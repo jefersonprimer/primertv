@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Anime {
+  id            String    @id @default(cuid())
+  title         String    @unique
+  description   String?
+  imageUrl      String?
+  seasons       Season[]
+  lastScrapedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Season {
+  id        String    @id @default(cuid())
+  number    Int
+  animeId   String
+  anime     Anime     @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  episodes  Episode[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([animeId, number])
+}
+
+model Episode {
+  id        String   @id @default(cuid())
+  number    Int
+  title     String?
+  videoUrl  String? // Can be an iframe url or mp4 link
+  seasonId  String
+  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([seasonId, number])
+}
+
+model Series {
+  id            String    @id @default(cuid())
+  title         String    @unique
+  description   String?
+  imageUrl      String?
+  lastScrapedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  seasons       SeriesSeason[]
+}
+
+model SeriesSeason {
+  id        String    @id @default(cuid())
+  number    Int
+  seriesId  String
+  series    Series    @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  episodes  SeriesEpisode[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([seriesId, number])
+}
+
+model SeriesEpisode {
+  id        String   @id @default(cuid())
+  number    Int
+  title     String?
+  videoUrl  String?
+  seasonId  String
+  season    SeriesSeason   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([seasonId, number])
+}
+
+model Movie {
+  id            String    @id @default(cuid())
+  title         String    @unique
+  description   String?
+  imageUrl      String?
+  videoUrl      String?
+  lastScrapedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Manga {
+  id            String    @id @default(cuid())
+  title         String    @unique
+  description   String?
+  imageUrl      String?
+  chapters      Chapter[]
+  lastScrapedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  number    Float
+  title     String?
+  pages     String[]
+  mangaId   String
+  manga     Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([mangaId, number])
+}
+
+model Novela {
+  id            String    @id @default(cuid())
+  title         String    @unique
+  description   String?
+  imageUrl      String?
+  lastScrapedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  seasons       NovelaSeason[]
+}
+
+model NovelaSeason {
+  id        String    @id @default(cuid())
+  number    Int
+  novelaId  String
+  novela    Novela    @relation(fields: [novelaId], references: [id], onDelete: Cascade)
+  episodes  NovelaEpisode[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([novelaId, number])
+}
+
+model NovelaEpisode {
+  id        String   @id @default(cuid())
+  number    Int
+  title     String?
+  videoUrl  String?
+  seasonId  String
+  season    NovelaSeason   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([seasonId, number])
+}
+
+model Channel {
+  id            String    @id @default(cuid())
+  title         String    @unique
+  description   String?
+  imageUrl      String?
+  videoUrl      String?
+  lastScrapedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
