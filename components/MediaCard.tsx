@@ -4,9 +4,13 @@ import Link from "next/link";
 export function MediaCard({
   item,
   type,
+  priority = false,
+  sizes = "(max-width: 640px) 160px, 200px",
 }: {
   item: any;
   type: "anime" | "series" | "movie" | "manga" | "novela" | "channel";
+  priority?: boolean;
+  sizes?: string;
 }) {
   const basePath =
     type === "novela"
@@ -23,7 +27,7 @@ export function MediaCard({
 
   return (
     <Link
-      href={`/${basePath}/${item.id}`}
+      href={`/${basePath}/${item.slug}`}
       className="group flex flex-col gap-2"
     >
       <div className="relative aspect-[2/3] overflow-hidden bg-zinc-200 dark:bg-zinc-800 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
@@ -32,7 +36,8 @@ export function MediaCard({
             src={item.imageUrl}
             alt={item.title}
             fill
-            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 250px"
+            sizes={sizes}
+            priority={priority}
             className="object-cover transition-transform duration-300 group-hover:scale-110"
           />
         ) : (

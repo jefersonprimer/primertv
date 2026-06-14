@@ -7,7 +7,7 @@ import { connection } from "next/server";
 import EpisodeList from "@/components/EpisodeList";
 
 interface NovelaDetailsPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function NovelaDetailsPage({
@@ -15,10 +15,10 @@ export default async function NovelaDetailsPage({
 }: NovelaDetailsPageProps) {
   await connection();
 
-  const { id } = await params;
+  const { slug } = await params;
 
   const novela = await prisma.novela.findUnique({
-    where: { id },
+    where: { slug },
     include: {
       seasons: {
         orderBy: { number: "asc" },
@@ -44,6 +44,7 @@ export default async function NovelaDetailsPage({
             src={novela.imageUrl}
             alt={novela.title}
             fill
+            sizes="100vw"
             className="object-cover opacity-30 blur-sm"
             priority
           />
@@ -58,6 +59,7 @@ export default async function NovelaDetailsPage({
                   src={novela.imageUrl}
                   alt={novela.title}
                   fill
+                  sizes="(max-width: 768px) 192px, 240px"
                   className="object-cover"
                   priority
                 />
@@ -107,7 +109,7 @@ export default async function NovelaDetailsPage({
 
                 <EpisodeList
                   items={season.episodes}
-                  baseUrl={`/novelas/${novela.id}/episode`}
+                  baseUrl={`/novelas/${novela.slug}/episode`}
                   itemType="episode"
                 />
               </section>

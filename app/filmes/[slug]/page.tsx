@@ -6,7 +6,7 @@ import { Metadata } from "next";
 import { connection } from "next/server";
 
 interface MovieDetailsPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
@@ -14,8 +14,8 @@ export async function generateMetadata({
 }: MovieDetailsPageProps): Promise<Metadata> {
   await connection();
 
-  const { id } = await params;
-  const movie = await prisma.movie.findUnique({ where: { id } });
+  const { slug } = await params;
+  const movie = await prisma.movie.findUnique({ where: { slug } });
 
   if (!movie) return { title: "Filme não encontrado" };
 
@@ -34,11 +34,12 @@ export default async function MovieDetailsPage({
 }: MovieDetailsPageProps) {
   await connection();
 
-  const { id } = await params;
+  const { slug } = await params;
 
   const movie = await prisma.movie.findUnique({
-    where: { id },
+    where: { slug },
   });
+
 
   if (!movie) {
     notFound();
@@ -57,6 +58,7 @@ export default async function MovieDetailsPage({
             src={movie.imageUrl}
             alt={movie.title}
             fill
+            sizes="100vw"
             className="object-cover opacity-30 blur-sm"
             priority
           />
@@ -71,6 +73,7 @@ export default async function MovieDetailsPage({
                   src={movie.imageUrl}
                   alt={movie.title}
                   fill
+                  sizes="(max-width: 768px) 192px, 240px"
                   className="object-cover"
                   priority
                 />

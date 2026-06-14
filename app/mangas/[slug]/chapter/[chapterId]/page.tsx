@@ -4,13 +4,13 @@ import { connection } from "next/server";
 import MangaReader from "@/components/MangaReader";
 
 interface ChapterPageProps {
-  params: Promise<{ id: string; chapterId: string }>;
+  params: Promise<{ slug: string; chapterId: string }>;
 }
 
 export default async function ChapterPage({ params }: ChapterPageProps) {
   await connection();
 
-  const { id, chapterId } = await params;
+  const { slug, chapterId } = await params;
 
   const chapter = await prisma.chapter.findUnique({
     where: { id: chapterId },
@@ -19,29 +19,29 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
     },
   });
 
-  if (!chapter || chapter.mangaId !== id) {
+  if (!chapter || chapter.manga.slug !== slug) {
     notFound();
   }
 
   const [prevChapter, nextChapter] = await Promise.all([
     prisma.chapter.findFirst({
       where: {
-        mangaId: id,
+        manga: { slug },
         number: { lt: chapter.number },
       },
       orderBy: { number: "desc" },
     }),
     prisma.chapter.findFirst({
       where: {
-        mangaId: id,
+        manga: { slug },
         number: { gt: chapter.number },
       },
       orderBy: { number: "asc" },
     }),
   ]);
 
-  const prevChapterUrl = prevChapter ? `/mangas/${id}/chapter/${prevChapter.id}` : null;
-  const nextChapterUrl = nextChapter ? `/mangas/${id}/chapter/${nextChapter.id}` : null;
+  const prevChapterUrl = prevChapter ? `/mangas/${slug}/chapter/${prevChapter.id}` : null;
+  const nextChapterUrl = nextChapter ? `/mangas/${slug}/chapter/${nextChapter.id}` : null;
 
   return (
     <MangaReader
@@ -49,9 +49,10 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
       chapterNumber={chapter.number}
       chapterTitle={chapter.title}
       mangaTitle={chapter.manga.title}
-      mangaId={id}
+      mangaId={slug}
       prevChapterUrl={prevChapterUrl}
       nextChapterUrl={nextChapterUrl}
     />
   );
 }
+

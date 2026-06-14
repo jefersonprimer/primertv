@@ -11,6 +11,7 @@ interface MediaCarouselProps {
   items: any[];
   type: "anime" | "series" | "movie" | "manga" | "novela" | "channel";
   viewAllHref?: string;
+  priority?: boolean;
 }
 
 export function MediaCarousel({
@@ -19,6 +20,7 @@ export function MediaCarousel({
   items,
   type,
   viewAllHref,
+  priority = false,
 }: MediaCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -87,9 +89,13 @@ export function MediaCarousel({
           onScroll={checkScroll}
           className="flex gap-6 overflow-x-auto scroll-smooth px-8 pb-4 no-scrollbar"
         >
-          {items.map((item) => (
+          {items.map((item, index) => (
             <div key={item.id} className="w-[160px] flex-shrink-0 sm:w-[200px]">
-              <MediaCard item={item} type={type} />
+              <MediaCard
+                item={item}
+                type={type}
+                priority={priority && index < 4}
+              />
             </div>
           ))}
         </div>

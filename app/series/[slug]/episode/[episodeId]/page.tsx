@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import { connection } from "next/server";
 
 interface WatchPageProps {
-  params: Promise<{ id: string; episodeId: string }>;
+  params: Promise<{ slug: string; episodeId: string }>;
 }
 
 export async function generateMetadata({ params }: WatchPageProps): Promise<Metadata> {
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
 export default async function WatchPage({ params }: WatchPageProps) {
   await connection();
 
-  const { id, episodeId } = await params;
+  const { slug, episodeId } = await params;
 
   const episode = await prisma.seriesEpisode.findFirst({
     where: { id: episodeId },
@@ -81,7 +81,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
       <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <Link
-            href={`/series/${id}`}
+            href={`/series/${slug}`}
             className="flex items-center gap-2 text-sm font-medium text-blue-500 transition-colors hover:text-blue-600"
           >
             <svg
@@ -160,7 +160,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                 <div className="flex items-center gap-4">
                   {prevEpisode && (
                     <Link
-                      href={`/series/${id}/episode/${prevEpisode.id}`}
+                      href={`/series/${slug}/episode/${prevEpisode.id}`}
                       className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                     >
                       Anterior
@@ -168,7 +168,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                   )}
                   {nextEpisode && (
                     <Link
-                      href={`/series/${id}/episode/${nextEpisode.id}`}
+                      href={`/series/${slug}/episode/${nextEpisode.id}`}
                       className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
                     >
                       Próximo
@@ -212,7 +212,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                   {episodes.map((ep) => (
                     <Link
                       key={ep.id}
-                      href={`/series/${id}/episode/${ep.id}`}
+                      href={`/series/${slug}/episode/${ep.id}`}
                       className={`flex items-center gap-3 rounded-lg p-3 text-sm transition-colors ${
                         ep.id === episode.id
                           ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"

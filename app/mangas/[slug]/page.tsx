@@ -6,32 +6,27 @@ import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
 
-interface AnimeDetailsPageProps {
-  params: Promise<{ id: string }>;
+interface MangaDetailsPageProps {
+  params: Promise<{ slug: string }>;
 }
 
-export default async function AnimeDetailsPage({
+export default async function MangaDetailsPage({
   params,
-}: AnimeDetailsPageProps) {
+}: MangaDetailsPageProps) {
   await connection();
 
-  const { id } = await params;
+  const { slug } = await params;
 
-  const anime = await prisma.anime.findUnique({
-    where: { id },
+  const manga = await prisma.manga.findUnique({
+    where: { slug },
     include: {
-      seasons: {
+      chapters: {
         orderBy: { number: "asc" },
-        include: {
-          episodes: {
-            orderBy: { number: "asc" },
-          },
-        },
       },
     },
   });
 
-  if (!anime) {
+  if (!manga) {
     notFound();
   }
 
@@ -39,11 +34,12 @@ export default async function AnimeDetailsPage({
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
       <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
-        {anime.imageUrl && (
+        {manga.imageUrl && (
           <Image
-            src={anime.imageUrl}
-            alt={anime.title}
+            src={manga.imageUrl}
+            alt={manga.title}
             fill
+            sizes="100vw"
             className="object-cover opacity-30 blur-sm"
             priority
           />
@@ -53,11 +49,12 @@ export default async function AnimeDetailsPage({
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
           <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
             <div className="relative aspect-[2/3] w-48 lg:w-60 flex-shrink-0 overflow-hidden shadow-2xl">
-              {anime.imageUrl ? (
+              {manga.imageUrl ? (
                 <Image
-                  src={anime.imageUrl}
-                  alt={anime.title}
+                  src={manga.imageUrl}
+                  alt={manga.title}
                   fill
+                  sizes="(max-width: 768px) 192px, 240px"
                   className="object-cover"
                   priority
                 />
@@ -69,11 +66,11 @@ export default async function AnimeDetailsPage({
             </div>
             <div className="flex flex-col gap-4">
               <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
-                {anime.title}
+                {manga.title}
               </h1>
-              {anime.description && (
+              {manga.description && (
                 <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
-                  {anime.description}
+                  {manga.description}
                 </p>
               )}
             </div>
@@ -81,32 +78,21 @@ export default async function AnimeDetailsPage({
         </div>
       </div>
 
-      {/* Episodes Section */}
+      {/* Chapters Section */}
       <main className="mx-auto max-w-[1223px]">
         <h2 className="mb-8 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-          Episódios
+          Capítulos
         </h2>
 
-        {anime.seasons.length === 0 ? (
-          <p className="text-zinc-500">Nenhum episódio encontrado.</p>
+        {manga.chapters.length === 0 ? (
+          <p className="text-zinc-500">Nenhum capítulo encontrado.</p>
         ) : (
-          <div className="flex flex-col gap-12">
-            {anime.seasons.map((season) => (
-              <section key={season.id}>
-                {anime.seasons.length > 1 && (
-                  <h3 className="mb-4 text-xl font-semibold text-zinc-800 dark:text-zinc-200">
-                    Temporada {season.number}
-                  </h3>
-                )}
-
-                <EpisodeList
-                  items={season.episodes}
-                  baseUrl={`/animes/${anime.id}/episode`}
-                  itemType="episode"
-                />
-              </section>
-            ))}
-          </div>
+          <EpisodeList
+            items={manga.chapters}
+            baseUrl={`/mangas/${manga.slug}/chapter`}
+            label="Capítulo"
+            itemType="chapter"
+          />
         )}
       </main>
     </div>

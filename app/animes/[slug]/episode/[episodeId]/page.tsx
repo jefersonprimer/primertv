@@ -6,7 +6,7 @@ import { connection } from "next/server";
 import { ChevronLeft } from "lucide-react";
 
 interface WatchPageProps {
-  params: Promise<{ id: string; episodeId: string }>;
+  params: Promise<{ slug: string; episodeId: string }>;
 }
 
 export async function generateMetadata({
@@ -56,7 +56,7 @@ export async function generateMetadata({
 export default async function WatchPage({ params }: WatchPageProps) {
   await connection();
 
-  const { id, episodeId } = await params;
+  const { slug, episodeId } = await params;
 
   // Search for the episode. We'll use findFirst to be safe.
   const episode = await prisma.episode.findFirst({
@@ -80,14 +80,11 @@ export default async function WatchPage({ params }: WatchPageProps) {
     notFound();
   }
 
-  // We should still verify if the anime ID matches, but let's be flexible
-  // In case there's some mismatch in how IDs are stored/passed.
-  if (episode.season.anime.id !== id) {
+  // We should still verify if the anime slug matches, but let's be flexible
+  if (episode.season.anime.slug !== slug) {
     console.warn(
-      `Mismatch between URL anime ID (${id}) and episode anime ID (${episode.season.anime.id})`,
+      `Mismatch between URL anime slug (${slug}) and episode anime slug (${episode.season.anime.slug})`,
     );
-    // We'll still allow it to render if the episode exists,
-    // to avoid the 404 the user is experiencing.
   }
 
   const episodes = episode.season.episodes;
@@ -106,7 +103,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
       <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/80">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <Link
-            href={`/animes/${id}`}
+            href={`/animes/${slug}`}
             className="flex items-center gap-2 text-sm font-medium text-blue-500 transition-colors hover:text-blue-600"
           >
             <ChevronLeft />
@@ -178,7 +175,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                 <div className="flex items-center gap-4">
                   {prevEpisode && (
                     <Link
-                      href={`/animes/${id}/episode/${prevEpisode.id}`}
+                      href={`/animes/${slug}/episode/${prevEpisode.id}`}
                       className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                     >
                       Anterior
@@ -186,7 +183,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                   )}
                   {nextEpisode && (
                     <Link
-                      href={`/animes/${id}/episode/${nextEpisode.id}`}
+                      href={`/animes/${slug}/episode/${nextEpisode.id}`}
                       className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
                     >
                       Próximo
@@ -239,7 +236,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                   {episodes.map((ep) => (
                     <Link
                       key={ep.id}
-                      href={`/animes/${id}/episode/${ep.id}`}
+                      href={`/animes/${slug}/episode/${ep.id}`}
                       className={`flex items-center gap-3 rounded-lg p-3 text-sm transition-colors ${
                         ep.id === episode.id
                           ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
@@ -274,3 +271,4 @@ export default async function WatchPage({ params }: WatchPageProps) {
     </div>
   );
 }
+

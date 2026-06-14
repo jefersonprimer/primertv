@@ -88,7 +88,12 @@ export default async function SearchPage({
             <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Animes</h2>
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {animes.map((anime) => (
-                <MediaCard key={anime.id} item={anime} type="anime" />
+                <MediaCard
+                  key={anime.id}
+                  item={anime}
+                  type="anime"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 200px"
+                />
               ))}
             </div>
           </section>
@@ -99,7 +104,12 @@ export default async function SearchPage({
             <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Séries</h2>
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {series.map((item) => (
-                <MediaCard key={item.id} item={item} type="series" />
+                <MediaCard
+                  key={item.id}
+                  item={item}
+                  type="series"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 200px"
+                />
               ))}
             </div>
           </section>
@@ -110,7 +120,12 @@ export default async function SearchPage({
             <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Filmes</h2>
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {movies.map((item) => (
-                <MediaCard key={item.id} item={item} type="movie" />
+                <MediaCard
+                  key={item.id}
+                  item={item}
+                  type="movie"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 200px"
+                />
               ))}
             </div>
           </section>
@@ -121,7 +136,12 @@ export default async function SearchPage({
             <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Mangás</h2>
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {mangas.map((item) => (
-                <MediaCard key={item.id} item={item} type="manga" />
+                <MediaCard
+                  key={item.id}
+                  item={item}
+                  type="manga"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 200px"
+                />
               ))}
             </div>
           </section>
@@ -132,7 +152,12 @@ export default async function SearchPage({
             <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Novelas</h2>
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {novelas.map((item) => (
-                <MediaCard key={item.id} item={item} type="novela" />
+                <MediaCard
+                  key={item.id}
+                  item={item}
+                  type="novela"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 200px"
+                />
               ))}
             </div>
           </section>

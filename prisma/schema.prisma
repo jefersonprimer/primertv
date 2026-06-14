@@ -11,6 +11,7 @@ datasource db {
 
 model Anime {
   id            String    @id @default(cuid())
+  slug          String    @unique
   title         String    @unique
   description   String?
   imageUrl      String?
@@ -47,6 +48,7 @@ model Episode {
 
 model Series {
   id            String    @id @default(cuid())
+  slug          String    @unique
   title         String    @unique
   description   String?
   imageUrl      String?
@@ -83,6 +85,7 @@ model SeriesEpisode {
 
 model Movie {
   id            String    @id @default(cuid())
+  slug          String    @unique
   title         String    @unique
   description   String?
   imageUrl      String?
@@ -94,6 +97,7 @@ model Movie {
 
 model Manga {
   id            String    @id @default(cuid())
+  slug          String    @unique
   title         String    @unique
   description   String?
   imageUrl      String?
@@ -118,6 +122,7 @@ model Chapter {
 
 model Novela {
   id            String    @id @default(cuid())
+  slug          String    @unique
   title         String    @unique
   description   String?
   imageUrl      String?
@@ -154,6 +159,7 @@ model NovelaEpisode {
 
 model Channel {
   id            String    @id @default(cuid())
+  slug          String    @unique
   title         String    @unique
   description   String?
   imageUrl      String?
@@ -162,3 +168,4 @@ model Channel {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
+

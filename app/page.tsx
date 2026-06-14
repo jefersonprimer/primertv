@@ -79,6 +79,7 @@ async function NovelaCarousel() {
       items={items}
       type="novela"
       viewAllHref="/novelas"
+      priority
     />
   );
 }
@@ -94,6 +95,7 @@ async function ChannelCarousel() {
       items={items}
       type="channel"
       viewAllHref="/channels"
+      priority
     />
   );
 }

@@ -6,19 +6,19 @@ import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
 
-interface SeriesDetailsPageProps {
-  params: Promise<{ id: string }>;
+interface AnimeDetailsPageProps {
+  params: Promise<{ slug: string }>;
 }
 
-export default async function SeriesDetailsPage({
+export default async function AnimeDetailsPage({
   params,
-}: SeriesDetailsPageProps) {
+}: AnimeDetailsPageProps) {
   await connection();
 
-  const { id } = await params;
+  const { slug } = await params;
 
-  const series = await prisma.series.findUnique({
-    where: { id },
+  const anime = await prisma.anime.findUnique({
+    where: { slug },
     include: {
       seasons: {
         orderBy: { number: "asc" },
@@ -31,7 +31,7 @@ export default async function SeriesDetailsPage({
     },
   });
 
-  if (!series) {
+  if (!anime) {
     notFound();
   }
 
@@ -39,11 +39,12 @@ export default async function SeriesDetailsPage({
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
       <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
-        {series.imageUrl && (
+        {anime.imageUrl && (
           <Image
-            src={series.imageUrl}
-            alt={series.title}
+            src={anime.imageUrl}
+            alt={anime.title}
             fill
+            sizes="100vw"
             className="object-cover opacity-30 blur-sm"
             priority
           />
@@ -53,11 +54,12 @@ export default async function SeriesDetailsPage({
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
           <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
             <div className="relative aspect-[2/3] w-48 lg:w-60 flex-shrink-0 overflow-hidden shadow-2xl">
-              {series.imageUrl ? (
+              {anime.imageUrl ? (
                 <Image
-                  src={series.imageUrl}
-                  alt={series.title}
+                  src={anime.imageUrl}
+                  alt={anime.title}
                   fill
+                  sizes="(max-width: 768px) 192px, 240px"
                   className="object-cover"
                   priority
                 />
@@ -68,18 +70,12 @@ export default async function SeriesDetailsPage({
               )}
             </div>
             <div className="flex flex-col gap-4">
-              <Link
-                href="/"
-                className="text-sm font-medium text-blue-500 hover:underline"
-              >
-                ← Voltar para a Home
-              </Link>
               <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
-                {series.title}
+                {anime.title}
               </h1>
-              {series.description && (
+              {anime.description && (
                 <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
-                  {series.description}
+                  {anime.description}
                 </p>
               )}
             </div>
@@ -93,13 +89,13 @@ export default async function SeriesDetailsPage({
           Episódios
         </h2>
 
-        {series.seasons.length === 0 ? (
+        {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (
           <div className="flex flex-col gap-12">
-            {series.seasons.map((season) => (
+            {anime.seasons.map((season) => (
               <section key={season.id}>
-                {series.seasons.length > 1 && (
+                {anime.seasons.length > 1 && (
                   <h3 className="mb-4 text-xl font-semibold text-zinc-800 dark:text-zinc-200">
                     Temporada {season.number}
                   </h3>
@@ -107,7 +103,7 @@ export default async function SeriesDetailsPage({
 
                 <EpisodeList
                   items={season.episodes}
-                  baseUrl={`/series/${series.id}/episode`}
+                  baseUrl={`/animes/${anime.slug}/episode`}
                   itemType="episode"
                 />
               </section>
@@ -118,3 +114,4 @@ export default async function SeriesDetailsPage({
     </div>
   );
 }
+

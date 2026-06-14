@@ -8,6 +8,7 @@ async function main() {
     update: {},
     create: {
       title: "Solo Leveling",
+      slug: "solo-leveling",
       description: "Test anime for scraper",
     },
   });

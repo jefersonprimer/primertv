@@ -6,14 +6,14 @@ import { Metadata } from "next";
 import { connection } from "next/server";
 
 interface ChannelPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: ChannelPageProps): Promise<Metadata> {
   await connection();
 
-  const { id } = await params;
-  const channel = await prisma.channel.findUnique({ where: { id } });
+  const { slug } = await params;
+  const channel = await prisma.channel.findUnique({ where: { slug } });
 
   if (!channel) return { title: "Canal não encontrado" };
 
@@ -30,11 +30,12 @@ export async function generateMetadata({ params }: ChannelPageProps): Promise<Me
 export default async function ChannelPage({ params }: ChannelPageProps) {
   await connection();
 
-  const { id } = await params;
+  const { slug } = await params;
 
   const channel = await prisma.channel.findUnique({
-    where: { id },
+    where: { slug },
   });
+
 
   if (!channel) {
     notFound();
@@ -50,6 +51,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
             src={channel.imageUrl}
             alt={channel.title}
             fill
+            sizes="100vw"
             className="object-cover opacity-40 blur-md"
             priority
           />
@@ -64,6 +66,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
                   src={channel.imageUrl}
                   alt={channel.title}
                   fill
+                  sizes="192px"
                   className="object-contain p-4"
                   priority
                 />
