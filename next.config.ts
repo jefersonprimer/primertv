@@ -107,6 +107,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "maxnovelas.com",
       },
+      {
+        protocol: "https",
+        hostname: "upnovelas.com",
+      },
+      {
+        protocol: "https",
+        hostname: "noveflix.net",
+      },
+      {
+        protocol: "https",
+        hostname: "**.claudeassets.com",
+      },
     ],
   },
 };

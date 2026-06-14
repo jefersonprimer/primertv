@@ -1,161 +1,130 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { MediaCard } from "@/components/MediaCard";
-import { connection } from "next/server";
+import { MediaCarousel } from "@/components/MediaCarousel";
+import { MediaCarouselSkeleton } from "@/components/MediaCarouselSkeleton";
+import { Suspense } from "react";
 
-export default async function Home() {
-  await connection();
-
-  const animes = await prisma.anime.findMany({
+async function AnimeCarousel() {
+  const items = await prisma.anime.findMany({
     orderBy: { createdAt: "desc" },
-    take: 12,
+    take: 15,
   });
+  return (
+    <MediaCarousel
+      title="Animes"
+      subtitle="Suas animações favoritas"
+      items={items}
+      type="anime"
+      viewAllHref="/anime"
+    />
+  );
+}
 
-  const series = await prisma.series.findMany({
+async function SeriesCarousel() {
+  const items = await prisma.series.findMany({
     orderBy: { createdAt: "desc" },
-    take: 12,
+    take: 15,
   });
+  return (
+    <MediaCarousel
+      title="Séries Populares"
+      subtitle="Maratone agora"
+      items={items}
+      type="series"
+      viewAllHref="/series"
+    />
+  );
+}
 
-  const movies = await prisma.movie.findMany({
+async function MovieCarousel() {
+  const items = await prisma.movie.findMany({
     orderBy: { createdAt: "desc" },
-    take: 12,
+    take: 15,
   });
+  return (
+    <MediaCarousel
+      title="Filmes Recentes"
+      subtitle="Lançamentos do cinema"
+      items={items}
+      type="movie"
+      viewAllHref="/movie"
+    />
+  );
+}
 
-  const mangas = await prisma.manga.findMany({
+async function MangaCarousel() {
+  const items = await prisma.manga.findMany({
     orderBy: { createdAt: "desc" },
-    take: 12,
+    take: 15,
   });
+  return (
+    <MediaCarousel
+      title="Mangás Recentes"
+      subtitle="Leia os capítulos mais novos"
+      items={items}
+      type="manga"
+      viewAllHref="/manga"
+    />
+  );
+}
 
-  const novelas = await prisma.novela.findMany({
+async function NovelaCarousel() {
+  const items = await prisma.novela.findMany({
     orderBy: { createdAt: "desc" },
-    take: 12,
+    take: 15,
   });
+  return (
+    <MediaCarousel
+      title="Novelas"
+      subtitle="As melhores tramas"
+      items={items}
+      type="novela"
+      viewAllHref="/novelas"
+    />
+  );
+}
 
-  const channels = await prisma.channel.findMany({
+async function ChannelCarousel() {
+  const items = await prisma.channel.findMany({
     orderBy: { title: "asc" },
   });
-
   return (
-    <div className="p-8">
-      <header className="mb-12 text-center md:text-left">
-        <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">Bem-vindo ao Primerflix</h2>
-        <p className="text-zinc-600 dark:text-zinc-400">Explore nossa coleção de conteúdos.</p>
-      </header>
+    <MediaCarousel
+      title="Canais TV"
+      subtitle="Assista ao vivo"
+      items={items}
+      type="channel"
+      viewAllHref="/channels"
+    />
+  );
+}
 
+export default function Home() {
+  return (
+    <div className="py-8 px-2">
       <main className="space-y-16">
-        {/* Channels Section */}
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Canais TV</h2>
-            <Link href="/channels" className="text-sm font-medium text-blue-500 hover:underline">
-              Ver tudo
-            </Link>
-          </div>
-          {channels.length === 0 ? (
-            <p className="text-zinc-500">Nenhum canal encontrado.</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {channels.map((item) => (
-                <MediaCard key={item.id} item={item} type="channel" />
-              ))}
-            </div>
-          )}
-        </section>
+        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+          <ChannelCarousel />
+        </Suspense>
 
-        {/* Novelas Section */}
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Novelas</h2>
-            <Link href="/novelas" className="text-sm font-medium text-blue-500 hover:underline">
-              Ver tudo
-            </Link>
-          </div>
-          {novelas.length === 0 ? (
-            <p className="text-zinc-500">Nenhuma novela encontrada.</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {novelas.map((item) => (
-                <MediaCard key={item.id} item={item} type="novela" />
-              ))}
-            </div>
-          )}
-        </section>
+        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+          <NovelaCarousel />
+        </Suspense>
 
-        {/* Movies Section */}
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Filmes Recentes</h2>
-            <Link href="/movie" className="text-sm font-medium text-blue-500 hover:underline">
-              Ver tudo
-            </Link>
-          </div>
-          {movies.length === 0 ? (
-            <p className="text-zinc-500">Nenhum filme encontrado.</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {movies.map((item) => (
-                <MediaCard key={item.id} item={item} type="movie" />
-              ))}
-            </div>
-          )}
-        </section>
+        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+          <MovieCarousel />
+        </Suspense>
 
-        {/* Animes Section */}
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Animes</h2>
-            <Link href="/anime" className="text-sm font-medium text-blue-500 hover:underline">
-              Ver tudo
-            </Link>
-          </div>
-          {animes.length === 0 ? (
-            <p className="text-zinc-500">Nenhum anime encontrado.</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {animes.map((anime) => (
-                <MediaCard key={anime.id} item={anime} type="anime" />
-              ))}
-            </div>
-          )}
-        </section>
+        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+          <AnimeCarousel />
+        </Suspense>
 
-        {/* Series Section */}
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Séries Populares</h2>
-            <Link href="/series" className="text-sm font-medium text-blue-500 hover:underline">
-              Ver tudo
-            </Link>
-          </div>
-          {series.length === 0 ? (
-            <p className="text-zinc-500">Nenhuma série encontrada.</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {series.map((item) => (
-                <MediaCard key={item.id} item={item} type="series" />
-              ))}
-            </div>
-          )}
-        </section>
+        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+          <SeriesCarousel />
+        </Suspense>
 
-        {/* Manga Section */}
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Mangás Recentes</h2>
-            <Link href="/manga" className="text-sm font-medium text-blue-500 hover:underline">
-              Ver tudo
-            </Link>
-          </div>
-          {mangas.length === 0 ? (
-            <p className="text-zinc-500">Nenhum mangá encontrado.</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {mangas.map((item) => (
-                <MediaCard key={item.id} item={item} type="manga" />
-              ))}
-            </div>
-          )}
-        </section>
+        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+          <MangaCarousel />
+        </Suspense>
       </main>
     </div>
   );

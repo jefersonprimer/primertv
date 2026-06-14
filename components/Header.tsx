@@ -1,13 +1,20 @@
 import Link from "next/link";
 import { SearchBar } from "./SearchBar";
+import { User } from "lucide-react";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-500">
-            PrimerTV
+    <header className="top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+      <div className="mx-auto flex max-w-7xl items-center justify-between p-2">
+        <Link
+          href="/"
+          className="flex items-center transition-opacity hover:opacity-80"
+        >
+          <span className="text-2xl font-extrabold tracking-tighter text-zinc-900 dark:text-white">
+            Primer
+            <span className="font-light text-blue-600 dark:text-blue-500">
+              TV
+            </span>
           </span>
         </Link>
         <nav className="ml-8 hidden items-center gap-6 md:flex">
@@ -59,6 +66,9 @@ export function Header() {
               <path d="m21 21-4.3-4.3" />
             </svg>
           </Link>
+          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800">
+            <User size={20} />
+          </button>
         </div>
       </div>
     </header>

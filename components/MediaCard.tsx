@@ -1,12 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export function MediaCard({ item, type }: { item: any; type: "anime" | "series" | "movie" | "manga" | "novela" | "channel" }) {
-  const basePath = type === "novela" ? "novelas" : type === "channel" ? "channels" : type;
+export function MediaCard({
+  item,
+  type,
+}: {
+  item: any;
+  type: "anime" | "series" | "movie" | "manga" | "novela" | "channel";
+}) {
+  const basePath =
+    type === "novela" ? "novelas" : type === "channel" ? "channels" : type;
 
   return (
-    <Link href={`/${basePath}/${item.id}`} className="group flex flex-col gap-2">
-      <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-zinc-200 dark:bg-zinc-800 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
+    <Link
+      href={`/${basePath}/${item.id}`}
+      className="group flex flex-col gap-2"
+    >
+      <div className="relative aspect-[2/3] overflow-hidden bg-zinc-200 dark:bg-zinc-800 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
         {item.imageUrl ? (
           <Image
             src={item.imageUrl}

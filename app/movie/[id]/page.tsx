@@ -44,7 +44,7 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
   const isDirectVideo = movie.videoUrl?.endsWith(".mp4") || movie.videoUrl?.endsWith(".m3u8");
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
       <div className="relative h-[60vh] w-full overflow-hidden bg-zinc-900">
         {movie.imageUrl && (
@@ -52,15 +52,15 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
             src={movie.imageUrl}
             alt={movie.title}
             fill
-            className="object-cover opacity-40 blur-md"
+            className="object-cover opacity-30 blur-sm"
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 via-zinc-50/20 to-transparent dark:from-black dark:via-black/20" />
-        
-        <div className="absolute inset-0 flex items-center justify-center p-8">
-          <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 md:flex-row">
-            <div className="relative aspect-[2/3] w-64 flex-shrink-0 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+
+        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+          <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
+            <div className="relative aspect-[2/3] w-48 flex-shrink-0 overflow-hidden rounded-xl shadow-2xl">
               {movie.imageUrl ? (
                 <Image
                   src={movie.imageUrl}
@@ -75,40 +75,30 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
                 </div>
               )}
             </div>
-            
-            <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left">
+            <div className="flex flex-col gap-4">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-400"
+                className="text-sm font-medium text-blue-500 hover:underline"
               >
                 ← Voltar para a Home
               </Link>
-              <h1 className="text-5xl font-extrabold tracking-tight md:text-7xl">
+              <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-50 md:text-5xl">
                 {movie.title}
               </h1>
               {movie.description && (
-                <p className="max-w-2xl text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
                   {movie.description}
                 </p>
               )}
-              
-              <div className="mt-4 flex flex-wrap gap-4">
-                <a
-                  href="#player"
-                  className="inline-flex h-14 items-center justify-center rounded-2xl bg-blue-600 px-10 text-lg font-bold text-white shadow-xl shadow-blue-500/20 transition-all hover:bg-blue-700 hover:scale-105 active:scale-95"
-                >
-                  Assistir Agora
-                </a>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Player Section */}
-      <main id="player" className="mx-auto max-w-6xl p-8 md:p-12">
-        <div className="mb-10 flex items-center justify-between">
-          <h2 className="text-3xl font-bold">Player</h2>
+      <main id="player" className="mx-auto max-w-[1223px]">
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Player</h2>
           <div className="flex items-center gap-2 text-sm font-medium text-zinc-500">
             <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
             Servidor Principal (HD)
@@ -142,7 +132,7 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
         </div>
 
         <div className="mt-12 rounded-3xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-900">
-          <h3 className="text-xl font-bold">Sobre o Filme</h3>
+          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Sobre o Filme</h3>
           <p className="mt-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
             {movie.description || "Este filme é uma das adições mais recentes ao nosso catálogo. No momento, estamos coletando mais informações sobre sua sinopse e detalhes técnicos. Aproveite a transmissão em alta definição!"}
           </p>
