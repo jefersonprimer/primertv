@@ -9,7 +9,9 @@ interface MovieDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: MovieDetailsPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: MovieDetailsPageProps): Promise<Metadata> {
   await connection();
 
   const { id } = await params;
@@ -27,7 +29,9 @@ export async function generateMetadata({ params }: MovieDetailsPageProps): Promi
   };
 }
 
-export default async function MovieDetailsPage({ params }: MovieDetailsPageProps) {
+export default async function MovieDetailsPage({
+  params,
+}: MovieDetailsPageProps) {
   await connection();
 
   const { id } = await params;
@@ -41,12 +45,13 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
   }
 
   // Simple heuristic to check if it's a video file or an embed
-  const isDirectVideo = movie.videoUrl?.endsWith(".mp4") || movie.videoUrl?.endsWith(".m3u8");
+  const isDirectVideo =
+    movie.videoUrl?.endsWith(".mp4") || movie.videoUrl?.endsWith(".m3u8");
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
-      <div className="relative h-[60vh] w-full overflow-hidden bg-zinc-900">
+      <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
         {movie.imageUrl && (
           <Image
             src={movie.imageUrl}
@@ -60,7 +65,7 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
 
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
           <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
-            <div className="relative aspect-[2/3] w-48 flex-shrink-0 overflow-hidden rounded-xl shadow-2xl">
+            <div className="relative aspect-[2/3] w-48 lg:w-60 flex-shrink-0 overflow-hidden shadow-2xl">
               {movie.imageUrl ? (
                 <Image
                   src={movie.imageUrl}
@@ -82,7 +87,7 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
               >
                 ← Voltar para a Home
               </Link>
-              <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-50 md:text-5xl">
+              <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                 {movie.title}
               </h1>
               {movie.description && (
@@ -98,7 +103,9 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
       {/* Player Section */}
       <main id="player" className="mx-auto max-w-[1223px]">
         <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Player</h2>
+          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            Player
+          </h2>
           <div className="flex items-center gap-2 text-sm font-medium text-zinc-500">
             <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
             Servidor Principal (HD)
@@ -132,9 +139,12 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
         </div>
 
         <div className="mt-12 rounded-3xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-900">
-          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Sobre o Filme</h3>
+          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
+            Sobre o Filme
+          </h3>
           <p className="mt-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            {movie.description || "Este filme é uma das adições mais recentes ao nosso catálogo. No momento, estamos coletando mais informações sobre sua sinopse e detalhes técnicos. Aproveite a transmissão em alta definição!"}
+            {movie.description ||
+              "Este filme é uma das adições mais recentes ao nosso catálogo. No momento, estamos coletando mais informações sobre sua sinopse e detalhes técnicos. Aproveite a transmissão em alta definição!"}
           </p>
         </div>
       </main>

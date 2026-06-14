@@ -19,7 +19,7 @@ export function Header() {
         </Link>
         <nav className="ml-8 hidden items-center gap-6 md:flex">
           <Link
-            href="/movie"
+            href="/filmes"
             className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
           >
             Filmes
@@ -31,7 +31,7 @@ export function Header() {
             Séries
           </Link>
           <Link
-            href="/anime"
+            href="/animes"
             className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
           >
             Animes

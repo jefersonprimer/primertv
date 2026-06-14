@@ -40,8 +40,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
     }),
   ]);
 
-  const prevChapterUrl = prevChapter ? `/manga/${id}/chapter/${prevChapter.id}` : null;
-  const nextChapterUrl = nextChapter ? `/manga/${id}/chapter/${nextChapter.id}` : null;
+  const prevChapterUrl = prevChapter ? `/mangas/${id}/chapter/${prevChapter.id}` : null;
+  const nextChapterUrl = nextChapter ? `/mangas/${id}/chapter/${nextChapter.id}` : null;
 
   return (
     <MangaReader

@@ -122,7 +122,7 @@ export default function MangaReader({
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
-              href={`/manga/${mangaId}`}
+              href={`/mangas/${mangaId}`}
               className="rounded-full p-2 hover:bg-zinc-800 transition-colors"
               title="Voltar"
             >
@@ -189,7 +189,7 @@ export default function MangaReader({
           <div className="flex h-[60vh] flex-col items-center justify-center gap-4 text-center p-4">
             <p className="text-zinc-400">Este capítulo ainda não tem páginas processadas.</p>
             <Link
-              href={`/manga/${mangaId}`}
+              href={`/mangas/${mangaId}`}
               className="rounded-lg bg-blue-600 px-6 py-2 font-medium hover:bg-blue-700 text-white transition-colors"
             >
               Voltar para a obra
@@ -261,7 +261,7 @@ export default function MangaReader({
           </div>
 
           <Link
-            href={`/manga/${mangaId}`}
+            href={`/mangas/${mangaId}`}
             className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors"
           >
             Voltar para a lista de capítulos

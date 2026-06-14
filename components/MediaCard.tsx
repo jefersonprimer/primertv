@@ -9,7 +9,17 @@ export function MediaCard({
   type: "anime" | "series" | "movie" | "manga" | "novela" | "channel";
 }) {
   const basePath =
-    type === "novela" ? "novelas" : type === "channel" ? "channels" : type;
+    type === "novela"
+      ? "novelas"
+      : type === "channel"
+      ? "channels"
+      : type === "movie"
+      ? "filmes"
+      : type === "anime"
+      ? "animes"
+      : type === "manga"
+      ? "mangas"
+      : type;
 
   return (
     <Link

@@ -38,7 +38,7 @@ export default async function SeriesDetailsPage({
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
-      <div className="relative h-[60vh] w-full overflow-hidden bg-zinc-900">
+      <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
         {series.imageUrl && (
           <Image
             src={series.imageUrl}
@@ -52,7 +52,7 @@ export default async function SeriesDetailsPage({
 
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
           <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
-            <div className="relative aspect-[2/3] w-48 flex-shrink-0 overflow-hidden rounded-xl shadow-2xl">
+            <div className="relative aspect-[2/3] w-48 lg:w-60 flex-shrink-0 overflow-hidden shadow-2xl">
               {series.imageUrl ? (
                 <Image
                   src={series.imageUrl}
@@ -74,7 +74,7 @@ export default async function SeriesDetailsPage({
               >
                 ← Voltar para a Home
               </Link>
-              <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-50 md:text-5xl">
+              <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                 {series.title}
               </h1>
               {series.description && (

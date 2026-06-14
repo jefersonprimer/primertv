@@ -14,7 +14,7 @@ async function AnimeCarousel() {
       subtitle="Suas animações favoritas"
       items={items}
       type="anime"
-      viewAllHref="/anime"
+      viewAllHref="/animes"
     />
   );
 }
@@ -46,7 +46,7 @@ async function MovieCarousel() {
       subtitle="Lançamentos do cinema"
       items={items}
       type="movie"
-      viewAllHref="/movie"
+      viewAllHref="/filmes"
     />
   );
 }
@@ -62,7 +62,7 @@ async function MangaCarousel() {
       subtitle="Leia os capítulos mais novos"
       items={items}
       type="manga"
-      viewAllHref="/manga"
+      viewAllHref="/mangas"
     />
   );
 }
