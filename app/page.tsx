@@ -3,8 +3,16 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { MediaCarouselSkeleton } from "@/components/MediaCarouselSkeleton";
 import { Suspense } from "react";
 
+export const revalidate = 3600; // revalida a cada hora
+
 async function AnimeCarousel() {
   const items = await prisma.anime.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+    },
     orderBy: { createdAt: "desc" },
     take: 15,
   });
@@ -21,6 +29,12 @@ async function AnimeCarousel() {
 
 async function SeriesCarousel() {
   const items = await prisma.series.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+    },
     orderBy: { createdAt: "desc" },
     take: 15,
   });
@@ -37,6 +51,12 @@ async function SeriesCarousel() {
 
 async function MovieCarousel() {
   const items = await prisma.movie.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+    },
     orderBy: { createdAt: "desc" },
     take: 15,
   });
@@ -53,6 +73,12 @@ async function MovieCarousel() {
 
 async function MangaCarousel() {
   const items = await prisma.manga.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+    },
     orderBy: { createdAt: "desc" },
     take: 15,
   });
@@ -69,6 +95,12 @@ async function MangaCarousel() {
 
 async function NovelaCarousel() {
   const items = await prisma.novela.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+    },
     orderBy: { createdAt: "desc" },
     take: 15,
   });
@@ -86,6 +118,12 @@ async function NovelaCarousel() {
 
 async function ChannelCarousel() {
   const items = await prisma.channel.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+    },
     orderBy: { title: "asc" },
   });
   return (

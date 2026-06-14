@@ -6,6 +6,8 @@ import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
 
+export const revalidate = 3600;
+
 interface MangaDetailsPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -13,8 +15,6 @@ interface MangaDetailsPageProps {
 export default async function MangaDetailsPage({
   params,
 }: MangaDetailsPageProps) {
-  await connection();
-
   const { slug } = await params;
 
   const manga = await prisma.manga.findUnique({

@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import { connection } from "next/server";
 
+export const revalidate = 3600;
+
 interface MovieDetailsPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -12,8 +14,6 @@ interface MovieDetailsPageProps {
 export async function generateMetadata({
   params,
 }: MovieDetailsPageProps): Promise<Metadata> {
-  await connection();
-
   const { slug } = await params;
   const movie = await prisma.movie.findUnique({ where: { slug } });
 
@@ -32,8 +32,6 @@ export async function generateMetadata({
 export default async function MovieDetailsPage({
   params,
 }: MovieDetailsPageProps) {
-  await connection();
-
   const { slug } = await params;
 
   const movie = await prisma.movie.findUnique({

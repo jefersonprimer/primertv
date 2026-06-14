@@ -6,6 +6,8 @@ import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
 
+export const revalidate = 3600;
+
 interface NovelaDetailsPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -13,8 +15,6 @@ interface NovelaDetailsPageProps {
 export default async function NovelaDetailsPage({
   params,
 }: NovelaDetailsPageProps) {
-  await connection();
-
   const { slug } = await params;
 
   const novela = await prisma.novela.findUnique({

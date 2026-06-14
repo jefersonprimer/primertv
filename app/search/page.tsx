@@ -20,50 +20,83 @@ export default async function SearchPage({
     );
   }
 
-  const animes = await prisma.anime.findMany({
-    where: {
-      title: {
-        contains: query,
-        mode: "insensitive",
+  const [animes, series, movies, mangas, novelas] = await Promise.all([
+    prisma.anime.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
       },
-    },
-  });
-
-  const series = await prisma.series.findMany({
-    where: {
-      title: {
-        contains: query,
-        mode: "insensitive",
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        imageUrl: true,
       },
-    },
-  });
-
-  const movies = await prisma.movie.findMany({
-    where: {
-      title: {
-        contains: query,
-        mode: "insensitive",
+      take: 24,
+    }),
+    prisma.series.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
       },
-    },
-  });
-
-  const mangas = await prisma.manga.findMany({
-    where: {
-      title: {
-        contains: query,
-        mode: "insensitive",
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        imageUrl: true,
       },
-    },
-  });
-
-  const novelas = await prisma.novela.findMany({
-    where: {
-      title: {
-        contains: query,
-        mode: "insensitive",
+      take: 24,
+    }),
+    prisma.movie.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
       },
-    },
-  });
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        imageUrl: true,
+      },
+      take: 24,
+    }),
+    prisma.manga.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        imageUrl: true,
+      },
+      take: 24,
+    }),
+    prisma.novela.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        imageUrl: true,
+      },
+      take: 24,
+    }),
+  ]);
 
   const hasResults = animes.length > 0 || series.length > 0 || movies.length > 0 || mangas.length > 0 || novelas.length > 0;
 

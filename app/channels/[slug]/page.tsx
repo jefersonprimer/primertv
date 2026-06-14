@@ -5,13 +5,13 @@ import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import { connection } from "next/server";
 
+export const revalidate = 3600;
+
 interface ChannelPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: ChannelPageProps): Promise<Metadata> {
-  await connection();
-
   const { slug } = await params;
   const channel = await prisma.channel.findUnique({ where: { slug } });
 
@@ -28,8 +28,6 @@ export async function generateMetadata({ params }: ChannelPageProps): Promise<Me
 }
 
 export default async function ChannelPage({ params }: ChannelPageProps) {
-  await connection();
-
   const { slug } = await params;
 
   const channel = await prisma.channel.findUnique({

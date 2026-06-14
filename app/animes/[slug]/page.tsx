@@ -6,6 +6,8 @@ import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
 
+export const revalidate = 3600;
+
 interface AnimeDetailsPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -13,8 +15,6 @@ interface AnimeDetailsPageProps {
 export default async function AnimeDetailsPage({
   params,
 }: AnimeDetailsPageProps) {
-  await connection();
-
   const { slug } = await params;
 
   const anime = await prisma.anime.findUnique({

@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -19,6 +20,9 @@ model Anime {
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([title])
 }
 
 model Season {
@@ -31,6 +35,7 @@ model Season {
   updatedAt DateTime  @updatedAt
 
   @@unique([animeId, number])
+  @@index([animeId])
 }
 
 model Episode {
@@ -44,6 +49,8 @@ model Episode {
   updatedAt DateTime @updatedAt
 
   @@unique([seasonId, number])
+  @@index([seasonId])
+  @@index([createdAt])
 }
 
 model Series {
@@ -56,6 +63,9 @@ model Series {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   seasons       SeriesSeason[]
+
+  @@index([createdAt])
+  @@index([title])
 }
 
 model SeriesSeason {
@@ -68,6 +78,7 @@ model SeriesSeason {
   updatedAt DateTime  @updatedAt
 
   @@unique([seriesId, number])
+  @@index([seriesId])
 }
 
 model SeriesEpisode {
@@ -81,6 +92,8 @@ model SeriesEpisode {
   updatedAt DateTime @updatedAt
 
   @@unique([seasonId, number])
+  @@index([seasonId])
+  @@index([createdAt])
 }
 
 model Movie {
@@ -93,6 +106,9 @@ model Movie {
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([title])
 }
 
 model Manga {
@@ -105,6 +121,9 @@ model Manga {
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([title])
 }
 
 model Chapter {
@@ -118,6 +137,8 @@ model Chapter {
   updatedAt DateTime @updatedAt
 
   @@unique([mangaId, number])
+  @@index([mangaId])
+  @@index([createdAt])
 }
 
 model Novela {
@@ -130,18 +151,22 @@ model Novela {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   seasons       NovelaSeason[]
+
+  @@index([createdAt])
+  @@index([title])
 }
 
 model NovelaSeason {
   id        String    @id @default(cuid())
   number    Int
   novelaId  String
-  novela    Novela    @relation(fields: [novelaId], references: [id], onDelete: Cascade)
+  novela     Novela    @relation(fields: [novelaId], references: [id], onDelete: Cascade)
   episodes  NovelaEpisode[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   @@unique([novelaId, number])
+  @@index([novelaId])
 }
 
 model NovelaEpisode {
@@ -155,6 +180,8 @@ model NovelaEpisode {
   updatedAt DateTime @updatedAt
 
   @@unique([seasonId, number])
+  @@index([seasonId])
+  @@index([createdAt])
 }
 
 model Channel {
@@ -167,5 +194,9 @@ model Channel {
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([title])
 }
+
 
