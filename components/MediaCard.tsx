@@ -16,21 +16,25 @@ export function MediaCard({
     type === "novela"
       ? "novelas"
       : type === "channel"
-      ? "channels"
-      : type === "movie"
-      ? "filmes"
-      : type === "anime"
-      ? "animes"
-      : type === "manga"
-      ? "mangas"
-      : type;
+        ? "channels"
+        : type === "movie"
+          ? "filmes"
+          : type === "anime"
+            ? "animes"
+            : type === "manga"
+              ? "mangas"
+              : type;
 
   return (
     <Link
       href={`/${basePath}/${item.slug}`}
       className="group flex flex-col gap-2"
     >
-      <div className="relative aspect-[2/3] overflow-hidden bg-zinc-200 dark:bg-zinc-800 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
+      <div
+        className={`relative overflow-hidden bg-white dark:bg-zinc-800 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10 ${
+          type === "channel" ? "aspect-square rounded-2xl" : "aspect-[2/3]"
+        }`}
+      >
         {item.imageUrl ? (
           <Image
             src={item.imageUrl}
@@ -38,7 +42,9 @@ export function MediaCard({
             fill
             sizes={sizes}
             priority={priority}
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
+            className={`transition-transform duration-300 group-hover:scale-110 ${
+              type === "channel" ? "object-contain p-4" : "object-cover"
+            }`}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-zinc-400">

@@ -151,15 +151,15 @@ export default function Home() {
         </Suspense>
 
         <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+          <SeriesCarousel />
+        </Suspense>
+
+        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
           <MovieCarousel />
         </Suspense>
 
         <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
           <AnimeCarousel />
-        </Suspense>
-
-        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-          <SeriesCarousel />
         </Suspense>
 
         <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>

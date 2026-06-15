@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import { connection } from "next/server";
+import { ChannelPlayer } from "./ChannelPlayer";
 
 export const revalidate = 3600;
 
@@ -30,18 +31,19 @@ export async function generateMetadata({
 }
 
 export default async function ChannelPage({ params }: ChannelPageProps) {
+  await connection();
   const { slug } = await params;
 
   const channel = await prisma.channel.findUnique({
     where: { slug },
+    include: {
+      sources: true,
+    },
   });
 
   if (!channel) {
     notFound();
   }
-
-  const isDirectVideo =
-    channel.videoUrl?.endsWith(".mp4") || channel.videoUrl?.endsWith(".m3u8");
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
@@ -101,32 +103,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
       </div>
 
       <main className="mx-auto max-w-6xl p-8 md:p-12">
-        <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
-          {channel.videoUrl ? (
-            isDirectVideo ? (
-              <video
-                src={channel.videoUrl}
-                controls
-                autoPlay
-                className="h-full w-full"
-              />
-            ) : (
-              <iframe
-                src={channel.videoUrl}
-                className="absolute inset-0 h-full w-full"
-                allowFullScreen
-                scrolling="no"
-                allow="autoplay; fullscreen; picture-in-picture"
-                title={`Player para ${channel.title}`}
-              />
-            )
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-4 text-zinc-500">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
-              <p>Conectando ao sinal do canal...</p>
-            </div>
-          )}
-        </div>
+        <ChannelPlayer channel={channel} />
 
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2">
@@ -148,7 +125,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-[10px] font-bold text-blue-500">
                     1
                   </span>
-                  Se o player não carregar, tente atualizar a página.
+                  Se o player não carregar, tente atualizar a página ou trocar a opção de player.
                 </li>
                 <li className="flex gap-3">
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-[10px] font-bold text-blue-500">
