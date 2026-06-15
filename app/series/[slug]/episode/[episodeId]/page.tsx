@@ -8,18 +8,20 @@ interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
 }
 
-export async function generateMetadata({ params }: WatchPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: WatchPageProps): Promise<Metadata> {
   await connection();
 
   const { episodeId } = await params;
   const episode = await prisma.seriesEpisode.findFirst({
     where: { id: episodeId },
-    include: { 
-      season: { 
-        include: { 
-          series: true 
-        } 
-      } 
+    include: {
+      season: {
+        include: {
+          series: true,
+        },
+      },
     },
   });
 
@@ -34,14 +36,18 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
     openGraph: {
       title,
       description,
-      images: episode.season.series.imageUrl ? [episode.season.series.imageUrl] : [],
+      images: episode.season.series.imageUrl
+        ? [episode.season.series.imageUrl]
+        : [],
       type: "video.episode",
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: episode.season.series.imageUrl ? [episode.season.series.imageUrl] : [],
+      images: episode.season.series.imageUrl
+        ? [episode.season.series.imageUrl]
+        : [],
     },
   };
 }
@@ -72,9 +78,11 @@ export default async function WatchPage({ params }: WatchPageProps) {
   const episodes = episode.season.episodes;
   const currentIndex = episodes.findIndex((e) => e.id === episode.id);
   const prevEpisode = currentIndex > 0 ? episodes[currentIndex - 1] : null;
-  const nextEpisode = currentIndex < episodes.length - 1 ? episodes[currentIndex + 1] : null;
+  const nextEpisode =
+    currentIndex < episodes.length - 1 ? episodes[currentIndex + 1] : null;
 
-  const isDirectVideo = episode.videoUrl?.endsWith(".mp4") || episode.videoUrl?.endsWith(".m3u8");
+  const isDirectVideo =
+    episode.videoUrl?.endsWith(".mp4") || episode.videoUrl?.endsWith(".m3u8");
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
@@ -97,7 +105,9 @@ export default async function WatchPage({ params }: WatchPageProps) {
             >
               <path d="m15 18-6-6 6-6" />
             </svg>
-            <span className="hidden sm:inline">Voltar para {episode.season.series.title}</span>
+            <span className="hidden sm:inline">
+              Voltar para {episode.season.series.title}
+            </span>
             <span className="sm:hidden">Voltar</span>
           </Link>
           <div className="flex flex-col items-center text-center">
@@ -115,7 +125,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
       <main className="mx-auto max-w-7xl px-4 py-6 md:py-10">
         <div className="grid gap-8 lg:grid-cols-4">
           <div className="lg:col-span-3">
-            <div className="group relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
+            <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
               {episode.videoUrl ? (
                 isDirectVideo ? (
                   <video
@@ -175,7 +185,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                     </Link>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
                   <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                   Servidor Principal (HD)
@@ -185,16 +195,22 @@ export default async function WatchPage({ params }: WatchPageProps) {
               <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold">{episode.season.series.title}</h2>
+                    <h2 className="text-2xl font-bold">
+                      {episode.season.series.title}
+                    </h2>
                     <p className="mt-1 text-zinc-500">
-                      Temporada {episode.season.number} • Episódio {episode.number}
+                      Temporada {episode.season.number} • Episódio{" "}
+                      {episode.number}
                     </p>
                   </div>
                 </div>
                 <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-800">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-400">Sinopse da Série</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-400">
+                    Sinopse da Série
+                  </h3>
                   <p className="mt-2 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    {episode.season.series.description || "Sem descrição disponível."}
+                    {episode.season.series.description ||
+                      "Sem descrição disponível."}
                   </p>
                 </div>
               </div>
@@ -205,7 +221,9 @@ export default async function WatchPage({ params }: WatchPageProps) {
             <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
               <div className="border-b border-zinc-100 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-800/50">
                 <h3 className="font-bold">Lista de Episódios</h3>
-                <p className="text-xs text-zinc-500">Temporada {episode.season.number}</p>
+                <p className="text-xs text-zinc-500">
+                  Temporada {episode.season.number}
+                </p>
               </div>
               <div className="max-h-[600px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
                 <div className="grid gap-1">
@@ -219,11 +237,13 @@ export default async function WatchPage({ params }: WatchPageProps) {
                           : "hover:bg-zinc-50 dark:hover:bg-zinc-800"
                       }`}
                     >
-                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
-                        ep.id === episode.id
-                          ? "bg-blue-600 text-white"
-                          : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800"
-                      }`}>
+                      <div
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
+                          ep.id === episode.id
+                            ? "bg-blue-600 text-white"
+                            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800"
+                        }`}
+                      >
                         {ep.number}
                       </div>
                       <div className="flex-1 overflow-hidden">

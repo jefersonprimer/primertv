@@ -42,6 +42,12 @@ export function Header() {
           >
             Canais
           </Link>
+          <Link
+            href="/novelas"
+            className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
+          >
+            Novelas
+          </Link>
         </nav>
         <div className="hidden flex-1 justify-center px-8 md:flex">
           <SearchBar />

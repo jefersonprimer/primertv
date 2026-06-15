@@ -11,7 +11,9 @@ interface ChannelPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: ChannelPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: ChannelPageProps): Promise<Metadata> {
   const { slug } = await params;
   const channel = await prisma.channel.findUnique({ where: { slug } });
 
@@ -34,12 +36,12 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
     where: { slug },
   });
 
-
   if (!channel) {
     notFound();
   }
 
-  const isDirectVideo = channel.videoUrl?.endsWith(".mp4") || channel.videoUrl?.endsWith(".m3u8");
+  const isDirectVideo =
+    channel.videoUrl?.endsWith(".mp4") || channel.videoUrl?.endsWith(".m3u8");
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
@@ -55,7 +57,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 via-zinc-50/20 to-transparent dark:from-black dark:via-black/20" />
-        
+
         <div className="absolute inset-0 flex items-center justify-center p-8">
           <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 md:flex-row">
             <div className="relative aspect-[1/1] w-48 flex-shrink-0 overflow-hidden rounded-full shadow-2xl ring-4 ring-white/10 bg-white p-4">
@@ -74,7 +76,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
                 </div>
               )}
             </div>
-            
+
             <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left">
               <Link
                 href="/channels"
@@ -99,7 +101,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
       </div>
 
       <main className="mx-auto max-w-6xl p-8 md:p-12">
-        <div className="group relative aspect-video w-full overflow-hidden rounded-3xl bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
+        <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
           {channel.videoUrl ? (
             isDirectVideo ? (
               <video
@@ -131,22 +133,29 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
             <div className="rounded-3xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-900">
               <h3 className="text-xl font-bold">Sobre o Canal</h3>
               <p className="mt-4 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Você está assistindo ao sinal ao vivo de {channel.title}. {channel.description || "Aproveite a melhor programação da TV brasileira em tempo real, com imagem de alta definição e som digital."}
+                Você está assistindo ao sinal ao vivo de {channel.title}.{" "}
+                {channel.description ||
+                  "Aproveite a melhor programação da TV brasileira em tempo real, com imagem de alta definição e som digital."}
               </p>
             </div>
           </div>
-          
+
           <div>
             <div className="rounded-3xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-900">
               <h3 className="text-lg font-bold">Instruções</h3>
               <ul className="mt-4 space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
                 <li className="flex gap-3">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-[10px] font-bold text-blue-500">1</span>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-[10px] font-bold text-blue-500">
+                    1
+                  </span>
                   Se o player não carregar, tente atualizar a página.
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-[10px] font-bold text-blue-500">2</span>
-                  Alguns canais podem exibir anúncios externos do próprio player.
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-[10px] font-bold text-blue-500">
+                    2
+                  </span>
+                  Alguns canais podem exibir anúncios externos do próprio
+                  player.
                 </li>
               </ul>
             </div>

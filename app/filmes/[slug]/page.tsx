@@ -38,7 +38,6 @@ export default async function MovieDetailsPage({
     where: { slug },
   });
 
-
   if (!movie) {
     notFound();
   }
@@ -113,7 +112,7 @@ export default async function MovieDetailsPage({
           </div>
         </div>
 
-        <div className="group relative aspect-video w-full overflow-hidden rounded-3xl bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
+        <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
           {movie.videoUrl ? (
             isDirectVideo ? (
               <video
