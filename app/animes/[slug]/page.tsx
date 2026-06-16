@@ -86,9 +86,16 @@ export default async function AnimeDetailsPage({
                 </div>
               )}
               {anime.aired && (
-                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                  {anime.aired}
-                </p>
+                <div className="flex items-center gap-4">
+                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    {anime.aired}
+                  </p>
+                  {anime.rating && (
+                    <span className="rounded bg-zinc-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                      {anime.rating}
+                    </span>
+                  )}
+                </div>
               )}
               {anime.description && (
                 <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">

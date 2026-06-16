@@ -15,6 +15,7 @@ model Anime {
   imageUrl      String?
   genres        String[]  @default([])
   aired         String?
+  rating        String?
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
