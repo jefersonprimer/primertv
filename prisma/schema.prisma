@@ -16,6 +16,7 @@ model Anime {
   title         String    @unique
   description   String?
   imageUrl      String?
+  genres        String[]  @default([])
   seasons       Season[]
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
@@ -59,6 +60,7 @@ model Series {
   title         String    @unique
   description   String?
   imageUrl      String?
+  genres        String[]  @default([])
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -102,6 +104,7 @@ model Movie {
   title         String    @unique
   description   String?
   imageUrl      String?
+  genres        String[]  @default([])
   videoUrl      String?
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
@@ -117,6 +120,7 @@ model Manga {
   title         String    @unique
   description   String?
   imageUrl      String?
+  genres        String[]  @default([])
   chapters      Chapter[]
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
@@ -147,6 +151,7 @@ model Novela {
   title         String    @unique
   description   String?
   imageUrl      String?
+  genres        String[]  @default([])
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

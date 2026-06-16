@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { connection } from "next/server";
 import { ChevronLeft } from "lucide-react";
+import { resolvePlayableUrl } from "@/lib/playable-url";
 
 interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
@@ -93,9 +94,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
   const nextEpisode =
     currentIndex < episodes.length - 1 ? episodes[currentIndex + 1] : null;
 
-  // Simple heuristic to check if it's a video file or an embed
-  const isDirectVideo =
-    episode.videoUrl?.endsWith(".mp4") || episode.videoUrl?.endsWith(".m3u8");
+  const playableUrl = (await resolvePlayableUrl(episode.videoUrl)) ?? episode.videoUrl;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
@@ -130,17 +129,17 @@ export default async function WatchPage({ params }: WatchPageProps) {
           <div className="lg:col-span-3">
             {/* Player Container */}
             <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
-              {episode.videoUrl ? (
-                isDirectVideo ? (
+              {playableUrl ? (
+                playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
                   <video
-                    src={episode.videoUrl}
+                    src={playableUrl}
                     controls
                     className="h-full w-full"
                     poster={episode.season.anime.imageUrl || undefined}
                   />
                 ) : (
                   <iframe
-                    src={episode.videoUrl}
+                    src={playableUrl}
                     className="absolute inset-0 h-full w-full"
                     allowFullScreen
                     scrolling="no"
@@ -271,4 +270,3 @@ export default async function WatchPage({ params }: WatchPageProps) {
     </div>
   );
 }
-

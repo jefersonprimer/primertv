@@ -68,6 +68,18 @@ export default async function MangaDetailsPage({
               <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                 {manga.title}
               </h1>
+              {manga.genres && manga.genres.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {manga.genres.map((genre) => (
+                    <span
+                      key={genre}
+                      className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              )}
               {manga.description && (
                 <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
                   {manga.description}
