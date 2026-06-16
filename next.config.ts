@@ -10,10 +10,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "meusanimes.blog",
-      },
-      {
-        protocol: "https",
         hostname: "image.tmdb.org",
       },
       {

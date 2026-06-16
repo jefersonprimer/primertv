@@ -85,6 +85,11 @@ export default async function AnimeDetailsPage({
                   ))}
                 </div>
               )}
+              {anime.aired && (
+                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                  {anime.aired}
+                </p>
+              )}
               {anime.description && (
                 <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
                   {anime.description}
@@ -96,7 +101,7 @@ export default async function AnimeDetailsPage({
       </div>
 
       {/* Episodes Section */}
-      <main className="mx-auto max-w-[1223px]">
+      <main className="mx-auto max-w-[1223px] pb-12">
         <h2 className="mb-8 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           Episódios
         </h2>
@@ -126,4 +131,3 @@ export default async function AnimeDetailsPage({
     </div>
   );
 }
-

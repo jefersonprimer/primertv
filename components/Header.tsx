@@ -30,7 +30,6 @@ export function Header() {
           >
             Séries
           </Link>
-          
 
           <Link
             href="/channels"
@@ -59,13 +58,13 @@ export function Header() {
             Mangas
           </Link>
         </nav>
-        <div className="hidden flex-1 justify-center px-8 md:flex">
+        <div className="hidden flex-1 justify-center px-8 lg:flex">
           <SearchBar />
         </div>
         <div className="flex items-center gap-4">
           <Link
             href="/search"
-            className="rounded-full p-2 text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 md:hidden"
+            className="rounded-full p-2 text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 lg:hidden"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

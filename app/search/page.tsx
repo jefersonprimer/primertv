@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { MediaCard } from "@/components/MediaCard";
 import { connection } from "next/server";
+import { SearchBar } from "@/components/SearchBar";
 
 export default async function SearchPage({
   searchParams,
@@ -14,8 +15,11 @@ export default async function SearchPage({
   if (!query) {
     return (
       <div className="p-8">
+        <div className="mb-8 lg:hidden">
+          <SearchBar />
+        </div>
         <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-50">Busca</h1>
-        <p className="mt-4 text-zinc-500">Digite algo na barra de busca acima para encontrar animes, séries, filmes, mangás e novelas.</p>
+        <p className="mt-4 text-zinc-500">Digite algo na barra de busca para encontrar animes, séries, filmes, mangás e novelas.</p>
       </div>
     );
   }
@@ -102,6 +106,9 @@ export default async function SearchPage({
 
   return (
     <div className="p-8">
+      <div className="mb-8 lg:hidden">
+        <SearchBar />
+      </div>
       <header className="mb-12">
         <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-50">
           Resultados para: <span className="text-blue-500">"{query}"</span>

@@ -52,7 +52,7 @@ export function MediaCarousel({
 
   return (
     <section className="group/carousel relative">
-      <div className="mb-6 flex items-end justify-between px-8">
+      <div className="mb-6 flex items-end justify-between px-2 lg:px-8">
         <div>
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
             {title}
@@ -87,7 +87,7 @@ export function MediaCarousel({
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-6 overflow-x-auto scroll-smooth px-8 pb-4 no-scrollbar"
+          className="flex gap-6 overflow-x-auto scroll-smooth px-2 lg:px-8 pb-4 no-scrollbar"
         >
           {items.map((item, index) => (
             <div key={item.id} className="w-[160px] flex-shrink-0 sm:w-[200px]">
