@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SearchBar } from "./SearchBar";
-import { LayoutDashboard, User } from "lucide-react";
+import { LayoutDashboard, User, Bookmark } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { logout } from "@/app/actions/auth";
 
@@ -88,6 +88,15 @@ export async function Header() {
           </Link>
           {user ? (
             <div className="flex items-center gap-3">
+              {user.role !== "admin" && (
+                <Link
+                  href="/watchlist"
+                  className="hidden items-center gap-2 rounded-full border border-zinc-200 px-3 py-1 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800 sm:flex"
+                >
+                  <Bookmark size={16} />
+                  Watchlist
+                </Link>
+              )}
               {user.role === "admin" && (
                 <Link
                   href="/admin"

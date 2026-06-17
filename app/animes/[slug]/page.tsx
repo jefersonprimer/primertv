@@ -8,6 +8,8 @@ import { Play } from "lucide-react";
 import SeasonSelector from "@/components/SeasonSelector";
 import AnimeDescription from "@/components/AnimeDescription";
 import RatingBadge from "@/components/RatingBadge";
+import { WatchlistButton } from "@/components/WatchlistButton";
+import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 
 export const revalidate = 3600;
 
@@ -60,6 +62,8 @@ export default async function AnimeDetailsPage({
   }
 
   const firstEpisodeId = anime.seasons[0]?.episodes[0]?.id;
+  const userId = await getAuthenticatedUserId();
+  const inWatchlist = await isInWatchlist("ANIME", anime.id);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -141,15 +145,24 @@ export default async function AnimeDetailsPage({
                 )}
               </div>
 
-              {firstEpisodeId && (
-                <Link
-                  href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 md:w-fit"
-                >
-                  <Play className="h-5 w-5 fill-current" />
-                  Começar a assistir EP1
-                </Link>
-              )}
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                {firstEpisodeId && (
+                  <Link
+                    href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 md:w-fit"
+                  >
+                    <Play className="h-5 w-5 fill-current" />
+                    Começar a assistir EP1
+                  </Link>
+                )}
+                <WatchlistButton
+                  mediaType="ANIME"
+                  mediaId={anime.id}
+                  slug={anime.slug}
+                  initialInWatchlist={inWatchlist}
+                  isLoggedIn={Boolean(userId)}
+                />
+              </div>
 
               <div className="max-w-2xl">
                 {anime.description && (

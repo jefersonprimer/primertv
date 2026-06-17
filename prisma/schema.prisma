@@ -7,13 +7,36 @@ datasource db {
   provider = "postgresql"
 }
 
+enum WatchlistMediaType {
+  ANIME
+  MANGA
+}
+
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  password       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  watchlistItems WatchlistItem[]
+}
+
+model WatchlistItem {
+  id        String             @id @default(cuid())
+  userId    String
+  mediaType WatchlistMediaType
+  animeId   String?
+  mangaId   String?
+  createdAt DateTime           @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime Anime? @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  manga Manga? @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, animeId])
+  @@unique([userId, mangaId])
+  @@index([userId])
 }
 
 model Anime {
@@ -28,7 +51,8 @@ model Anime {
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  seasons       Season[]
+  seasons        Season[]
+  watchlistItems WatchlistItem[]
 
   @@index([createdAt])
   @@index([title])
@@ -132,7 +156,8 @@ model Manga {
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  chapters      Chapter[]
+  chapters       Chapter[]
+  watchlistItems WatchlistItem[]
 
   @@index([createdAt])
   @@index([title])

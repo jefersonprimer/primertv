@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
+import { WatchlistButton } from "@/components/WatchlistButton";
+import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 
 export const revalidate = 3600;
 
@@ -29,6 +31,9 @@ export default async function MangaDetailsPage({
   if (!manga) {
     notFound();
   }
+
+  const userId = await getAuthenticatedUserId();
+  const inWatchlist = await isInWatchlist("MANGA", manga.id);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -68,6 +73,13 @@ export default async function MangaDetailsPage({
               <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                 {manga.title}
               </h1>
+              <WatchlistButton
+                mediaType="MANGA"
+                mediaId={manga.id}
+                slug={manga.slug}
+                initialInWatchlist={inWatchlist}
+                isLoggedIn={Boolean(userId)}
+              />
               {manga.genres && manga.genres.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {manga.genres.map((genre) => (
