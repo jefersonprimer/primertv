@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { connection } from "next/server";
+import { Metadata } from "next";
 
 import SeasonSelector from "@/components/SeasonSelector";
 
@@ -10,6 +11,27 @@ export const revalidate = 3600;
 
 interface AnimeDetailsPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: AnimeDetailsPageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  const anime = await prisma.anime.findUnique({
+    where: { slug },
+    select: { title: true },
+  });
+
+  if (!anime) {
+    return {
+      title: "Anime não encontrado - PrimerTv",
+    };
+  }
+
+  return {
+    title: `${anime.title} - PrimerTv`,
+  };
 }
 
 export default async function AnimeDetailsPage({
