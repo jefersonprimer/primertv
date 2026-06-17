@@ -85,7 +85,7 @@ export default async function AnimeDetailsPage({
         </div>
 
         {/* Content Container */}
-        <div className="mx-auto max-w-[1223px] px-4 py-8 md:absolute md:bottom-0 md:left-0 md:right-0 md:px-8 md:py-12">
+        <div className="mx-auto max-w-[1223px] py-8 md:absolute md:bottom-0 md:left-0 md:right-0 md:py-12">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Image */}
             <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:w-48 lg:w-60 flex-shrink-0 rounded-lg">
@@ -175,7 +175,7 @@ export default async function AnimeDetailsPage({
       </div>
 
       {/* Episodes Section */}
-      <main className="mx-auto max-w-[1223px] px-4 pb-12 md:px-8">
+      <main className="mx-auto max-w-[1223px] pb-12">
         {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (
