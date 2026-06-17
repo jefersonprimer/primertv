@@ -88,11 +88,11 @@ export default async function AnimeDetailsPage({
               {anime.aired && (
                 <div className="flex items-center gap-4">
                   <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                    {anime.aired}
+                    Aired: {anime.aired}
                   </p>
                   {anime.rating && (
                     <span className="rounded bg-zinc-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                      {anime.rating}
+                      Rating: {anime.rating}
                     </span>
                   )}
                 </div>
