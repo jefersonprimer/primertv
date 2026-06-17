@@ -7,7 +7,7 @@ export default async function ChannelsPage() {
   await connection();
 
   const channels = await prisma.channel.findMany({
-    orderBy: { title: "asc" },
+    orderBy: { position: "asc" },
   });
 
   return (

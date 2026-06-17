@@ -1,6 +1,8 @@
 import { prisma } from "../lib/prisma";
 
 async function main() {
+  const preferredOrder = ["globo", "record", "sbt", "band", "redetv"];
+
   const channels = [
     {
       title: "Globo",
@@ -13,6 +15,23 @@ async function main() {
           url: "https://s2.micineovs.com/GLOBO/index.m3u8?token=16FOTt9Ae2m8",
         },
         { title: "Globo RJ", url: "https://v2.rde.lat/globorj" },
+      ],
+    },
+    {
+      title: "Record",
+      slug: "record",
+      imageUrl: "/Logomarca_da_Record_(2023).webp",
+      description: "Programação da Rede Record ao vivo.",
+      sources: [
+        {
+          title: "Opção 1",
+          url: "https://tvacabo.top/player.html?url=https://tvconquistalrv.duckdns.org:3334/hls/tvconquistalrv.m3u8",
+        },
+        {
+          title: "Opção 2",
+          url: "https://redecanaistv.wales/player3/ch.php?canal=record",
+        },
+        { title: "Opção 3", url: "https://ww2.embedtv.lat/recordmg" },
       ],
     },
     {
@@ -31,23 +50,6 @@ async function main() {
           title: "SBT SP",
           url: "https://redecanaistv.wales/player3/ch.php?canal=sbt",
         },
-      ],
-    },
-    {
-      title: "Record",
-      slug: "record",
-      imageUrl: "/Logomarca_da_Record_(2023).webp",
-      description: "Programação da Rede Record ao vivo.",
-      sources: [
-        {
-          title: "Opção 1",
-          url: "https://tvacabo.top/player.html?url=https://tvconquistalrv.duckdns.org:3334/hls/tvconquistalrv.m3u8",
-        },
-        {
-          title: "Opção 2",
-          url: "https://redecanaistv.wales/player3/ch.php?canal=record",
-        },
-        { title: "Opção 3", url: "https://ww2.embedtv.lat/recordmg" },
       ],
     },
     {
@@ -110,8 +112,15 @@ async function main() {
   ];
 
   console.log("Seeding channels...");
-  for (const channel of channels as any[]) {
+  for (let i = 0; i < channels.length; i++) {
+    const channel = channels[i];
     const { sources, ...channelData } = channel;
+
+    // Determine position: use index from preferredOrder if available, otherwise use current index + large number
+    let position = preferredOrder.indexOf(channel.slug);
+    if (position === -1) {
+      position = 100 + i;
+    }
 
     await prisma.channel.upsert({
       where: { slug: channel.slug },
@@ -120,6 +129,7 @@ async function main() {
         description: channel.description,
         videoUrl: channel.videoUrl,
         embedUrl: channel.embedUrl,
+        position: position,
         sources: sources
           ? {
               deleteMany: {},
@@ -129,6 +139,7 @@ async function main() {
       },
       create: {
         ...channelData,
+        position: position,
         sources: sources
           ? {
               create: sources,

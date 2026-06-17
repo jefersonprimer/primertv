@@ -124,8 +124,9 @@ async function ChannelCarousel() {
       title: true,
       imageUrl: true,
     },
-    orderBy: { title: "asc" },
+    orderBy: { position: "asc" },
   });
+
   return (
     <MediaCarousel
       title="Canais TV"

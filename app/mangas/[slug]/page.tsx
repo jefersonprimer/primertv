@@ -91,7 +91,7 @@ export default async function MangaDetailsPage({
       </div>
 
       {/* Chapters Section */}
-      <main className="mx-auto max-w-[1223px]">
+      <main className="mx-auto max-w-[1223px] py-12">
         <h2 className="mb-8 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           Capítulos
         </h2>
