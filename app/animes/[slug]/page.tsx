@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { connection } from "next/server";
 import { Metadata } from "next";
+import { Play } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
+import AnimeDescription from "@/components/AnimeDescription";
+import RatingBadge from "@/components/RatingBadge";
 
 export const revalidate = 3600;
 
@@ -57,31 +59,38 @@ export default async function AnimeDetailsPage({
     notFound();
   }
 
+  const firstEpisodeId = anime.seasons[0]?.episodes[0]?.id;
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      {/* Header/Banner Section */}
-      <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
-        {anime.imageUrl && (
-          <Image
-            src={anime.imageUrl}
-            alt={anime.title}
-            fill
-            sizes="100vw"
-            className="object-cover opacity-30 blur-sm"
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+      {/* Hero Section */}
+      <div className="relative">
+        {/* Banner for Desktop */}
+        <div className="relative hidden h-[70vh] w-full overflow-hidden bg-zinc-900 md:block">
+          {anime.imageUrl && (
+            <Image
+              src={anime.imageUrl}
+              alt={anime.title}
+              fill
+              sizes="100vw"
+              className="object-cover opacity-30 blur-sm"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+        </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
-          <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
-            <div className="relative aspect-[2/3] w-48 lg:w-60 flex-shrink-0 overflow-hidden shadow-2xl">
+        {/* Content Container */}
+        <div className="mx-auto max-w-[1223px] px-4 py-8 md:absolute md:bottom-0 md:left-0 md:right-0 md:px-8 md:py-12">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end">
+            {/* Poster Image */}
+            <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:w-48 lg:w-60 flex-shrink-0 rounded-lg">
               {anime.imageUrl ? (
                 <Image
                   src={anime.imageUrl}
                   alt={anime.title}
                   fill
-                  sizes="(max-width: 768px) 192px, 240px"
+                  sizes="(max-width: 768px) 100vw, 240px"
                   className="object-cover"
                   priority
                 />
@@ -91,46 +100,69 @@ export default async function AnimeDetailsPage({
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-4">
-              <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
-                {anime.title}
-              </h1>
-              {anime.genres && anime.genres.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {anime.genres.map((genre) => (
-                    <span
-                      key={genre}
-                      className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                    >
-                      {genre}
-                    </span>
-                  ))}
-                </div>
+
+            {/* Info Section */}
+            <div className="flex flex-1 flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
+                  {anime.title}
+                </h1>
+
+                {(anime.rating ||
+                  (anime.genres && anime.genres.length > 0)) && (
+                  <div className="mt-2 flex items-center flex-wrap gap-2">
+                    {anime.rating && (
+                      <RatingBadge rating={anime.rating} className="h-5 w-5" />
+                    )}
+                    {anime.rating &&
+                      anime.genres &&
+                      anime.genres.length > 0 && (
+                        <span
+                          className="text-zinc-400 dark:text-zinc-600 flex items-center justify-center"
+                          aria-hidden="true"
+                        >
+                          <svg
+                            className="h-2 w-2 fill-current"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 2L22 12L12 22L2 12Z" />
+                          </svg>
+                        </span>
+                      )}
+                    {anime.genres?.map((genre) => (
+                      <span
+                        key={genre}
+                        className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                      >
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {firstEpisodeId && (
+                <Link
+                  href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 md:w-fit"
+                >
+                  <Play className="h-5 w-5 fill-current" />
+                  Começar a assistir EP1
+                </Link>
               )}
-              {anime.aired && (
-                <div className="flex items-center gap-4">
-                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                    Aired: {anime.aired}
-                  </p>
-                  {anime.rating && (
-                    <span className="rounded bg-zinc-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                      Rating: {anime.rating}
-                    </span>
-                  )}
-                </div>
-              )}
-              {anime.description && (
-                <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
-                  {anime.description}
-                </p>
-              )}
+
+              <div className="max-w-2xl">
+                {anime.description && (
+                  <AnimeDescription description={anime.description} />
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Episodes Section */}
-      <main className="mx-auto max-w-[1223px] pb-12">
+      <main className="mx-auto max-w-[1223px] px-4 pb-12 md:px-8">
         {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (
