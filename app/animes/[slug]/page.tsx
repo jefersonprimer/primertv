@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { connection } from "next/server";
 
-import EpisodeList from "@/components/EpisodeList";
+import SeasonSelector from "@/components/SeasonSelector";
 
 export const revalidate = 3600;
 
@@ -109,30 +109,10 @@ export default async function AnimeDetailsPage({
 
       {/* Episodes Section */}
       <main className="mx-auto max-w-[1223px] pb-12">
-        <h2 className="mb-8 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-          Episódios
-        </h2>
-
         {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (
-          <div className="flex flex-col gap-12">
-            {anime.seasons.map((season) => (
-              <section key={season.id}>
-                {anime.seasons.length > 1 && (
-                  <h3 className="mb-4 text-xl font-semibold text-zinc-800 dark:text-zinc-200">
-                    Temporada {season.number}
-                  </h3>
-                )}
-
-                <EpisodeList
-                  items={season.episodes}
-                  baseUrl={`/animes/${anime.slug}/episode`}
-                  itemType="episode"
-                />
-              </section>
-            ))}
-          </div>
+          <SeasonSelector seasons={anime.seasons} animeSlug={anime.slug} />
         )}
       </main>
     </div>
