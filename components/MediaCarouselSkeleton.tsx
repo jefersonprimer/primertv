@@ -12,7 +12,13 @@ export function MediaCarouselSkeleton({
   return (
     <section className="relative">
       {(hasTitle || hasSubtitle) && (
-        <div className="mb-6 px-8">
+        <div 
+          className="mb-6 w-full"
+          style={{
+            paddingLeft: 'max(8px, (100vw - 1223px) / 2)',
+            paddingRight: 'max(8px, (100vw - 1223px) / 2)',
+          }}
+        >
           {hasTitle && (
             <div className="h-8 w-48 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
           )}
@@ -22,9 +28,15 @@ export function MediaCarouselSkeleton({
         </div>
       )}
 
-      <div className="flex gap-6 overflow-hidden px-8 pb-4">
+      <div 
+        className="flex gap-6 overflow-hidden pb-4"
+        style={{
+          paddingLeft: 'max(8px, (100vw - 1223px) / 2)',
+          paddingRight: 'max(8px, (100vw - 1223px) / 2)',
+        }}
+      >
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="w-[160px] flex-shrink-0 sm:w-[200px]">
+          <div key={i} className="w-[160px] flex-shrink-0 sm:w-[200px] lg:w-[225.4px]">
             <MediaCardSkeleton />
           </div>
         ))}

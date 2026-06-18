@@ -141,7 +141,7 @@ async function ChannelCarousel() {
 
 export default function Home() {
   return (
-    <div className="py-8 px-2">
+    <div className="py-8">
       <main className="space-y-16">
         <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
           <ChannelCarousel />

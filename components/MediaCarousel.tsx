@@ -29,8 +29,12 @@ export function MediaCarousel({
   const checkScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10); // 10px buffer
+      // Use a more robust check for the right arrow visibility
+      // scrollWidth includes the total width of all items + padding
+      // clientWidth is the visible width
+      // We subtract a larger buffer because of the dynamic padding logic
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 40);
     }
   };
 
@@ -42,8 +46,18 @@ export function MediaCarousel({
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      const { clientWidth } = scrollRef.current;
-      const scrollAmount = direction === "left" ? -clientWidth : clientWidth;
+      const isLargeScreen = window.innerWidth >= 1024;
+      let scrollAmount;
+      
+      if (isLargeScreen) {
+        // 5 cards (225.4px) + 5 gaps (24px) = 1127 + 120 = 1247px
+        // This moves exactly one full set of 5 cards
+        scrollAmount = direction === "left" ? -1247 : 1247;
+      } else {
+        const { clientWidth } = scrollRef.current;
+        scrollAmount = direction === "left" ? -clientWidth : clientWidth;
+      }
+      
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
   };
@@ -52,7 +66,13 @@ export function MediaCarousel({
 
   return (
     <section className="group/carousel relative">
-      <div className="mb-6 flex items-end justify-between px-2 lg:px-8">
+      <div 
+        className="mb-6 flex items-end justify-between w-full"
+        style={{
+          paddingLeft: 'max(8px, (100vw - 1223px) / 2)',
+          paddingRight: 'max(8px, (100vw - 1223px) / 2)',
+        }}
+      >
         <div>
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
             {title}
@@ -87,10 +107,14 @@ export function MediaCarousel({
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-6 overflow-x-auto scroll-smooth px-2 lg:px-8 pb-4 no-scrollbar"
+          className="flex gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
+          style={{
+            paddingLeft: 'max(8px, (100vw - 1223px) / 2)',
+            paddingRight: 'max(8px, (100vw - 1223px) / 2)',
+          }}
         >
           {items.map((item, index) => (
-            <div key={item.id} className="w-[160px] flex-shrink-0 sm:w-[200px]">
+            <div key={item.id} className="w-[160px] flex-shrink-0 sm:w-[200px] lg:w-[225.4px]">
               <MediaCard
                 item={item}
                 type={type}
