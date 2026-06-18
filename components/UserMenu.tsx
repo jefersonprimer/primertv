@@ -4,12 +4,10 @@ import { useState } from "react";
 import { User, LogOut, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
+import { SessionUser } from "@/lib/auth";
 
 interface UserMenuProps {
-  user: {
-    name: string;
-    role: string;
-  };
+  user: SessionUser;
 }
 
 export function UserMenu({ user }: UserMenuProps) {
