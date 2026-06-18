@@ -88,7 +88,7 @@ export default async function AnimeDetailsPage({
         <div className="mx-auto max-w-[1223px] py-8 md:absolute md:bottom-0 md:left-0 md:right-0 md:py-12">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Image */}
-            <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:w-48 lg:w-60 flex-shrink-0 rounded-lg">
+            <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:w-48 lg:w-60 flex-shrink-0">
               {anime.imageUrl ? (
                 <Image
                   src={anime.imageUrl}
@@ -149,7 +149,7 @@ export default async function AnimeDetailsPage({
                 {firstEpisodeId && (
                   <Link
                     href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 md:w-fit"
+                    className="flex w-full items-center justify-center gap-2 bg-blue-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-700 md:w-fit"
                   >
                     <Play className="h-5 w-5 fill-current" />
                     Começar a assistir EP1

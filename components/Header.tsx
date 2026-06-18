@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { User, Bookmark, Search } from "lucide-react";
 import { getSession } from "@/lib/auth";
+import { MobileSidebar } from "./MobileSidebar";
+import { NAV_LINKS } from "./nav-links";
 import { UserMenu } from "./UserMenu";
 
 export async function Header() {
@@ -8,60 +10,33 @@ export async function Header() {
   const user = session?.user;
 
   return (
-    <header className="top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link
-            href="/"
-            className="flex items-center transition-opacity hover:opacity-80"
-          >
-            <span className="text-2xl font-extrabold tracking-tighter text-zinc-900 dark:text-white">
-              Primer
-              <span className="font-light text-blue-600 dark:text-blue-500">
-                TV
+        <div className="flex h-full items-center gap-8">
+          <div className="flex h-full items-center gap-1">
+            <MobileSidebar />
+            <Link
+              href="/"
+              className="flex items-center transition-opacity hover:opacity-80"
+            >
+              <span className="text-2xl font-extrabold tracking-tighter text-zinc-900 dark:text-white">
+                Primer
+                <span className="font-light text-blue-600 dark:text-blue-500">
+                  TV
+                </span>
               </span>
-            </span>
-          </Link>
+            </Link>
+          </div>
           <nav className="hidden items-center gap-6 md:flex">
-            <Link
-              href="/filmes"
-              className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
-            >
-              Filmes
-            </Link>
-            <Link
-              href="/series"
-              className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
-            >
-              Séries
-            </Link>
-
-            <Link
-              href="/channels"
-              className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
-            >
-              Canais
-            </Link>
-            <Link
-              href="/novelas"
-              className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
-            >
-              Novelas
-            </Link>
-
-            <Link
-              href="/animes"
-              className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
-            >
-              Animes
-            </Link>
-
-            <Link
-              href="/mangas"
-              className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
-            >
-              Mangas
-            </Link>
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
 

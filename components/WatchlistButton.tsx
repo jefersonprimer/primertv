@@ -31,7 +31,7 @@ export function WatchlistButton({
     return (
       <Link
         href="/login"
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-6 py-3 font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800 md:w-fit"
+        className="flex w-full items-center justify-center gap-2 border border-zinc-300 px-4 py-2 font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800 md:w-fit"
       >
         <Bookmark className="h-5 w-5" />
         Adicionar à watchlist
@@ -47,7 +47,7 @@ export function WatchlistButton({
       <button
         type="submit"
         disabled={isPending}
-        className={`flex w-full items-center justify-center gap-2 rounded-lg border px-6 py-3 font-semibold transition-colors md:w-fit ${
+        className={`flex w-full items-center justify-center gap-2 border px-4 py-2 font-semibold transition-colors md:w-fit ${
           inWatchlist
             ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700"
             : "border-zinc-300 text-zinc-900 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800"
