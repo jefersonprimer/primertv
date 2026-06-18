@@ -7,7 +7,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const getPrismaClient = () => {
   const pool = new pg.Pool({ 
     connectionString: process.env.DATABASE_URL,
-    max: 10, // Limit to 10 connections to stay under the 15 limit
+    max: 3, // Limit to 3 connections to stay under the 15 limit
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
   });

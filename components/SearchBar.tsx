@@ -1,17 +1,28 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Search, X } from "lucide-react";
 
 export function SearchBar() {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query)}`);
     }
+  };
+
+  const handleClear = () => {
+    setQuery("");
+    inputRef.current?.focus();
   };
 
   return (
@@ -23,27 +34,28 @@ export function SearchBar() {
             className="relative w-full max-w-[880px]"
           >
             <input
+              ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar animes, séries, filmes, mangás ou novelas..."
-              className="w-full border-b border-zinc-200 bg-transparent py-4 pl-12 text-xl text-zinc-900 outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-blue-500"
+              className="w-full border-b border-zinc-200 bg-transparent py-4 pl-12 pr-12 text-xl text-zinc-900 outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-blue-500"
             />
-            <svg
+            <Search
               className="absolute left-2 top-1/2 -translate-y-1/2 text-zinc-400"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
+              size={24}
+            />
+
+            {query && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-200"
+                aria-label="Limpar pesquisa"
+              >
+                <X size={24} />
+              </button>
+            )}
           </form>
         </div>
       </div>
