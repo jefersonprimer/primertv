@@ -51,9 +51,9 @@ export function ChannelPlayer({ channel }: ChannelPlayerProps) {
           ) : (
             <iframe
               src={currentUrl}
-              className="absolute inset-0 h-full w-full"
+              className="absolute inset-0 h-full w-full overflow-y-auto"
               allowFullScreen
-              scrolling="no"
+              scrolling="auto"
               allow="autoplay; fullscreen; picture-in-picture"
               title={`Player para ${channel.title}`}
             />

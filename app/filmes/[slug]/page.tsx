@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { connection } from "next/server";
 
 export const revalidate = 3600;
 
@@ -20,8 +19,8 @@ export async function generateMetadata({
   if (!movie) return { title: "Filme não encontrado" };
 
   return {
-    title: `Assistir ${movie.title} Online em HD - Primerflix`,
-    description: `Assista ao filme ${movie.title} online grátis em HD no Primerflix.`,
+    title: `Assistir ${movie.title} Online em HD - PrimerTv`,
+    description: `Assista ao filme ${movie.title} online grátis em HD no PrimerTv.`,
     openGraph: {
       title: movie.title,
       images: movie.imageUrl ? [movie.imageUrl] : [],
@@ -136,9 +135,9 @@ export default async function MovieDetailsPage({
             ) : (
               <iframe
                 src={movie.videoUrl}
-                className="absolute inset-0 h-full w-full"
+                className="absolute inset-0 h-full w-full overflow-y-auto"
                 allowFullScreen
-                scrolling="no"
+                scrolling="auto"
                 allow="autoplay; fullscreen; picture-in-picture"
                 title={`Player para ${movie.title}`}
               />

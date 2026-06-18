@@ -21,20 +21,17 @@ export async function generateMetadata({
   params,
 }: AnimeDetailsPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const anime = await prisma.anime.findUnique({ where: { slug } });
 
-  const anime = await prisma.anime.findUnique({
-    where: { slug },
-    select: { title: true },
-  });
-
-  if (!anime) {
-    return {
-      title: "Anime não encontrado - PrimerTv",
-    };
-  }
+  if (!anime) return { title: "Anime não encontrado" };
 
   return {
-    title: `${anime.title} - PrimerTv`,
+    title: `Assistir ${anime.title} Online em HD - PrimerTv`,
+    description: `Assista ao anime ${anime.title} online grátis em HD no PrimerTv.`,
+    openGraph: {
+      title: anime.title,
+      images: anime.imageUrl ? [anime.imageUrl] : [],
+    },
   };
 }
 

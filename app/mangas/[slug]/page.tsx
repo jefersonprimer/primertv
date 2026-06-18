@@ -1,17 +1,35 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
+import MediaDescricao from "@/components/MediaDescricao";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
+import { Metadata } from "next";
 
 export const revalidate = 3600;
 
 interface MangaDetailsPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: MangaDetailsPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const manga = await prisma.manga.findUnique({ where: { slug } });
+
+  if (!manga) return { title: "Manga não encontrada" };
+
+  return {
+    title: `Leia ${manga.title} Online - PrimerTv`,
+    description: `Leia ao ${manga.title} online grátis no PrimerTv.`,
+    openGraph: {
+      title: manga.title,
+      images: manga.imageUrl ? [manga.imageUrl] : [],
+    },
+  };
 }
 
 export default async function MangaDetailsPage({
@@ -93,9 +111,9 @@ export default async function MangaDetailsPage({
                 </div>
               )}
               {manga.description && (
-                <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
-                  {manga.description}
-                </p>
+                <div className="max-w-2xl">
+                  <MediaDescricao description={manga.description} />
+                </div>
               )}
             </div>
           </div>

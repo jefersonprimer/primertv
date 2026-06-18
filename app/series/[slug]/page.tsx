@@ -1,16 +1,33 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
 import MediaDescricao from "@/components/MediaDescricao";
+import { Metadata } from "next";
 
 export const revalidate = 3600;
 
 interface SeriesDetailsPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: SeriesDetailsPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const serie = await prisma.series.findUnique({ where: { slug } });
+
+  if (!serie) return { title: "Série não encontrada" };
+
+  return {
+    title: `Assistir ${serie.title} Online em HD - Primerflix`,
+    description: `Assista à série ${serie.title} online grátis em HD no PrimerTv.`,
+    openGraph: {
+      title: serie.title,
+      images: serie.imageUrl ? [serie.imageUrl] : [],
+    },
+  };
 }
 
 export default async function SeriesDetailsPage({

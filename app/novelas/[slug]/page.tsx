@@ -1,8 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { connection } from "next/server";
+import { Metadata } from "next";
 
 import EpisodeList from "@/components/EpisodeList";
 
@@ -10,6 +9,24 @@ export const revalidate = 3600;
 
 interface NovelaDetailsPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: NovelaDetailsPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const novela = await prisma.novela.findUnique({ where: { slug } });
+
+  if (!novela) return { title: "Novela não encontrado" };
+
+  return {
+    title: `Assistir ${novela.title} Online em HD - PrimerTv`,
+    description: `Assista a novela ${novela.title} online grátis em HD no PrimerTv.`,
+    openGraph: {
+      title: novela.title,
+      images: novela.imageUrl ? [novela.imageUrl] : [],
+    },
+  };
 }
 
 export default async function NovelaDetailsPage({
@@ -70,12 +87,6 @@ export default async function NovelaDetailsPage({
               )}
             </div>
             <div className="flex flex-col gap-4">
-              <Link
-                href="/"
-                className="text-sm font-medium text-blue-500 hover:underline"
-              >
-                ← Voltar para a Home
-              </Link>
               <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                 {novela.title}
               </h1>

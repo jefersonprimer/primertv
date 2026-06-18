@@ -137,9 +137,9 @@ export default async function WatchPage({ params }: WatchPageProps) {
                 ) : (
                   <iframe
                     src={episode.videoUrl}
-                    className="absolute inset-0 h-full w-full"
+                    className="absolute inset-0 h-full w-full overflow-y-auto"
                     allowFullScreen
-                    scrolling="no"
+                    scrolling="auto"
                     allow="autoplay; fullscreen; picture-in-picture"
                     title={`Player para ${episode.season.novela.title} Capítulo ${episode.number}`}
                   />
