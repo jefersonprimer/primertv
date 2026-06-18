@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, LogOut, LayoutDashboard, X } from "lucide-react";
+import { User, LogOut, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 
@@ -19,7 +19,9 @@ export function UserMenu({ user }: UserMenuProps) {
     <div className="relative flex h-full items-center">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-full items-center px-4 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+        className={`flex h-full items-center px-4 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+          isOpen ? "bg-zinc-100 dark:bg-zinc-800" : ""
+        }`}
       >
         <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
           <User size={20} />
@@ -29,10 +31,10 @@ export function UserMenu({ user }: UserMenuProps) {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="absolute right-0 top-full z-50 w-64 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
             <div className="border-b border-zinc-100 p-4 dark:border-zinc-800">
               <div className="flex items-center justify-between">
                 <div>
@@ -43,12 +45,6 @@ export function UserMenu({ user }: UserMenuProps) {
                     {user.role === "admin" ? "Administrador" : "Membro"}
                   </p>
                 </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="rounded-full p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                >
-                  <X size={16} />
-                </button>
               </div>
             </div>
 
@@ -63,7 +59,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   Painel Admin
                 </Link>
               )}
-              
+
               <button
                 onClick={async () => {
                   await logout();

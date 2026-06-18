@@ -16,12 +16,8 @@ export default async function SearchPage({
 
   if (!query) {
     return (
-      <div className="mx-auto max-w-[1130px] p-8">
-        <div className="mx-auto max-w-[1050px]">
-          <div className="mb-8">
-            <SearchBar />
-          </div>
-        </div>
+      <div className="w-full">
+        <SearchBar />
       </div>
     );
   }
@@ -104,31 +100,35 @@ export default async function SearchPage({
     }),
   ]);
 
-  const hasResults = animes.length > 0 || series.length > 0 || movies.length > 0 || mangas.length > 0 || novelas.length > 0;
+  const hasResults =
+    animes.length > 0 ||
+    series.length > 0 ||
+    movies.length > 0 ||
+    mangas.length > 0 ||
+    novelas.length > 0;
 
   return (
-    <div className="mx-auto max-w-[1130px] p-8">
-      <div className="mx-auto max-w-[1050px]">
-        <div className="mb-8">
-          <SearchBar />
-        </div>
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-50">
-            Resultados para: <span className="text-blue-500">"{query}"</span>
-          </h1>
-        </header>
+    <div className="w-full">
+      <SearchBar />
 
+      <div className="mx-auto max-w-[1130px] px-8 py-12">
         <main className="space-y-16">
           {!hasResults && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className="text-xl text-zinc-500">Nenhum resultado encontrado para "{query}".</p>
-              <p className="text-zinc-400">Tente buscar por termos diferentes ou verifique a ortografia.</p>
+              <p className="text-xl text-zinc-500">
+                Nenhum resultado encontrado para "{query}".
+              </p>
+              <p className="text-zinc-400">
+                Tente buscar por termos diferentes ou verifique a ortografia.
+              </p>
             </div>
           )}
 
           {animes.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Animes</h2>
+              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                Animes
+              </h2>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {animes.map((anime) => (
                   <MediaCard
@@ -144,7 +144,9 @@ export default async function SearchPage({
 
           {series.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Séries</h2>
+              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                Séries
+              </h2>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {series.map((item) => (
                   <MediaCard
@@ -160,7 +162,9 @@ export default async function SearchPage({
 
           {movies.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Filmes</h2>
+              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                Filmes
+              </h2>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {movies.map((item) => (
                   <MediaCard
@@ -176,7 +180,9 @@ export default async function SearchPage({
 
           {mangas.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Mangás</h2>
+              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                Mangás
+              </h2>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {mangas.map((item) => (
                   <MediaCard
@@ -192,7 +198,9 @@ export default async function SearchPage({
 
           {novelas.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Novelas</h2>
+              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                Novelas
+              </h2>
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {novelas.map((item) => (
                   <MediaCard
