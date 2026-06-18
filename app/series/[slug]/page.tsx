@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { connection } from "next/server";
 
 import EpisodeList from "@/components/EpisodeList";
+import MediaDescricao from "@/components/MediaDescricao";
 
 export const revalidate = 3600;
 
@@ -92,9 +93,9 @@ export default async function SeriesDetailsPage({
                 </div>
               )}
               {series.description && (
-                <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
-                  {series.description}
-                </p>
+                <div className="max-w-2xl">
+                  <MediaDescricao description={series.description} />
+                </div>
               )}
             </div>
           </div>

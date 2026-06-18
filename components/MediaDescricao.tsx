@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 
-interface AnimeDescriptionProps {
+interface MediaDescricaoProps {
   description: string;
 }
 
-export default function AnimeDescription({ description }: AnimeDescriptionProps) {
+export default function MediaDescricao({ description }: MediaDescricaoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
 

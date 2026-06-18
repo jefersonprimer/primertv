@@ -6,7 +6,7 @@ import { Metadata } from "next";
 import { Play } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
-import AnimeDescription from "@/components/AnimeDescription";
+import MediaDescricao from "@/components/MediaDescricao";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
@@ -166,7 +166,7 @@ export default async function AnimeDetailsPage({
 
               <div className="max-w-2xl">
                 {anime.description && (
-                  <AnimeDescription description={anime.description} />
+                  <MediaDescricao description={anime.description} />
                 )}
               </div>
             </div>
