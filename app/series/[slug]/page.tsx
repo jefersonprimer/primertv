@@ -71,12 +71,6 @@ export default async function SeriesDetailsPage({
               )}
             </div>
             <div className="flex flex-col gap-4">
-              <Link
-                href="/"
-                className="text-sm font-medium text-blue-500 hover:underline"
-              >
-                ← Voltar para a Home
-              </Link>
               <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                 {series.title}
               </h1>
