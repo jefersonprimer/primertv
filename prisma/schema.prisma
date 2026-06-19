@@ -48,6 +48,7 @@ model Anime {
   genres        String[]  @default([])
   aired         String?
   rating        String?
+  status        String?
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -153,6 +154,9 @@ model Manga {
   description   String?
   imageUrl      String?
   genres        String[]  @default([])
+  aired         String?
+  rating        String?
+  status        String?
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

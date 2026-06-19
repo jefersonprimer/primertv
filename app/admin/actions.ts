@@ -147,6 +147,7 @@ export async function saveMedia(
           slug: finalSlug,
           aired: readString(formData, "aired") || null,
           rating: readString(formData, "rating") || null,
+          status: readString(formData, "status") || null,
         };
 
         if (existing) {
@@ -166,6 +167,9 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          aired: readString(formData, "aired") || null,
+          rating: readString(formData, "rating") || null,
+          status: readString(formData, "status") || null,
         };
 
         if (existing) {

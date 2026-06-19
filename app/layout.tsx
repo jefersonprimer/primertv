@@ -5,7 +5,7 @@ import { HeaderSkeleton } from "@/components/HeaderSkeleton";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "PrimerTV",
+  title: "Bem-vindo à PrimerTv",
   description: "Seus animes e séries favoritos em um só lugar.",
 };
 

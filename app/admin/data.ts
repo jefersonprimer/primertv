@@ -43,6 +43,7 @@ export type AdminMediaDetail = {
   genres: string[];
   aired?: string | null;
   rating?: string | null;
+  status?: string | null;
   videoUrl?: string | null;
   embedUrl?: string | null;
   position?: number;
@@ -237,6 +238,7 @@ export async function getCollectionDetail(
         genres: anime.genres,
         aired: anime.aired,
         rating: anime.rating,
+        status: anime.status,
         seasons: anime.seasons.map((season) => ({
           id: season.id,
           number: season.number,
@@ -267,6 +269,9 @@ export async function getCollectionDetail(
         description: manga.description,
         imageUrl: manga.imageUrl,
         genres: manga.genres,
+        aired: manga.aired,
+        rating: manga.rating,
+        status: manga.status,
         chapters: manga.chapters.map((chapter) => ({
           id: chapter.id,
           number: chapter.number,

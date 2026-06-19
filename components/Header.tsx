@@ -10,8 +10,8 @@ export async function Header() {
   const user = session?.user;
 
   return (
-    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
+    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+      <div className="mx-auto flex h-15 max-w-7xl items-center justify-between">
         <div className="flex h-full items-center gap-8">
           <div className="flex h-full items-center gap-1">
             <MobileSidebar />
@@ -19,20 +19,20 @@ export async function Header() {
               href="/"
               className="flex items-center transition-opacity hover:opacity-80"
             >
-              <span className="text-2xl font-extrabold tracking-tighter text-zinc-900 dark:text-white">
+              <span className="text-xl font-bold tracking-tighter text-zinc-900 dark:text-white">
                 Primer
                 <span className="font-light text-blue-600 dark:text-blue-500">
-                  TV
+                  Tv
                 </span>
               </span>
             </Link>
           </div>
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden h-full items-center md:flex">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-zinc-600 hover:text-blue-500 dark:text-zinc-400 dark:hover:text-blue-500"
+                className="flex h-full items-center px-4 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
               >
                 {link.label}
               </Link>

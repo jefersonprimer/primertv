@@ -96,6 +96,7 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
       },
       { name: "aired", label: "Exibição", type: "text" },
       { name: "rating", label: "Classificação", type: "text" },
+      { name: "status", label: "Status", type: "text" },
     ],
   },
   mangas: {
@@ -119,6 +120,9 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         placeholder: "Ação, Aventura",
         helpText: "Separe por vírgula.",
       },
+      { name: "aired", label: "Publicação", type: "text" },
+      { name: "rating", label: "Classificação", type: "text" },
+      { name: "status", label: "Status", type: "text" },
     ],
   },
   novelas: {

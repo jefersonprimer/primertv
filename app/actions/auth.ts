@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { encrypt, isAdminEmail } from "@/lib/auth";
+import { createSessionToken, isAdminEmail, sessionCookieOptions } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -41,14 +41,14 @@ export async function signup(_prevState: AuthState | undefined, formData: FormDa
     },
   });
 
-  // Create session
-  const expires = new Date(Date.now() + 120 * 60 * 1000); // 2 hours
-  const session = await encrypt({
-    user: { id: user.id, name: user.name, email: user.email, role: "user" },
-    expires,
+  const { token, expires } = await createSessionToken({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: "user",
   });
 
-  (await cookies()).set("session", session, { expires, httpOnly: true });
+  (await cookies()).set("session", token, sessionCookieOptions(expires));
 
   redirect("/");
 }
@@ -67,18 +67,14 @@ export async function login(_prevState: AuthState | undefined, formData: FormDat
       return { error: "Credenciais inválidas." };
     }
 
-    const expires = new Date(Date.now() + 120 * 60 * 1000); // 2 hours
-    const session = await encrypt({
-      user: {
-        id: "admin",
-        name: "Administrador",
-        email,
-        role: "admin",
-      },
-      expires,
+    const { token, expires } = await createSessionToken({
+      id: "admin",
+      name: "Administrador",
+      email,
+      role: "admin",
     });
 
-    (await cookies()).set("session", session, { expires, httpOnly: true });
+    (await cookies()).set("session", token, sessionCookieOptions(expires));
 
     redirect("/admin");
   }
@@ -97,16 +93,19 @@ export async function login(_prevState: AuthState | undefined, formData: FormDat
     return { error: "Credenciais inválidas." };
   }
 
-  // Create session
-  const expires = new Date(Date.now() + 120 * 60 * 1000); // 2 hours
-  const session = await encrypt({ user: { id: user.id, name: user.name, email: user.email, role: "user" }, expires });
+  const { token, expires } = await createSessionToken({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: "user",
+  });
 
-  (await cookies()).set("session", session, { expires, httpOnly: true });
+  (await cookies()).set("session", token, sessionCookieOptions(expires));
 
   redirect("/");
 }
 
 export async function logout() {
-  (await cookies()).set("session", "", { expires: new Date(0) });
+  (await cookies()).delete("session");
   redirect("/login");
 }
