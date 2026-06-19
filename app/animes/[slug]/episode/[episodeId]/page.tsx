@@ -97,7 +97,8 @@ export default async function WatchPage({ params }: WatchPageProps) {
   const nextEpisode =
     currentIndex < episodes.length - 1 ? episodes[currentIndex + 1] : null;
 
-  const playableUrl = (await resolvePlayableUrl(episode.videoUrl)) ?? episode.videoUrl;
+  const playableUrl =
+    (await resolvePlayableUrl(episode.videoUrl)) ?? episode.videoUrl;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
@@ -133,7 +134,8 @@ export default async function WatchPage({ params }: WatchPageProps) {
             {/* Player Container */}
             <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
               {playableUrl ? (
-                playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
+                playableUrl.endsWith(".mp4") ||
+                playableUrl.endsWith(".m3u8") ? (
                   <video
                     src={playableUrl}
                     controls
@@ -199,7 +201,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+              <div>
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h2 className="text-2xl font-bold">
@@ -226,7 +228,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
           {/* Sidebar: Episode List */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+            <div className="sticky top-24 border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
               <div className="border-b border-zinc-100 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-800/50">
                 <h3 className="font-bold">Lista de Episódios</h3>
                 <p className="text-xs text-zinc-500">

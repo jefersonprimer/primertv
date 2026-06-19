@@ -10,6 +10,7 @@ import MediaDescricao from "@/components/MediaDescricao";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
+import { MediaCarousel } from "@/components/MediaCarousel";
 
 export const revalidate = 3600;
 
@@ -62,6 +63,26 @@ export default async function AnimeDetailsPage({
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("ANIME", anime.id);
 
+  const similarAnimes = anime.genres && anime.genres.length > 0
+    ? await prisma.anime.findMany({
+        where: {
+          genres: {
+            hasSome: anime.genres,
+          },
+          id: {
+            not: anime.id,
+          },
+        },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          imageUrl: true,
+        },
+        take: 15,
+      })
+    : [];
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Hero Section */}
@@ -103,7 +124,7 @@ export default async function AnimeDetailsPage({
             </div>
 
             {/* Info Section */}
-            <div className="relative z-10 flex flex-1 flex-col gap-4 -mt-70 md:mt-0 p-6 md:p-0">
+            <div className="relative z-10 flex flex-1 flex-col gap-4 -mt-70 md:mt-0 py-6 px-4 md:p-0">
               {/* Mobile Background with Gradient Mask to fade out the top boundary line */}
               <div
                 className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50/20 via-zinc-50/85 to-zinc-50 dark:from-black/20 dark:via-black/85 dark:to-black backdrop-blur-[3px] rounded-t-2xl md:hidden"
@@ -171,7 +192,7 @@ export default async function AnimeDetailsPage({
                 />
               </div>
 
-              <div className="max-w-2xl">
+              <div className="max-w-2xl mt-4">
                 {anime.description && (
                   <MediaDescricao description={anime.description} />
                 )}
@@ -182,13 +203,25 @@ export default async function AnimeDetailsPage({
       </div>
 
       {/* Episodes Section */}
-      <main className="mx-auto max-w-[1223px] pb-12">
+      <main className="mx-auto max-w-[1223px] pb-12 px-4 md:px-0">
         {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (
           <SeasonSelector seasons={anime.seasons} animeSlug={anime.slug} />
         )}
       </main>
+
+      {/* Similar Animes Carousel */}
+      {similarAnimes.length > 0 && (
+        <div className="pb-12">
+          <MediaCarousel
+            title="Animes Semelhantes"
+            subtitle="Baseado nos gêneros deste anime"
+            items={similarAnimes}
+            type="anime"
+          />
+        </div>
+      )}
     </div>
   );
 }
