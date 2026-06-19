@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import EpisodeList from "./EpisodeList";
 
 interface Episode {
@@ -89,6 +89,33 @@ export default function SeasonSelector({
         baseUrl={`/animes/${animeSlug}/episode`}
         itemType="episode"
       />
+
+      {seasons.length > 1 && (
+        <div className="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 pt-6 mt-2">
+          <button
+            onClick={() =>
+              currentIndex > 0 && setCurrentIndex(currentIndex - 1)
+            }
+            disabled={currentIndex === 0}
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+          >
+            <ChevronLeft className="h-5 w-5" />
+            <span>Temporada Anterior</span>
+          </button>
+
+          <button
+            onClick={() =>
+              currentIndex < seasons.length - 1 &&
+              setCurrentIndex(currentIndex + 1)
+            }
+            disabled={currentIndex === seasons.length - 1}
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+          >
+            <span>Próxima Temporada</span>
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

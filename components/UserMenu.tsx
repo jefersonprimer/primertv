@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, LogOut, LayoutDashboard } from "lucide-react";
+import { User, LogOut, LayoutDashboard, History, Bookmark } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { SessionUser } from "@/lib/auth";
@@ -47,6 +47,27 @@ export function UserMenu({ user }: UserMenuProps) {
             </div>
 
             <div className="p-2">
+              {user.role !== "admin" && (
+                <>
+                  <Link
+                    href="/historico"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800/50"
+                  >
+                    <History size={18} className="text-blue-500" />
+                    Histórico
+                  </Link>
+                  <Link
+                    href="/watchlist"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800/50"
+                  >
+                    <Bookmark size={18} className="text-blue-500" />
+                    Watchlist
+                  </Link>
+                </>
+              )}
+
               {user.role === "admin" && (
                 <Link
                   href="/admin"

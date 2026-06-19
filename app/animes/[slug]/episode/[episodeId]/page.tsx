@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { connection } from "next/server";
 import { ChevronLeft } from "lucide-react";
 import { resolvePlayableUrl } from "@/lib/playable-url";
+import { recordAnimeWatchHistory } from "@/lib/history";
 
 interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
@@ -80,6 +81,8 @@ export default async function WatchPage({ params }: WatchPageProps) {
   if (!episode) {
     notFound();
   }
+
+  await recordAnimeWatchHistory(episode.id);
 
   // We should still verify if the anime slug matches, but let's be flexible
   if (episode.season.anime.slug !== slug) {

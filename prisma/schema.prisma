@@ -20,6 +20,7 @@ model User {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   watchlistItems WatchlistItem[]
+  watchHistory   WatchHistory[]
 }
 
 model WatchlistItem {
@@ -73,18 +74,32 @@ model Season {
 }
 
 model Episode {
-  id        String   @id @default(cuid())
-  number    Int
-  title     String?
-  videoUrl  String?
-  seasonId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  id           String         @id @default(cuid())
+  number       Int
+  title        String?
+  videoUrl     String?
+  seasonId     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  season       Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  watchHistory WatchHistory[]
 
   @@unique([seasonId, number])
   @@index([seasonId])
   @@index([createdAt])
+}
+
+model WatchHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  episodeId String
+  watchedAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([userId, watchedAt])
 }
 
 model Series {
