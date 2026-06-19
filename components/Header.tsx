@@ -11,7 +11,7 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
-      <div className="mx-auto flex h-15 max-w-7xl items-center justify-between">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
         <div className="flex h-full items-center gap-8">
           <div className="flex h-full items-center gap-1">
             <MobileSidebar />
