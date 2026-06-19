@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+} from "lucide-react";
 import EpisodeList from "./EpisodeList";
 
 interface Episode {
@@ -28,64 +33,128 @@ export default function SeasonSelector({
 }: SeasonSelectorProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<"oldest" | "newest">("oldest");
 
   const currentSeason = seasons[currentIndex];
 
   if (!currentSeason) return null;
 
+  const sortedEpisodes = [...currentSeason.episodes].sort((a, b) => {
+    if (sortBy === "oldest") {
+      return a.number - b.number;
+    } else {
+      return b.number - a.number;
+    }
+  });
+
   return (
     <div className="flex flex-col gap-8">
-      <div className="relative inline-block">
-        <button
-          onClick={() => seasons.length > 1 && setIsOpen(!isOpen)}
-          className={`flex items-center gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-50 ${
-            seasons.length > 1
-              ? "cursor-pointer hover:text-blue-500 transition-colors"
-              : ""
-          }`}
-        >
-          Temporada {currentSeason.number}
-          {seasons.length > 1 && (
-            <ChevronDown
-              className={`h-6 w-6 transition-transform ${isOpen ? "rotate-180" : ""}`}
-            />
-          )}
-        </button>
+      <div className="flex items-center justify-between">
+        <div className="relative inline-block">
+          <button
+            onClick={() => seasons.length > 1 && setIsOpen(!isOpen)}
+            className={`flex items-center gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-50 ${
+              seasons.length > 1
+                ? "cursor-pointer hover:text-blue-500 transition-colors"
+                : ""
+            }`}
+          >
+            Temporada {currentSeason.number}
+            {seasons.length > 1 && (
+              <ChevronDown
+                className={`h-6 w-6 transition-transform ${isOpen ? "rotate-180" : ""}`}
+              />
+            )}
+          </button>
 
-        {isOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setIsOpen(false)}
+          {isOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setIsOpen(false)}
+              />
+              <div className="absolute left-0 top-full z-50 mt-2 py-2 w-60 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
+                {seasons.map((season, index) => (
+                  <button
+                    key={season.id}
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between ${
+                      index === currentIndex
+                        ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                        : "text-zinc-700 dark:text-zinc-300"
+                    }`}
+                  >
+                    <span>Temporada {season.number}</span>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400 font-normal">
+                      {season.episodes.length} episódios
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="relative inline-block">
+          <button
+            onClick={() => setIsSortOpen(!isSortOpen)}
+            className="flex items-center p-2 gap-2 text-base font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-500     hover:dark:bg-zinc-900 transition-colors cursor-pointer"
+          >
+            <ArrowUpDown className="h-5 w-5" />
+            <span>
+              {sortBy === "oldest" ? "Mais antigos" : "Mais recentes"}
+            </span>
+            <ChevronDown
+              className={`h-5 w-5 transition-transform ${isSortOpen ? "rotate-180" : ""}`}
             />
-            <div className="absolute left-0 top-full z-50 mt-2 py-2 w-60 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
-              {seasons.map((season, index) => (
+          </button>
+
+          {isSortOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setIsSortOpen(false)}
+              />
+              <div className="absolute right-0 top-full z-50 mt-2 py-2 w-40 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900 ">
                 <button
-                  key={season.id}
                   onClick={() => {
-                    setCurrentIndex(index);
-                    setIsOpen(false);
+                    setSortBy("oldest");
+                    setIsSortOpen(false);
                   }}
-                  className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between ${
-                    index === currentIndex
+                  className={`w-full px-4 py-2 text-left text-base font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between ${
+                    sortBy === "oldest"
                       ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
                       : "text-zinc-700 dark:text-zinc-300"
                   }`}
                 >
-                  <span>Temporada {season.number}</span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-400 font-normal">
-                    {season.episodes.length} episódios
-                  </span>
+                  <span>Mais antigos</span>
                 </button>
-              ))}
-            </div>
-          </>
-        )}
+                <button
+                  onClick={() => {
+                    setSortBy("newest");
+                    setIsSortOpen(false);
+                  }}
+                  className={`w-full px-4 py-2 text-left text-base font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between ${
+                    sortBy === "newest"
+                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                      : "text-zinc-700 dark:text-zinc-300"
+                  }`}
+                >
+                  <span>Mais recentes</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <EpisodeList
-        key={currentSeason.id}
-        items={currentSeason.episodes}
+        key={`${currentSeason.id}-${sortBy}`}
+        items={sortedEpisodes}
         baseUrl={`/animes/${animeSlug}/episode`}
         itemType="episode"
       />
