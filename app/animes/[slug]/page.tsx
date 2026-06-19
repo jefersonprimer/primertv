@@ -82,7 +82,7 @@ export default async function AnimeDetailsPage({
         </div>
 
         {/* Content Container */}
-        <div className="mx-auto max-w-[1223px] py-8 md:absolute md:bottom-0 md:left-0 md:right-0 md:py-12">
+        <div className="mx-auto max-w-[1223px] md:absolute md:bottom-0 md:left-0 md:right-0 md:py-12">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Image */}
             <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:w-48 lg:w-60 flex-shrink-0">
@@ -103,15 +103,25 @@ export default async function AnimeDetailsPage({
             </div>
 
             {/* Info Section */}
-            <div className="flex flex-1 flex-col gap-4">
-              <div className="flex flex-col gap-1">
+            <div className="relative z-10 flex flex-1 flex-col gap-4 -mt-70 md:mt-0 p-6 md:p-0">
+              {/* Mobile Background with Gradient Mask to fade out the top boundary line */}
+              <div
+                className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50/20 via-zinc-50/85 to-zinc-50 dark:from-black/20 dark:via-black/85 dark:to-black backdrop-blur-[3px] rounded-t-2xl md:hidden"
+                style={{
+                  maskImage:
+                    "linear-gradient(to bottom, transparent, black 120px)",
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, transparent, black 120px)",
+                }}
+              />
+              <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left">
                 <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                   {anime.title}
                 </h1>
 
                 {(anime.rating ||
                   (anime.genres && anime.genres.length > 0)) && (
-                  <div className="mt-2 flex items-center flex-wrap gap-2">
+                  <div className="mt-2 flex items-center justify-center md:justify-start flex-wrap gap-2">
                     {anime.rating && (
                       <RatingBadge rating={anime.rating} className="h-5 w-5" />
                     )}
@@ -142,11 +152,11 @@ export default async function AnimeDetailsPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="flex items-center gap-3 w-full md:w-auto">
                 {firstEpisodeId && (
                   <Link
                     href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
-                    className="flex w-full items-center justify-center gap-2 bg-blue-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-700 md:w-fit"
+                    className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
                   >
                     <Play className="h-5 w-5 fill-current" />
                     Começar a assistir EP1

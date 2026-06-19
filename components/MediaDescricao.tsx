@@ -4,9 +4,13 @@ import { useState } from "react";
 
 interface MediaDescricaoProps {
   description: string;
+  className?: string;
 }
 
-export default function MediaDescricao({ description }: MediaDescricaoProps) {
+export default function MediaDescricao({
+  description,
+  className = "text-zinc-600 dark:text-zinc-400",
+}: MediaDescricaoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 150;
 
@@ -17,7 +21,7 @@ export default function MediaDescricao({ description }: MediaDescricaoProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+      <p className={`${className} text-sm leading-relaxed`}>
         {displayedText}
         {!isExpanded && shouldShowButton && "..."}
       </p>

@@ -31,34 +31,36 @@ export function WatchlistButton({
     return (
       <Link
         href="/login"
-        className="flex w-full items-center justify-center gap-2 border border-zinc-300 px-4 py-2 font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800 md:w-fit"
+        className="flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border border-zinc-300 font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800 md:px-4 md:py-2 flex-shrink-0"
       >
         <Bookmark className="h-5 w-5" />
-        Adicionar à watchlist
+        <span className="hidden md:inline">Adicionar à watchlist</span>
       </Link>
     );
   }
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className="flex-shrink-0">
       <input type="hidden" name="mediaType" value={mediaType} />
       <input type="hidden" name="mediaId" value={mediaId} />
       <input type="hidden" name="slug" value={slug} />
       <button
         type="submit"
         disabled={isPending}
-        className={`flex w-full items-center justify-center gap-2 border px-4 py-2 font-semibold transition-colors md:w-fit ${
+        className={`flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border font-semibold transition-colors md:px-4 md:py-2 ${
           inWatchlist
             ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700"
             : "border-zinc-300 text-zinc-900 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800"
         }`}
       >
         <Bookmark className={`h-5 w-5 ${inWatchlist ? "fill-current" : ""}`} />
-        {isPending
-          ? "Salvando..."
-          : inWatchlist
-            ? "Na watchlist"
-            : "Adicionar à watchlist"}
+        <span className="hidden md:inline">
+          {isPending
+            ? "Salvando..."
+            : inWatchlist
+              ? "Na watchlist"
+              : "Adicionar à watchlist"}
+        </span>
       </button>
       {state.error && (
         <p className="mt-2 text-sm text-red-500">{state.error}</p>
