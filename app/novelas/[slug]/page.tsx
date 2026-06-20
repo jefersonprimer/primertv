@@ -134,6 +134,7 @@ export default async function NovelaDetailsPage({
                   items={season.episodes}
                   baseUrl={`/novelas/${novela.slug}/episode`}
                   itemType="episode"
+                  animeTitle={novela.title}
                 />
               </section>
             ))}

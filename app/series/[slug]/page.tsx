@@ -163,6 +163,7 @@ export default async function SeriesDetailsPage({
                   items={season.episodes}
                   baseUrl={`/series/${series.slug}/episode`}
                   itemType="episode"
+                  animeTitle={series.title}
                 />
               </section>
             ))}

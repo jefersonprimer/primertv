@@ -140,7 +140,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                     src={playableUrl}
                     controls
                     className="h-full w-full"
-                    poster={episode.season.anime.imageUrl || undefined}
+                    poster={episode.imageUrl || episode.season.anime.imageUrl || undefined}
                   />
                 ) : (
                   <iframe

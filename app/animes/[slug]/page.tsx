@@ -80,32 +80,33 @@ export default async function AnimeDetailsPage({
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("ANIME", anime.id);
 
-  const similarAnimes = anime.genres && anime.genres.length > 0
-    ? await prisma.anime.findMany({
-        where: {
-          genres: {
-            hasSome: anime.genres,
+  const similarAnimes =
+    anime.genres && anime.genres.length > 0
+      ? await prisma.anime.findMany({
+          where: {
+            genres: {
+              hasSome: anime.genres,
+            },
+            id: {
+              not: anime.id,
+            },
           },
-          id: {
-            not: anime.id,
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            imageUrl: true,
           },
-        },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          imageUrl: true,
-        },
-        take: 15,
-      })
-    : [];
+          take: 15,
+        })
+      : [];
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Hero Section */}
       <div className="relative">
         {/* Banner Section */}
-        <div className="relative h-[40vh] md:h-[70vh] w-full overflow-hidden bg-zinc-900">
+        <div className="relative hidden md:block md:h-[70vh] w-full overflow-hidden bg-zinc-900">
           {finalBannerUrl ? (
             <Image
               src={finalBannerUrl}
@@ -231,11 +232,17 @@ export default async function AnimeDetailsPage({
       </div>
 
       {/* Episodes Section */}
-      <main className="mx-auto max-w-[1223px] pb-12 px-4 md:px-0">
+      <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
         {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (
-          <SeasonSelector seasons={anime.seasons} animeSlug={anime.slug} />
+          <SeasonSelector
+            seasons={anime.seasons}
+            animeSlug={anime.slug}
+            animeTitle={anime.title}
+            animeRating={anime.rating}
+            animeDuration={anime.duration}
+          />
         )}
       </main>
 

@@ -80,6 +80,7 @@ model Episode {
   number       Int
   title        String?
   videoUrl     String?
+  imageUrl     String?
   seasonId     String
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

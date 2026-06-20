@@ -14,6 +14,7 @@ interface Episode {
   number: number;
   title: string | null;
   videoUrl?: string | null;
+  imageUrl?: string | null;
 }
 
 interface Season {
@@ -25,11 +26,17 @@ interface Season {
 interface SeasonSelectorProps {
   seasons: Season[];
   animeSlug: string;
+  animeTitle?: string | null;
+  animeRating?: string | null;
+  animeDuration?: string | null;
 }
 
 export default function SeasonSelector({
   seasons,
   animeSlug,
+  animeTitle,
+  animeRating,
+  animeDuration,
 }: SeasonSelectorProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -49,9 +56,9 @@ export default function SeasonSelector({
   });
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <div className="relative inline-block">
+        <div className="relative inline-block px-2">
           <button
             onClick={() => seasons.length > 1 && setIsOpen(!isOpen)}
             className={`flex items-center gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-50 ${
@@ -157,6 +164,9 @@ export default function SeasonSelector({
         items={sortedEpisodes}
         baseUrl={`/animes/${animeSlug}/episode`}
         itemType="episode"
+        animeTitle={animeTitle}
+        animeRating={animeRating}
+        animeDuration={animeDuration}
       />
 
       {seasons.length > 1 && (
