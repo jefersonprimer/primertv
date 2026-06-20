@@ -8,21 +8,16 @@ export function HeaderSkeleton() {
             Primer
             <span className="font-light">Tv</span>
           </span>
-        </div>
 
-        {/* Desktop Nav placeholders */}
-        <nav className="ml-8 hidden items-center gap-6 md:flex">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800"
-            />
-          ))}
-        </nav>
-
-        {/* Search Bar placeholder */}
-        <div className="hidden flex-1 justify-center px-8 md:flex">
-          <div className="h-12 w-full max-w-xl animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800" />
+          {/* Desktop Nav placeholders */}
+          <nav className="ml-8 hidden gap-6 md:flex">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800"
+              />
+            ))}
+          </nav>
         </div>
 
         {/* Right side icons placeholders */}
@@ -30,6 +25,10 @@ export function HeaderSkeleton() {
           {/* Mobile search icon placeholder */}
           <div className="h-9 w-9 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800 md:hidden" />
 
+          {/* Search Icon */}
+          <div className="h-8 w-8 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800" />
+          {/* Bookmark Icon */}
+          <div className="h-8 w-8 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800" />
           {/* User button placeholder */}
           <div className="h-10 w-10 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
         </div>

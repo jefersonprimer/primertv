@@ -4,6 +4,8 @@ import { MediaCarouselSkeleton } from "@/components/MediaCarouselSkeleton";
 import { Suspense } from "react";
 import { FavoritesCarousel, FavoritesCarouselSkeleton } from "@/components/FavoritesCarousel";
 import { HistoryCarousel, HistoryCarouselSkeleton } from "@/components/HistoryCarousel";
+import { TodayReleases } from "@/components/TodayReleases";
+import { TodayReleasesSkeleton } from "@/components/TodayReleasesSkeleton";
 
 
 export const revalidate = 3600; // revalida a cada hora
@@ -152,6 +154,10 @@ export default function Home() {
 
         <Suspense fallback={<HistoryCarouselSkeleton />}>
           <HistoryCarousel />
+        </Suspense>
+
+        <Suspense fallback={<TodayReleasesSkeleton />}>
+          <TodayReleases />
         </Suspense>
 
         <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>

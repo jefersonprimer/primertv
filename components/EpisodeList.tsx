@@ -117,7 +117,9 @@ export default function EpisodeList({
                     </span>
                   )}
                   <h4 className="line-clamp-2 sm:line-clamp-1 font-medium text-zinc-900 dark:text-zinc-100">
-                    {item.title && item.title.trim() ? item.title : `${label} ${item.number}`}
+                    {item.title && item.title.trim()
+                      ? item.title
+                      : `${label} ${item.number}`}
                   </h4>
                 </div>
               ) : (
@@ -141,9 +143,7 @@ export default function EpisodeList({
               {/* Bottom card button (only shown for chapters) */}
               {itemType === "chapter" && (
                 <div className="mt-auto pt-2">
-                  <div
-                    className="w-full inline-flex items-center justify-center bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-zinc-800 dark:bg-blue-600 dark:hover:bg-blue-700 md:opacity-0 group-hover:opacity-100 transform md:translate-y-1 group-hover:translate-y-0"
-                  >
+                  <div className="w-full inline-flex items-center justify-center bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-zinc-800 dark:bg-blue-600 dark:hover:bg-blue-700 md:opacity-0 group-hover:opacity-100 transform md:translate-y-1 group-hover:translate-y-0">
                     Ler Agora
                   </div>
                 </div>
@@ -163,9 +163,7 @@ export default function EpisodeList({
                     </h4>
                   </div>
 
-                  <div
-                    className="w-full inline-flex items-center justify-center bg-blue-600 gap-2 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 mt-auto uppercase"
-                  >
+                  <div className="w-full inline-flex items-center justify-center bg-blue-600 gap-2 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 mt-auto uppercase">
                     <PlayIcon size={20} />
                     reproduzir ep{item.number}
                   </div>
@@ -177,7 +175,7 @@ export default function EpisodeList({
       </div>
 
       {hasMore && (
-        <div className=" w-full max-w-[1018px] mx-auto">
+        <div className="w-full max-w-[1018px] mx-auto">
           <button
             onClick={showMore}
             className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700"

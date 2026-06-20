@@ -100,7 +100,7 @@ export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
+          className="flex gap-4 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
           style={{
             paddingLeft: "max(8px, (100vw - 1223px) / 2)",
             paddingRight: "max(8px, (100vw - 1223px) / 2)",
@@ -113,12 +113,12 @@ export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
             return (
               <div
                 key={item.id}
-                className="w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]"
+                className="w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px] hover:bg-zinc-800 p-2"
               >
                 <div className="group flex flex-col gap-2">
                   <Link
                     href={cardHref}
-                    className="relative aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:shadow-blue-500/10 group-hover:-translate-y-1"
+                    className="relative aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:shadow-blue-500/10"
                   >
                     {/* Main Image */}
                     {displayImageUrl ? (
@@ -127,7 +127,7 @@ export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
                         alt={`Episódio ${item.episodeNumber} de ${item.animeTitle}`}
                         fill
                         sizes="(max-width: 640px) 260px, (max-width: 1024px) 300px, 287.75px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-zinc-400 text-sm font-medium">
@@ -150,15 +150,15 @@ export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
 
                   <div className="flex flex-col gap-0.5 px-1">
                     <Link href={cardHref}>
-                      <h3 className="line-clamp-1 text-sm font-bold text-zinc-800 dark:text-zinc-200 hover:text-blue-500 transition-colors">
+                      <h3 className="line-clamp-2 text-base font-semibold text-zinc-800 dark:text-zinc-200 hover:text-blue-500 transition-colors">
                         {item.animeTitle}
                       </h3>
                     </Link>
                     <Link
                       href={cardHref}
-                      className="text-xs text-zinc-500 dark:text-zinc-400 font-medium hover:text-blue-500 transition-colors flex items-center gap-1"
+                      className="text-sm text-zinc-500 dark:text-zinc-400 font-medium hover:text-blue-500 transition-colors flex items-center gap-1"
                     >
-                      Continuar a assistir ep {item.episodeNumber}
+                      Continuar a assistir EP{item.episodeNumber}
                     </Link>
                   </div>
                 </div>

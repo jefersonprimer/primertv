@@ -5,4 +5,5 @@ export const NAV_LINKS = [
   { href: "/filmes", label: "Filmes" },
   { href: "/animes", label: "Animes" },
   { href: "/mangas", label: "Mangas" },
+  { href: "/calendario", label: "Calendário" },
 ] as const;
