@@ -42,6 +42,7 @@ export async function getAnimeWatchHistory(userId: string) {
           id: true,
           number: true,
           title: true,
+          imageUrl: true,
           season: {
             select: {
               number: true,

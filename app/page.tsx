@@ -3,6 +3,7 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { MediaCarouselSkeleton } from "@/components/MediaCarouselSkeleton";
 import { Suspense } from "react";
 import { FavoritesCarousel, FavoritesCarouselSkeleton } from "@/components/FavoritesCarousel";
+import { HistoryCarousel, HistoryCarouselSkeleton } from "@/components/HistoryCarousel";
 
 
 export const revalidate = 3600; // revalida a cada hora
@@ -147,6 +148,10 @@ export default function Home() {
       <main className="space-y-16">
         <Suspense fallback={<FavoritesCarouselSkeleton />}>
           <FavoritesCarousel />
+        </Suspense>
+
+        <Suspense fallback={<HistoryCarouselSkeleton />}>
+          <HistoryCarousel />
         </Suspense>
 
         <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
