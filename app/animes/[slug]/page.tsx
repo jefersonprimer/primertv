@@ -11,6 +11,7 @@ import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
+import { getAnimeBanner } from "@/lib/banners";
 
 export const revalidate = 3600;
 
@@ -26,12 +27,22 @@ export async function generateMetadata({
 
   if (!anime) return { title: "Anime não encontrado" };
 
+  let bannerUrl = anime.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getAnimeBanner(anime.id, anime.title);
+  }
+  const ogBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
+  const ogImages = [];
+  if (ogBannerUrl) ogImages.push(ogBannerUrl);
+  if (anime.imageUrl) ogImages.push(anime.imageUrl);
+
   return {
     title: `Assistir ${anime.title} Online em HD - PrimerTv`,
     description: `Assista ao anime ${anime.title} online grátis em HD no PrimerTv.`,
     openGraph: {
       title: anime.title,
-      images: anime.imageUrl ? [anime.imageUrl] : [],
+      images: ogImages,
     },
   };
 }
@@ -58,6 +69,12 @@ export default async function AnimeDetailsPage({
   if (!anime) {
     notFound();
   }
+
+  let bannerUrl = anime.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getAnimeBanner(anime.id, anime.title);
+  }
+  const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
 
   const firstEpisodeId = anime.seasons[0]?.episodes[0]?.id;
   const userId = await getAuthenticatedUserId();
@@ -87,17 +104,28 @@ export default async function AnimeDetailsPage({
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Hero Section */}
       <div className="relative">
-        {/* Banner for Desktop */}
-        <div className="relative hidden h-[70vh] w-full overflow-hidden bg-zinc-900 md:block">
-          {anime.imageUrl && (
+        {/* Banner Section */}
+        <div className="relative h-[40vh] md:h-[70vh] w-full overflow-hidden bg-zinc-900">
+          {finalBannerUrl ? (
             <Image
-              src={anime.imageUrl}
+              src={finalBannerUrl}
               alt={anime.title}
               fill
               sizes="100vw"
-              className="object-cover opacity-30 blur-sm"
+              className="object-cover opacity-35"
               priority
             />
+          ) : (
+            anime.imageUrl && (
+              <Image
+                src={anime.imageUrl}
+                alt={anime.title}
+                fill
+                sizes="100vw"
+                className="object-cover opacity-30 blur-sm"
+                priority
+              />
+            )
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
         </div>

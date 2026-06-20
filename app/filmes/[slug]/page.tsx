@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { getMovieBanner } from "@/lib/banners";
 
 export const revalidate = 3600;
 
@@ -18,12 +19,22 @@ export async function generateMetadata({
 
   if (!movie) return { title: "Filme não encontrado" };
 
+  let bannerUrl = movie.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getMovieBanner(movie.id, movie.title);
+  }
+  const ogBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
+  const ogImages = [];
+  if (ogBannerUrl) ogImages.push(ogBannerUrl);
+  if (movie.imageUrl) ogImages.push(movie.imageUrl);
+
   return {
     title: `Assistir ${movie.title} Online em HD - PrimerTv`,
     description: `Assista ao filme ${movie.title} online grátis em HD no PrimerTv.`,
     openGraph: {
       title: movie.title,
-      images: movie.imageUrl ? [movie.imageUrl] : [],
+      images: ogImages,
     },
   };
 }
@@ -41,6 +52,12 @@ export default async function MovieDetailsPage({
     notFound();
   }
 
+  let bannerUrl = movie.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getMovieBanner(movie.id, movie.title);
+  }
+  const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
   // Simple heuristic to check if it's a video file or an embed
   const isDirectVideo =
     movie.videoUrl?.endsWith(".mp4") || movie.videoUrl?.endsWith(".m3u8");
@@ -49,15 +66,26 @@ export default async function MovieDetailsPage({
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
       <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
-        {movie.imageUrl && (
+        {finalBannerUrl ? (
           <Image
-            src={movie.imageUrl}
+            src={finalBannerUrl}
             alt={movie.title}
             fill
             sizes="100vw"
-            className="object-cover opacity-30 blur-sm"
+            className="object-cover opacity-35"
             priority
           />
+        ) : (
+          movie.imageUrl && (
+            <Image
+              src={movie.imageUrl}
+              alt={movie.title}
+              fill
+              sizes="100vw"
+              className="object-cover opacity-30 blur-sm"
+              priority
+            />
+          )
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
 

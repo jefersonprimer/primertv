@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import EpisodeList from "@/components/EpisodeList";
 import MediaDescricao from "@/components/MediaDescricao";
 import { Metadata } from "next";
+import { getSeriesBanner } from "@/lib/banners";
 
 export const revalidate = 3600;
 
@@ -20,12 +21,22 @@ export async function generateMetadata({
 
   if (!serie) return { title: "Série não encontrada" };
 
+  let bannerUrl = serie.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getSeriesBanner(serie.id, serie.title);
+  }
+  const ogBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
+  const ogImages = [];
+  if (ogBannerUrl) ogImages.push(ogBannerUrl);
+  if (serie.imageUrl) ogImages.push(serie.imageUrl);
+
   return {
     title: `Assistir ${serie.title} Online em HD - Primerflix`,
     description: `Assista à série ${serie.title} online grátis em HD no PrimerTv.`,
     openGraph: {
       title: serie.title,
-      images: serie.imageUrl ? [serie.imageUrl] : [],
+      images: ogImages,
     },
   };
 }
@@ -53,19 +64,36 @@ export default async function SeriesDetailsPage({
     notFound();
   }
 
+  let bannerUrl = series.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getSeriesBanner(series.id, series.title);
+  }
+  const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
       <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
-        {series.imageUrl && (
+        {finalBannerUrl ? (
           <Image
-            src={series.imageUrl}
+            src={finalBannerUrl}
             alt={series.title}
             fill
             sizes="100vw"
-            className="object-cover opacity-30 blur-sm"
+            className="object-cover opacity-35"
             priority
           />
+        ) : (
+          series.imageUrl && (
+            <Image
+              src={series.imageUrl}
+              alt={series.title}
+              fill
+              sizes="100vw"
+              className="object-cover opacity-30 blur-sm"
+              priority
+            />
+          )
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
 

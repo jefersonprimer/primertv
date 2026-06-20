@@ -46,6 +46,7 @@ model Anime {
   title         String    @unique
   description   String?
   imageUrl      String?
+  bannerUrl     String?
   genres        String[]  @default([])
   aired         String?
   rating        String?
@@ -109,6 +110,7 @@ model Series {
   title         String         @unique
   description   String?
   imageUrl      String?
+  bannerUrl     String?
   genres        String[]       @default([])
   lastScrapedAt DateTime?
   createdAt     DateTime       @default(now())
@@ -153,6 +155,7 @@ model Movie {
   title         String    @unique
   description   String?
   imageUrl      String?
+  bannerUrl     String?
   genres        String[]  @default([])
   videoUrl      String?
   lastScrapedAt DateTime?
@@ -169,6 +172,7 @@ model Manga {
   title         String    @unique
   description   String?
   imageUrl      String?
+  bannerUrl     String?
   genres        String[]  @default([])
   aired         String?
   rating        String?

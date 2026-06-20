@@ -7,6 +7,7 @@ import MediaDescricao from "@/components/MediaDescricao";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { Metadata } from "next";
+import { getMangaBanner } from "@/lib/banners";
 
 export const revalidate = 3600;
 
@@ -22,12 +23,22 @@ export async function generateMetadata({
 
   if (!manga) return { title: "Manga não encontrada" };
 
+  let bannerUrl = manga.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getMangaBanner(manga.id, manga.title);
+  }
+  const ogBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
+  const ogImages = [];
+  if (ogBannerUrl) ogImages.push(ogBannerUrl);
+  if (manga.imageUrl) ogImages.push(manga.imageUrl);
+
   return {
     title: `Leia ${manga.title} Online - PrimerTv`,
     description: `Leia ao ${manga.title} online grátis no PrimerTv.`,
     openGraph: {
       title: manga.title,
-      images: manga.imageUrl ? [manga.imageUrl] : [],
+      images: ogImages,
     },
   };
 }
@@ -50,6 +61,12 @@ export default async function MangaDetailsPage({
     notFound();
   }
 
+  let bannerUrl = manga.bannerUrl;
+  if (!bannerUrl) {
+    bannerUrl = await getMangaBanner(manga.id, manga.title);
+  }
+  const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("MANGA", manga.id);
 
@@ -57,15 +74,26 @@ export default async function MangaDetailsPage({
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
       <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
-        {manga.imageUrl && (
+        {finalBannerUrl ? (
           <Image
-            src={manga.imageUrl}
+            src={finalBannerUrl}
             alt={manga.title}
             fill
             sizes="100vw"
-            className="object-cover opacity-30 blur-sm"
+            className="object-cover opacity-35"
             priority
           />
+        ) : (
+          manga.imageUrl && (
+            <Image
+              src={manga.imageUrl}
+              alt={manga.title}
+              fill
+              sizes="100vw"
+              className="object-cover opacity-30 blur-sm"
+              priority
+            />
+          )
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
 
