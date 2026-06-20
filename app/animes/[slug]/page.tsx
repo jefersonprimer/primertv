@@ -165,7 +165,7 @@ export default async function AnimeDetailsPage({
                 }}
               />
               <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left">
-                <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
+                <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                   {anime.title}
                 </h1>
 

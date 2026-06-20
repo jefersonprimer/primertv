@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { MediaCarousel } from "@/components/MediaCarousel";
 import { MediaCarouselSkeleton } from "@/components/MediaCarouselSkeleton";
 import { Suspense } from "react";
+import { FavoritesCarousel, FavoritesCarouselSkeleton } from "@/components/FavoritesCarousel";
+
 
 export const revalidate = 3600; // revalida a cada hora
 
@@ -143,6 +145,10 @@ export default function Home() {
   return (
     <div className="py-8">
       <main className="space-y-16">
+        <Suspense fallback={<FavoritesCarouselSkeleton />}>
+          <FavoritesCarousel />
+        </Suspense>
+
         <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
           <ChannelCarousel />
         </Suspense>
