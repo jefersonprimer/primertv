@@ -10,6 +10,7 @@ interface AnimeItem {
   slug: string;
   title: string;
   imageUrl: string | null;
+  bannerUrl: string | null;
   description: string | null;
   releaseDay: number;
   releaseTime: string;
@@ -67,42 +68,99 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
   ) => {
     const episodeNumbers = anime.episodeNumbers || [];
     const showEllipsis = episodeNumbers.length > 3;
-    const displayPills = showEllipsis ? episodeNumbers.slice(0, 2) : episodeNumbers.slice(0, -1);
+    const displayPills = showEllipsis
+      ? episodeNumbers.slice(0, 2)
+      : episodeNumbers.slice(0, -1);
+    const singleEpisodeRelease = episodeNumbers.length === 1;
+    const bannerImageUrl = anime.bannerUrl || anime.imageUrl;
+    const showEpisodeHover =
+      singleEpisodeRelease &&
+      Boolean(anime.episodeImageUrl) &&
+      Boolean(bannerImageUrl);
+    const cardHref =
+      singleEpisodeRelease && anime.latestEpisodeId
+        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+        : `/animes/${anime.slug}`;
+    const multipleEpisodeRelease = episodeNumbers.length > 1;
 
     return (
       <div
         key={`${anime.id}-${anime.releaseDay}`}
-        className="group flex gap-4 p-3 bg-zinc-50/50 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 dark:bg-zinc-900/30"
+        className="group flex gap-4 p-3 hover:bg-zinc-50/50 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:dark:bg-zinc-900/30 hover:cursor-pointer"
       >
         {/* Left: Image Banner */}
-        <Link
-          href={`/animes/${anime.slug}`}
-          className="relative aspect-[16/10] w-28 sm:w-36 flex-shrink-0 overflow-hidden bg-zinc-200 dark:bg-zinc-950 shadow-sm"
+        <div
+          className={`relative flex-shrink-0 ${
+            multipleEpisodeRelease ? "pt-2 pr-3" : ""
+          }`}
         >
-          {anime.imageUrl ? (
+          {multipleEpisodeRelease &&
+            [3, 2, 1].map((depth) => (
+              <div
+                key={depth}
+                aria-hidden
+                className="pointer-events-none absolute bottom-0 left-0 aspect-[16/10] w-28 sm:w-36 overflow-hidden border border-zinc-200/70 shadow-sm dark:border-zinc-700/60"
+                style={{
+                  transform: `translate(${depth * 3}px, ${-depth * 2.5}px)`,
+                  zIndex: 4 - depth,
+                }}
+              >
+                {bannerImageUrl && (
+                  <div
+                    className="absolute inset-0 scale-110 bg-cover bg-center opacity-25 blur-[1.5px]"
+                    style={{ backgroundImage: `url(${bannerImageUrl})` }}
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-200/95 via-zinc-100/90 to-zinc-300/85 dark:from-zinc-800/95 dark:via-zinc-850/90 dark:to-zinc-700/85" />
+              </div>
+            ))}
+
+          <Link
+            href={cardHref}
+            className={`relative block aspect-[16/10] w-28 sm:w-36 overflow-hidden bg-zinc-200 shadow-sm dark:bg-zinc-950 ${
+              multipleEpisodeRelease
+                ? "z-10 ring-1 ring-black/5 shadow-md dark:ring-white/10"
+                : ""
+            }`}
+          >
+          {bannerImageUrl ? (
             <Image
-              src={anime.imageUrl}
+              src={bannerImageUrl}
               alt={anime.title}
               fill
               sizes="(max-width: 768px) 112px, 144px"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className={`object-cover transition-all duration-500 ${
+                showEpisodeHover
+                  ? "opacity-100 group-hover:opacity-0 group-hover:scale-105"
+                  : "group-hover:scale-105"
+              }`}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
               Sem Imagem
             </div>
           )}
+          {showEpisodeHover && anime.episodeImageUrl && (
+            <Image
+              src={anime.episodeImageUrl}
+              alt={`Episódio ${anime.lastEpisode} de ${anime.title}`}
+              fill
+              sizes="(max-width: 768px) 112px, 144px"
+              className="absolute inset-0 object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Play className="h-6 w-6 text-white fill-current" />
           </div>
-        </Link>
+          </Link>
+        </div>
 
         {/* Right: Info */}
         <div className="flex flex-col justify-between py-1 min-w-0 flex-1">
           <div>
             {/* Anime Title */}
             <Link
-              href={`/animes/${anime.slug}`}
+              href={cardHref}
               className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-500 transition-colors line-clamp-1 leading-snug"
             >
               {anime.title}
@@ -152,9 +210,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             <Clock className="h-3.5 w-3.5" />
             <span
               className={
-                isToday
-                  ? "text-green-600 dark:text-green-400 font-semibold"
-                  : ""
+                isToday ? "text-green-600 dark:text-green-400 font-medium" : ""
               }
             >
               {dayLabel} às {anime.releaseTime}
@@ -183,8 +239,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {/* Today Section */}
         {todayAnimes.length > 0 ? (
           <div className="space-y-4">
-            <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
               Hoje
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -206,8 +261,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {showMore &&
           (yesterdayAnimes.length > 0 ? (
             <div className="space-y-4">
-              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-zinc-400" />
+              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
                 Ontem
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -218,9 +272,8 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white border-b border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-zinc-400" />
-                Lançamentos de Ontem
+              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
+                Ontem
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
                 Nenhum lançamento registrado para ontem.
@@ -232,8 +285,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {showMore &&
           (dayBeforeAnimes.length > 0 ? (
             <div className="space-y-4">
-              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-zinc-400" />
+              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
                 {getDayName(dayBeforeYesterday)}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -244,9 +296,8 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white border-b border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-zinc-400" />
-                Lançamentos de {getDayName(dayBeforeYesterday)}
+              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
+                {getDayName(dayBeforeYesterday)}
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
                 Nenhum lançamento registrado para este dia.

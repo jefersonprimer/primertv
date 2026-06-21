@@ -1,6 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { TodayReleasesClient } from "./TodayReleasesClient";
 
+function getSaoPauloDateKey(date: Date): string {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Sao_Paulo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  } catch {
+    return date.toISOString().slice(0, 10);
+  }
+}
+
 // Deterministic day assignment helper
 function getDeterministicDay(id: string): number {
   let hash = 0;
@@ -18,6 +31,7 @@ export async function TodayReleases() {
       slug: true,
       title: true,
       imageUrl: true,
+      bannerUrl: true,
       description: true,
       seasons: {
         select: {
@@ -97,13 +111,23 @@ export async function TodayReleases() {
       releaseTime = `${displayHour}:00 ${ampm}`;
     }
 
-    const episodeNumbers = episodes.map((ep) => ep.number);
+    const releaseDateKey = latestEpisode
+      ? getSaoPauloDateKey(new Date(latestEpisode.createdAt))
+      : null;
+    const sameDayEpisodes = releaseDateKey
+      ? episodes.filter(
+          (ep) =>
+            getSaoPauloDateKey(new Date(ep.createdAt)) === releaseDateKey,
+        )
+      : episodes;
+    const episodeNumbers = sameDayEpisodes.map((ep) => ep.number);
 
     return {
       id: anime.id,
       slug: anime.slug,
       title: anime.title,
       imageUrl: anime.imageUrl,
+      bannerUrl: anime.bannerUrl === "none" ? null : anime.bannerUrl,
       description: anime.description,
       releaseDay,
       releaseTime,
