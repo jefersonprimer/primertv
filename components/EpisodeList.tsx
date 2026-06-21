@@ -15,11 +15,12 @@ interface Item {
   animeTitle?: string | null;
   animeRating?: string | null;
   animeDuration?: string | null;
+  href?: string;
 }
 
 interface EpisodeListProps {
   items: Item[];
-  baseUrl: string;
+  baseUrl?: string;
   label?: string; // "Episódio" or "Capítulo"
   itemType: "episode" | "chapter";
   animeTitle?: string | null;
@@ -65,7 +66,7 @@ export default function EpisodeList({
           return (
             <Link
               key={item.id}
-              href={`${baseUrl}/${item.id}`}
+              href={item.href || (baseUrl ? `${baseUrl}/${item.id}` : "#")}
               className={`group relative flex gap-3 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 p-3 transition-all duration-300 overflow-hidden ${
                 itemType === "episode" ? "flex-row sm:flex-col" : "flex-col"
               }`}
@@ -165,7 +166,7 @@ export default function EpisodeList({
 
                   <div className="w-full inline-flex items-center justify-center bg-blue-600 gap-2 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 mt-auto uppercase">
                     <PlayIcon size={20} />
-                    reproduzir ep{item.number}
+                    {label === "Filme" ? "assistir filme" : `reproduzir ep ${item.number}`}
                   </div>
                 </div>
               )}

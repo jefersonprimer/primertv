@@ -53,6 +53,7 @@ model Anime {
   rating          String?
   status          String?
   duration        String?
+  premiered       String?
   lastScrapedAt   DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
