@@ -51,9 +51,13 @@ model Anime {
   genres          String[]         @default([])
   aired           String?
   rating          String?
+  score           Float?
   status          String?
   duration        String?
   premiered       String?
+  rank            Int?
+  popularity      Int?
+  members         Int?
   lastScrapedAt   DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -63,6 +67,9 @@ model Anime {
 
   @@index([createdAt])
   @@index([title])
+  @@index([rank])
+  @@index([popularity])
+  @@index([members])
 }
 
 model Season {

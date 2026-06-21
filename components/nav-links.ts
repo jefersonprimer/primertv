@@ -1,5 +1,6 @@
 export const NAV_LINKS = [
   { href: "/new", label: "Novidades" },
+  { href: "/popular", label: "Populares" },
   { href: "/channels", label: "Canais" },
   { href: "/novelas", label: "Novelas" },
   { href: "/series", label: "Séries" },

@@ -5,7 +5,6 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { SeasonDropdown } from "@/components/SeasonDropdown";
 import { parseSeasonAndYear, getUniqueSeasons } from "@/lib/seasons";
-import RatingBadge from "@/components/RatingBadge";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const revalidate = 3600; // Revalidate every hour
@@ -73,11 +72,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
       slug: true,
       title: true,
       imageUrl: true,
-      description: true,
       aired: true,
-      rating: true,
-      status: true,
-      genres: true,
       premiered: true,
     },
     orderBy: {
@@ -138,132 +133,49 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filteredAnimes.map((anime) => {
-            // Determine status badge color
-            const isNotYetAired =
-              anime.status?.toLowerCase().includes("not yet") || false;
-            const isAiring =
-              anime.status?.toLowerCase().includes("currently") || false;
-
-            let statusLabel = "Finalizado";
-            let statusColor =
-              "bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800";
-
-            if (isNotYetAired) {
-              statusLabel = "Não Estreou";
-              statusColor =
-                "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
-            } else if (isAiring) {
-              statusLabel = "Em Exibição";
-              statusColor =
-                "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
-            }
-
-            // Capitalized premiered display or fallback formatting
-            const premieredDisplay = anime.premiered
-              ? anime.premiered
-              : parseSeasonAndYear(null, anime.aired)
-                ? (() => {
-                    const info = parseSeasonAndYear(null, anime.aired);
-                    return info
-                      ? `${info.season.charAt(0).toUpperCase() + info.season.slice(1)} ${info.year}`
-                      : null;
-                  })()
-                : null;
-
-            return (
-              <div
-                key={anime.id}
-                className="group flex flex-col bg-white dark:bg-zinc-950 rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-zinc-200 dark:border-zinc-900 transition-all duration-300 hover:-translate-y-1"
-              >
-                {/* Poster Container */}
-                <Link
-                  href={`/animes/${anime.slug}`}
-                  className="relative aspect-[2/3] w-full block overflow-hidden bg-zinc-900"
-                >
-                  {anime.imageUrl ? (
-                    <Image
-                      src={anime.imageUrl}
-                      alt={anime.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      priority={false}
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-zinc-400">
-                      Sem imagem
-                    </div>
-                  )}
-                  {/* Rating badge overlapping the image */}
-                  {anime.rating && (
-                    <div className="absolute top-3 left-3 z-10">
-                      <RatingBadge
-                        rating={anime.rating}
-                        className="scale-90 origin-top-left"
-                      />
-                    </div>
-                  )}
-                </Link>
-
-                {/* Info Container */}
-                <div className="p-4 flex flex-col flex-1 justify-between gap-4">
-                  <div className="space-y-2">
-                    <Link
-                      href={`/animes/${anime.slug}`}
-                      className="block text-base font-bold text-zinc-900 dark:text-zinc-50 group-hover:text-blue-500 transition-colors line-clamp-1"
-                    >
-                      {anime.title}
-                    </Link>
-
-                    {/* Status Badge */}
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`px-2 py-0.5 text-xs font-semibold rounded-md ${statusColor}`}
-                      >
-                        {statusLabel}
-                      </span>
-                    </div>
-
-                    {/* Meta fields */}
-                    <div className="text-xs space-y-1 text-zinc-500 dark:text-zinc-400 pt-1">
-                      {premieredDisplay && (
-                        <p>
-                          <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                            Estreia:
-                          </span>{" "}
-                          {premieredDisplay}
-                        </p>
-                      )}
-                      {anime.aired && (
-                        <p className="line-clamp-1">
-                          <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                            Período:
-                          </span>{" "}
-                          {anime.aired}
-                        </p>
-                      )}
-                    </div>
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {filteredAnimes.map((anime) => (
+            <Link
+              key={anime.id}
+              href={`/animes/${anime.slug}`}
+              className="group flex flex-col gap-3"
+            >
+              <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-100 shadow-md ring-1 ring-black/5 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15 dark:bg-zinc-900 dark:ring-white/10">
+                {anime.imageUrl ? (
+                  <Image
+                    src={anime.imageUrl}
+                    alt={anime.title}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 200px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    priority={false}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-sm text-zinc-500">
+                    Sem imagem
                   </div>
+                )}
 
-                  {/* Genres */}
-                  {anime.genres && anime.genres.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {anime.genres.slice(0, 3).map((genre) => (
-                        <span
-                          key={genre}
-                          className="bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 text-[10px] font-semibold rounded-md border border-zinc-200/50 dark:border-zinc-800/50 hover:underline"
-                        >
-                          {genre}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="flex h-12 w-12 scale-90 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform duration-300 group-hover:scale-100">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-            );
-          })}
+
+              <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 transition-colors group-hover:text-blue-500 dark:text-zinc-100">
+                {anime.title}
+              </h3>
+            </Link>
+          ))}
         </div>
       )}
 
