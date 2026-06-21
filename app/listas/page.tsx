@@ -1,0 +1,169 @@
+"use server";
+
+import { getAuthenticatedUserId } from "@/lib/watchlist";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { connection } from "next/server";
+import { List, FolderHeart, ArrowRight } from "lucide-react";
+import CreateListForm from "@/components/CreateListForm";
+import DeleteListButton from "@/components/DeleteListButton";
+
+export default async function ListasPage() {
+  await connection();
+
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    redirect("/login");
+  }
+
+  // Fetch all custom lists with items (only need the first 4 for preview thumbnails)
+  const lists = await prisma.customList.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      items: {
+        take: 4,
+        orderBy: { createdAt: "desc" },
+        include: {
+          anime: {
+            select: {
+              id: true,
+              imageUrl: true,
+              title: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: { items: true },
+      },
+    },
+  });
+
+  const totalLists = lists.length;
+
+  return (
+    <div className="mx-auto max-w-[1130px] p-8">
+      <div className="mx-auto max-w-[1050px]">
+        <header className="mb-12 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <List className="h-8 w-8 text-blue-500" />
+              Minhas Listas
+            </h1>
+            <p className="text-zinc-600 dark:text-zinc-400 mt-1">
+              Crie e organize suas próprias coleções personalizadas de animes.
+            </p>
+          </div>
+          <div className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+            {totalLists} / 10 listas criadas
+          </div>
+        </header>
+
+        <main>
+          {totalLists === 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {/* Empty state + inline form */}
+              <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-center min-h-[300px]">
+                <FolderHeart className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
+                <p className="text-lg font-bold text-zinc-800 dark:text-zinc-200">Nenhuma lista criada</p>
+                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-[200px]">
+                  Crie sua primeira lista ao lado para começar a organizar seus animes!
+                </p>
+              </div>
+
+              <div className="min-h-[300px]">
+                <CreateListForm />
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {lists.map((list) => {
+                const animeItems = list.items.map((i) => i.anime);
+                const count = list._count.items;
+
+                return (
+                  <div
+                    key={list.id}
+                    className="flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-6 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div>
+                      {/* Card Header */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 transition-colors truncate">
+                            {list.name}
+                          </h2>
+                          {list.description && (
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 truncate">
+                              {list.description}
+                            </p>
+                          )}
+                        </div>
+                        <DeleteListButton listId={list.id} listName={list.name} />
+                      </div>
+
+                      {/* Thumbnails Grid Preview */}
+                      <div className="my-6 aspect-[2/1] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-950 border border-zinc-250 dark:border-zinc-850 p-2">
+                        <div className="grid h-full grid-cols-4 gap-2">
+                          {[0, 1, 2, 3].map((index) => {
+                            const anime = animeItems[index];
+                            if (anime && anime.imageUrl) {
+                              return (
+                                <div key={index} className="relative h-full w-full overflow-hidden rounded-lg">
+                                  <Image
+                                    src={anime.imageUrl}
+                                    alt={anime.title}
+                                    fill
+                                    sizes="60px"
+                                    className="object-cover"
+                                  />
+                                </div>
+                              );
+                            }
+                            return (
+                              <div
+                                key={index}
+                                className="flex h-full w-full items-center justify-center rounded-lg bg-zinc-200 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-700"
+                              >
+                                <FolderHeart className="h-4 w-4 opacity-30" />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Footer */}
+                    <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                        {count} / 100 animes
+                      </span>
+
+                      <Link
+                        href={`/listas/${list.id}`}
+                        className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                      >
+                        Ver Lista
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Add form as final grid item if lists limit not reached */}
+              {totalLists < 10 && (
+                <div className="min-h-[300px]">
+                  <CreateListForm />
+                </div>
+              )}
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}

@@ -9,6 +9,8 @@ import SeasonSelector from "@/components/SeasonSelector";
 import MediaDescricao from "@/components/MediaDescricao";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
+import ShareButton from "@/components/ShareButton";
+import AddToListButton from "@/components/AddToListButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
 import { getAnimeBanner } from "@/lib/banners";
@@ -153,7 +155,7 @@ export default async function AnimeDetailsPage({
             </div>
 
             {/* Info Section */}
-            <div className="relative z-10 flex flex-1 flex-col gap-4 -mt-70 md:mt-0 py-6 px-4 md:p-0">
+            <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 max-w-[500px]">
               {/* Mobile Background with Gradient Mask to fade out the top boundary line */}
               <div
                 className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50/20 via-zinc-50/85 to-zinc-50 dark:from-black/20 dark:via-black/85 dark:to-black backdrop-blur-[3px] rounded-t-2xl md:hidden"
@@ -165,7 +167,7 @@ export default async function AnimeDetailsPage({
                 }}
               />
               <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left">
-                <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
+                <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2">
                   {anime.title}
                 </h1>
 
@@ -193,7 +195,7 @@ export default async function AnimeDetailsPage({
                     {anime.genres?.map((genre) => (
                       <span
                         key={genre}
-                        className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                        className="bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 hover:underline"
                       >
                         {genre}
                       </span>
@@ -202,29 +204,32 @@ export default async function AnimeDetailsPage({
                 )}
               </div>
 
-              <div className="flex items-center gap-3 w-full md:w-auto">
-                {firstEpisodeId && (
-                  <Link
-                    href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
-                    className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
-                  >
-                    <Play className="h-5 w-5 fill-current" />
-                    Começar a assistir EP1
-                  </Link>
-                )}
-                <WatchlistButton
-                  mediaType="ANIME"
-                  mediaId={anime.id}
-                  slug={anime.slug}
-                  initialInWatchlist={inWatchlist}
-                  isLoggedIn={Boolean(userId)}
-                />
-              </div>
-
-              <div className="max-w-2xl mt-4">
-                {anime.description && (
-                  <MediaDescricao description={anime.description} />
-                )}
+              <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                <div className="flex flex-row items-center gap-3 w-full md:w-auto">
+                  {firstEpisodeId && (
+                    <Link
+                      href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
+                      className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
+                    >
+                      <Play className="h-5 w-5 fill-current" />
+                      Começar a assistir EP1
+                    </Link>
+                  )}
+                  <WatchlistButton
+                    mediaType="ANIME"
+                    mediaId={anime.id}
+                    slug={anime.slug}
+                    initialInWatchlist={inWatchlist}
+                    isLoggedIn={Boolean(userId)}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-start">
+                  <AddToListButton
+                    animeId={anime.id}
+                    isLoggedIn={Boolean(userId)}
+                  />
+                  <ShareButton />
+                </div>
               </div>
             </div>
           </div>
@@ -233,6 +238,11 @@ export default async function AnimeDetailsPage({
 
       {/* Episodes Section */}
       <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
+        {anime.description && (
+          <div className="max-w-2xl mb-8">
+            <MediaDescricao description={anime.description} />
+          </div>
+        )}
         {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (

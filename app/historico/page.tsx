@@ -3,19 +3,10 @@
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { getAnimeWatchHistory } from "@/lib/history";
 import Link from "next/link";
-import Image from "next/image";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { Clock } from "lucide-react";
-
-function formatWatchedAt(date: Date) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
+import { HistoryCard } from "@/components/HistoryCard";
 
 export default async function HistoricoPage() {
   await connection();
@@ -26,6 +17,26 @@ export default async function HistoricoPage() {
   }
 
   const items = await getAnimeWatchHistory(userId);
+
+  const resolvedItems = items.map((item) => {
+    const episode = item.episode;
+    const season = episode.season;
+    const anime = season.anime;
+
+    return {
+      id: item.id,
+      episodeId: episode.id,
+      episodeNumber: episode.number,
+      episodeTitle: episode.title,
+      episodeImageUrl: episode.imageUrl,
+      seasonNumber: season.number,
+      animeId: anime.id,
+      animeSlug: anime.slug,
+      animeTitle: anime.title,
+      animeImageUrl: anime.imageUrl,
+      watchedAt: item.watchedAt,
+    };
+  });
 
   return (
     <div className="mx-auto max-w-[1130px] p-8">
@@ -41,12 +52,13 @@ export default async function HistoricoPage() {
         </header>
 
         <main>
-          {items.length === 0 ? (
+          {resolvedItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <Clock className="mb-4 text-zinc-300 dark:text-zinc-700" size={48} />
-              <p className="text-xl text-zinc-500">
-                Seu histórico está vazio.
-              </p>
+              <Clock
+                className="mb-4 text-zinc-300 dark:text-zinc-700"
+                size={48}
+              />
+              <p className="text-xl text-zinc-500">Seu histórico está vazio.</p>
               <p className="mt-2 text-zinc-400">
                 Assista episódios em{" "}
                 <Link href="/animes" className="text-blue-500 hover:underline">
@@ -56,53 +68,10 @@ export default async function HistoricoPage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {items.map((item) => {
-                const anime = item.episode.season.anime;
-                const href = `/animes/${anime.slug}/episode/${item.episode.id}`;
-
-                return (
-                  <Link
-                    key={item.id}
-                    href={href}
-                    className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-blue-200 hover:bg-blue-50/50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-900 dark:hover:bg-blue-950/20"
-                  >
-                    <div className="relative h-20 w-14 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                      {anime.imageUrl ? (
-                        <Image
-                          src={anime.imageUrl}
-                          alt={anime.title}
-                          fill
-                          className="object-cover"
-                          sizes="56px"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-xs text-zinc-400">
-                          N/A
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold text-zinc-900 dark:text-zinc-50">
-                        {anime.title}
-                      </p>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                        Temporada {item.episode.season.number} • Episódio{" "}
-                        {item.episode.number}
-                        {item.episode.title && ` — ${item.episode.title}`}
-                      </p>
-                    </div>
-
-                    <time
-                      dateTime={item.watchedAt.toISOString()}
-                      className="shrink-0 text-xs text-zinc-400"
-                    >
-                      {formatWatchedAt(item.watchedAt)}
-                    </time>
-                  </Link>
-                );
-              })}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {resolvedItems.map((item) => (
+                <HistoryCard key={item.id} item={item} className="w-full" />
+              ))}
             </div>
           )}
         </main>

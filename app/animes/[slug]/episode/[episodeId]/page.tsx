@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
 import { connection } from "next/server";
-import { ChevronLeft } from "lucide-react";
 import { resolvePlayableUrl } from "@/lib/playable-url";
 import { recordAnimeWatchHistory } from "@/lib/history";
 
@@ -102,31 +101,6 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
-      {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link
-            href={`/animes/${slug}`}
-            className="flex items-center gap-2 text-sm font-medium text-blue-500 transition-colors hover:text-blue-600"
-          >
-            <ChevronLeft />
-            <span className="hidden sm:inline">
-              Voltar para {episode.season.anime.title}
-            </span>
-            <span className="sm:hidden">Voltar</span>
-          </Link>
-          <div className="flex flex-col items-center text-center">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-500">
-              Temporada {episode.season.number}
-            </span>
-            <h1 className="text-sm font-bold sm:text-base">
-              Episódio {episode.number} {episode.title && `- ${episode.title}`}
-            </h1>
-          </div>
-          <div className="w-20 sm:w-32" /> {/* Spacer for balance */}
-        </div>
-      </nav>
-
       <main className="mx-auto max-w-7xl px-4 py-6 md:py-10">
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Main Content: Player and Info */}
@@ -140,7 +114,11 @@ export default async function WatchPage({ params }: WatchPageProps) {
                     src={playableUrl}
                     controls
                     className="h-full w-full"
-                    poster={episode.imageUrl || episode.season.anime.imageUrl || undefined}
+                    poster={
+                      episode.imageUrl ||
+                      episode.season.anime.imageUrl ||
+                      undefined
+                    }
                   />
                 ) : (
                   <iframe
@@ -204,19 +182,21 @@ export default async function WatchPage({ params }: WatchPageProps) {
               <div>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold">
-                      {episode.season.anime.title}
-                    </h2>
-                    <p className="mt-1 text-zinc-500">
+                    <Link
+                      href={`/animes/${slug}`}
+                      className="inline-block hover:text-blue-500 dark:hover:text-blue-400 transition-colors hover:underline"
+                    >
+                      <h4 className="text-base font-bold">
+                        {episode.season.anime.title}
+                      </h4>
+                    </Link>
+                    <h1 className="text-[22px] font-bold mt-1 text-zinc-500">
                       Temporada {episode.season.number} • Episódio{" "}
                       {episode.number}
-                    </p>
+                    </h1>
                   </div>
                 </div>
                 <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-800">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-400">
-                    Sinopse do Anime
-                  </h3>
                   <p className="mt-2 text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     {episode.season.anime.description ||
                       "Sem descrição disponível."}

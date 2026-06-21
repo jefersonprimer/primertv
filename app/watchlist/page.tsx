@@ -1,8 +1,10 @@
 "use server";
 
 import { MediaCard } from "@/components/MediaCard";
+import FavoriteCard from "@/components/FavoriteCard";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { prisma } from "@/lib/prisma";
+import { getAnimeBanner } from "@/lib/banners";
 import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
@@ -20,11 +22,17 @@ export default async function WatchlistPage() {
     orderBy: { createdAt: "desc" },
     include: {
       anime: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          imageUrl: true,
+        include: {
+          seasons: {
+            orderBy: { number: "asc" },
+            take: 1,
+            include: {
+              episodes: {
+                orderBy: { number: "asc" },
+                take: 1,
+              },
+            },
+          },
         },
       },
       manga: {
@@ -38,9 +46,34 @@ export default async function WatchlistPage() {
     },
   });
 
-  const animes = items
+  const rawAnimes = items
     .filter((item) => item.mediaType === "ANIME" && item.anime)
     .map((item) => item.anime!);
+
+  const animes = await Promise.all(
+    rawAnimes.map(async (anime) => {
+      let banner = anime.bannerUrl;
+      if (!banner) {
+        banner = await getAnimeBanner(anime.id, anime.title);
+      }
+      const finalBannerUrl = banner === "none" ? null : banner;
+
+      const firstEpisode = anime.seasons[0]?.episodes[0];
+      const firstEpisodeId = firstEpisode?.id || null;
+      const firstEpisodeImageUrl = firstEpisode?.imageUrl || null;
+
+      return {
+        id: anime.id,
+        slug: anime.slug,
+        title: anime.title,
+        bannerUrl: finalBannerUrl || anime.imageUrl,
+        firstEpisodeId,
+        firstEpisodeImageUrl,
+        rating: anime.rating,
+        duration: anime.duration,
+      };
+    }),
+  );
 
   const mangas = items
     .filter((item) => item.mediaType === "MANGA" && item.manga)
@@ -63,9 +96,7 @@ export default async function WatchlistPage() {
         <main className="space-y-16">
           {isEmpty ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className="text-xl text-zinc-500">
-                Sua watchlist está vazia.
-              </p>
+              <p className="text-xl text-zinc-500">Sua watchlist está vazia.</p>
               <p className="mt-2 text-zinc-400">
                 Explore{" "}
                 <Link href="/animes" className="text-blue-500 hover:underline">
@@ -85,9 +116,9 @@ export default async function WatchlistPage() {
                   <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
                     Animes
                   </h2>
-                  <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {animes.map((item) => (
-                      <MediaCard key={item.id} item={item} type="anime" />
+                      <FavoriteCard key={item.id} item={item} />
                     ))}
                   </div>
                 </section>
@@ -98,7 +129,7 @@ export default async function WatchlistPage() {
                   <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
                     Mangás
                   </h2>
-                  <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {mangas.map((item) => (
                       <MediaCard key={item.id} item={item} type="manga" />
                     ))}

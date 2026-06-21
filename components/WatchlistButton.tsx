@@ -35,12 +35,11 @@ export function WatchlistButton({
         href="/login"
         className={
           compact
-            ? "flex h-8 w-8 items-center justify-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950/20 rounded-lg flex-shrink-0"
-            : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 border-blue-600 font-semibold text-blue-600 transition-colors hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950/20 md:px-4 md:py-2 flex-shrink-0"
+            ? "flex h-8 w-8 items-center justify-center border-2 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700 rounded-lg flex-shrink-0 transition-colors"
+            : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors md:px-2 md:py-1.5 flex-shrink-0"
         }
       >
-        <Bookmark className={compact ? "h-4 w-4" : "h-5 w-5"} />
-        {!compact && <span className="hidden md:inline">Adicionar à watchlist</span>}
+        <Bookmark className={compact ? "h-6 w-6" : "h-6 w-6"} />
       </Link>
     );
   }
@@ -55,28 +54,17 @@ export function WatchlistButton({
         disabled={isPending}
         className={
           compact
-            ? `flex h-8 w-8 items-center justify-center border-2 font-semibold transition-colors rounded-lg ${
-                inWatchlist
-                  ? "border-blue-600 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:border-blue-500 dark:bg-blue-950/20 dark:text-blue-400 dark:hover:bg-blue-950/40"
-                  : "border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950/20"
-              }`
-            : `flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 font-semibold transition-colors md:px-4 md:py-2 ${
-                inWatchlist
-                  ? "border-blue-600 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:border-blue-500 dark:bg-blue-950/20 dark:text-blue-400 dark:hover:bg-blue-950/40"
-                  : "border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950/20"
-              }`
+            ? "flex h-8 w-8 items-center justify-center border-2 font-semibold transition-colors rounded-lg border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700"
+            : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 font-semibold transition-colors md:px-2 md:py-1.5 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700"
         }
       >
-        <Bookmark className={compact ? "h-4 w-4 fill-current" : `h-6 w-6 ${inWatchlist ? "fill-current" : ""}`} />
-        {!compact && (
-          <span className="hidden md:inline">
-            {isPending
-              ? "Salvando..."
-              : inWatchlist
-                ? "Na watchlist"
-                : "Adicionar à watchlist"}
-          </span>
-        )}
+        <Bookmark
+          className={
+            compact
+              ? "h-4 w-4 fill-current"
+              : `h-6 w-6 ${inWatchlist ? "fill-current" : ""}`
+          }
+        />
       </button>
       {state.error && (
         <p className="mt-2 text-sm text-red-500">{state.error}</p>

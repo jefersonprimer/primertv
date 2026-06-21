@@ -17,20 +17,22 @@ export default function MediaDescricao({
   if (!description) return null;
 
   const shouldShowButton = description.length > maxLength;
-  const displayedText = isExpanded ? description : description.slice(0, maxLength);
+  const displayedText = isExpanded
+    ? description
+    : description.slice(0, maxLength);
 
   return (
     <div className="flex flex-col gap-2">
-      <p className={`${className} text-sm leading-relaxed`}>
+      <p className={`${className} text-base leading-relaxed`}>
         {displayedText}
         {!isExpanded && shouldShowButton && "..."}
       </p>
       {shouldShowButton && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-blue-500 hover:text-blue-600 text-sm font-semibold self-start"
+          className="text-blue-500 hover:text-blue-600 text-sm font-semibold self-start uppercase"
         >
-          {isExpanded ? "Mostrar menor" : "Mais detalhes"}
+          {isExpanded ? "mostrar menor" : "mais detalhes"}
         </button>
       )}
     </div>

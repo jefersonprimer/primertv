@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { HeaderSkeleton } from "@/components/HeaderSkeleton";
+import { Footer } from "@/components/Footer";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
           <Header />
         </Suspense>
         <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

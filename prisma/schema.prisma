@@ -21,6 +21,7 @@ model User {
   updatedAt      DateTime        @updatedAt
   watchlistItems WatchlistItem[]
   watchHistory   WatchHistory[]
+  customLists    CustomList[]
 }
 
 model WatchlistItem {
@@ -41,22 +42,23 @@ model WatchlistItem {
 }
 
 model Anime {
-  id            String    @id @default(cuid())
-  slug          String    @unique
-  title         String    @unique
-  description   String?
-  imageUrl      String?
-  bannerUrl     String?
-  genres        String[]  @default([])
-  aired         String?
-  rating        String?
-  status        String?
-  duration      String?
-  lastScrapedAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  seasons        Season[]
-  watchlistItems WatchlistItem[]
+  id              String           @id @default(cuid())
+  slug            String           @unique
+  title           String           @unique
+  description     String?
+  imageUrl        String?
+  bannerUrl       String?
+  genres          String[]         @default([])
+  aired           String?
+  rating          String?
+  status          String?
+  duration        String?
+  lastScrapedAt   DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  seasons         Season[]
+  watchlistItems  WatchlistItem[]
+  customListItems CustomListItem[]
 
   @@index([createdAt])
   @@index([title])
@@ -277,3 +279,31 @@ model ChannelSource {
 
   @@index([channelId])
 }
+
+model CustomList {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       CustomListItem[]
+
+  @@index([userId])
+}
+
+model CustomListItem {
+  id        String     @id @default(cuid())
+  listId    String
+  animeId   String
+  createdAt DateTime   @default(now())
+
+  list  CustomList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  anime Anime      @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, animeId])
+  @@index([listId])
+  @@index([animeId])
+}
+
