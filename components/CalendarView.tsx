@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, Clock, Tv, ChevronRight, Play } from "lucide-react";
+import { Clock, Tv, Play, Loader2 } from "lucide-react";
 import { WatchlistButton } from "@/components/WatchlistButton";
 
 interface AnimeItem {
@@ -18,6 +18,7 @@ interface AnimeItem {
   latestEpisodeId: string | null;
   episodeImageUrl: string | null;
   inWatchlist?: boolean;
+  episodeNumbers?: number[];
 }
 
 interface CalendarViewProps {
@@ -60,7 +61,6 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
       <div className="mb-8 flex flex-col items-center justify-between gap-4 md:flex-row md:items-start">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-3xl">
-            <Calendar className="h-7 w-7 text-blue-600 dark:text-blue-500" />
             Calendário Semanal
           </h1>
           <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
@@ -119,7 +119,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
 
       {/* Mobile Active Column View */}
       <div className="block md:hidden">
-        <div className=" bg-white p-4 shadow-sm border border-zinc-100 dark:bg-zinc-950 dark:border-zinc-900">
+        <div className="bg-white p-4 shadow-sm border border-zinc-100 dark:bg-zinc-950 dark:border-zinc-900">
           <div className="mb-4 flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-900">
             <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2">
               <span className="h-2 w-2 bg-blue-600" />
@@ -138,12 +138,13 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="relative pl-4 border-l border-zinc-200 dark:border-zinc-800 flex flex-col gap-6 ml-2">
               {groupedAnimes[activeDay]?.map((anime) => (
                 <AnimeCalendarCard
                   key={anime.id}
                   anime={anime}
                   isLoggedIn={isLoggedIn}
+                  isToday={activeDay === currentDay}
                 />
               ))}
             </div>
@@ -152,7 +153,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
       </div>
 
       {/* Desktop Column Grid */}
-      <div className="hidden md:grid md:grid-cols-7 gap-4 xl:gap-5 items-start">
+      <div className="hidden md:grid md:grid-cols-7 items-start">
         {DAYS_OF_WEEK.map((day) => {
           const isToday = currentDay === day.value;
           const dayList = groupedAnimes[day.value] || [];
@@ -160,14 +161,14 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
           return (
             <div
               key={day.value}
-              className={`flex flex-col p-3 border transition-all duration-300 ${
+              className={`flex flex-col pl-4 pr-2 pb-4 border-l transition-all duration-300 relative ${
                 isToday
-                  ? "bg-blue-500/5 border-blue-500/30 dark:bg-blue-500/5 dark:border-blue-500/20 shadow-md shadow-blue-500/5"
-                  : "bg-white border-zinc-200 dark:bg-zinc-950 dark:border-zinc-900"
+                  ? "border-blue-500 dark:border-blue-500/70 bg-blue-500/[0.02]"
+                  : "border-zinc-200 dark:border-zinc-850"
               }`}
             >
               {/* Day Header */}
-              <div className="mb-4 flex flex-col gap-1 border-b border-zinc-100 pb-3 dark:border-zinc-900">
+              <div className="mb-4 flex flex-col gap-1 pb-2">
                 <span
                   className={`text-sm font-bold truncate ${
                     isToday
@@ -185,19 +186,20 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
 
               {/* Anime Cards Stack */}
               {dayList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-zinc-100 dark:border-zinc-900">
+                <div className="flex flex-col items-center justify-center py-8 text-center border border-dashed border-zinc-150 dark:border-zinc-800/80">
                   <Tv className="h-6 w-6 text-zinc-300 dark:text-zinc-800" />
                   <span className="mt-2 text-[10px] text-zinc-400 dark:text-zinc-500">
                     Vazio
                   </span>
                 </div>
               ) : (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-6">
                   {dayList.map((anime) => (
                     <AnimeCalendarCard
                       key={anime.id}
                       anime={anime}
                       isLoggedIn={isLoggedIn}
+                      isToday={isToday}
                     />
                   ))}
                 </div>
@@ -213,11 +215,25 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
 function AnimeCalendarCard({
   anime,
   isLoggedIn,
+  isToday,
 }: {
   anime: AnimeItem;
   isLoggedIn: boolean;
+  isToday: boolean;
 }) {
-  const mockEpisodePills = [1, 2, 3, 4];
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (isHovered) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 600); // Exibe o spinner/loading por 600ms antes de mostrar os detalhes reais
+      return () => clearTimeout(timer);
+    } else {
+      setIsLoading(true);
+    }
+  }, [isHovered]);
 
   // Decide position of hover popover: left-full or right-full
   const popoverPositionClass =
@@ -232,74 +248,90 @@ function AnimeCalendarCard({
       : "left-0 -translate-x-1/2 border-b border-l";
 
   return (
-    <div className="group relative hover:z-50 flex flex-col border border-zinc-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/40 hover:shadow-md hover:shadow-blue-500/5 dark:border-zinc-900 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/60">
-      {/* 6:00 am release badge */}
-      <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded bg-blue-600/90 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-white shadow-sm backdrop-blur-xs">
-        <Clock className="h-2.5 w-2.5" />
-        {anime.releaseTime}
+    <div
+      className="group relative hover:z-50 flex flex-col transition-all duration-300"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Timeline Dot (Bolinha no horário) */}
+      <div
+        className={`absolute left-[-16px] -translate-x-1/2 top-[2.5px] z-10 rounded-full border-2 transition-all duration-300 ${
+          isToday
+            ? "w-3 h-3 bg-blue-600 border-white dark:bg-blue-500 dark:border-zinc-950 scale-110 shadow-sm shadow-blue-500/50"
+            : "w-2.5 h-2.5 bg-zinc-300 border-white dark:bg-zinc-600 dark:border-zinc-950"
+        }`}
+      />
+
+      {/* Horário */}
+      <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+        <Clock className="h-3 w-3 text-zinc-400" />
+        <span>{anime.releaseTime}</span>
       </div>
 
-      {/* Poster Image */}
+      {/* Nome do Anime */}
       <Link
         href={`/animes/${anime.slug}`}
-        className="relative aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-950"
+        className="mt-1 block text-xs font-bold text-zinc-900 hover:text-blue-600 dark:text-zinc-100 dark:hover:text-blue-500 transition-colors line-clamp-2 leading-snug"
+        title={anime.title}
       >
-        {anime.imageUrl ? (
-          <Image
-            src={anime.imageUrl}
-            alt={anime.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 200px"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-[10px] text-zinc-400">
-            Sem Imagem
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        {anime.title}
       </Link>
 
-      {/* Card Info */}
-      <div className="flex flex-col p-2.5">
-        <Link
-          href={`/animes/${anime.slug}`}
-          className="line-clamp-1 text-xs font-semibold text-zinc-900 transition-colors group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-500"
-          title={anime.title}
-        >
-          {anime.title}
-        </Link>
-
-        {/* Episodes Row */}
-        <div className="mt-2.5 border-t border-zinc-100 pt-2 dark:border-zinc-800/80">
-          <div className="flex items-center justify-between text-[9px] font-medium text-zinc-400 dark:text-zinc-500">
-            <span>Episódios</span>
-            <span className="text-blue-500 dark:text-blue-400 font-semibold flex items-center gap-0.5">
-              Completo <ChevronRight className="h-2 w-2" />
-            </span>
-          </div>
-
-          <div className="mt-1.5 flex flex-wrap items-center gap-1">
-            {mockEpisodePills.map((num) => (
-              <span
-                key={num}
-                className="flex h-4 min-w-4 items-center justify-center rounded bg-zinc-100 px-1 text-[9px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-              >
-                {num}
-              </span>
-            ))}
-            <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-600 mx-0.5">
-              ...
-            </span>
-            <span
-              className="flex h-4 min-w-4 items-center justify-center rounded border border-blue-200 bg-blue-50/50 px-1 text-[9px] font-bold text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400"
-              title={`Último episódio disponível: EP ${anime.lastEpisode}`}
-            >
-              {anime.lastEpisode}
-            </span>
-          </div>
-        </div>
+      {/* Status do Episódio */}
+      <div className="mt-1 text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+        {isToday ? (
+          <span>Episódio {anime.lastEpisode} Disponível</span>
+        ) : (
+          <span>
+            {anime.lastEpisode <= 1
+              ? `Episódio ${anime.lastEpisode} Disponível`
+              : `1-${anime.lastEpisode} Disponível`}
+          </span>
+        )}
       </div>
+
+      {/* Imagem do Episódio (Apenas se for Hoje) */}
+      {isToday && (
+        <Link
+          href={
+            anime.latestEpisodeId
+              ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+              : `/animes/${anime.slug}`
+          }
+          className="relative mt-2 block aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-800/80 shadow-xs group/episode"
+        >
+          {anime.episodeImageUrl ? (
+            <Image
+              src={anime.episodeImageUrl}
+              alt={`Episódio ${anime.lastEpisode}`}
+              fill
+              sizes="(max-width: 768px) 100vw, 200px"
+              className="object-cover transition-transform duration-300 group-hover/episode:scale-105"
+            />
+          ) : anime.imageUrl ? (
+            <Image
+              src={anime.imageUrl}
+              alt={`Episódio ${anime.lastEpisode}`}
+              fill
+              sizes="(max-width: 768px) 100vw, 200px"
+              className="object-cover transition-transform duration-300 group-hover/episode:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-[10px] text-zinc-400">
+              Sem Imagem
+            </div>
+          )}
+
+          {/* Badge no canto superior esquerdo */}
+          <div className="absolute top-0 left-0 bg-black/80 text-white font-extrabold text-xs rounded-br px-2 py-0.5 shadow-sm backdrop-blur-xs">
+            {anime.lastEpisode}
+          </div>
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover/episode:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <Play className="h-6 w-6 text-white fill-current" />
+          </div>
+        </Link>
+      )}
 
       {/* Popover Hover Modal */}
       <div
@@ -309,110 +341,121 @@ function AnimeCalendarCard({
         <div
           className={`absolute top-6 w-3 h-3 rotate-45 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-850 ${arrowPositionClass}`}
         />
-        <div className="flex gap-4">
-          {/* Left: Poster image */}
-          <div className="relative aspect-[2/3] w-28 flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md">
-            {anime.imageUrl ? (
-              <Image
-                src={anime.imageUrl}
-                alt={anime.title}
-                fill
-                sizes="112px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-[10px] text-zinc-400">
-                Sem Imagem
-              </div>
-            )}
+
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center min-h-[300px] w-full">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500" />
+            <span className="mt-2.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+              Carregando dados...
+            </span>
           </div>
+        ) : (
+          <div className="transition-all duration-300 opacity-100 ease-out flex flex-col h-full">
+            <div className="flex gap-4">
+              {/* Left: Poster image */}
+              <div className="relative aspect-[2/3] w-28 flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md">
+                {anime.imageUrl ? (
+                  <Image
+                    src={anime.imageUrl}
+                    alt={anime.title}
+                    fill
+                    sizes="112px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-[10px] text-zinc-400">
+                    Sem Imagem
+                  </div>
+                )}
+              </div>
 
-          {/* Right: details */}
-          <div className="flex flex-col flex-1 min-w-0">
-            <h4 className="text-sm font-bold text-zinc-900 dark:text-white line-clamp-2 leading-tight">
-              {anime.title}
-            </h4>
-            <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-4 leading-relaxed">
-              {anime.description ||
-                "Sem descrição disponível para este anime no momento."}
-            </p>
+              {/* Right: details */}
+              <div className="flex flex-col flex-1 min-w-0">
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-white line-clamp-2 leading-tight">
+                  {anime.title}
+                </h4>
+                <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-4 leading-relaxed">
+                  {anime.description ||
+                    "Sem descrição disponível para este anime no momento."}
+                </p>
 
-            {/* Buttons Row */}
-            <div className="mt-auto pt-3 flex items-center gap-2">
+                {/* Buttons Row */}
+                <div className="mt-auto pt-3 flex items-center gap-2">
+                  <Link
+                    href={
+                      anime.latestEpisodeId
+                        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                        : `/animes/${anime.slug}`
+                    }
+                    className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-sm"
+                  >
+                    <Play className="h-3 w-3 fill-current ml-0.5" />
+                    Assistir EP {anime.lastEpisode}
+                  </Link>
+                  <WatchlistButton
+                    mediaType="ANIME"
+                    mediaId={anime.id}
+                    slug={anime.slug}
+                    initialInWatchlist={!!anime.inWatchlist}
+                    isLoggedIn={isLoggedIn}
+                    compact={true}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Below all: Episode Image + Episode badge */}
+            <div className="mt-4 border-t border-zinc-100 dark:border-zinc-900 pt-4 flex flex-col">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
+                Último Episódio Lançado
+              </span>
               <Link
                 href={
                   anime.latestEpisodeId
                     ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
                     : `/animes/${anime.slug}`
                 }
-                className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] transition-colors shadow-sm"
+                className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"
               >
-                <Play className="h-3 w-3 fill-current" />
-                Assistir EP {anime.lastEpisode}
+                {anime.episodeImageUrl ? (
+                  <Image
+                    src={anime.episodeImageUrl}
+                    alt={`Episódio ${anime.lastEpisode}`}
+                    fill
+                    sizes="348px"
+                    className="object-cover transition-transform duration-500 group-hover/episode_popover:scale-105"
+                  />
+                ) : anime.imageUrl ? (
+                  <Image
+                    src={anime.imageUrl}
+                    alt={`Episódio ${anime.lastEpisode}`}
+                    fill
+                    sizes="348px"
+                    className="object-cover opacity-60 blur-xs transition-transform duration-500 group-hover/episode_popover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
+                    Sem Imagem do Episódio
+                  </div>
+                )}
+
+                {/* Episode Number Badge in top-left */}
+                <div className="absolute top-0 left-0 bg-black/80 text-white font-black text-xs px-2 py-0.5 shadow-lg rounded-br tracking-wide z-20">
+                  {anime.lastEpisode}
+                </div>
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
+
+                {/* Hover Play Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover/episode_popover:opacity-100 z-20">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform duration-300 scale-90 group-hover/episode_popover:scale-100">
+                    <Play className="h-6 w-6 fill-current ml-0.5" />
+                  </div>
+                </div>
               </Link>
-              <WatchlistButton
-                mediaType="ANIME"
-                mediaId={anime.id}
-                slug={anime.slug}
-                initialInWatchlist={!!anime.inWatchlist}
-                isLoggedIn={isLoggedIn}
-                compact={true}
-              />
             </div>
           </div>
-        </div>
-
-        {/* Below all: Episode Image + Episode badge */}
-        <div className="mt-4 border-t border-zinc-100 dark:border-zinc-900 pt-4 flex flex-col">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
-            Último Episódio Lançado
-          </span>
-          <Link
-            href={
-              anime.latestEpisodeId
-                ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
-                : `/animes/${anime.slug}`
-            }
-            className="group/episode relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"
-          >
-            {anime.episodeImageUrl ? (
-              <Image
-                src={anime.episodeImageUrl}
-                alt={`Episódio ${anime.lastEpisode}`}
-                fill
-                sizes="348px"
-                className="object-cover transition-transform duration-500 group-hover/episode:scale-105"
-              />
-            ) : anime.imageUrl ? (
-              // Fallback to anime poster blurred slightly
-              <Image
-                src={anime.imageUrl}
-                alt={`Episódio ${anime.lastEpisode}`}
-                fill
-                sizes="348px"
-                className="object-cover opacity-60 blur-xs transition-transform duration-500 group-hover/episode:scale-105"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
-                Sem Imagem do Episódio
-              </div>
-            )}
-
-            {/* Episode Number Badge in top-left */}
-            <div className="absolute top-2.5 left-2.5 bg-black/80 text-white font-black text-[10px] px-2 py-0.5 rounded shadow-lg border border-white/10 tracking-wide z-20">
-              EP {anime.lastEpisode}
-            </div>
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
-
-            {/* Hover Play Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover/episode:opacity-100 z-20">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform duration-300 scale-90 group-hover/episode:scale-100">
-                <Play className="h-6 w-6 fill-current ml-0.5" />
-              </div>
-            </div>
-          </Link>
-        </div>
+        )}
       </div>
     </div>
   );

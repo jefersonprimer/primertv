@@ -19,101 +19,6 @@ function getDeterministicDay(id: string): number {
   return Math.abs(hash) % 7;
 }
 
-// Fallback high-quality anime list to ensure the UI is beautifully populated
-const MOCK_ANIME_FALLBACKS = [
-  {
-    id: "fallback-1",
-    slug: "one-piece",
-    title: "One Piece",
-    description: "Luffy e sua tripulação navegam pelos oceanos em busca do lendário tesouro One Piece, enfrentando inimigos poderosos e fazendo grandes aliados para que Luffy se torne o Rei dos Piratas.",
-    imageUrl: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80",
-    episodeImageUrl: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=600&auto=format&fit=crop&q=80",
-    releaseDay: 0, // Domingo
-    releaseTime: "6:00 am",
-    lastEpisode: 20,
-    latestEpisodeId: null,
-    inWatchlist: false,
-  },
-  {
-    id: "fallback-2",
-    slug: "jujutsu-kaisen",
-    title: "Jujutsu Kaisen",
-    description: "Sofrimento, arrependimento, vergonha: os sentimentos negativos humanos tornam-se Maldições, assolando o cotidiano das pessoas. Para salvar um amigo, Yuji Itadori acaba engolindo o dedo da Maldição de nível especial e assume a sua alma.",
-    imageUrl: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80",
-    episodeImageUrl: "https://images.unsplash.com/photo-1563089145-599997674d42?w=600&auto=format&fit=crop&q=80",
-    releaseDay: 1, // Segunda
-    releaseTime: "6:00 am",
-    lastEpisode: 10,
-    latestEpisodeId: null,
-    inWatchlist: false,
-  },
-  {
-    id: "fallback-3",
-    slug: "demon-slayer",
-    title: "Demon Slayer: Kimetsu no Yaiba",
-    description: "Tanjirou Kamado luta incansavelmente para curar sua irmã Nezuko, que foi transformada em demônio (oni), e vingar a morte trágica de sua família juntando-se à corporação dos Exterminadores de Demônios.",
-    imageUrl: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&auto=format&fit=crop&q=80",
-    episodeImageUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80",
-    releaseDay: 2, // Terça
-    releaseTime: "6:00 am",
-    lastEpisode: 20,
-    latestEpisodeId: null,
-    inWatchlist: false,
-  },
-  {
-    id: "fallback-4",
-    slug: "chainsaw-man",
-    title: "Chainsaw Man",
-    description: "Denji é um jovem pobre que faz qualquer coisa por dinheiro, até caçar demônios com seu cachorro-demônio Pochita. Após ser traído e morto, ele se funde com Pochita e renasce como o Homem-Motosserra.",
-    imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
-    episodeImageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
-    releaseDay: 3, // Quarta
-    releaseTime: "6:00 am",
-    lastEpisode: 10,
-    latestEpisodeId: null,
-    inWatchlist: false,
-  },
-  {
-    id: "fallback-5",
-    slug: "frieren",
-    title: "Frieren: Beyond Journey's End",
-    description: "A maga elfa Frieren e seus corajosos companheiros derrotaram o Rei Demônio e trouxeram paz ao reino. Após a jornada, Frieren deve encarar a passagem do tempo e as memórias da sua vida de quase imortal.",
-    imageUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80",
-    episodeImageUrl: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=600&auto=format&fit=crop&q=80",
-    releaseDay: 4, // Quinta
-    releaseTime: "6:00 am",
-    lastEpisode: 20,
-    latestEpisodeId: null,
-    inWatchlist: false,
-  },
-  {
-    id: "fallback-6",
-    slug: "solo-leveling",
-    title: "Solo Leveling",
-    description: "Em um mundo onde caçadores lutam contra monstros invasores, Sung Jin-woo é o caçador mais fraco de todos. Mas após sobreviver a uma masmorra dupla mortal, ele ganha uma habilidade única de subir de nível sem limites.",
-    imageUrl: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=600&auto=format&fit=crop&q=80",
-    episodeImageUrl: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80",
-    releaseDay: 5, // Sexta
-    releaseTime: "6:00 am",
-    lastEpisode: 10,
-    latestEpisodeId: null,
-    inWatchlist: false,
-  },
-  {
-    id: "fallback-7",
-    slug: "attack-on-titan",
-    title: "Attack on Titan",
-    description: "Eren Yeager prometeu exterminar até o último Titã da Terra após presenciar a destruição de sua cidade natal e a morte de sua mãe por essas criaturas gigantescas.",
-    imageUrl: "https://images.unsplash.com/photo-1563089145-599997674d42?w=600&auto=format&fit=crop&q=80",
-    episodeImageUrl: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&auto=format&fit=crop&q=80",
-    releaseDay: 6, // Sábado
-    releaseTime: "6:00 am",
-    lastEpisode: 20,
-    latestEpisodeId: null,
-    inWatchlist: false,
-  }
-];
-
 export default async function CalendarioPage() {
   // Check if user is logged in and fetch their watchlist
   const userId = await getAuthenticatedUserId();
@@ -143,9 +48,8 @@ export default async function CalendarioPage() {
               createdAt: true,
             },
             orderBy: {
-              number: "desc",
+              number: "asc",
             },
-            take: 1,
           },
         },
         orderBy: {
@@ -168,7 +72,8 @@ export default async function CalendarioPage() {
     let episodeImageUrl: string | null = null;
 
     const latestSeason = anime.seasons?.[0];
-    const latestEpisode = latestSeason?.episodes?.[0];
+    const episodes = latestSeason?.episodes || [];
+    const latestEpisode = episodes[episodes.length - 1];
 
     if (latestEpisode) {
       latestEpisodeId = latestEpisode.id;
@@ -210,6 +115,8 @@ export default async function CalendarioPage() {
       releaseTime = `${displayHour}:00 ${ampm}`;
     }
 
+    const episodeNumbers = episodes.map((ep) => ep.number);
+
     return {
       id: anime.id,
       slug: anime.slug,
@@ -222,20 +129,25 @@ export default async function CalendarioPage() {
       latestEpisodeId,
       episodeImageUrl,
       inWatchlist: watchlistIds.has(anime.id),
+      episodeNumbers,
     };
   });
 
-  // Combine database animes and fallback animes
-  const finalAnimes = [...processedDbAnimes];
-  MOCK_ANIME_FALLBACKS.forEach((fallback) => {
-    if (!finalAnimes.some((a) => a.slug === fallback.slug)) {
-      finalAnimes.push(fallback);
-    }
-  });
+  // Obter o dia da semana atual no fuso horário de Brasília (UTC-3)
+  let currentDay = new Date().getDay();
+  try {
+    const spDateStr = new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" });
+    currentDay = new Date(spDateStr).getDay();
+  } catch (e) {
+    currentDay = new Date().getDay();
+  }
+
+  // Filtrar para mostrar apenas os animes que já foram lançados nesta semana (até o dia atual)
+  const filteredDbAnimes = processedDbAnimes.filter((anime) => anime.releaseDay <= currentDay);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <CalendarView animes={finalAnimes} isLoggedIn={Boolean(userId)} />
+      <CalendarView animes={filteredDbAnimes} isLoggedIn={Boolean(userId)} />
     </div>
   );
 }

@@ -35,7 +35,7 @@ export function WatchlistButton({
         href="/login"
         className={
           compact
-            ? "flex h-8 w-8 items-center justify-center border-2 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700 rounded-lg flex-shrink-0 transition-colors"
+            ? "flex h-8 w-8 items-center justify-center border-2 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700 flex-shrink-0 transition-colors"
             : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors md:px-2 md:py-1.5 flex-shrink-0"
         }
       >
@@ -54,7 +54,7 @@ export function WatchlistButton({
         disabled={isPending}
         className={
           compact
-            ? "flex h-8 w-8 items-center justify-center border-2 font-semibold transition-colors rounded-lg border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700"
+            ? "flex h-8 w-8 items-center justify-center border-2 font-semibold transition-colors border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700"
             : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 font-semibold transition-colors md:px-2 md:py-1.5 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700"
         }
       >

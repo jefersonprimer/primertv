@@ -16,6 +16,7 @@ interface AnimeItem {
   lastEpisode: number;
   latestEpisodeId: string | null;
   episodeImageUrl: string | null;
+  episodeNumbers?: number[];
 }
 
 interface TodayReleasesClientProps {
@@ -59,13 +60,15 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
     return dayNames[releaseDay];
   }
 
-  const mockEpisodePills = [1, 2, 3];
-
   const renderAnimeCard = (
     anime: AnimeItem,
     isToday: boolean,
     dayLabel: string,
   ) => {
+    const episodeNumbers = anime.episodeNumbers || [];
+    const showEllipsis = episodeNumbers.length > 3;
+    const displayPills = showEllipsis ? episodeNumbers.slice(0, 2) : episodeNumbers.slice(0, -1);
+
     return (
       <div
         key={`${anime.id}-${anime.releaseDay}`}
@@ -110,27 +113,37 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
               <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mr-0.5">
                 Episódios:
               </span>
-              {mockEpisodePills.map((num) => (
-                <span
-                  key={num}
-                  className="flex h-4 min-w-4 items-center justify-center rounded bg-zinc-150 px-1 text-[9px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                >
-                  {num}
+              {episodeNumbers.length === 0 ? (
+                <span className="text-[9px] text-zinc-400 dark:text-zinc-500 italic">
+                  Sem episódios
                 </span>
-              ))}
-              <span className="text-[9px] font-bold text-zinc-450 dark:text-zinc-650 mx-0.5">
-                ...
-              </span>
-              <Link
-                href={
-                  anime.latestEpisodeId
-                    ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
-                    : `/animes/${anime.slug}`
-                }
-                className="flex h-4 min-w-4 items-center justify-center rounded border border-blue-200 bg-blue-50/50 hover:bg-blue-100/50 px-1 text-[9px] font-bold text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400 transition-colors"
-              >
-                {anime.lastEpisode}
-              </Link>
+              ) : (
+                <>
+                  {displayPills.map((num) => (
+                    <span
+                      key={num}
+                      className="flex h-4 min-w-4 items-center justify-center rounded bg-zinc-150 px-1 text-[9px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                    >
+                      {num}
+                    </span>
+                  ))}
+                  {showEllipsis && (
+                    <span className="text-[9px] font-bold text-zinc-450 dark:text-zinc-650 mx-0.5">
+                      ...
+                    </span>
+                  )}
+                  <Link
+                    href={
+                      anime.latestEpisodeId
+                        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                        : `/animes/${anime.slug}`
+                    }
+                    className="flex h-4 min-w-4 items-center justify-center rounded border border-blue-200 bg-blue-50/50 hover:bg-blue-100/50 px-1 text-[9px] font-bold text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400 transition-colors"
+                  >
+                    {anime.lastEpisode}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
