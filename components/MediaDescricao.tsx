@@ -12,7 +12,7 @@ interface MediaDescricaoProps {
 
 export default function MediaDescricao({
   description,
-  className = "text-zinc-600 dark:text-zinc-400",
+  className = "text-zinc-600 dark:text-white",
   rating,
   genres,
 }: MediaDescricaoProps) {

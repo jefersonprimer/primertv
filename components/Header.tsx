@@ -10,7 +10,7 @@ export async function Header() {
   const user = session?.user;
 
   return (
-    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727] backdrop-blur-md dark:border-zinc-800">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
         <div className="flex h-full items-center gap-8">
           <div className="flex h-full items-center gap-1">
@@ -32,7 +32,7 @@ export async function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex h-full items-center px-4 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] hover:text-[#f2f2f2] transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-950"
               >
                 {link.label}
               </Link>

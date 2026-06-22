@@ -127,7 +127,7 @@ export default async function AnimeDetailsPage({
               alt={anime.title}
               fill
               sizes="100vw"
-              className="object-cover opacity-35"
+              className="object-cover opacity-100"
               priority
             />
           ) : (
@@ -137,12 +137,17 @@ export default async function AnimeDetailsPage({
                 alt={anime.title}
                 fill
                 sizes="100vw"
-                className="object-cover opacity-30 blur-sm"
+                className="object-cover opacity-100"
                 priority
               />
             )
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+          {/* Bottom Gradient (fades to page bg) */}
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+          {/* Left Gradient (occupies 40% of the width, fading softer to transparent) */}
+          <div className="absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/80" />
+          {/* Right Gradient (occupies 10% of the width, fading to transparent) */}
+          <div className="absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-zinc-50/50 to-transparent dark:from-black/50" />
         </div>
 
         {/* Content Container */}

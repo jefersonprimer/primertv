@@ -4,7 +4,7 @@ import { Globe, Tv } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-zinc-200 bg-white/80 text-zinc-600 backdrop-blur-md dark:border-zinc-800/80 dark:bg-black/80 dark:text-zinc-400">
+    <footer className="w-full bg-white/80 text-zinc-600 backdrop-blur-md dark:bg-black/80 dark:text-zinc-400">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand & Description */}
