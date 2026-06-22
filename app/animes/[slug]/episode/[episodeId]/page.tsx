@@ -106,7 +106,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
-      <main className="mx-auto max-w-7xl px-4 py-6 md:py-10">
+      <main className="mx-auto max-w-7xl px-4 pb-6 md:pb-10">
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Main Content: Player and Info */}
           <div className="lg:col-span-3">
@@ -163,7 +163,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                   {prevEpisode && (
                     <Link
                       href={`/animes/${slug}/episode/${prevEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                      className="inline-flex h-11 items-center justify-center bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                     >
                       Anterior
                     </Link>
@@ -171,7 +171,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
                   {nextEpisode && (
                     <Link
                       href={`/animes/${slug}/episode/${nextEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
+                      className="inline-flex h-11 items-center justify-center bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
                     >
                       Próximo
                     </Link>
@@ -223,7 +223,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
           {/* Sidebar: Episode List */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+            <div className="sticky border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
               <div className="border-b border-zinc-100 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-800/50">
                 <h3 className="font-bold">Lista de Episódios</h3>
                 <p className="text-xs text-zinc-500">
