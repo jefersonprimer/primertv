@@ -73,7 +73,7 @@ export default async function SeriesDetailsPage({
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
-      <div className="relative h-[70vh] w-full overflow-hidden bg-zinc-900">
+      <div className="relative min-h-[70vh] w-full flex flex-col justify-end overflow-hidden bg-zinc-900">
         {finalBannerUrl ? (
           <Image
             src={finalBannerUrl}
@@ -97,7 +97,7 @@ export default async function SeriesDetailsPage({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
 
-        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+        <div className="relative w-full p-8 md:p-12 z-10">
           <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
             <div className="relative aspect-[2/3] w-48 lg:w-60 flex-shrink-0 overflow-hidden shadow-2xl">
               {series.imageUrl ? (
@@ -115,7 +115,7 @@ export default async function SeriesDetailsPage({
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 flex-1">
               <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
                 {series.title}
               </h1>
@@ -132,8 +132,11 @@ export default async function SeriesDetailsPage({
                 </div>
               )}
               {series.description && (
-                <div className="max-w-2xl">
-                  <MediaDescricao description={series.description} />
+                <div className="w-full">
+                  <MediaDescricao
+                    description={series.description}
+                    genres={series.genres}
+                  />
                 </div>
               )}
             </div>

@@ -118,9 +118,9 @@ export default async function AnimeDetailsPage({
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Hero Section */}
-      <div className="relative">
+      <div className="relative md:min-h-[85vh] w-full md:flex md:flex-col md:justify-end">
         {/* Banner Section */}
-        <div className="relative hidden md:block md:h-[85vh] w-full overflow-hidden bg-zinc-900">
+        <div className="absolute inset-0 hidden md:block bg-zinc-900 overflow-hidden">
           {finalBannerUrl ? (
             <Image
               src={finalBannerUrl}
@@ -146,7 +146,7 @@ export default async function AnimeDetailsPage({
         </div>
 
         {/* Content Container */}
-        <div className="mx-auto max-w-[1223px] md:absolute md:bottom-0 md:left-0 md:right-0 md:py-12">
+        <div className="mx-auto max-w-[1223px] w-full relative z-10 md:py-12">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Image */}
             <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:hidden flex-shrink-0">
@@ -167,7 +167,7 @@ export default async function AnimeDetailsPage({
             </div>
 
             {/* Info Section */}
-            <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 max-w-2xl">
+            <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 w-full">
               {/* Mobile Background with Gradient Mask to fade out the top boundary line */}
               <div
                 className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50/20 via-zinc-50/85 to-zinc-50 dark:from-black/20 dark:via-black/85 dark:to-black backdrop-blur-[3px] rounded-t-2xl md:hidden"
@@ -178,9 +178,9 @@ export default async function AnimeDetailsPage({
                     "linear-gradient(to bottom, transparent, black 120px)",
                 }}
               />
-              <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full">
+              <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:max-w-2xl">
                 {anime.logoUrl ? (
-                  <div className="relative w-full max-w-[280px] md:max-w-[380px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
+                  <div className="relative w-full max-w-[280px] md:max-w-[400px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
                     <Image
                       src={anime.logoUrl}
                       alt={anime.title}
@@ -191,7 +191,7 @@ export default async function AnimeDetailsPage({
                     <h1 className="sr-only">{anime.title}</h1>
                   </div>
                 ) : (
-                  <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2">
+                  <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 max-w-[380px]">
                     {anime.title}
                   </h1>
                 )}
@@ -229,14 +229,14 @@ export default async function AnimeDetailsPage({
                           </svg>
                         </span>
                       )}
-                    {anime.genres?.map((genre) => (
-                      <span
-                        key={genre}
-                        className="bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 hover:underline"
-                      >
-                        {genre}
-                      </span>
-                    ))}
+                    <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                      {anime.genres?.map((genre, index) => (
+                        <span key={genre}>
+                          <span className="underline">{genre}</span>
+                          {index < anime.genres.length - 1 && ", "}
+                        </span>
+                      ))}
+                    </span>
                   </div>
                 )}
 
@@ -295,8 +295,12 @@ export default async function AnimeDetailsPage({
               </div>
 
               {anime.description && (
-                <div className="mt-4 max-w-[600px]">
-                  <MediaDescricao description={anime.description} />
+                <div className="mt-4 w-full">
+                  <MediaDescricao
+                    description={anime.description}
+                    rating={anime.rating || undefined}
+                    genres={anime.genres}
+                  />
                 </div>
               )}
             </div>
