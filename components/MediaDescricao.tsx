@@ -52,7 +52,7 @@ export default function MediaDescricao({
       {hasExtraInfo && (
         <div className="flex flex-col gap-4 flex-1 md:w-1/3 text-sm font-normal">
           {rating && (
-            <div className="flex gap-1">
+            <div className="flex gap-1.5">
               Classificação:
               <span>
                 {rating && <RatingBadge rating={rating} className="h-4 w-4" />}
