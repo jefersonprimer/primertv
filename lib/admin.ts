@@ -40,6 +40,7 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         placeholder: "Sinopse do filme",
       },
       { name: "imageUrl", label: "Imagem", type: "text" },
+      { name: "bannerUrl", label: "Banner URL", type: "text" },
       {
         name: "genres",
         label: "Gêneros",
@@ -64,6 +65,7 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         placeholder: "Sinopse da série",
       },
       { name: "imageUrl", label: "Imagem", type: "text" },
+      { name: "bannerUrl", label: "Banner URL", type: "text" },
       {
         name: "genres",
         label: "Gêneros",
@@ -87,6 +89,9 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         placeholder: "Sinopse do anime",
       },
       { name: "imageUrl", label: "Imagem", type: "text" },
+      { name: "logoUrl", label: "Logo URL", type: "text" },
+      { name: "bannerUrl", label: "Banner URL", type: "text" },
+      { name: "compactImageUrl", label: "Imagem Compacta URL", type: "text" },
       {
         name: "genres",
         label: "Gêneros",
@@ -113,6 +118,7 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         placeholder: "Sinopse do manga",
       },
       { name: "imageUrl", label: "Imagem", type: "text" },
+      { name: "bannerUrl", label: "Banner URL", type: "text" },
       {
         name: "genres",
         label: "Gêneros",

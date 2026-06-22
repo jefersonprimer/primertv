@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { Play } from "lucide-react";
+import { Play, Star, Trophy } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
 import MediaDescricao from "@/components/MediaDescricao";
@@ -16,6 +16,18 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { getAnimeBanner } from "@/lib/banners";
 
 export const revalidate = 3600;
+
+function formatMembers(num: number | null | undefined): string {
+  if (num === null || num === undefined) return "";
+  const formatted = new Intl.NumberFormat("pt-BR").format(num);
+  if (num >= 1000000) {
+    return `${formatted}M`;
+  }
+  if (num >= 1000) {
+    return `${formatted}K`;
+  }
+  return formatted;
+}
 
 interface AnimeDetailsPageProps {
   params: Promise<{ slug: string }>;
@@ -108,7 +120,7 @@ export default async function AnimeDetailsPage({
       {/* Hero Section */}
       <div className="relative">
         {/* Banner Section */}
-        <div className="relative hidden md:block md:h-[70vh] w-full overflow-hidden bg-zinc-900">
+        <div className="relative hidden md:block md:h-[85vh] w-full overflow-hidden bg-zinc-900">
           {finalBannerUrl ? (
             <Image
               src={finalBannerUrl}
@@ -137,7 +149,7 @@ export default async function AnimeDetailsPage({
         <div className="mx-auto max-w-[1223px] md:absolute md:bottom-0 md:left-0 md:right-0 md:py-12">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Image */}
-            <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:w-48 lg:w-60 flex-shrink-0">
+            <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:hidden flex-shrink-0">
               {anime.imageUrl ? (
                 <Image
                   src={anime.imageUrl}
@@ -155,7 +167,7 @@ export default async function AnimeDetailsPage({
             </div>
 
             {/* Info Section */}
-            <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 max-w-[500px]">
+            <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 max-w-2xl">
               {/* Mobile Background with Gradient Mask to fade out the top boundary line */}
               <div
                 className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50/20 via-zinc-50/85 to-zinc-50 dark:from-black/20 dark:via-black/85 dark:to-black backdrop-blur-[3px] rounded-t-2xl md:hidden"
@@ -166,10 +178,35 @@ export default async function AnimeDetailsPage({
                     "linear-gradient(to bottom, transparent, black 120px)",
                 }}
               />
-              <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left">
-                <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2">
-                  {anime.title}
-                </h1>
+              <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full">
+                {anime.logoUrl ? (
+                  <div className="relative w-full max-w-[280px] md:max-w-[380px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
+                    <Image
+                      src={anime.logoUrl}
+                      alt={anime.title}
+                      fill
+                      priority
+                      className="object-contain object-center md:object-left"
+                    />
+                    <h1 className="sr-only">{anime.title}</h1>
+                  </div>
+                ) : (
+                  <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2">
+                    {anime.title}
+                  </h1>
+                )}
+
+                {anime.rank !== null && anime.rank !== undefined && (
+                  <div className="mt-2 flex items-center justify-center md:justify-start">
+                    <span
+                      className="inline-flex items-center gap-1.5 bg-[#2E51A2]/10 px-2.5 py-1 text-xs font-semibold text-[#2E51A2] dark:bg-[#2E51A2]/20 dark:text-blue-400 ring-1 ring-inset ring-[#2E51A2]/20 hover:cursor-pointer"
+                      title="Rank do myanimelist.net"
+                    >
+                      <Trophy className="h-3.5 w-3.5 text-[#2E51A2] dark:text-blue-400 fill-[#2E51A2]/10 dark:fill-[#2E51A2]/20" />
+                      MAL: #{anime.rank}
+                    </span>
+                  </div>
+                )}
 
                 {(anime.rating ||
                   (anime.genres && anime.genres.length > 0)) && (
@@ -202,6 +239,31 @@ export default async function AnimeDetailsPage({
                     ))}
                   </div>
                 )}
+
+                {anime.score !== null && anime.score !== undefined && (
+                  <div className="mt-2 flex items-center justify-center md:justify-start gap-2">
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 10 }).map((_, i) => {
+                        const isFilled = i < Math.round(anime.score || 0);
+                        return (
+                          <Star
+                            key={i}
+                            className={`h-7 w-7 ${
+                              isFilled
+                                ? "fill-amber-500 text-amber-500"
+                                : "text-zinc-300 dark:text-zinc-600"
+                            }`}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div className="h-4 border border-zinc-700" />
+                    <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 gap-2">
+                      {anime.score.toFixed(1)} (Membros{" "}
+                      {formatMembers(anime.members)})
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
@@ -231,6 +293,12 @@ export default async function AnimeDetailsPage({
                   <ShareButton />
                 </div>
               </div>
+
+              {anime.description && (
+                <div className="mt-4 max-w-[600px]">
+                  <MediaDescricao description={anime.description} />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -238,11 +306,6 @@ export default async function AnimeDetailsPage({
 
       {/* Episodes Section */}
       <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
-        {anime.description && (
-          <div className="max-w-2xl mb-8">
-            <MediaDescricao description={anime.description} />
-          </div>
-        )}
         {anime.seasons.length === 0 ? (
           <p className="text-zinc-500">Nenhum episódio encontrado.</p>
         ) : (

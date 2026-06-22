@@ -58,7 +58,7 @@ export default function SeasonSelector({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <div className="relative inline-block px-2">
+        <div className="relative inline-block">
           <button
             onClick={() => seasons.length > 1 && setIsOpen(!isOpen)}
             className={`flex items-center gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-50 ${
@@ -109,11 +109,14 @@ export default function SeasonSelector({
         <div className="relative inline-block">
           <button
             onClick={() => setIsSortOpen(!isSortOpen)}
-            className="flex items-center p-2 gap-2 text-base font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-500     hover:dark:bg-zinc-900 transition-colors cursor-pointer"
+            className={`flex items-center p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
+              isSortOpen
+                ? "bg-zinc-100 text-blue-500 dark:bg-zinc-800 dark:text-blue-400"
+                : "text-zinc-700 dark:text-zinc-300 hover:text-blue-500 hover:bg-zinc-100 hover:dark:bg-zinc-900"
+            }`}
           >
-            <ArrowUpDown className="h-5 w-5" />
             <span>
-              {sortBy === "oldest" ? "Mais antigos" : "Mais recentes"}
+              {sortBy === "oldest" ? "mais antigos" : "mais recentes"}
             </span>
             <ChevronDown
               className={`h-5 w-5 transition-transform ${isSortOpen ? "rotate-180" : ""}`}
@@ -126,7 +129,7 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsSortOpen(false)}
               />
-              <div className="absolute right-0 top-full z-50 mt-2 py-2 w-40 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900 ">
+              <div className="absolute right-0 top-full z-50 py-2 w-40 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900 ">
                 <button
                   onClick={() => {
                     setSortBy("oldest");

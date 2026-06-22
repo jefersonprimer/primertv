@@ -12,7 +12,7 @@ export default function MediaDescricao({
   className = "text-zinc-600 dark:text-zinc-400",
 }: MediaDescricaoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 150;
+  const maxLength = 300;
 
   if (!description) return null;
 
@@ -23,14 +23,14 @@ export default function MediaDescricao({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className={`${className} text-base leading-relaxed`}>
+      <p className={`${className} text-base font-normal leading-relaxed`}>
         {displayedText}
         {!isExpanded && shouldShowButton && "..."}
       </p>
       {shouldShowButton && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-blue-500 hover:text-blue-600 text-sm font-semibold self-start uppercase"
+          className="text-blue-500 hover:text-blue-600 text-sm font-bold self-start uppercase"
         >
           {isExpanded ? "mostrar menor" : "mais detalhes"}
         </button>

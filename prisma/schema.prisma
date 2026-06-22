@@ -48,6 +48,8 @@ model Anime {
   description     String?
   imageUrl        String?
   bannerUrl       String?
+  logoUrl         String?
+  compactImageUrl String?
   genres          String[]         @default([])
   aired           String?
   rating          String?

@@ -106,6 +106,7 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          bannerUrl: readString(formData, "bannerUrl") || null,
           videoUrl,
         };
 
@@ -126,6 +127,7 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          bannerUrl: readString(formData, "bannerUrl") || null,
         };
 
         if (existing) {
@@ -145,6 +147,9 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          logoUrl: readString(formData, "logoUrl") || null,
+          bannerUrl: readString(formData, "bannerUrl") || null,
+          compactImageUrl: readString(formData, "compactImageUrl") || null,
           aired: readString(formData, "aired") || null,
           rating: readString(formData, "rating") || null,
           status: readString(formData, "status") || null,
@@ -167,6 +172,7 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          bannerUrl: readString(formData, "bannerUrl") || null,
           aired: readString(formData, "aired") || null,
           rating: readString(formData, "rating") || null,
           status: readString(formData, "status") || null,

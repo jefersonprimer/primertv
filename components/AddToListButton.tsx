@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ListPlus, X, Plus, Check, Loader2, Info } from "lucide-react";
+import { X, Plus, Check, Loader2, Info } from "lucide-react";
 import {
   createList,
   toggleAnimeInList,
@@ -117,17 +117,12 @@ export default function AddToListButton({
         href="/login"
         className={
           compact
-            ? "flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 rounded-lg flex-shrink-0 transition-colors"
-            : "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 rounded-lg md:rounded-none md:border-0"
+            ? "flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 flex-shrink-0 cursor-pointer transition-colors"
+            : "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 cursor-pointer md:border-0"
         }
+        title="Adicionar a uma lista personalizada"
       >
-        <ListPlus className={compact ? "h-4 w-4" : "h-6 w-6"} />
-        {!compact && (
-          <>
-            <span className="md:hidden">Minha Lista</span>
-            <span className="hidden md:inline">Salvar em Lista</span>
-          </>
-        )}
+        <Plus className="h-6 w-6" />
       </a>
     );
   }
@@ -138,23 +133,21 @@ export default function AddToListButton({
         onClick={() => setIsOpen(true)}
         className={
           compact
-            ? "flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 rounded-lg flex-shrink-0 cursor-pointer transition-colors"
-            : "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 cursor-pointer rounded-lg md:rounded-none md:border-0"
+            ? "flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 flex-shrink-0 cursor-pointer transition-colors"
+            : "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 cursor-pointer md:border-0"
         }
         title="Adicionar a uma lista personalizada"
       >
-        <Plus className={compact ? "h-6 w-6" : "h-6 w-6"} />
-        {!compact && <span className="md:hidden">Minha Lista</span>}
+        <Plus className="h-6 w-6" />
       </button>
 
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-2xl">
+          <div className="relative w-full max-w-md overflow-hidden bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
               <h2 className="text-lg font-bold text-zinc-50 flex items-center gap-2">
-                <ListPlus className="h-5 w-5 text-blue-500" />
                 Minhas Listas
               </h2>
               <button
@@ -194,7 +187,7 @@ export default function AddToListButton({
                         key={list.id}
                         type="button"
                         onClick={() => handleToggle(list.id)}
-                        className="flex w-full items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/40 p-3 hover:bg-zinc-800 hover:border-zinc-700 transition-all text-left group cursor-pointer"
+                        className="flex w-full items-center justify-between border border-zinc-800 bg-zinc-950/40 p-3 hover:bg-zinc-800 hover:border-zinc-700 transition-all text-left group cursor-pointer"
                       >
                         <div className="flex-1 min-w-0 pr-2">
                           <p className="font-medium text-sm text-zinc-100 group-hover:text-white transition-colors truncate">
@@ -239,7 +232,7 @@ export default function AddToListButton({
                       value={newListName}
                       onChange={(e) => setNewListName(e.target.value)}
                       maxLength={50}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                      className="w-full border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                       required
                     />
                     <input
@@ -248,13 +241,13 @@ export default function AddToListButton({
                       value={newListDesc}
                       onChange={(e) => setNewListDesc(e.target.value)}
                       maxLength={150}
-                      className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                      className="w-full border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={isCreating || !newListName.trim()}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex w-full items-center justify-center gap-2 bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isCreating ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

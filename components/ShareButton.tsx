@@ -32,12 +32,12 @@ export default function ShareButton({
       onClick={handleShare}
       className={`flex items-center justify-center font-semibold transition-colors duration-300 flex-shrink-0 cursor-pointer ${
         compact
-          ? `h-8 w-8 rounded-lg ${
+          ? `h-8 w-8 ${
               copied
                 ? "text-emerald-600 hover:text-emerald-700"
                 : "text-blue-600 hover:text-blue-700"
             }`
-          : `h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 px-4 py-1.5 md:px-2 md:py-1.5 rounded-lg md:rounded-none md:border-0 ${
+          : `h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 px-4 py-1.5 md:px-2 md:py-1.5 md:border-0 ${
               copied
                 ? "border-emerald-600 text-emerald-600 hover:text-emerald-700"
                 : "border-blue-600 text-blue-600 hover:text-blue-700"

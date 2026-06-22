@@ -11,12 +11,11 @@ export function HeaderSkeleton() {
 
           {/* Desktop Nav placeholders */}
           <nav className="ml-8 hidden gap-6 md:flex">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800"
-              />
-            ))}
+            <div className="h-4 w-20 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-4 w-20 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
           </nav>
         </div>
 

@@ -5,6 +5,8 @@ import { Metadata } from "next";
 import { connection } from "next/server";
 import { resolvePlayableUrl } from "@/lib/playable-url";
 import { recordAnimeWatchHistory } from "@/lib/history";
+import { WatchlistButton } from "@/components/WatchlistButton";
+import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 
 interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
@@ -99,6 +101,9 @@ export default async function WatchPage({ params }: WatchPageProps) {
   const playableUrl =
     (await resolvePlayableUrl(episode.videoUrl)) ?? episode.videoUrl;
 
+  const userId = await getAuthenticatedUserId();
+  const inWatchlist = await isInWatchlist("ANIME", episode.season.anime.id);
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
       <main className="mx-auto max-w-7xl px-4 py-6 md:py-10">
@@ -180,8 +185,8 @@ export default async function WatchPage({ params }: WatchPageProps) {
               </div>
 
               <div>
-                <div className="flex items-start justify-between gap-4">
-                  <div>
+                <div className="flex flex-col items-start gap-2">
+                  <div className="flex items-center justify-between w-full">
                     <Link
                       href={`/animes/${slug}`}
                       className="inline-block hover:text-blue-500 dark:hover:text-blue-400 transition-colors hover:underline"
@@ -190,11 +195,21 @@ export default async function WatchPage({ params }: WatchPageProps) {
                         {episode.season.anime.title}
                       </h4>
                     </Link>
-                    <h1 className="text-[22px] font-bold mt-1 text-zinc-500">
-                      Temporada {episode.season.number} • Episódio{" "}
-                      {episode.number}
-                    </h1>
+
+                    <WatchlistButton
+                      mediaType="ANIME"
+                      mediaId={episode.season.anime.id}
+                      slug={episode.season.anime.slug}
+                      initialInWatchlist={inWatchlist}
+                      isLoggedIn={Boolean(userId)}
+                      hasBorder={false}
+                    />
                   </div>
+
+                  <h1 className="text-[22px] font-bold text-zinc-500">
+                    Temporada {episode.season.number} • Episódio{" "}
+                    {episode.number}
+                  </h1>
                 </div>
                 <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-800">
                   <p className="mt-2 text-zinc-600 dark:text-zinc-400 leading-relaxed">

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Award, Tv, Star, Trophy } from "lucide-react";
-import RatingBadge from "@/components/RatingBadge";
 import { getPopularAnimes, PopularAnimeItem } from "@/app/actions/popular";
 
 interface PopularAnimesListProps {
@@ -38,7 +37,9 @@ export function PopularAnimesList({
         // Filter out any duplicates just in case
         setItems((prev) => {
           const existingIds = new Set(prev.map((item) => item.id));
-          const newItems = res.items.filter((item) => !existingIds.has(item.id));
+          const newItems = res.items.filter(
+            (item) => !existingIds.has(item.id),
+          );
           return [...prev, ...newItems];
         });
         setPage(nextPage);
@@ -65,7 +66,7 @@ export function PopularAnimesList({
       {
         rootMargin: "200px", // Pre-fetch when user is 200px from the bottom
         threshold: 0.1,
-      }
+      },
     );
 
     observer.observe(observerTarget);
@@ -140,19 +141,12 @@ export function PopularAnimesList({
               {/* Rank Badge */}
               <div
                 className={`absolute top-0 left-0 z-10 flex items-center gap-1 rounded-br px-2.5 py-1 text-xs font-black shadow-md ${getRankBadgeStyle(
-                  item.rank
+                  item.rank,
                 )}`}
               >
                 {getRankIcon(item.rank)}
                 <span>#{item.rank}</span>
               </div>
-
-              {/* Rating or Status overlay */}
-              {item.rating && (
-                <div className="absolute bottom-3 right-3 z-10 shadow-md">
-                  <RatingBadge rating={item.rating} size={20} />
-                </div>
-              )}
 
               {/* Hover play overlay */}
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -194,7 +188,10 @@ export function PopularAnimesList({
         {/* Loading Skeletons */}
         {loading &&
           Array.from({ length: 12 }).map((_, idx) => (
-            <div key={`skeleton-${idx}`} className="flex flex-col gap-3 animate-pulse">
+            <div
+              key={`skeleton-${idx}`}
+              className="flex flex-col gap-3 animate-pulse"
+            >
               <div className="relative aspect-[2/3] w-full bg-zinc-200 dark:bg-zinc-800 shadow-md ring-1 ring-black/5 dark:ring-white/10" />
               <div className="flex flex-col gap-2">
                 <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded" />
@@ -207,7 +204,10 @@ export function PopularAnimesList({
 
       {/* Target element for IntersectionObserver */}
       {hasMore && !loading && (
-        <div ref={observerRef} className="h-10 w-full flex justify-center items-center">
+        <div
+          ref={observerRef}
+          className="h-10 w-full flex justify-center items-center"
+        >
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600 dark:border-zinc-700 dark:border-t-blue-500" />
         </div>
       )}

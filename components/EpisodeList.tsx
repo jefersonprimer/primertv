@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Play, PlayIcon } from "lucide-react";
+import { PlayIcon } from "lucide-react";
 import RatingBadge from "./RatingBadge";
 
 interface Item {
@@ -57,7 +57,7 @@ export default function EpisodeList({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {visibleItems.map((item) => {
           const displayAnimeTitle = item.animeTitle || animeTitle;
           const displayAnimeRating = item.animeRating || animeRating;
@@ -67,7 +67,7 @@ export default function EpisodeList({
             <Link
               key={item.id}
               href={item.href || (baseUrl ? `${baseUrl}/${item.id}` : "#")}
-              className={`group relative flex gap-3 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 p-3 transition-all duration-300 overflow-hidden ${
+              className={`group relative flex gap-3 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition-all duration-300 overflow-hidden ${
                 itemType === "episode" ? "flex-row sm:flex-col" : "flex-col"
               }`}
             >
@@ -89,7 +89,7 @@ export default function EpisodeList({
 
                   {/* Rating badge on top-left */}
                   {displayAnimeRating && (
-                    <div className="absolute top-2 left-2 z-10">
+                    <div className="absolute top-1 left-1 z-10">
                       <RatingBadge rating={displayAnimeRating} size={16} />
                     </div>
                   )}
@@ -102,7 +102,7 @@ export default function EpisodeList({
 
                   {/* Duration badge on bottom-right */}
                   {displayAnimeDuration && (
-                    <div className="absolute bottom-2 right-2 bg-black/60 px-1.5 py-0.5 text-xs font-bold text-white backdrop-blur-sm">
+                    <div className="absolute bottom-1 right-1 bg-black/60 px-1.5 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
                       {formatDuration(displayAnimeDuration)}
                     </div>
                   )}
@@ -113,11 +113,11 @@ export default function EpisodeList({
               {itemType === "episode" ? (
                 <div className="flex flex-col gap-1 flex-1 justify-center sm:justify-start">
                   {displayAnimeTitle && (
-                    <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider line-clamp-1">
+                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider line-clamp-1">
                       {displayAnimeTitle}
                     </span>
                   )}
-                  <h4 className="line-clamp-2 sm:line-clamp-1 font-medium text-zinc-900 dark:text-zinc-100">
+                  <h4 className="line-clamp-2 sm:line-clamp-1 text-base font-normal text-zinc-900 dark:text-zinc-100">
                     {item.title && item.title.trim()
                       ? item.title
                       : `${label} ${item.number}`}
@@ -155,18 +155,20 @@ export default function EpisodeList({
                 <div className="hidden sm:flex absolute inset-0 bg-zinc-900 dark:bg-zinc-950 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex-col p-4 justify-between text-white z-20 pointer-events-none group-hover:pointer-events-auto">
                   <div className="flex flex-col gap-1">
                     {displayAnimeTitle && (
-                      <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider line-clamp-1">
+                      <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider line-clamp-1">
                         {displayAnimeTitle}
                       </span>
                     )}
-                    <h4 className="line-clamp-2 text-sm font-medium text-white">
+                    <h4 className="line-clamp-2 text-base font-normal text-white">
                       {item.title || `${label} ${item.number}`}
                     </h4>
                   </div>
 
                   <div className="w-full inline-flex items-center justify-center bg-blue-600 gap-2 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 mt-auto uppercase">
                     <PlayIcon size={20} />
-                    {label === "Filme" ? "assistir filme" : `reproduzir ep ${item.number}`}
+                    {label === "Filme"
+                      ? "assistir filme"
+                      : `reproduzir ep ${item.number}`}
                   </div>
                 </div>
               )}
