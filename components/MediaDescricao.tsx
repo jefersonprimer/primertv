@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import RatingBadge from "./RatingBadge";
 
 interface MediaDescricaoProps {
   description: string;
@@ -51,8 +52,11 @@ export default function MediaDescricao({
       {hasExtraInfo && (
         <div className="flex flex-col gap-4 flex-1 md:w-1/3 text-sm font-normal">
           {rating && (
-            <div className="flex">
+            <div className="flex gap-1">
               Classificação:
+              <span>
+                {rating && <RatingBadge rating={rating} className="h-4 w-4" />}
+              </span>
               <span className="text-zinc-700 dark:text-zinc-300">{rating}</span>
             </div>
           )}
