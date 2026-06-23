@@ -65,7 +65,7 @@ export function MediaCarousel({
   if (items.length === 0) return null;
 
   return (
-    <section className="group/carousel relative">
+    <section className="group/carousel relative ">
       {title && (
         <div
           className="mb-6 flex items-end justify-between w-full"

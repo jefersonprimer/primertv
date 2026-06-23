@@ -29,14 +29,14 @@ export function MobileSidebar() {
         aria-hidden="true"
       />
 
-      <aside className="fixed top-16 bottom-0 left-0 z-[70] w-full border-r border-zinc-200 bg-white sm:w-64 md:hidden dark:border-zinc-800 dark:bg-zinc-950">
-        <nav className="flex flex-col gap-1 p-4">
+      <aside className="fixed top-16 bottom-0 left-0 z-[70] w-full bg-[#151515] sm:w-70 md:hidden">
+        <nav className="flex flex-col gap-1 py-2.5">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="rounded-lg px-4 py-3 text-base font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-blue-500 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-blue-500"
+              className="px-4 py-3 text-base font-medium text-[#bbb] transition-colors hover:bg-[#272727] hover:text-[#f2f2f2]"
             >
               {link.label}
             </Link>
@@ -51,8 +51,8 @@ export function MobileSidebar() {
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
-        className={`flex h-full items-center px-4 text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 md:hidden ${
-          isOpen ? "bg-zinc-100 dark:bg-zinc-800" : ""
+        className={`flex h-full items-center px-4 text-[#bbb] hover:text-[#f2f2f2] transition-colors hover:bg-[#151515] md:hidden ${
+          isOpen ? "text-[#f2f2f2] bg-[#151515]" : ""
         }`}
         aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
         aria-expanded={isOpen}

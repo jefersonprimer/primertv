@@ -12,6 +12,7 @@ import {
 } from "@/components/HistoryCarousel";
 import { TodayReleases } from "@/components/TodayReleases";
 import { TodayReleasesSkeleton } from "@/components/TodayReleasesSkeleton";
+import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 
 export const revalidate = 3600; // revalida a cada hora
 
@@ -105,36 +106,41 @@ async function MangaCarousel() {
 
 export default function Home() {
   return (
-    <div className="py-8">
-      <main className="space-y-16">
-        <Suspense fallback={<FavoritesCarouselSkeleton />}>
-          <FavoritesCarousel />
-        </Suspense>
+    <>
+      <Suspense fallback={<HeroCarouselSkeleton />}>
+        <HeroCarousel />
+      </Suspense>
+      <div className="py-8 pl-3 md:pl-8 lg:pl-12 xl:pl-0 md:-translate-y-30 xl:-translate-y-50">
+        <main className="space-y-16">
+          <Suspense fallback={<FavoritesCarouselSkeleton />}>
+            <FavoritesCarousel />
+          </Suspense>
 
-        <Suspense fallback={<HistoryCarouselSkeleton />}>
-          <HistoryCarousel />
-        </Suspense>
+          <Suspense fallback={<HistoryCarouselSkeleton />}>
+            <HistoryCarousel />
+          </Suspense>
 
-        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-          <SeriesCarousel />
-        </Suspense>
+          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+            <SeriesCarousel />
+          </Suspense>
 
-        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-          <MovieCarousel />
-        </Suspense>
+          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+            <MovieCarousel />
+          </Suspense>
 
-        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-          <AnimeCarousel />
-        </Suspense>
+          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+            <AnimeCarousel />
+          </Suspense>
 
-        <Suspense fallback={<TodayReleasesSkeleton />}>
-          <TodayReleases />
-        </Suspense>
+          <Suspense fallback={<TodayReleasesSkeleton />}>
+            <TodayReleases />
+          </Suspense>
 
-        <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-          <MangaCarousel />
-        </Suspense>
-      </main>
-    </div>
+          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+            <MangaCarousel />
+          </Suspense>
+        </main>
+      </div>
+    </>
   );
 }

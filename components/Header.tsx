@@ -35,8 +35,8 @@ export async function Header() {
               </span>
             </Link>
           </div>
-          <nav className="hidden h-full items-center md:flex">
-            {DESKTOP_LINKS.map((link) => (
+          <nav className="hidden h-full items-center sm:flex">
+            {DESKTOP_LINKS.slice(0, 3).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -45,8 +45,19 @@ export async function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="h-4 w-px bg-zinc-700 mx-2" />
-            <ExplorarDropdown />
+            <div className="hidden md:flex h-full items-center">
+              {DESKTOP_LINKS.slice(3).map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <div className="h-4 w-px bg-zinc-700 mx-2" />
+              <ExplorarDropdown />
+            </div>
           </nav>
         </div>
 
@@ -63,7 +74,7 @@ export async function Header() {
               {user.role !== "admin" && (
                 <Link
                   href="/watchlist"
-                  className="flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
+                  className="hidden md:flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
                 >
                   <Bookmark size={22} />
                 </Link>
