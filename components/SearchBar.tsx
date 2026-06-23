@@ -4,31 +4,68 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Search, X } from "lucide-react";
 
+const MAX_RECENT = 12;
+const STORAGE_KEY = "recent-searches";
+
 export function SearchBar() {
   const [query, setQuery] = useState("");
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        setRecentSearches(JSON.parse(stored));
+      } catch {}
+    }
   }, []);
+
+  const saveSearches = (searches: string[]) => {
+    setRecentSearches(searches);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query)}`);
+    const trimmed = query.trim();
+    if (trimmed) {
+      const upper = trimmed.toUpperCase();
+      const updated = [
+        upper,
+        ...recentSearches.filter((s) => s !== upper),
+      ].slice(0, MAX_RECENT);
+      saveSearches(updated);
+      router.push(`/search?q=${encodeURIComponent(trimmed)}`);
     }
   };
 
   const handleClear = () => {
     setQuery("");
     inputRef.current?.focus();
+    router.push("/search");
+  };
+
+  const handleRemoveSearch = (search: string) => {
+    saveSearches(recentSearches.filter((s) => s !== search));
+  };
+
+  const handleClearAll = () => {
+    saveSearches([]);
+  };
+
+  const handleRecentClick = (search: string) => {
+    const original = search.toLowerCase();
+    setQuery(original);
+    router.push(`/search?q=${encodeURIComponent(original)}`);
   };
 
   return (
-    <div className="w-full bg-[#151515] py-6 px-8">
-      <div className="mx-auto max-w-[1130px]">
-        <div className="flex justify-center w-full">
+    <div className="w-full bg-[#151515]">
+      <div className="w-full">
+        <div className="flex justify-center w-full py-6">
           <form
             onSubmit={handleSearch}
             className="relative w-full max-w-[880px]"
@@ -58,6 +95,47 @@ export function SearchBar() {
             )}
           </form>
         </div>
+
+        {recentSearches.length > 0 && query.length === 0 && (
+          <div className="w-full bg-black py-6">
+            <div className="mx-auto mt-6 max-w-[1050px]">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-xl font-bold tracking-widest text-[#f2f2f2]">
+                  Resultados Recentes de Busca
+                </h3>
+                <button
+                  onClick={handleClearAll}
+                  className="text-xl text-[#bbb] font-bold transition-colors hover:text-[#f2f2f2]"
+                >
+                  Limpar Buscas
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {recentSearches.map((search) => (
+                  <div
+                    key={search}
+                    className="group inline-flex cursor-pointer items-center gap-2 px-2 py-1 transition-colors bg-blue-600 hover:bg-blue-500"
+                    onClick={() => handleRecentClick(search)}
+                  >
+                    <span className="text-sm font-medium uppercase text-white group-hover:text-zinc-200">
+                      {search}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveSearch(search);
+                      }}
+                      className="rounded p-1 text-zinc-700 opacity-0 transition-all hover:text-zinc-400 group-hover:opacity-100"
+                      aria-label={`Remover ${search}`}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
