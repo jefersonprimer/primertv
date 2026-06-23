@@ -40,10 +40,14 @@ export async function createList(name: string, description?: string) {
   }
 }
 
-export async function toggleAnimeInList(listId: string, animeId: string) {
+export async function toggleAnimeInList(listId: string, animeId?: string, seriesId?: string) {
   const userId = await getAuthenticatedUserId();
   if (!userId) {
     return { success: false, error: "Você precisa estar logado." };
+  }
+
+  if (!animeId && !seriesId) {
+    return { success: false, error: "Nenhum ID de mídia fornecido." };
   }
 
   // Verify list ownership and count items
@@ -61,12 +65,10 @@ export async function toggleAnimeInList(listId: string, animeId: string) {
   }
 
   // Check if item is already in list
-  const existing = await prisma.customListItem.findUnique({
+  const existing = await prisma.customListItem.findFirst({
     where: {
-      listId_animeId: {
-        listId,
-        animeId,
-      },
+      listId,
+      ...(animeId ? { animeId } : { seriesId }),
     },
   });
 
@@ -74,10 +76,7 @@ export async function toggleAnimeInList(listId: string, animeId: string) {
     // Remove
     await prisma.customListItem.delete({
       where: {
-        listId_animeId: {
-          listId,
-          animeId,
-        },
+        id: existing.id,
       },
     });
     revalidatePath("/listas");
@@ -86,13 +85,14 @@ export async function toggleAnimeInList(listId: string, animeId: string) {
   } else {
     // Add - check limit
     if (list._count.items >= 100) {
-      return { success: false, error: "Esta lista já atingiu o limite máximo de 100 animes." };
+      return { success: false, error: "Esta lista já atingiu o limite máximo de 100 itens." };
     }
 
     await prisma.customListItem.create({
       data: {
         listId,
-        animeId,
+        animeId: animeId || null,
+        seriesId: seriesId || null,
       },
     });
     revalidatePath("/listas");
@@ -101,7 +101,7 @@ export async function toggleAnimeInList(listId: string, animeId: string) {
   }
 }
 
-export async function getUserListsWithAnimeState(animeId: string) {
+export async function getUserListsWithAnimeState(animeId?: string, seriesId?: string) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return [];
 
@@ -111,8 +111,10 @@ export async function getUserListsWithAnimeState(animeId: string) {
       orderBy: { createdAt: "desc" },
       include: {
         items: {
-          where: { animeId },
-          select: { animeId: true },
+          where: {
+            ...(animeId ? { animeId } : { seriesId }),
+          },
+          select: { animeId: true, seriesId: true },
         },
       },
     });

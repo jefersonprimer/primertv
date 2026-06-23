@@ -6,20 +6,21 @@ import { toggleAnimeInList } from "@/app/actions/lists";
 
 interface RemoveFromListButtonProps {
   listId: string;
-  animeId: string;
+  animeId?: string;
+  seriesId?: string;
 }
 
-export default function RemoveFromListButton({ listId, animeId }: RemoveFromListButtonProps) {
+export default function RemoveFromListButton({ listId, animeId, seriesId }: RemoveFromListButtonProps) {
   const [isPending, setIsPending] = useState(false);
 
   const handleRemove = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (confirm("Deseja remover este anime da lista?")) {
+    if (confirm("Deseja remover este item da lista?")) {
       setIsPending(true);
       try {
-        const res = await toggleAnimeInList(listId, animeId);
+        const res = await toggleAnimeInList(listId, animeId, seriesId);
         if (!res.success) {
           alert(res.error || "Erro ao remover item.");
         }

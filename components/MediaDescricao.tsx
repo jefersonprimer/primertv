@@ -8,6 +8,7 @@ interface MediaDescricaoProps {
   className?: string;
   rating?: string;
   genres?: string[];
+  year?: number | null;
 }
 
 export default function MediaDescricao({
@@ -15,6 +16,7 @@ export default function MediaDescricao({
   className = "text-zinc-600 dark:text-white",
   rating,
   genres,
+  year,
 }: MediaDescricaoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 300;
@@ -26,7 +28,7 @@ export default function MediaDescricao({
     ? description
     : description.slice(0, maxLength);
 
-  const hasExtraInfo = rating || (genres && genres.length > 0);
+  const hasExtraInfo = rating || (genres && genres.length > 0) || year;
 
   return (
     <div className="flex flex-col md:flex-row gap-8 w-full border-b-2 border-zinc-700 pb-4">
@@ -51,6 +53,12 @@ export default function MediaDescricao({
       {/* Info Column */}
       {hasExtraInfo && (
         <div className="flex flex-col gap-4 flex-1 md:w-1/3 text-sm font-normal">
+          {year && (
+            <div>
+              Ano:{" "}
+              <span className="text-zinc-700 dark:text-zinc-300">{year}</span>
+            </div>
+          )}
           {rating && (
             <div className="flex gap-1.5">
               Classificação:

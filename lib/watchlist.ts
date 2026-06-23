@@ -24,7 +24,11 @@ export async function isInWatchlist(
     where: {
       userId,
       mediaType,
-      ...(mediaType === "ANIME" ? { animeId: mediaId } : { mangaId: mediaId }),
+      ...(mediaType === "ANIME"
+        ? { animeId: mediaId }
+        : mediaType === "MANGA"
+        ? { mangaId: mediaId }
+        : { seriesId: mediaId }),
     },
     select: { id: true },
   });

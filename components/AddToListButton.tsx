@@ -9,9 +9,12 @@ import {
 } from "@/app/actions/lists";
 
 interface ListSelectorProps {
-  animeId: string;
+  animeId?: string;
+  seriesId?: string;
   isLoggedIn: boolean;
   compact?: boolean;
+  hasBorder?: boolean;
+  roundedFull?: boolean;
 }
 
 interface UserList {
@@ -23,8 +26,11 @@ interface UserList {
 
 export default function AddToListButton({
   animeId,
+  seriesId,
   isLoggedIn,
   compact = false,
+  hasBorder,
+  roundedFull = false,
 }: ListSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [lists, setLists] = useState<UserList[]>([]);
@@ -33,6 +39,38 @@ export default function AddToListButton({
   const [newListDesc, setNewListDesc] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Determine button styles dynamically
+  const buttonClass = (() => {
+    if (compact) {
+      return `flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 flex-shrink-0 cursor-pointer transition-colors relative group${
+        roundedFull ? " rounded-full" : ""
+      }`;
+    }
+
+    let base =
+      "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 cursor-pointer relative group";
+
+    if (roundedFull) {
+      base += " rounded-full";
+    }
+
+    if (hasBorder === undefined) {
+      base += " border-2 border-blue-600 hover:border-blue-700 md:border-0";
+    } else if (hasBorder === true) {
+      base += " border-2 border-blue-600 hover:border-blue-700";
+    } else {
+      base += " border-0";
+    }
+
+    return base;
+  })();
+
+  const tooltipElement = (
+    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 rounded-md shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
+      Adicionar a Lista
+    </span>
+  );
 
   // Load lists when modal opens
   useEffect(() => {
@@ -45,7 +83,7 @@ export default function AddToListButton({
     setLoading(true);
     setError(null);
     try {
-      const data = await getUserListsWithAnimeState(animeId);
+      const data = await getUserListsWithAnimeState(animeId, seriesId);
       setLists(data);
     } catch (err) {
       console.error(err);
@@ -65,7 +103,7 @@ export default function AddToListButton({
     );
 
     try {
-      const res = await toggleAnimeInList(listId, animeId);
+      const res = await toggleAnimeInList(listId, animeId, seriesId);
       if (!res.success) {
         // Revert UI update
         setLists((prev) =>
@@ -115,14 +153,11 @@ export default function AddToListButton({
     return (
       <a
         href="/login"
-        className={
-          compact
-            ? "flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 flex-shrink-0 cursor-pointer transition-colors"
-            : "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 cursor-pointer md:border-0"
-        }
-        title="Adicionar a uma lista personalizada"
+        className={buttonClass}
+        aria-label="Adicionar a uma lista personalizada"
       >
         <Plus className="h-6 w-6" />
+        {tooltipElement}
       </a>
     );
   }
@@ -131,14 +166,11 @@ export default function AddToListButton({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={
-          compact
-            ? "flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 flex-shrink-0 cursor-pointer transition-colors"
-            : "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 cursor-pointer md:border-0"
-        }
-        title="Adicionar a uma lista personalizada"
+        className={buttonClass}
+        aria-label="Adicionar a uma lista personalizada"
       >
         <Plus className="h-6 w-6" />
+        {tooltipElement}
       </button>
 
       {/* Modal */}
@@ -270,7 +302,7 @@ export default function AddToListButton({
               {/* Info limits */}
               <div className="text-[10px] text-zinc-500 flex justify-between pt-2 border-t border-zinc-800">
                 <span>Limite: 10 listas por usuário</span>
-                <span>Max: 100 animes por lista</span>
+                <span>Max: 100 itens por lista</span>
               </div>
             </div>
           </div>

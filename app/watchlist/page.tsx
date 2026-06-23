@@ -43,6 +43,14 @@ export default async function WatchlistPage() {
           imageUrl: true,
         },
       },
+      series: {
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          imageUrl: true,
+        },
+      },
     },
   });
 
@@ -79,7 +87,11 @@ export default async function WatchlistPage() {
     .filter((item) => item.mediaType === "MANGA" && item.manga)
     .map((item) => item.manga!);
 
-  const isEmpty = animes.length === 0 && mangas.length === 0;
+  const seriesList = items
+    .filter((item) => item.mediaType === "SERIES" && item.series)
+    .map((item) => item.series!);
+
+  const isEmpty = animes.length === 0 && mangas.length === 0 && seriesList.length === 0;
 
   return (
     <div className="mx-auto max-w-[1130px] p-8">
@@ -89,7 +101,7 @@ export default async function WatchlistPage() {
             Minha Watchlist
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400">
-            Animes e mangás que você salvou para assistir ou ler depois.
+            Animes, mangás e séries que você salvou para assistir ou ler depois.
           </p>
         </header>
 
@@ -101,6 +113,10 @@ export default async function WatchlistPage() {
                 Explore{" "}
                 <Link href="/animes" className="text-blue-500 hover:underline">
                   animes
+                </Link>{" "}
+                ou{" "}
+                <Link href="/series" className="text-blue-500 hover:underline">
+                  séries
                 </Link>{" "}
                 ou{" "}
                 <Link href="/mangas" className="text-blue-500 hover:underline">
@@ -119,6 +135,19 @@ export default async function WatchlistPage() {
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {animes.map((item) => (
                       <FavoriteCard key={item.id} item={item} />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {seriesList.length > 0 && (
+                <section>
+                  <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                    Séries
+                  </h2>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {seriesList.map((item) => (
+                      <MediaCard key={item.id} item={item} type="series" />
                     ))}
                   </div>
                 </section>

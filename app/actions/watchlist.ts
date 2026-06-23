@@ -27,7 +27,7 @@ export async function toggleWatchlist(
     return { error: "Dados inválidos." };
   }
 
-  if (mediaType !== "ANIME" && mediaType !== "MANGA") {
+  if (mediaType !== "ANIME" && mediaType !== "MANGA" && mediaType !== "SERIES") {
     return { error: "Tipo de mídia inválido." };
   }
 
@@ -35,14 +35,24 @@ export async function toggleWatchlist(
     where: {
       userId,
       mediaType,
-      ...(mediaType === "ANIME" ? { animeId: mediaId } : { mangaId: mediaId }),
+      ...(mediaType === "ANIME"
+        ? { animeId: mediaId }
+        : mediaType === "MANGA"
+        ? { mangaId: mediaId }
+        : { seriesId: mediaId }),
     },
     select: { id: true },
   });
 
+  const getRevalidatePath = (type: WatchlistMediaType, s: string) => {
+    if (type === "ANIME") return `/animes/${s}`;
+    if (type === "MANGA") return `/mangas/${s}`;
+    return `/series/${s}`;
+  };
+
   if (existing) {
     await prisma.watchlistItem.delete({ where: { id: existing.id } });
-    revalidatePath(mediaType === "ANIME" ? `/animes/${slug}` : `/mangas/${slug}`);
+    revalidatePath(getRevalidatePath(mediaType, slug));
     revalidatePath("/watchlist");
     return { inWatchlist: false };
   }
@@ -51,11 +61,15 @@ export async function toggleWatchlist(
     data: {
       userId,
       mediaType,
-      ...(mediaType === "ANIME" ? { animeId: mediaId } : { mangaId: mediaId }),
+      ...(mediaType === "ANIME"
+        ? { animeId: mediaId }
+        : mediaType === "MANGA"
+        ? { mangaId: mediaId }
+        : { seriesId: mediaId }),
     },
   });
 
-  revalidatePath(mediaType === "ANIME" ? `/animes/${slug}` : `/mangas/${slug}`);
+  revalidatePath(getRevalidatePath(mediaType, slug));
   revalidatePath("/watchlist");
   return { inWatchlist: true };
 }

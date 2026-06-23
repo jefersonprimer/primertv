@@ -12,6 +12,15 @@ interface AniListResponse {
 interface TmdbSearchResponse {
   results?: Array<{
     backdrop_path: string | null;
+    id?: number;
+    media_type?: string;
+  }>;
+}
+
+interface TmdbImagesResponse {
+  logos?: Array<{
+    file_path: string;
+    iso_639_1: string | null;
   }>;
 }
 
@@ -165,6 +174,77 @@ export const getSeriesBanner = cache(async (seriesId: string, title: string): Pr
   }
 
   return resolvedBanner;
+});
+
+/**
+ * Searches TMDB API for a series logo URL based on the series title,
+ * saves the result to the database, and returns the logo image URL.
+ * Wrapped in React cache to prevent duplicate calls during the same request lifecycle.
+ */
+export const getSeriesLogo = cache(async (seriesId: string, title: string): Promise<string | null> => {
+  if (!title || !seriesId) return null;
+
+  let resolvedLogo: string | null = null;
+  const tmdbKey = process.env.TMDB_API_KEY;
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+
+  if (tmdbKey || tmdbToken) {
+    try {
+      const searchUrl = `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(title)}&language=pt-BR`;
+      const headers: HeadersInit = {};
+
+      if (tmdbToken) {
+        headers["Authorization"] = `Bearer ${tmdbToken}`;
+      }
+
+      const searchResponse = await fetch(
+        tmdbKey && !tmdbToken ? `${searchUrl}&api_key=${tmdbKey}` : searchUrl,
+        { headers, next: { revalidate: 3600 } }
+      );
+
+      if (searchResponse.ok) {
+        const searchData = (await searchResponse.json()) as TmdbSearchResponse;
+        const tvId = searchData.results?.[0]?.id;
+
+        if (tvId) {
+          const imagesUrl = `https://api.themoviedb.org/3/tv/${tvId}/images`;
+          const imagesResponse = await fetch(
+            tmdbKey && !tmdbToken ? `${imagesUrl}&api_key=${tmdbKey}` : imagesUrl,
+            { headers, next: { revalidate: 3600 } }
+          );
+
+          if (imagesResponse.ok) {
+            const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
+            const logos = imagesData.logos || [];
+
+            // Prefer Portuguese logo, fallback to English, then any
+            const preferred = logos.find((l) => l.iso_639_1 === "pt") ||
+                              logos.find((l) => l.iso_639_1 === "en") ||
+                              logos[0];
+
+            if (preferred?.file_path) {
+              resolvedLogo = `https://image.tmdb.org/t/p/original${preferred.file_path}`;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Erro ao buscar logo da série "${title}" no TMDB:`, error);
+    }
+  }
+
+  const logoToSave = resolvedLogo || "none";
+
+  try {
+    await prisma.series.update({
+      where: { id: seriesId },
+      data: { logoUrl: logoToSave },
+    });
+  } catch (dbError) {
+    console.error(`Erro ao salvar logo da série "${title}" no banco:`, dbError);
+  }
+
+  return resolvedLogo;
 });
 
 /**

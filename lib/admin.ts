@@ -66,6 +66,8 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
       },
       { name: "imageUrl", label: "Imagem", type: "text" },
       { name: "bannerUrl", label: "Banner URL", type: "text" },
+      { name: "logoUrl", label: "Logo URL", type: "text" },
+      { name: "score", label: "Nota", type: "number", step: "0.1" },
       {
         name: "genres",
         label: "Gêneros",

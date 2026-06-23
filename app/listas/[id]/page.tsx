@@ -44,6 +44,14 @@ export default async function ListDetailsPage({ params }: ListDetailsPageProps) 
           imageUrl: true,
         },
       },
+      series: {
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          imageUrl: true,
+        },
+      },
     },
   });
 
@@ -72,7 +80,7 @@ export default async function ListDetailsPage({ params }: ListDetailsPageProps) 
             </p>
           )}
           <div className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mt-2">
-            {items.length} / 100 animes adicionados
+            {items.length} / 100 itens adicionados
           </div>
         </header>
 
@@ -88,17 +96,30 @@ export default async function ListDetailsPage({ params }: ListDetailsPageProps) 
                 <Link href="/animes" className="text-blue-500 hover:underline">
                   animes
                 </Link>{" "}
+                ou{" "}
+                <Link href="/series" className="text-blue-500 hover:underline">
+                  séries
+                </Link>{" "}
                 e adicione-os à sua lista.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {items.map((item) => (
-                <div key={item.id} className="relative group animate-in fade-in zoom-in-95 duration-200">
-                  <RemoveFromListButton listId={list.id} animeId={item.anime.id} />
-                  <MediaCard item={item.anime} type="anime" />
-                </div>
-              ))}
+              {items.map((item) => {
+                const mediaItem = item.anime || item.series;
+                const mediaType = item.anime ? "anime" : "series";
+                if (!mediaItem) return null;
+                return (
+                  <div key={item.id} className="relative group animate-in fade-in zoom-in-95 duration-200">
+                    <RemoveFromListButton
+                      listId={list.id}
+                      animeId={item.anime?.id}
+                      seriesId={item.series?.id}
+                    />
+                    <MediaCard item={mediaItem} type={mediaType} />
+                  </div>
+                );
+              })}
             </div>
           )}
         </main>

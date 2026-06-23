@@ -14,6 +14,7 @@ type WatchlistButtonProps = {
   isLoggedIn: boolean;
   compact?: boolean;
   hasBorder?: boolean;
+  roundedFull?: boolean;
 };
 
 export function WatchlistButton({
@@ -24,6 +25,7 @@ export function WatchlistButton({
   isLoggedIn,
   compact = false,
   hasBorder = true,
+  roundedFull = false,
 }: WatchlistButtonProps) {
   const [state, formAction, isPending] = useActionState(toggleWatchlist, {
     inWatchlist: initialInWatchlist,
@@ -31,7 +33,7 @@ export function WatchlistButton({
 
   const inWatchlist = state.inWatchlist ?? initialInWatchlist;
 
-  const linkClass = hasBorder
+  let linkClass = hasBorder
     ? (compact
         ? "flex h-8 w-8 items-center justify-center border-2 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700 flex-shrink-0 transition-colors"
         : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 border-blue-600 hover:border-blue-700 font-semibold text-blue-600 hover:text-blue-700 transition-colors md:px-2 md:py-1.5 flex-shrink-0")
@@ -39,7 +41,7 @@ export function WatchlistButton({
         ? "flex h-8 w-8 items-center justify-center text-zinc-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-500 flex-shrink-0 transition-colors"
         : "flex h-10 w-10 items-center justify-center text-zinc-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-500 flex-shrink-0 transition-colors");
 
-  const buttonClass = hasBorder
+  let buttonClass = hasBorder
     ? (compact
         ? "flex h-8 w-8 items-center justify-center border-2 font-semibold transition-colors border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700"
         : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 font-semibold transition-colors md:px-2 md:py-1.5 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700")
@@ -55,6 +57,20 @@ export function WatchlistButton({
               : "text-zinc-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-500"
           }`);
 
+  if (roundedFull) {
+    linkClass += " rounded-full";
+    buttonClass += " rounded-full";
+  }
+
+  linkClass += " relative group";
+  buttonClass += " relative group";
+
+  const tooltipElement = (
+    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 rounded-md shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
+      Minha Lista
+    </span>
+  );
+
   if (!isLoggedIn) {
     return (
       <Link href="/login" className={linkClass}>
@@ -65,6 +81,7 @@ export function WatchlistButton({
               : "h-6 w-6"
           }
         />
+        {tooltipElement}
       </Link>
     );
   }
@@ -86,6 +103,7 @@ export function WatchlistButton({
               : `h-6 w-6 ${inWatchlist ? "fill-current" : ""}`
           }
         />
+        {tooltipElement}
       </button>
       {state.error && (
         <p className="mt-2 text-sm text-red-500">{state.error}</p>

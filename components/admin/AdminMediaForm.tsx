@@ -48,7 +48,7 @@ function FieldInput({
       type={field.type}
       defaultValue={defaultValue}
       placeholder={field.placeholder}
-      step={field.type === "number" ? "1" : undefined}
+      step={field.type === "number" ? (field.step || "1") : undefined}
       className={baseClass}
     />
   );

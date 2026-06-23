@@ -5,7 +5,12 @@ import { prisma } from "@/lib/prisma";
 import EpisodeList from "@/components/EpisodeList";
 import MediaDescricao from "@/components/MediaDescricao";
 import { Metadata } from "next";
-import { getSeriesBanner } from "@/lib/banners";
+import { getSeriesBanner, getSeriesLogo } from "@/lib/banners";
+import { WatchlistButton } from "@/components/WatchlistButton";
+import AddToListButton from "@/components/AddToListButton";
+import ShareButton from "@/components/ShareButton";
+import { MediaCarousel } from "@/components/MediaCarousel";
+import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 
 export const revalidate = 3600;
 
@@ -70,17 +75,47 @@ export default async function SeriesDetailsPage({
   }
   const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
 
+  let logoUrl = series.logoUrl;
+  if (!logoUrl || logoUrl === "none") {
+    logoUrl = await getSeriesLogo(series.id, series.title);
+  }
+  const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
+
+  const userId = await getAuthenticatedUserId();
+  const inWatchlist = await isInWatchlist("SERIES", series.id);
+
+  const similarSeries =
+    series.genres && series.genres.length > 0
+      ? await prisma.series.findMany({
+          where: {
+            genres: {
+              hasSome: series.genres,
+            },
+            id: {
+              not: series.id,
+            },
+          },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            imageUrl: true,
+          },
+          take: 15,
+        })
+      : [];
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       {/* Header/Banner Section */}
-      <div className="relative min-h-[70vh] w-full flex flex-col justify-end overflow-hidden bg-zinc-900">
+      <div className="relative md:min-h-[90vh] w-full flex flex-col justify-end overflow-hidden bg-zinc-900">
         {finalBannerUrl ? (
           <Image
             src={finalBannerUrl}
             alt={series.title}
             fill
             sizes="100vw"
-            className="object-cover opacity-35"
+            className="object-cover opacity-100 hidden md:block"
             priority
           />
         ) : (
@@ -90,22 +125,27 @@ export default async function SeriesDetailsPage({
               alt={series.title}
               fill
               sizes="100vw"
-              className="object-cover opacity-30 blur-sm"
+              className="object-cover opacity-100 hidden md:block"
               priority
             />
           )
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+        {/* Bottom Gradient (fades to page bg) */}
+        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+        {/* Left Gradient (occupies 40% of the width, fading softer to transparent) */}
+        <div className="absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/80" />
+        {/* Right Gradient (occupies 10% of the width, fading to transparent) */}
+        <div className="absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-zinc-50/50 to-transparent dark:from-black/50" />
 
         <div className="relative w-full p-8 md:p-12 z-10">
           <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
-            <div className="relative aspect-[2/3] w-48 lg:w-60 flex-shrink-0 overflow-hidden shadow-2xl">
+            <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:hidden flex-shrink-0">
               {series.imageUrl ? (
                 <Image
                   src={series.imageUrl}
                   alt={series.title}
                   fill
-                  sizes="(max-width: 768px) 192px, 240px"
+                  sizes="(max-width: 768px) 100vw, 240px"
                   className="object-cover"
                   priority
                 />
@@ -115,10 +155,62 @@ export default async function SeriesDetailsPage({
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-4 flex-1">
-              <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
-                {series.title}
-              </h1>
+            <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 w-full">
+              {/* Mobile Background with Gradient Mask to fade out the top boundary line */}
+              <div
+                className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50/20 via-zinc-50/85 to-zinc-50 dark:from-black/20 dark:via-black/85 dark:to-black backdrop-blur-[3px] rounded-t-2xl md:hidden"
+                style={{
+                  maskImage:
+                    "linear-gradient(to bottom, transparent, black 120px)",
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, transparent, black 120px)",
+                }}
+              />
+              {finalLogoUrl ? (
+                <div className="relative w-full max-w-[280px] md:max-w-[400px] aspect-[3/1] mb-2 flex items-center">
+                  <Image
+                    src={finalLogoUrl}
+                    alt={series.title}
+                    fill
+                    priority
+                    className="object-contain object-left"
+                  />
+                  <h1 className="sr-only">{series.title}</h1>
+                </div>
+              ) : (
+                <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
+                  {series.title}
+                </h1>
+              )}
+              {series.score !== null && series.score !== undefined && (
+                <div className="flex items-center gap-1.5">
+                  <span className="rounded bg-[#f5c518] px-1.5 py-0.5 text-xs font-bold text-black leading-none">
+                    IMDb
+                  </span>
+                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                    {series.score.toFixed(1)}
+                    <span className="text-zinc-400">/10</span>
+                  </span>
+                </div>
+              )}
+              <div className="flex flex-row items-center gap-3 w-full md:w-auto">
+                <WatchlistButton
+                  mediaType="SERIES"
+                  mediaId={series.id}
+                  slug={series.slug}
+                  initialInWatchlist={inWatchlist}
+                  isLoggedIn={Boolean(userId)}
+                  hasBorder={true}
+                  roundedFull={true}
+                />
+                <AddToListButton
+                  seriesId={series.id}
+                  isLoggedIn={Boolean(userId)}
+                  hasBorder={true}
+                  roundedFull={true}
+                />
+                <ShareButton hasBorder={true} roundedFull={true} />
+              </div>
               {series.genres && series.genres.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {series.genres.map((genre) => (
@@ -135,7 +227,9 @@ export default async function SeriesDetailsPage({
                 <div className="w-full">
                   <MediaDescricao
                     description={series.description}
+                    rating={series.rating || undefined}
                     genres={series.genres}
+                    year={series.year}
                   />
                 </div>
               )}
@@ -173,6 +267,17 @@ export default async function SeriesDetailsPage({
           </div>
         )}
       </main>
+
+      {similarSeries.length > 0 && (
+        <div className="pb-12">
+          <MediaCarousel
+            title="Recomendados"
+            subtitle="Baseado nos gêneros desta série"
+            items={similarSeries}
+            type="series"
+          />
+        </div>
+      )}
     </div>
   );
 }

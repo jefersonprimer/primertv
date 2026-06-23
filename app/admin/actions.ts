@@ -128,6 +128,8 @@ export async function saveMedia(
           ...common,
           slug: finalSlug,
           bannerUrl: readString(formData, "bannerUrl") || null,
+          logoUrl: readString(formData, "logoUrl") || null,
+          score: readNumber(formData, "score"),
         };
 
         if (existing) {

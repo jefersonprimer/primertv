@@ -10,6 +10,7 @@ datasource db {
 enum WatchlistMediaType {
   ANIME
   MANGA
+  SERIES
 }
 
 model User {
@@ -30,14 +31,17 @@ model WatchlistItem {
   mediaType WatchlistMediaType
   animeId   String?
   mangaId   String?
+  seriesId  String?
   createdAt DateTime           @default(now())
 
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  anime Anime? @relation(fields: [animeId], references: [id], onDelete: Cascade)
-  manga Manga? @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime  Anime?  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  manga  Manga?  @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  series Series? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
 
   @@unique([userId, animeId])
   @@unique([userId, mangaId])
+  @@unique([userId, seriesId])
   @@index([userId])
 }
 
@@ -124,11 +128,17 @@ model Series {
   description   String?
   imageUrl      String?
   bannerUrl     String?
+  logoUrl       String?
   genres        String[]       @default([])
+  rating        String?
+  score         Float?
+  year          Int?
   lastScrapedAt DateTime?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   seasons       SeriesSeason[]
+  watchlistItems  WatchlistItem[]
+  customListItems CustomListItem[]
 
   @@index([createdAt])
   @@index([title])
@@ -171,6 +181,7 @@ model Movie {
   bannerUrl     String?
   genres        String[]  @default([])
   videoUrl      String?
+  rating        String?
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -304,16 +315,20 @@ model CustomList {
 }
 
 model CustomListItem {
-  id        String     @id @default(cuid())
+  id        String   @id @default(cuid())
   listId    String
-  animeId   String
-  createdAt DateTime   @default(now())
+  animeId   String?
+  seriesId  String?
+  createdAt DateTime @default(now())
 
-  list  CustomList @relation(fields: [listId], references: [id], onDelete: Cascade)
-  anime Anime      @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  list   CustomList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  anime  Anime?     @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  series Series?    @relation(fields: [seriesId], references: [id], onDelete: Cascade)
 
   @@unique([listId, animeId])
+  @@unique([listId, seriesId])
   @@index([listId])
   @@index([animeId])
+  @@index([seriesId])
 }
 
