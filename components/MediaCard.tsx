@@ -16,7 +16,7 @@ export function MediaCard({
     type === "novela"
       ? "novelas"
       : type === "channel"
-        ? "channels"
+        ? "livetv"
         : type === "movie"
           ? "filmes"
           : type === "anime"

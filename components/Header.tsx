@@ -4,6 +4,15 @@ import { getSession } from "@/lib/auth";
 import { MobileSidebar } from "./MobileSidebar";
 import { NAV_LINKS } from "./nav-links";
 import { UserMenu } from "./UserMenu";
+import { ExplorarDropdown } from "./ExplorarDropdown";
+
+const DESKTOP_LINKS = [
+  { href: "/popular", label: "Populares" },
+  { href: "/new", label: "Novidades" },
+  { href: "/seasons", label: "Temporadas" },
+  { href: "/series", label: "Séries" },
+  { href: "/animes", label: "Animes" },
+];
 
 export async function Header() {
   const session = await getSession();
@@ -28,7 +37,7 @@ export async function Header() {
             </Link>
           </div>
           <nav className="hidden h-full items-center md:flex">
-            {NAV_LINKS.map((link) => (
+            {DESKTOP_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -37,6 +46,8 @@ export async function Header() {
                 {link.label}
               </Link>
             ))}
+            <div className="h-4 w-px bg-zinc-700 mx-2" />
+            <ExplorarDropdown />
           </nav>
         </div>
 

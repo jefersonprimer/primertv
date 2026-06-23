@@ -6,7 +6,7 @@ import { Footer } from "@/components/Footer";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Bem-vindo à PrimerTv",
+  title: "Bem-vindo(a) à PrimerTv",
   description: "Seus animes e séries favoritos em um só lugar.",
 };
 

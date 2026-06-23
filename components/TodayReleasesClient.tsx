@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Play } from "lucide-react";
 
 interface AnimeItem {
   id: string;
@@ -123,35 +123,35 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                 : ""
             }`}
           >
-          {bannerImageUrl ? (
-            <Image
-              src={bannerImageUrl}
-              alt={anime.title}
-              fill
-              sizes="(max-width: 768px) 112px, 144px"
-              className={`object-cover transition-all duration-500 ${
-                showEpisodeHover
-                  ? "opacity-100 group-hover:opacity-0 group-hover:scale-105"
-                  : "group-hover:scale-105"
-              }`}
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
-              Sem Imagem
+            {bannerImageUrl ? (
+              <Image
+                src={bannerImageUrl}
+                alt={anime.title}
+                fill
+                sizes="(max-width: 768px) 112px, 144px"
+                className={`object-cover transition-all duration-500 ${
+                  showEpisodeHover
+                    ? "opacity-100 group-hover:opacity-0 group-hover:scale-105"
+                    : "group-hover:scale-105"
+                }`}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
+                Sem Imagem
+              </div>
+            )}
+            {showEpisodeHover && anime.episodeImageUrl && (
+              <Image
+                src={anime.episodeImageUrl}
+                alt={`Episódio ${anime.lastEpisode} de ${anime.title}`}
+                fill
+                sizes="(max-width: 768px) 112px, 144px"
+                className="absolute inset-0 object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <Play className="h-6 w-6 text-white fill-current" />
             </div>
-          )}
-          {showEpisodeHover && anime.episodeImageUrl && (
-            <Image
-              src={anime.episodeImageUrl}
-              alt={`Episódio ${anime.lastEpisode} de ${anime.title}`}
-              fill
-              sizes="(max-width: 768px) 112px, 144px"
-              className="absolute inset-0 object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <Play className="h-6 w-6 text-white fill-current" />
-          </div>
           </Link>
         </div>
 
@@ -208,11 +208,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           {/* Release time */}
           <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-zinc-400 dark:text-zinc-500 mt-3">
             <Clock className="h-3.5 w-3.5" />
-            <span
-              className={
-                isToday ? "text-green-600 dark:text-green-400 font-medium" : ""
-              }
-            >
+            <span className={isToday ? "font-medium" : ""}>
               {dayLabel} às {anime.releaseTime}
             </span>
           </div>
@@ -225,13 +221,15 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       {/* Title Header */}
       <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-2xl">
-            Novos Lançamentos
-          </h2>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
-            Fique por dentro das novidades do calendário semanal de lançamentos.
-          </p>
+        <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-2xl">
+          Novos Lançamentos
+        </h2>
+
+        <div className="flex items-center gap-2 text-[#bbb] hover:text-white hover:cursor-pointer">
+          <Link href="/calendario" className="text-sm font-bold uppercase">
+            ver calendario de lancamentos
+          </Link>
+          <ChevronRight size="24" />
         </div>
       </div>
 

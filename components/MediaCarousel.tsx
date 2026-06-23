@@ -6,7 +6,7 @@ import { MediaCard } from "./MediaCard";
 import Link from "next/link";
 
 interface MediaCarouselProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   items: any[];
   type: "anime" | "series" | "movie" | "manga" | "novela" | "channel";
@@ -66,32 +66,34 @@ export function MediaCarousel({
 
   return (
     <section className="group/carousel relative">
-      <div
-        className="mb-6 flex items-end justify-between w-full"
-        style={{
-          paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-          paddingRight: "max(8px, (100vw - 1223px) / 2)",
-        }}
-      >
-        <div>
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {subtitle}
-            </p>
+      {title && (
+        <div
+          className="mb-6 flex items-end justify-between w-full"
+          style={{
+            paddingLeft: "max(8px, (100vw - 1223px) / 2)",
+            paddingRight: "max(8px, (100vw - 1223px) / 2)",
+          }}
+        >
+          <div>
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              {title}
+            </h2>
+            {subtitle && (
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                {subtitle}
+              </p>
+            )}
+          </div>
+          {viewAllHref && (
+            <Link
+              href={viewAllHref}
+              className="text-sm font-medium text-blue-500 hover:underline"
+            >
+              Ver tudo
+            </Link>
           )}
         </div>
-        {viewAllHref && (
-          <Link
-            href={viewAllHref}
-            className="text-sm font-medium text-blue-500 hover:underline"
-          >
-            Ver tudo
-          </Link>
-        )}
-      </div>
+      )}
 
       <div className="relative">
         {showLeftArrow && (

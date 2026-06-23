@@ -157,7 +157,7 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
   channels: {
     label: "Canais",
     itemLabel: "canal",
-    publicPath: "/channels",
+    publicPath: "/livetv",
     fields: [
       { name: "title", label: "Título", type: "text", required: true },
       { name: "slug", label: "Slug", type: "text", required: true },

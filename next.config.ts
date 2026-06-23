@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/channels",
+        destination: "/livetv",
+        permanent: true,
+      },
+      {
+        source: "/channels/:slug*",
+        destination: "/livetv/:slug*",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     unoptimized: true,
     remotePatterns: [

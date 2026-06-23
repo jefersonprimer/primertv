@@ -262,10 +262,9 @@ export default async function AnimeDetailsPage({
                         );
                       })}
                     </div>
-                    <div className="h-4 border border-zinc-700" />
-                    <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 gap-2">
-                      {anime.score.toFixed(1)} (Membros{" "}
-                      {formatMembers(anime.members)})
+                    <div className="h-4 border border-zinc-600" />
+                    <span className="text-sm font-semibold text-white gap-2">
+                      {anime.score.toFixed(1)} ({formatMembers(anime.members)})
                     </span>
                   </div>
                 )}

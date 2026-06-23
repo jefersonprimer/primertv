@@ -36,7 +36,7 @@ export function TodayReleasesSkeleton() {
 
       {/* Button skeleton */}
       <div className="mt-8 flex justify-center">
-        <div className="h-10 w-32 -xl bg-zinc-200 dark:bg-zinc-800" />
+        <div className="h-10 w-[1018px] bg-zinc-200 dark:bg-zinc-800" />
       </div>
     </div>
   );
