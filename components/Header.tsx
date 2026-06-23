@@ -2,16 +2,15 @@ import Link from "next/link";
 import { User, Bookmark, Search } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { MobileSidebar } from "./MobileSidebar";
-import { NAV_LINKS } from "./nav-links";
 import { UserMenu } from "./UserMenu";
 import { ExplorarDropdown } from "./ExplorarDropdown";
 
 const DESKTOP_LINKS = [
-  { href: "/popular", label: "Populares" },
-  { href: "/new", label: "Novidades" },
-  { href: "/seasons", label: "Temporadas" },
   { href: "/series", label: "Séries" },
+  { href: "/filmes", label: "Filmes" },
   { href: "/animes", label: "Animes" },
+  { href: "/mangas", label: "Mangas" },
+  { href: "/livetv", label: "Live Tv" },
 ];
 
 export async function Header() {
@@ -41,7 +40,7 @@ export async function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] hover:text-[#f2f2f2] transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-950"
+                className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
               >
                 {link.label}
               </Link>
@@ -54,7 +53,7 @@ export async function Header() {
         <div className="flex h-full items-center">
           <Link
             href="/search"
-            className="flex h-full items-center px-4 text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
           >
             <Search size={22} />
           </Link>
@@ -64,7 +63,7 @@ export async function Header() {
               {user.role !== "admin" && (
                 <Link
                   href="/watchlist"
-                  className="flex h-full items-center px-4 text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  className="flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
                 >
                   <Bookmark size={22} />
                 </Link>
@@ -74,7 +73,7 @@ export async function Header() {
           ) : (
             <Link
               href="/login"
-              className="flex h-full items-center px-4 text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className="flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800">
                 <User size={20} />

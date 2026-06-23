@@ -179,9 +179,13 @@ model Movie {
   description   String?
   imageUrl      String?
   bannerUrl     String?
+  logoUrl       String?
   genres        String[]  @default([])
   videoUrl      String?
   rating        String?
+  runtime       Int?
+  releaseDate   DateTime?
+  score         Float?
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
