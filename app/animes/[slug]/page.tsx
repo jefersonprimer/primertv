@@ -149,7 +149,7 @@ export default async function AnimeDetailsPage({
             )
           )}
           {/* Bottom Gradient (fades to page bg) */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+          <div className="absolute bottom-0 left-0 right-0 h-68 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
           {/* Left Gradient (occupies 40% of the width, fading softer to transparent) */}
           <div className="absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/80" />
           {/* Right Gradient (occupies 10% of the width, fading to transparent) */}
@@ -207,17 +207,44 @@ export default async function AnimeDetailsPage({
                   </h1>
                 )}
 
-                {anime.rank !== null && anime.rank !== undefined && (
-                  <div className="mt-2 flex items-center justify-center md:justify-start gap-1.5">
-                    <span className="rounded bg-[#2E51A2] px-1.5 py-0.5 text-xs font-bold text-white leading-none">
-                      MAL
-                    </span>
-                    <Trophy className="h-3.5 w-3.5 text-amber-500" />
-                    <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                      #{anime.rank}
-                    </span>
-                  </div>
-                )}
+                <div className="mt-2 flex items-center justify-center md:justify-start gap-3 flex-wrap">
+                  {anime.rank !== null && anime.rank !== undefined && (
+                    <div
+                      title={`Top #${anime.rank} no ranking do MyAnimeList.net`}
+                      className="inline-flex items-center rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 text-xs font-bold shadow-sm cursor-help"
+                    >
+                      <span className="bg-[#2E51A2] px-2 py-1.5 text-white uppercase tracking-wider text-[10px] leading-none">
+                        MAL
+                      </span>
+                      <span className="bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 px-2 py-1.5 flex items-center gap-1 leading-none">
+                        #{anime.rank}
+                      </span>
+                    </div>
+                  )}
+
+                  {anime.awards &&
+                    anime.awards.length > 0 &&
+                    (() => {
+                      const winningAwards = anime.awards.filter((award) =>
+                        award.toLowerCase().includes("winner"),
+                      );
+                      if (winningAwards.length === 0) return null;
+                      return (
+                        <div className="inline-flex items-center gap-1.5 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-1.5 rounded border border-amber-500/30 text-xs font-bold shadow-sm transition hover:scale-105 duration-200">
+                          <Image
+                            src="/anime_award_icon.png"
+                            alt="Award Icon"
+                            width={14}
+                            height={14}
+                            className="object-contain"
+                          />
+                          <span className="text-amber-700 dark:text-amber-400 leading-none">
+                            {winningAwards.join(", ")}
+                          </span>
+                        </div>
+                      );
+                    })()}
+                </div>
 
                 {(anime.rating ||
                   (anime.genres && anime.genres.length > 0)) && (
@@ -256,7 +283,13 @@ export default async function AnimeDetailsPage({
                     <div className="flex items-center gap-0.5">
                       <svg aria-hidden="true" className="absolute w-0 h-0">
                         <defs>
-                          <linearGradient id="star-gradient" x1="0" y1="0" x2="1" y2="1">
+                          <linearGradient
+                            id="star-gradient"
+                            x1="0"
+                            y1="0"
+                            x2="1"
+                            y2="1"
+                          >
                             <stop offset="0%" stopColor="#ACD4FE" />
                             <stop offset="50%" stopColor="#8DB4F5" />
                             <stop offset="100%" stopColor="#85AEF3" />
@@ -320,6 +353,7 @@ export default async function AnimeDetailsPage({
                     description={anime.description}
                     rating={anime.rating || undefined}
                     genres={anime.genres}
+                    awards={anime.awards}
                   />
                 </div>
               )}

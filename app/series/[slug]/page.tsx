@@ -269,7 +269,7 @@ export default async function SeriesDetailsPage({
       </main>
 
       {similarSeries.length > 0 && (
-        <div className="pb-12">
+        <div className="py-12">
           <MediaCarousel
             title="Recomendados"
             subtitle="Baseado nos gêneros desta série"

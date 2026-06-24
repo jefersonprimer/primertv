@@ -55,6 +55,7 @@ model Anime {
   logoUrl         String?
   compactImageUrl String?
   genres          String[]         @default([])
+  awards          String[]         @default([])
   aired           String?
   rating          String?
   score           Float?

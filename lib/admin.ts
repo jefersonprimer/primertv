@@ -101,6 +101,13 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         placeholder: "Ação, Shounen",
         helpText: "Separe por vírgula.",
       },
+      {
+        name: "awards",
+        label: "Prêmios (Awards)",
+        type: "text",
+        placeholder: "2025 Anime Awards Nominee, 2024 Best Animation",
+        helpText: "Separe por vírgula.",
+      },
       { name: "aired", label: "Exibição", type: "text" },
       { name: "rating", label: "Classificação", type: "text" },
       { name: "status", label: "Status", type: "text" },
@@ -205,6 +212,14 @@ export function splitGenres(value: FormDataEntryValue | null) {
 
 export function joinGenres(value: string[] | undefined | null) {
   return value?.join(", ") || "";
+}
+
+export function splitAwards(value: FormDataEntryValue | null) {
+  return splitGenres(value);
+}
+
+export function joinAwards(value: string[] | undefined | null) {
+  return joinGenres(value);
 }
 
 export function toDateTimeLocal(value: Date | string | null | undefined) {

@@ -64,7 +64,8 @@ export default async function MovieDetailsPage({
   const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
 
   const movieDetails = await getMovieDetails(movie.id, movie.title);
-  const displayGenres = movieDetails.genres.length > 0 ? movieDetails.genres : movie.genres;
+  const displayGenres =
+    movieDetails.genres.length > 0 ? movieDetails.genres : movie.genres;
 
   const similarMovies =
     movie.genres && movie.genres.length > 0
@@ -164,7 +165,9 @@ export default async function MovieDetailsPage({
                   {movie.title}
                 </h1>
               )}
-              {(movieDetails.score || movieDetails.runtime || movieDetails.year) && (
+              {(movieDetails.score ||
+                movieDetails.runtime ||
+                movieDetails.year) && (
                 <div className="flex flex-row items-center gap-3 flex-wrap">
                   {movieDetails.score && (
                     <div className="flex items-center gap-1.5">
@@ -179,7 +182,10 @@ export default async function MovieDetailsPage({
                   )}
                   {movieDetails.runtime && (
                     <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                      {Math.floor(movieDetails.runtime / 60)}h{movieDetails.runtime % 60 > 0 ? `${movieDetails.runtime % 60}min` : ""}
+                      {Math.floor(movieDetails.runtime / 60)}h
+                      {movieDetails.runtime % 60 > 0
+                        ? `${movieDetails.runtime % 60}min`
+                        : ""}
                     </span>
                   )}
                   {movieDetails.year && (
@@ -222,9 +228,15 @@ export default async function MovieDetailsPage({
               {(movieDetails.description || movie.description) && (
                 <div className="w-full">
                   <MediaDescricao
-                    description={movieDetails.description || movie.description || ""}
+                    description={
+                      movieDetails.description || movie.description || ""
+                    }
                     rating={movieDetails.rating || movie.rating || undefined}
-                    genres={movieDetails.genres.length > 0 ? movieDetails.genres : movie.genres}
+                    genres={
+                      movieDetails.genres.length > 0
+                        ? movieDetails.genres
+                        : movie.genres
+                    }
                     year={movieDetails.year || undefined}
                   />
                 </div>
@@ -271,7 +283,6 @@ export default async function MovieDetailsPage({
             </div>
           )}
         </div>
-
       </main>
 
       {similarMovies.length > 0 && (

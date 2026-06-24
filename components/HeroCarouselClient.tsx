@@ -19,6 +19,7 @@ export interface HeroCarouselItem {
   rating: string | null;
   firstEpisodeId: string | null;
   inWatchlist: boolean;
+  type?: "anime" | "series" | "movie";
 }
 
 interface HeroCarouselClientProps {
@@ -147,7 +148,13 @@ export function HeroCarouselClient({
             <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
               {current.firstEpisodeId ? (
                 <Link
-                  href={`/animes/${current.slug}/episode/${current.firstEpisodeId}`}
+                  href={
+                    current.type === "series"
+                      ? `/series/${current.slug}/episode/${current.firstEpisodeId}`
+                      : current.type === "movie"
+                        ? `/filmes/${current.slug}`
+                        : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
+                  }
                   className="flex w-full max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6"
                 >
                   <Play className="h-5 w-5 fill-current" />
@@ -155,19 +162,35 @@ export function HeroCarouselClient({
                 </Link>
               ) : (
                 <Link
-                  href={`/animes/${current.slug}`}
+                  href={
+                    current.type === "series"
+                      ? `/series/${current.slug}`
+                      : current.type === "movie"
+                        ? `/filmes/${current.slug}`
+                        : `/animes/${current.slug}`
+                  }
                   className="flex h-10 items-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:px-6"
                 >
                   Ver detalhes
                 </Link>
               )}
-              <WatchlistButton
-                mediaType="ANIME"
-                mediaId={current.id}
-                slug={current.slug}
-                initialInWatchlist={current.inWatchlist}
-                isLoggedIn={isLoggedIn}
-              />
+              {current.type !== "movie" ? (
+                <WatchlistButton
+                  mediaType={current.type === "series" ? "SERIES" : "ANIME"}
+                  mediaId={current.id}
+                  slug={current.slug}
+                  initialInWatchlist={current.inWatchlist}
+                  isLoggedIn={isLoggedIn}
+                />
+              ) : (
+                <WatchlistButton
+                  mediaType="SERIES"
+                  mediaId={current.id}
+                  slug={current.slug}
+                  initialInWatchlist={false}
+                  isLoggedIn={false}
+                />
+              )}
             </div>
 
             <div className="flex items-center justify-center md:justify-start gap-2 pt-4 md:pt-6 lg:pt-8">
@@ -196,14 +219,14 @@ export function HeroCarouselClient({
       <button
         onClick={goPrev}
         className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-white transition-all md:flex lg:left-2 md:h-12 md:w-12"
-        aria-label="Anime anterior"
+        aria-label={current.type === "series" ? "Série anterior" : "Anime anterior"}
       >
         <ChevronLeft size={40} />
       </button>
       <button
         onClick={goNext}
         className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-white transition-all md:flex lg:right-2 md:h-12 md:w-12"
-        aria-label="Próximo anime"
+        aria-label={current.type === "series" ? "Próxima série" : "Próximo anime"}
       >
         <ChevronRight size={40} />
       </button>

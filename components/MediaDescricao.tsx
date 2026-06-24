@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import RatingBadge from "./RatingBadge";
+import { Trophy } from "lucide-react";
 
 interface MediaDescricaoProps {
   description: string;
@@ -9,6 +10,7 @@ interface MediaDescricaoProps {
   rating?: string;
   genres?: string[];
   year?: number | null;
+  awards?: string[];
 }
 
 export default function MediaDescricao({
@@ -17,6 +19,7 @@ export default function MediaDescricao({
   rating,
   genres,
   year,
+  awards,
 }: MediaDescricaoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 300;
@@ -28,7 +31,7 @@ export default function MediaDescricao({
     ? description
     : description.slice(0, maxLength);
 
-  const hasExtraInfo = rating || (genres && genres.length > 0) || year;
+  const hasExtraInfo = rating || (genres && genres.length > 0) || year || (awards && awards.length > 0);
 
   return (
     <div className="flex flex-col md:flex-row gap-8 w-full border-b-2 border-zinc-700 pb-4">
@@ -77,6 +80,24 @@ export default function MediaDescricao({
                   {index < genres.length - 1 && ", "}
                 </span>
               ))}
+            </div>
+          )}
+          {awards && awards.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs flex items-center gap-1.5">
+                <Trophy className="h-4 w-4 text-amber-500 animate-pulse" />
+                Prêmios & Indicações
+              </span>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {awards.map((award) => (
+                  <span
+                    key={award}
+                    className="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 dark:bg-amber-500/20 border border-amber-500/20 shadow-sm transition hover:scale-105 duration-200"
+                  >
+                    {award}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </div>

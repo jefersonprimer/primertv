@@ -6,6 +6,7 @@ import {
   adminCollections,
   slugify,
   splitGenres,
+  splitAwards,
 } from "@/lib/admin";
 import { isAdminEmail } from "@/lib/auth";
 import { getSession } from "@/lib/auth";
@@ -155,6 +156,7 @@ export async function saveMedia(
           aired: readString(formData, "aired") || null,
           rating: readString(formData, "rating") || null,
           status: readString(formData, "status") || null,
+          awards: splitAwards(formData.get("awards")),
         };
 
         if (existing) {

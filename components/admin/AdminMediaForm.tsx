@@ -6,6 +6,7 @@ import {
   AdminCollectionConfig,
   AdminField,
   joinGenres,
+  joinAwards,
   toDateTimeLocal,
 } from "@/lib/admin";
 import { useActionState } from "react";
@@ -100,7 +101,9 @@ export function AdminMediaForm({
           const defaultValue =
             field.name === "genres"
               ? joinGenres(Array.isArray(value) ? value : undefined)
-              : field.type === "number"
+              : field.name === "awards"
+                ? joinAwards(Array.isArray(value) ? (value as string[]) : undefined)
+                : field.type === "number"
                 ? value == null
                   ? ""
                   : String(value)

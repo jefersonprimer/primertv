@@ -1,72 +1,133 @@
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { HeroCarouselClient } from "./HeroCarouselClient";
-import { getAnimeLogo } from "@/lib/banners";
+import { getAnimeLogo, getSeriesLogo } from "@/lib/banners";
+import { getMovieLogo } from "@/lib/tmdb";
 
-export async function HeroCarousel() {
-  const animes = await prisma.anime.findMany({
-    where: {
-      bannerUrl: { not: null },
-    },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      description: true,
-      bannerUrl: true,
-      imageUrl: true,
-      logoUrl: true,
-      genres: true,
-      rating: true,
-      seasons: {
-        orderBy: { number: "asc" },
+export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "series" | "movie" } = {}) {
+  const isSeries = type === "series";
+  const isMovie = type === "movie";
+
+  const mediaList = isSeries
+    ? await prisma.series.findMany({
+        where: {
+          bannerUrl: { not: null },
+        },
         select: {
-          episodes: {
+          id: true,
+          slug: true,
+          title: true,
+          description: true,
+          bannerUrl: true,
+          imageUrl: true,
+          logoUrl: true,
+          genres: true,
+          rating: true,
+          seasons: {
             orderBy: { number: "asc" },
-            select: { id: true },
+            select: {
+              episodes: {
+                orderBy: { number: "asc" },
+                select: { id: true },
+                take: 1,
+              },
+            },
             take: 1,
           },
         },
-        take: 1,
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 6,
-  });
+        orderBy: { createdAt: "desc" },
+        take: 6,
+      })
+    : isMovie
+      ? await prisma.movie.findMany({
+          where: {
+            bannerUrl: { not: null },
+          },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            description: true,
+            bannerUrl: true,
+            imageUrl: true,
+            logoUrl: true,
+            genres: true,
+            rating: true,
+          },
+          orderBy: { createdAt: "desc" },
+          take: 6,
+        })
+      : await prisma.anime.findMany({
+          where: {
+            bannerUrl: { not: null },
+          },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            description: true,
+            bannerUrl: true,
+            imageUrl: true,
+            logoUrl: true,
+            genres: true,
+            rating: true,
+            seasons: {
+              orderBy: { number: "asc" },
+              select: {
+                episodes: {
+                  orderBy: { number: "asc" },
+                  select: { id: true },
+                  take: 1,
+                },
+              },
+              take: 1,
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 6,
+        });
 
   const userId = await getAuthenticatedUserId();
 
-  let watchlistAnimeIds = new Set<string>();
-  if (userId) {
+  let watchlistIds = new Set<string>();
+  if (userId && !isMovie) {
     const items = await prisma.watchlistItem.findMany({
-      where: { userId, mediaType: "ANIME" },
-      select: { animeId: true },
+      where: { userId, mediaType: isSeries ? "SERIES" : "ANIME" },
+      select: { animeId: true, seriesId: true },
     });
-    watchlistAnimeIds = new Set(
-      items.map((i) => i.animeId).filter(Boolean) as string[],
+    watchlistIds = new Set(
+      items.map((i) => (isSeries ? i.seriesId : i.animeId)).filter(Boolean) as string[],
     );
   }
 
   const items = await Promise.all(
-    animes.map(async (anime) => {
-      let logoUrl = anime.logoUrl;
+    mediaList.map(async (media) => {
+      let logoUrl = media.logoUrl;
       if (!logoUrl) {
-        logoUrl = await getAnimeLogo(anime.id, anime.title);
+        logoUrl = isSeries
+          ? await getSeriesLogo(media.id, media.title)
+          : isMovie
+            ? await getMovieLogo(media.id, media.title)
+            : await getAnimeLogo(media.id, media.title);
       }
       const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
 
+      const seasons = (media as any).seasons;
+      const firstEpisodeId = seasons?.[0]?.episodes?.[0]?.id ?? null;
+
       return {
-        id: anime.id,
-        slug: anime.slug,
-        title: anime.title,
-        description: anime.description,
-        bannerUrl: anime.bannerUrl,
-        imageUrl: anime.imageUrl,
+        id: media.id,
+        slug: media.slug,
+        title: media.title,
+        description: media.description,
+        bannerUrl: media.bannerUrl,
+        imageUrl: media.imageUrl,
         logoUrl: finalLogoUrl,
-        genres: anime.genres,
-        rating: anime.rating,
-        firstEpisodeId: anime.seasons[0]?.episodes[0]?.id ?? null,
-        inWatchlist: watchlistAnimeIds.has(anime.id),
+        genres: media.genres,
+        rating: media.rating,
+        firstEpisodeId,
+        inWatchlist: watchlistIds.has(media.id),
+        type,
       };
     })
   );
