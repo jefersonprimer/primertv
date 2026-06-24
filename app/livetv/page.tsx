@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { MediaCarousel } from "@/components/MediaCarousel";
-import Link from "next/link";
 import { connection } from "next/server";
 
 export default async function ChannelsPage() {
@@ -24,25 +23,6 @@ export default async function ChannelsPage() {
 
   return (
     <div className="py-8">
-      <header
-        className="mb-12 flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4"
-        style={{
-          paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-          paddingRight: "max(8px, (100vw - 1223px) / 2)",
-        }}
-      >
-        <div>
-          <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">Canais de TV</h2>
-          <p className="text-zinc-600 dark:text-zinc-400">Assista aos melhores canais brasileiros ao vivo.</p>
-        </div>
-        <Link
-          href="/"
-          className="inline-flex h-10 items-center justify-center rounded-full border border-zinc-200 bg-white px-6 text-sm font-medium transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-        >
-          Voltar para Home
-        </Link>
-      </header>
-
       <main className="space-y-16">
         {channels.length === 0 && novelas.length === 0 ? (
           <div
@@ -59,7 +39,6 @@ export default async function ChannelsPage() {
             {channels.length > 0 && (
               <MediaCarousel
                 title="Canais TV"
-                subtitle="Assista ao vivo"
                 items={channels}
                 type="channel"
                 priority

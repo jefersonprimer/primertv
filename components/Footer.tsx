@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NAV_LINKS } from "./nav-links";
-import { Globe, Tv } from "lucide-react";
+import { Globe } from "lucide-react";
 
 export function Footer() {
   return (
@@ -9,12 +9,12 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand & Description */}
           <div className="flex flex-col gap-4 sm:col-span-2">
-            <Link href="/" className="flex items-center gap-2 group w-fit">
-              <span className="flex items-center  gap-1 text-xl font-bold tracking-tighter text-zinc-900 transition-colors group-hover:text-zinc-700 dark:text-white dark:group-hover:text-zinc-300">
-                Primer
-                <div className="flex h-6 w-6 items-center justify-center rounded bg-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all duration-300 group-hover:scale-105 group-hover:bg-blue-500 group-hover:shadow-blue-500/30 dark:bg-blue-600">
-                  <Tv className="h-5 w-5" />
-                </div>
+            <Link
+              href="/"
+              className="flex items-center transition-opacity hover:opacity-80"
+            >
+              <span className="text-2xl font-bold tracking-tighter text-zinc-900 dark:text-white">
+                PrimerTv
               </span>
             </Link>
             <p className="max-w-md text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">

@@ -76,7 +76,7 @@ export function SearchBar() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar animes, séries, filmes, mangás ou novelas..."
-              className="w-full border-b border-zinc-200 bg-transparent py-4 pl-12 pr-12 text-xl text-zinc-900 outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-blue-500"
+              className="w-full border-b-2 border-zinc-200 bg-transparent py-4 pl-12 pr-12 text-xl lg:text-3xl text-zinc-900 outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-blue-500"
             />
             <Search
               className="absolute left-2 top-1/2 -translate-y-1/2 text-zinc-400"
@@ -97,7 +97,7 @@ export function SearchBar() {
         </div>
 
         {recentSearches.length > 0 && query.length === 0 && (
-          <div className="w-full bg-black py-6">
+          <div className="w-full bg-black pt-6 pb-24">
             <div className="mx-auto mt-6 max-w-[1050px]">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-xl font-bold tracking-widest text-[#f2f2f2]">
@@ -105,7 +105,7 @@ export function SearchBar() {
                 </h3>
                 <button
                   onClick={handleClearAll}
-                  className="text-xl text-[#bbb] font-bold transition-colors hover:text-[#f2f2f2]"
+                  className="text-sm text-[#bbb] font-bold transition-colors hover:text-[#f2f2f2] uppercase"
                 >
                   Limpar Buscas
                 </button>
@@ -114,10 +114,10 @@ export function SearchBar() {
                 {recentSearches.map((search) => (
                   <div
                     key={search}
-                    className="group inline-flex cursor-pointer items-center gap-2 px-2 py-1 transition-colors bg-blue-600 hover:bg-blue-500"
+                    className="group inline-flex cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80"
                     onClick={() => handleRecentClick(search)}
                   >
-                    <span className="text-sm font-medium uppercase text-white group-hover:text-zinc-200">
+                    <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2">
                       {search}
                     </span>
                     <button
@@ -125,10 +125,10 @@ export function SearchBar() {
                         e.stopPropagation();
                         handleRemoveSearch(search);
                       }}
-                      className="rounded p-1 text-zinc-700 opacity-0 transition-all hover:text-zinc-400 group-hover:opacity-100"
+                      className="border-l border-[#272727] text-[#bbb] transition-all hover:text-[#f2f2f2]"
                       aria-label={`Remover ${search}`}
                     >
-                      <X size={14} />
+                      <X size={24} />
                     </button>
                   </div>
                 ))}
