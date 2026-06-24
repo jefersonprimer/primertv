@@ -13,7 +13,7 @@ import ShareButton from "@/components/ShareButton";
 import AddToListButton from "@/components/AddToListButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
-import { getAnimeBanner } from "@/lib/banners";
+import { getAnimeBanner, getAnimeLogo } from "@/lib/banners";
 
 export const revalidate = 3600;
 
@@ -89,6 +89,12 @@ export default async function AnimeDetailsPage({
     bannerUrl = await getAnimeBanner(anime.id, anime.title);
   }
   const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
+  let logoUrl = anime.logoUrl;
+  if (!logoUrl) {
+    logoUrl = await getAnimeLogo(anime.id, anime.title);
+  }
+  const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
 
   const firstEpisodeId = anime.seasons[0]?.episodes[0]?.id;
   const userId = await getAuthenticatedUserId();
@@ -184,10 +190,10 @@ export default async function AnimeDetailsPage({
                 }}
               />
               <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:max-w-2xl">
-                {anime.logoUrl ? (
+                {finalLogoUrl ? (
                   <div className="relative w-full max-w-[280px] md:max-w-[400px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
                     <Image
-                      src={anime.logoUrl}
+                      src={finalLogoUrl}
                       alt={anime.title}
                       fill
                       priority
@@ -202,13 +208,13 @@ export default async function AnimeDetailsPage({
                 )}
 
                 {anime.rank !== null && anime.rank !== undefined && (
-                  <div className="mt-2 flex items-center justify-center md:justify-start">
-                    <span
-                      className="inline-flex items-center gap-1.5 bg-[#2E51A2]/10 px-2.5 py-1 text-xs font-semibold text-[#2E51A2] dark:bg-[#2E51A2]/20 dark:text-blue-400 ring-1 ring-inset ring-[#2E51A2]/20 hover:cursor-pointer"
-                      title="Rank do myanimelist.net"
-                    >
-                      <Trophy className="h-3.5 w-3.5 text-[#2E51A2] dark:text-blue-400 fill-[#2E51A2]/10 dark:fill-[#2E51A2]/20" />
-                      MAL: #{anime.rank}
+                  <div className="mt-2 flex items-center justify-center md:justify-start gap-1.5">
+                    <span className="rounded bg-[#2E51A2] px-1.5 py-0.5 text-xs font-bold text-white leading-none">
+                      MAL
+                    </span>
+                    <Trophy className="h-3.5 w-3.5 text-amber-500" />
+                    <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                      #{anime.rank}
                     </span>
                   </div>
                 )}
@@ -248,6 +254,15 @@ export default async function AnimeDetailsPage({
                 {anime.score !== null && anime.score !== undefined && (
                   <div className="mt-2 flex items-center justify-center md:justify-start gap-2">
                     <div className="flex items-center gap-0.5">
+                      <svg aria-hidden="true" className="absolute w-0 h-0">
+                        <defs>
+                          <linearGradient id="star-gradient" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stopColor="#ACD4FE" />
+                            <stop offset="50%" stopColor="#8DB4F5" />
+                            <stop offset="100%" stopColor="#85AEF3" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
                       {Array.from({ length: 10 }).map((_, i) => {
                         const isFilled = i < Math.round(anime.score || 0);
                         return (
@@ -255,9 +270,10 @@ export default async function AnimeDetailsPage({
                             key={i}
                             className={`h-7 w-7 ${
                               isFilled
-                                ? "fill-amber-500 text-amber-500"
-                                : "text-zinc-300 dark:text-zinc-600"
+                                ? "text-[#8DB4F5]"
+                                : "text-zinc-300 dark:text-zinc-400"
                             }`}
+                            fill={isFilled ? "url(#star-gradient)" : "none"}
                           />
                         );
                       })}

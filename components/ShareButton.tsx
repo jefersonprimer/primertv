@@ -49,13 +49,16 @@ export default function ShareButton({
 
     if (hasBorder === undefined) {
       if (copied) {
-        base += " border-2 border-emerald-600 text-emerald-600 hover:text-emerald-700 md:border-0";
+        base +=
+          " border-2 border-emerald-600 text-emerald-600 hover:text-emerald-700 md:border-0";
       } else {
-        base += " border-2 border-blue-600 text-blue-600 hover:text-blue-700 md:border-0";
+        base +=
+          " border-2 border-blue-600 text-blue-600 hover:text-blue-700 md:border-0";
       }
     } else if (hasBorder === true) {
       if (copied) {
-        base += " border-2 border-emerald-600 text-emerald-600 hover:text-emerald-700";
+        base +=
+          " border-2 border-emerald-600 text-emerald-600 hover:text-emerald-700";
       } else {
         base += " border-2 border-blue-600 text-blue-600 hover:text-blue-700";
       }
@@ -72,7 +75,7 @@ export default function ShareButton({
   };
 
   const tooltipElement = (
-    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 rounded-md shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
+    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
       {copied ? "Link copiado!" : "Compartilhar"}
     </span>
   );

@@ -119,6 +119,7 @@ export function HeroCarouselClient({
                   priority
                   className="object-contain"
                 />
+                <h1 className="sr-only">{current.title}</h1>
               </div>
             ) : (
               <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 md:max-w-[380px]">

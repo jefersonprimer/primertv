@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { HeroCarouselClient } from "./HeroCarouselClient";
+import { getAnimeLogo } from "@/lib/banners";
 
 export async function HeroCarousel() {
   const animes = await prisma.anime.findMany({
@@ -46,19 +47,29 @@ export async function HeroCarousel() {
     );
   }
 
-  const items = animes.map((anime) => ({
-    id: anime.id,
-    slug: anime.slug,
-    title: anime.title,
-    description: anime.description,
-    bannerUrl: anime.bannerUrl,
-    imageUrl: anime.imageUrl,
-    logoUrl: anime.logoUrl,
-    genres: anime.genres,
-    rating: anime.rating,
-    firstEpisodeId: anime.seasons[0]?.episodes[0]?.id ?? null,
-    inWatchlist: watchlistAnimeIds.has(anime.id),
-  }));
+  const items = await Promise.all(
+    animes.map(async (anime) => {
+      let logoUrl = anime.logoUrl;
+      if (!logoUrl) {
+        logoUrl = await getAnimeLogo(anime.id, anime.title);
+      }
+      const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
+
+      return {
+        id: anime.id,
+        slug: anime.slug,
+        title: anime.title,
+        description: anime.description,
+        bannerUrl: anime.bannerUrl,
+        imageUrl: anime.imageUrl,
+        logoUrl: finalLogoUrl,
+        genres: anime.genres,
+        rating: anime.rating,
+        firstEpisodeId: anime.seasons[0]?.episodes[0]?.id ?? null,
+        inWatchlist: watchlistAnimeIds.has(anime.id),
+      };
+    })
+  );
 
   if (items.length === 0) return null;
 

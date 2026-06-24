@@ -119,6 +119,89 @@ export const getAnimeBanner = cache(async (animeId: string, title: string): Prom
 });
 
 /**
+ * Searches TMDB API for an anime logo URL based on the anime title,
+ * saves the result to the database, and returns the logo image URL.
+ * Wrapped in React cache to prevent duplicate calls during the same request lifecycle.
+ */
+export const getAnimeLogo = cache(async (animeId: string, title: string): Promise<string | null> => {
+  if (!title || !animeId) return null;
+
+  // 1. Check database first to see if logo exists or is "none"
+  const anime = await prisma.anime.findUnique({
+    where: { id: animeId },
+    select: { logoUrl: true },
+  });
+
+  if (anime?.logoUrl) {
+    return anime.logoUrl === "none" ? null : anime.logoUrl;
+  }
+
+  let resolvedLogo: string | null = null;
+  const tmdbKey = process.env.TMDB_API_KEY;
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+
+  if (tmdbKey || tmdbToken) {
+    try {
+      const searchUrl = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&language=pt-BR`;
+      const headers: HeadersInit = {};
+
+      if (tmdbToken) {
+        headers["Authorization"] = `Bearer ${tmdbToken}`;
+      }
+
+      const searchResponse = await fetch(
+        tmdbKey && !tmdbToken ? `${searchUrl}&api_key=${tmdbKey}` : searchUrl,
+        { headers, next: { revalidate: 3600 } }
+      );
+
+      if (searchResponse.ok) {
+        const searchData = (await searchResponse.json()) as TmdbSearchResponse;
+        const firstMatch = searchData.results?.find(
+          (item) => item.media_type === "tv" || item.media_type === "movie"
+        );
+
+        if (firstMatch && firstMatch.id) {
+          const mediaType = firstMatch.media_type || "tv";
+          const imagesUrl = `https://api.themoviedb.org/3/${mediaType}/${firstMatch.id}/images`;
+          const imagesResponse = await fetch(
+            tmdbKey && !tmdbToken ? `${imagesUrl}&api_key=${tmdbKey}` : imagesUrl,
+            { headers, next: { revalidate: 3600 } }
+          );
+
+          if (imagesResponse.ok) {
+            const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
+            const logos = imagesData.logos || [];
+
+            const preferred = logos.find((l) => l.iso_639_1 === "pt") ||
+                              logos.find((l) => l.iso_639_1 === "en") ||
+                              logos[0];
+
+            if (preferred?.file_path) {
+              resolvedLogo = `https://image.tmdb.org/t/p/original${preferred.file_path}`;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Erro ao buscar logo do anime "${title}" no TMDB:`, error);
+    }
+  }
+
+  const logoToSave = resolvedLogo || "none";
+
+  try {
+    await prisma.anime.update({
+      where: { id: animeId },
+      data: { logoUrl: logoToSave },
+    });
+  } catch (dbError) {
+    console.error(`Erro ao salvar logo do anime "${title}" no banco:`, dbError);
+  }
+
+  return resolvedLogo;
+});
+
+/**
  * Searches TMDB API for a series banner backdrop URL based on the series title,
  * saves the result to the database (using 'none' as a placeholder if not found),
  * and returns the banner image URL.
