@@ -213,7 +213,7 @@ export default function Home() {
       <Suspense fallback={<HeroCarouselSkeleton />}>
         <HeroCarousel />
       </Suspense>
-      <div className="py-8 pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-40 md:-translate-y-30 xl:-translate-y-50">
+      <div className="py-8 pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-38 md:-translate-y-30 xl:-translate-y-50">
         <main className="space-y-16">
           <Suspense fallback={<FavoritesCarouselSkeleton />}>
             <FavoritesCarousel />

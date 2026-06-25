@@ -7,6 +7,7 @@ import { resolvePlayableUrl } from "@/lib/playable-url";
 import { recordAnimeWatchHistory } from "@/lib/history";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
+import EpisodeSidebar from "./EpisodeSidebar";
 
 interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
@@ -67,9 +68,17 @@ export default async function WatchPage({ params }: WatchPageProps) {
     include: {
       season: {
         include: {
-          anime: true,
-          episodes: {
-            orderBy: { number: "asc" },
+          anime: {
+            include: {
+              seasons: {
+                orderBy: { number: "asc" },
+                include: {
+                  episodes: {
+                    orderBy: { number: "asc" },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -92,11 +101,20 @@ export default async function WatchPage({ params }: WatchPageProps) {
     );
   }
 
-  const episodes = episode.season.episodes;
-  const currentIndex = episodes.findIndex((e) => e.id === episode.id);
-  const prevEpisode = currentIndex > 0 ? episodes[currentIndex - 1] : null;
+  const seasons = episode.season.anime.seasons;
+  const allEpisodes = seasons.flatMap((s) =>
+    s.episodes.map((ep) => ({
+      ...ep,
+      seasonNumber: s.number,
+      seasonId: s.id,
+    })),
+  );
+  const currentIndex = allEpisodes.findIndex((e) => e.id === episode.id);
+  const prevEpisode = currentIndex > 0 ? allEpisodes[currentIndex - 1] : null;
   const nextEpisode =
-    currentIndex < episodes.length - 1 ? episodes[currentIndex + 1] : null;
+    currentIndex < allEpisodes.length - 1
+      ? allEpisodes[currentIndex + 1]
+      : null;
 
   const playableUrl =
     (await resolvePlayableUrl(episode.videoUrl)) ?? episode.videoUrl;
@@ -223,46 +241,14 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
           {/* Sidebar: Episode List */}
           <div className="lg:col-span-1">
-            <div className="sticky border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
-              <div className="border-b border-zinc-100 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-800/50">
-                <h3 className="font-bold">Lista de Episódios</h3>
-                <p className="text-xs text-zinc-500">
-                  Temporada {episode.season.number}
-                </p>
-              </div>
-              <div className="max-h-[600px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
-                <div className="grid gap-1">
-                  {episodes.map((ep) => (
-                    <Link
-                      key={ep.id}
-                      href={`/animes/${slug}/episode/${ep.id}`}
-                      className={`flex items-center gap-3 rounded-lg p-3 text-sm transition-colors ${
-                        ep.id === episode.id
-                          ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                          : "hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                      }`}
-                    >
-                      <div
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
-                          ep.id === episode.id
-                            ? "bg-blue-600 text-white"
-                            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800"
-                        }`}
-                      >
-                        {ep.number}
-                      </div>
-                      <div className="flex-1 overflow-hidden">
-                        <p className="truncate font-medium">
-                          {ep.title || `Episódio ${ep.number}`}
-                        </p>
-                      </div>
-                      {ep.id === episode.id && (
-                        <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+            <div className="sticky  overflow-hidden pt-8">
+              <EpisodeSidebar
+                seasons={episode.season.anime.seasons}
+                currentEpisodeId={episode.id}
+                animeSlug={slug}
+                animeRating={episode.season.anime.rating}
+                animeDuration={episode.season.anime.duration}
+              />
             </div>
           </div>
         </div>

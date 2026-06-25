@@ -100,7 +100,7 @@ export function HeroCarouselClient({
       ))}
 
       {/* Mobile gradient overlay for poster readability */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent md:hidden" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-transparent md:hidden" />
       {/* Left Gradient */}
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[50%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/90 hidden md:block" />
       {/* Right Gradient */}

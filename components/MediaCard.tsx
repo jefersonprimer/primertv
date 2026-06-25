@@ -53,7 +53,7 @@ export function MediaCard({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
-      <h3 className="line-clamp-2 text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-blue-500">
+      <h3 className="line-clamp-2 text-sm font-medium text-[#f2f2f2] group-hover:text-blue-500">
         {item.title}
       </h3>
     </Link>

@@ -52,7 +52,7 @@ export function FavoritesCarouselClient({
   return (
     <section className="group/carousel relative">
       <div
-        className="mb-4 flex items-end justify-between w-full"
+        className="mb-3 sm:mb-4 flex items-end justify-between w-full"
         style={{
           paddingLeft: "max(8px, (100vw - 1223px) / 2)",
           paddingRight: "max(8px, (100vw - 1223px) / 2)",

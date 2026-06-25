@@ -65,14 +65,14 @@ export function MediaCarousel({
     <section className="group/carousel relative ">
       {title && (
         <div
-          className="mb-4 flex items-end justify-between w-full"
+          className="mb-3 sm:mb-4 flex items-end justify-between w-full"
           style={{
             paddingLeft: "max(8px, (100vw - 1223px) / 2)",
             paddingRight: "max(8px, (100vw - 1223px) / 2)",
           }}
         >
           <div>
-            <h2 className="text-[22px] md:text-[28px] font-bold text-zinc-900 dark:text-zinc-50">
+            <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2]">
               {title}
             </h2>
             {subtitle && (
@@ -98,7 +98,7 @@ export function MediaCarousel({
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
+          className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
           style={{
             paddingLeft: "max(8px, (100vw - 1223px) / 2)",
             paddingRight: "max(8px, (100vw - 1223px) / 2)",

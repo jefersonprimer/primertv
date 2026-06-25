@@ -50,17 +50,15 @@ export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
   return (
     <section className="group/carousel relative">
       <div
-        className="mb-4 flex items-end justify-between w-full"
+        className="mb-3 sm:mb-4 flex items-end justify-between w-full"
         style={{
           paddingLeft: "max(8px, (100vw - 1223px) / 2)",
           paddingRight: "max(8px, (100vw - 1223px) / 2)",
         }}
       >
-        <div>
-          <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2] flex items-center gap-2">
-            Continuar Assistindo
-          </h2>
-        </div>
+        <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2]  flex items-center gap-2">
+          Continuar Assistindo
+        </h2>
         <Link
           href="/historico"
           className="flex items-center gap-1.5 text-sm font-bold text-[#bbb] hover:text-white hover:underline uppercase"
