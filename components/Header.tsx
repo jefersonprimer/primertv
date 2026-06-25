@@ -40,7 +40,7 @@ export async function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex h-full items-center px-4 text-base font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
+                className="flex h-full items-center px-4 text-sm font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
               >
                 {link.label}
               </Link>
@@ -50,7 +50,7 @@ export async function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex h-full items-center px-4 text-base font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
+                  className="flex h-full items-center px-4 text-sm font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
                 >
                   {link.label}
                 </Link>

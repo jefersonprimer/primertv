@@ -59,7 +59,7 @@ export function HeroCarouselClient({
 
   return (
     <section
-      className="relative h-[80vh] w-full overflow-hidden bg-zinc-900 md:h-[80v] lg:h-screen"
+      className="relative h-[80vh] sm:h-screen md:h-[80v] lg:h-screen w-full overflow-hidden bg-zinc-900"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -67,6 +67,21 @@ export function HeroCarouselClient({
         @keyframes progress-fill {
           from { width: 0%; }
           to { width: 100%; }
+        }
+        @media (max-width: 639px) {
+          .mobile-bottom-blur {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 180px;
+            pointer-events: none;
+            background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.15) 75%, transparent 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            mask-image: linear-gradient(to top, black 25%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%);
+          }
         }
       `}</style>
 
@@ -105,10 +120,13 @@ export function HeroCarouselClient({
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[50%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/90 hidden md:block" />
       {/* Right Gradient */}
       <div className="pointer-events-none absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-zinc-50/50 to-transparent dark:from-black/50 hidden md:block" />
-      {/* Bottom Gradient */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
+      {/* Bottom Gradient for sm and larger */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black hidden sm:block" />
 
-      <div className="absolute inset-0 flex items-end pb-40 md:pb-[24px] md:items-center md:pb-0">
+      {/* Mobile bottom blur & gradient overlay for screens < sm */}
+      <div className="mobile-bottom-blur sm:hidden" />
+
+      <div className="absolute inset-0 flex items-end pb-40 sm:pb-0 md:pb-[24px] md:items-center md:pb-0">
         <div className="mx-auto w-full max-w-[1223px] md:px-10 lg:px-16 xl:px-0 lg:-translate-y-20">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl">
             {current.logoUrl ? (

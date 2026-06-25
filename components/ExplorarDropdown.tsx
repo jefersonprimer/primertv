@@ -39,7 +39,7 @@ export function ExplorarDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
-        className={`flex h-full items-center gap-1.5 px-4 text-base font-normal text-[#bbb] hover:text-[#f2f2f2] transition-colors duration-200 hover:bg-[#151515] focus:outline-none ${
+        className={`flex h-full items-center gap-1.5 px-4 text-sm font-normal text-[#bbb] hover:text-[#f2f2f2] transition-colors duration-200 hover:bg-[#151515] focus:outline-none ${
           isOpen ? "text-[#f2f2f2] bg-[#151515]" : ""
         }`}
       >
