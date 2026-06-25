@@ -59,7 +59,7 @@ export function HeroCarouselClient({
 
   return (
     <section
-      className="relative h-screen w-full overflow-hidden bg-zinc-900 md:h-[80vh] lg:h-screen"
+      className="relative h-[80vh] w-full overflow-hidden bg-zinc-900 md:h-[80v] lg:h-screen"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -108,7 +108,7 @@ export function HeroCarouselClient({
       {/* Bottom Gradient */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
 
-      <div className="absolute inset-0 flex items-end pb-24 md:items-center md:pb-0">
+      <div className="absolute inset-0 flex items-end pb-40 md:pb-[24px] md:items-center md:pb-0">
         <div className="mx-auto w-full max-w-[1223px] md:px-10 lg:px-16 xl:px-0 lg:-translate-y-20">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl">
             {current.logoUrl ? (
@@ -133,7 +133,7 @@ export function HeroCarouselClient({
                 <RatingBadge rating={current.rating} size={20} />
               )}
               {current.genres.length > 0 && (
-                <span className="text-xs font-medium text-zinc-200 md:text-sm md:text-zinc-300">
+                <span className="text-sm font-normal text-[#8c8c8c]">
                   {current.genres.join(", ")}
                 </span>
               )}
@@ -155,7 +155,7 @@ export function HeroCarouselClient({
                         ? `/filmes/${current.slug}`
                         : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
                   }
-                  className="flex w-full max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6"
+                  className="flex w-full max-w-[360px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6"
                 >
                   <Play className="h-5 w-5 fill-current" />
                   Começar a assistir EP1
@@ -218,15 +218,19 @@ export function HeroCarouselClient({
 
       <button
         onClick={goPrev}
-        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-white transition-all md:flex lg:left-2 md:h-12 md:w-12"
-        aria-label={current.type === "series" ? "Série anterior" : "Anime anterior"}
+        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:left-2 md:h-12 md:w-12"
+        aria-label={
+          current.type === "series" ? "Série anterior" : "Anime anterior"
+        }
       >
         <ChevronLeft size={40} />
       </button>
       <button
         onClick={goNext}
-        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-white transition-all md:flex lg:right-2 md:h-12 md:w-12"
-        aria-label={current.type === "series" ? "Próxima série" : "Próximo anime"}
+        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:right-2 md:h-12 md:w-12"
+        aria-label={
+          current.type === "series" ? "Próxima série" : "Próximo anime"
+        }
       >
         <ChevronRight size={40} />
       </button>

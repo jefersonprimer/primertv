@@ -179,7 +179,7 @@ export default function SeasonSelector({
               currentIndex > 0 && setCurrentIndex(currentIndex - 1)
             }
             disabled={currentIndex === 0}
-            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
           >
             <ChevronLeft className="h-5 w-5" />
             <span>Temporada Anterior</span>
@@ -191,7 +191,7 @@ export default function SeasonSelector({
               setCurrentIndex(currentIndex + 1)
             }
             disabled={currentIndex === seasons.length - 1}
-            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
           >
             <span>Próxima Temporada</span>
             <ChevronRight className="h-5 w-5" />

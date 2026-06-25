@@ -19,13 +19,13 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727] backdrop-blur-md dark:border-zinc-800">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
-        <div className="flex h-full items-center gap-8">
+      <div className="mx-auto flex h-16 max-w-full items-center justify-between">
+        <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-1">
             <MobileSidebar />
             <Link
               href="/"
-              className="flex items-center transition-opacity hover:opacity-80"
+              className="flex items-center transition-opacity hover:opacity-80 lg:pl-4"
             >
               <span className="text-xl font-bold tracking-tighter text-zinc-900 dark:text-white">
                 Primer
@@ -40,7 +40,7 @@ export async function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
+                className="flex h-full items-center px-4 text-base font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
               >
                 {link.label}
               </Link>
@@ -50,7 +50,7 @@ export async function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
+                  className="flex h-full items-center px-4 text-base font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
                 >
                   {link.label}
                 </Link>

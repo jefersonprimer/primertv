@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Clock, Play } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Clock, Play } from "lucide-react";
 
 interface AnimeItem {
   id: string;
@@ -161,20 +161,18 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             {/* Anime Title */}
             <Link
               href={cardHref}
-              className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-500 transition-colors line-clamp-1 leading-snug"
+              className="text-sm font-bold text-[#bbb] hover:text-white transition-colors line-clamp-1 leading-snug"
             >
               {anime.title}
             </Link>
 
             {/* Episode pills progress */}
             <div className="mt-2 flex flex-wrap items-center gap-1">
-              <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 mr-0.5">
+              <span className="text-sm font-medium text-zinc-500 mr-0.5">
                 Episódios:
               </span>
               {episodeNumbers.length === 0 ? (
-                <span className="text-[9px] text-zinc-400 dark:text-zinc-500 italic">
-                  Sem episódios
-                </span>
+                <span className="text-sm text-zinc-500">Sem episódios</span>
               ) : (
                 <>
                   {displayPills.map((num) => (
@@ -206,7 +204,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           </div>
 
           {/* Release time */}
-          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-zinc-400 dark:text-zinc-500 mt-3">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 mt-3">
             <Clock className="h-3.5 w-3.5" />
             <span className={isToday ? "font-medium" : ""}>
               {dayLabel} às {anime.releaseTime}
@@ -220,13 +218,17 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       {/* Title Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-2xl">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="flex items-center gap-2 text-white text-[22px] md:text-[28px] font-bold tracking-tight ">
+          <Calendar size={24} />
           Novos Lançamentos
         </h2>
 
         <div className="flex items-center gap-2 text-[#bbb] hover:text-white hover:cursor-pointer">
-          <Link href="/calendario" className="text-sm font-bold uppercase">
+          <Link
+            href="/calendario"
+            className="text-sm font-bold uppercase hidden sm:flex"
+          >
             ver calendario de lancamentos
           </Link>
           <ChevronRight size="24" />
@@ -237,7 +239,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {/* Today Section */}
         {todayAnimes.length > 0 ? (
           <div className="space-y-4">
-            <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
+            <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
               Hoje
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -259,7 +261,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {showMore &&
           (yesterdayAnimes.length > 0 ? (
             <div className="space-y-4">
-              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
+              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
                 Ontem
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -283,7 +285,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {showMore &&
           (dayBeforeAnimes.length > 0 ? (
             <div className="space-y-4">
-              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
+              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
                 {getDayName(dayBeforeYesterday)}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">

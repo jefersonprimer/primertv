@@ -3,20 +3,46 @@ import { prisma } from "./lib/prisma";
 
 async function main() {
   try {
-    const movies = await prisma.movie.findMany({
-      select: { genres: true }
-    });
-    const genresCount: Record<string, number> = {};
-    for (const m of movies) {
-      for (const g of m.genres) {
-        genresCount[g] = (genresCount[g] || 0) + 1;
+    // Update some anime to Summer 2026 (Current Season)
+    await prisma.anime.updateMany({
+      where: {
+        title: {
+          in: [
+            "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season",
+            "Steel Ball Run: JoJo no Kimyou na Bouken",
+            "Kingdom 3rd Season"
+          ]
+        }
+      },
+      data: {
+        premiered: "Summer 2026",
+        status: "Currently Airing"
       }
-    }
-    console.log("MOVIE GENRES:", genresCount);
+    });
+
+    // Update some anime to Fall 2026 (Next Season)
+    await prisma.anime.updateMany({
+      where: {
+        title: {
+          in: [
+            "Sousou no Frieren 2nd Season",
+            "Monster",
+            "Owarimonogatari 2nd Season"
+          ]
+        }
+      },
+      data: {
+        premiered: "Fall 2026",
+        status: "Not yet aired"
+      }
+    });
+
+    console.log("Database updated successfully!");
   } catch (err) {
-    console.error("Error querying db:", err);
+    console.error("Error updating db:", err);
   } finally {
     await prisma.$disconnect();
   }
 }
 main();
+

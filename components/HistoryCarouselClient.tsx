@@ -9,7 +9,6 @@ interface HistoryCarouselClientProps {
   items: HistoryItem[];
 }
 
-
 export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -51,25 +50,23 @@ export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
   return (
     <section className="group/carousel relative">
       <div
-        className="mb-6 flex items-end justify-between w-full"
+        className="mb-4 flex items-end justify-between w-full"
         style={{
           paddingLeft: "max(8px, (100vw - 1223px) / 2)",
           paddingRight: "max(8px, (100vw - 1223px) / 2)",
         }}
       >
         <div>
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+          <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2] flex items-center gap-2">
             Continuar Assistindo
           </h2>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            De onde você parou
-          </p>
         </div>
         <Link
           href="/historico"
-          className="text-sm font-medium text-blue-500 hover:underline"
+          className="flex items-center gap-1.5 text-sm font-bold text-[#bbb] hover:text-white hover:underline uppercase"
         >
-          Ver histórico
+          <span>Ver histórico</span>
+          <ChevronRight size={20} />
         </Link>
       </div>
 

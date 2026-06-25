@@ -120,7 +120,7 @@ export default async function MovieDetailsPage({
         {/* Right Gradient */}
         <div className="absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-zinc-50/50 to-transparent dark:from-black/50" />
 
-        <div className="relative w-full p-8 md:p-12 z-10">
+        <div className="relative w-full z-10">
           <div className="mx-auto flex max-w-[1223px] flex-col gap-6 md:flex-row md:items-end">
             <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:hidden flex-shrink-0">
               {movie.imageUrl ? (
@@ -149,53 +149,67 @@ export default async function MovieDetailsPage({
                     "linear-gradient(to bottom, transparent, black 120px)",
                 }}
               />
-              {finalLogoUrl ? (
-                <div className="relative w-full max-w-[280px] md:max-w-[400px] aspect-[3/1] mb-2 flex items-center">
-                  <Image
-                    src={finalLogoUrl}
-                    alt={movie.title}
-                    fill
-                    priority
-                    className="object-contain object-left"
-                  />
-                  <h1 className="sr-only">{movie.title}</h1>
-                </div>
-              ) : (
-                <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl">
-                  {movie.title}
-                </h1>
-              )}
-              {(movieDetails.score ||
-                movieDetails.runtime ||
-                movieDetails.year) && (
-                <div className="flex flex-row items-center gap-3 flex-wrap">
-                  {movieDetails.score && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="rounded bg-[#f5c518] px-1.5 py-0.5 text-xs font-bold text-black leading-none">
-                        IMDb
+              <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:max-w-2xl">
+                {finalLogoUrl ? (
+                  <div className="relative w-full max-w-[280px] md:max-w-[400px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
+                    <Image
+                      src={finalLogoUrl}
+                      alt={movie.title}
+                      fill
+                      priority
+                      className="object-contain object-center md:object-left"
+                    />
+                    <h1 className="sr-only">{movie.title}</h1>
+                  </div>
+                ) : (
+                  <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 md:text-4xl text-center md:text-left">
+                    {movie.title}
+                  </h1>
+                )}
+                {(movieDetails.score ||
+                  movieDetails.runtime ||
+                  movieDetails.year) && (
+                  <div className="flex flex-row items-center gap-3 flex-wrap justify-center md:justify-start mt-2">
+                    {movieDetails.score && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="rounded bg-[#f5c518] px-1.5 py-0.5 text-xs font-bold text-black leading-none">
+                          IMDb
+                        </span>
+                        <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                          {movieDetails.score.toFixed(1)}
+                          <span className="text-zinc-400">/10</span>
+                        </span>
+                      </div>
+                    )}
+                    {movieDetails.runtime && (
+                      <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {Math.floor(movieDetails.runtime / 60)}h
+                        {movieDetails.runtime % 60 > 0
+                          ? `${movieDetails.runtime % 60}min`
+                          : ""}
                       </span>
-                      <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                        {movieDetails.score.toFixed(1)}
-                        <span className="text-zinc-400">/10</span>
+                    )}
+                    {movieDetails.year && (
+                      <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {movieDetails.year}
                       </span>
-                    </div>
-                  )}
-                  {movieDetails.runtime && (
-                    <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                      {Math.floor(movieDetails.runtime / 60)}h
-                      {movieDetails.runtime % 60 > 0
-                        ? `${movieDetails.runtime % 60}min`
-                        : ""}
-                    </span>
-                  )}
-                  {movieDetails.year && (
-                    <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                      {movieDetails.year}
-                    </span>
-                  )}
-                </div>
-              )}
-              <div className="flex flex-row items-center gap-3 w-full md:w-auto">
+                    )}
+                  </div>
+                )}
+                {displayGenres.length > 0 && (
+                  <div className="flex flex-wrap gap-2 justify-center md:justify-start mt-2">
+                    {displayGenres.map((genre) => (
+                      <span
+                        key={genre}
+                        className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                      >
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-start">
                 <WatchlistButton
                   mediaType="SERIES"
                   mediaId={movie.id}
@@ -213,18 +227,6 @@ export default async function MovieDetailsPage({
                 />
                 <ShareButton hasBorder={true} roundedFull={true} />
               </div>
-              {displayGenres.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {displayGenres.map((genre) => (
-                    <span
-                      key={genre}
-                      className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                    >
-                      {genre}
-                    </span>
-                  ))}
-                </div>
-              )}
               {(movieDetails.description || movie.description) && (
                 <div className="w-full">
                   <MediaDescricao

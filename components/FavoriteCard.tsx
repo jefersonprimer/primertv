@@ -19,20 +19,34 @@ interface FavoriteCardProps {
   className?: string;
 }
 
-export default function FavoriteCard({ item, className = "" }: FavoriteCardProps) {
+function formatDuration(duration: string | null | undefined): string {
+  if (!duration) return "";
+  const matches = duration.match(/\d+/);
+  if (matches) {
+    return `${matches[0]}m`;
+  }
+  return duration;
+}
+
+export default function FavoriteCard({
+  item,
+  className = "",
+}: FavoriteCardProps) {
   const cardHref = item.firstEpisodeId
     ? `/animes/${item.slug}/episode/${item.firstEpisodeId}`
     : `/animes/${item.slug}`;
 
   return (
-    <div className={`group flex flex-col gap-2 hover:bg-zinc-800 p-2 transition-colors duration-200 ${className}`}>
+    <div
+      className={`group flex flex-col gap-2 hover:bg-zinc-800 p-2 transition-colors duration-200 ${className}`}
+    >
       <Link
         href={cardHref}
         className="relative aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10"
       >
         {/* Rating Badge in upper left */}
         {item.rating && (
-          <div className="absolute top-2 left-2 z-20 shadow-md">
+          <div className="absolute top-1 left-1 z-20 shadow-md">
             <RatingBadge rating={item.rating} size={20} />
           </div>
         )}
@@ -75,8 +89,8 @@ export default function FavoriteCard({ item, className = "" }: FavoriteCardProps
 
         {/* Duration Badge in bottom right on hover */}
         {item.duration && (
-          <div className="absolute bottom-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/80 backdrop-blur-xs text-white px-2 py-0.5 text-xs font-semibold border border-white/10 shadow-sm">
-            {item.duration}
+          <div className="absolute bottom-1 right-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/80 backdrop-blur-xs text-white px-2 py-0.5 text-sm font-semibold shadow-sm">
+            {formatDuration(item.duration)}
           </div>
         )}
 
@@ -90,7 +104,7 @@ export default function FavoriteCard({ item, className = "" }: FavoriteCardProps
 
       <div className="flex flex-col gap-1">
         <Link href={cardHref}>
-          <h3 className="line-clamp-2 text-base font-semibold text-zinc-900 dark:text-zinc-100 hover:text-blue-500 transition-colors">
+          <h3 className="flex h-full items-center text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-2">
             {item.title}
           </h3>
         </Link>
@@ -98,14 +112,14 @@ export default function FavoriteCard({ item, className = "" }: FavoriteCardProps
         {item.firstEpisodeId ? (
           <Link
             href={cardHref}
-            className="text-sm text-zinc-500 dark:text-zinc-400 font-medium hover:text-blue-500 transition-colors flex items-center gap-1"
+            className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"
           >
             Começar a assistir EP: 1
           </Link>
         ) : (
           <Link
             href={cardHref}
-            className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium hover:text-blue-500 transition-colors w-fit"
+            className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"
           >
             Ver detalhes
           </Link>

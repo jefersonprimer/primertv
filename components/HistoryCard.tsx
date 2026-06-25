@@ -21,7 +21,10 @@ interface HistoryCardProps {
   className?: string;
 }
 
-export function HistoryCard({ item, className = "w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]" }: HistoryCardProps) {
+export function HistoryCard({
+  item,
+  className = "w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]",
+}: HistoryCardProps) {
   const cardHref = `/animes/${item.animeSlug}/episode/${item.episodeId}`;
   const displayImageUrl = item.episodeImageUrl || item.animeImageUrl;
 
@@ -42,13 +45,13 @@ export function HistoryCard({ item, className = "w-[260px] flex-shrink-0 sm:w-[3
               className="object-cover transition-transform duration-500"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-zinc-400 text-sm font-medium">
+            <div className="flex h-full items-center justify-center text-[#f2f2f2] hover:text-white text-base font-bold">
               {item.animeTitle}
             </div>
           )}
 
           {/* Season / Episode overlay badge */}
-          <div className="absolute top-2 left-2 z-20 bg-black/75 backdrop-blur-xs text-white px-2 py-0.5 text-xs font-semibold">
+          <div className="absolute top-0 left-0 z-20 bg-black/75 backdrop-blur-xs text-[#f2f2f2] px-2 py-0.5 text-sm font-normal">
             T{item.seasonNumber} : EP {item.episodeNumber}
           </div>
 
@@ -62,13 +65,13 @@ export function HistoryCard({ item, className = "w-[260px] flex-shrink-0 sm:w-[3
 
         <div className="flex flex-col gap-0.5 px-1">
           <Link href={cardHref}>
-            <h3 className="line-clamp-2 text-base font-semibold text-zinc-800 dark:text-zinc-200 hover:text-blue-500 transition-colors">
+            <h3 className="flex h-full items-center text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-2">
               {item.animeTitle}
             </h3>
           </Link>
           <Link
             href={cardHref}
-            className="text-sm text-zinc-500 dark:text-zinc-400 font-medium hover:text-blue-500 transition-colors flex items-center gap-1"
+            className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"
           >
             Continuar a assistir EP{item.episodeNumber}
           </Link>

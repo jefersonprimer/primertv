@@ -1,6 +1,13 @@
 "use client";
 import { useState } from "react";
-import { User, LogOut, LayoutDashboard, History, Bookmark, List } from "lucide-react";
+import {
+  User,
+  LogOut,
+  LayoutDashboard,
+  History,
+  Bookmark,
+  List,
+} from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { SessionUser } from "@/lib/auth";
@@ -16,8 +23,8 @@ export function UserMenu({ user }: UserMenuProps) {
     <div className="relative flex h-full items-center">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-full items-center px-4 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
-          isOpen ? "bg-zinc-100 dark:bg-zinc-800" : ""
+        className={`flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors ${
+          isOpen ? "bg-[#151515]" : ""
         }`}
       >
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-semibold text-white shadow-sm ring-2 ring-zinc-200/50 transition-all hover:scale-105 active:scale-95 dark:ring-zinc-800/50">
@@ -31,7 +38,7 @@ export function UserMenu({ user }: UserMenuProps) {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-full z-50 w-64 bg-zinc-100 p-1.5 shadow-2xl dark:bg-zinc-800">
+          <div className="absolute right-0 top-full z-50 w-64 bg-[#151515] p-1.5 shadow-2xl">
             <div className="px-3 py-2.5 pb-2">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/10">
