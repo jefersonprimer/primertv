@@ -65,7 +65,7 @@ export function SearchBar() {
   return (
     <div className="w-full bg-[#151515]">
       <div className="w-full">
-        <div className="flex justify-center w-full py-6">
+        <div className="flex justify-center w-full py-6 px-4 md:px-0">
           <form
             onSubmit={handleSearch}
             className="relative w-full max-w-[880px]"
@@ -97,27 +97,28 @@ export function SearchBar() {
         </div>
 
         {recentSearches.length > 0 && query.length === 0 && (
-          <div className="w-full bg-black pt-6 pb-24">
+          <div className="w-full bg-black pt-4 sm:pt-6 pb-18 sm:pb-24 py-6 px-4 md:px-0">
             <div className="mx-auto mt-6 max-w-[1050px]">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-xl font-bold tracking-widest text-[#f2f2f2]">
+                <h3 className="text-base sm:text-xl font-bold tracking-widest text-[#f2f2f2]">
                   Resultados Recentes de Busca
                 </h3>
                 <button
                   onClick={handleClearAll}
                   className="text-sm text-[#bbb] font-bold transition-colors hover:text-[#f2f2f2] uppercase"
                 >
-                  Limpar Buscas
+                  Limpar
+                  <span className="hidden sm:flex">Buscas</span>
                 </button>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
                 {recentSearches.map((search) => (
                   <div
                     key={search}
-                    className="group inline-flex cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80"
+                    className="group flex sm:inline-flex justify-between sm:justify-start cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80"
                     onClick={() => handleRecentClick(search)}
                   >
-                    <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2">
+                    <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2 py-0">
                       {search}
                     </span>
                     <button
@@ -125,7 +126,7 @@ export function SearchBar() {
                         e.stopPropagation();
                         handleRemoveSearch(search);
                       }}
-                      className="border-l border-[#272727] text-[#bbb] transition-all hover:text-[#f2f2f2]"
+                      className="border-l border-[#272727] text-[#bbb] transition-all hover:text-[#f2f2f2] p-0"
                       aria-label={`Remover ${search}`}
                     >
                       <X size={24} />
