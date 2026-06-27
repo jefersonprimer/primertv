@@ -173,7 +173,7 @@ export function HeroCarouselClient({
                         ? `/filmes/${current.slug}`
                         : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
                   }
-                  className="flex w-full max-w-[360px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6"
+                  className="flex w-full max-w-[340px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6"
                 >
                   <Play className="h-5 w-5 fill-current" />
                   Começar a assistir EP1

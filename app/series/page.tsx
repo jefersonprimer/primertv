@@ -139,7 +139,7 @@ export default function SeriesPage() {
       <Suspense fallback={<HeroCarouselSkeleton />}>
         <HeroCarousel type="series" />
       </Suspense>
-      <div className="py-8 pl-3 md:pl-8 lg:pl-12 xl:pl-0 md:-translate-y-30 xl:-translate-y-50">
+      <div className="pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-26 sm:-translate-y-2 md:-translate-y-18 lg:-translate-y-32 xl:-translate-y-40">
         <main className="space-y-16">
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <RecentSeriesCarousel />
