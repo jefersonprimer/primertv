@@ -190,6 +190,7 @@ model Movie {
   lastScrapedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  tmdbId        String?
 
   @@index([createdAt])
   @@index([title])

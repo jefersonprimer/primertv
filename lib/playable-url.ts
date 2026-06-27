@@ -79,6 +79,8 @@ function isKnownEmbedUrl(url: string): boolean {
     "filemoon.sx",
     "vizcloud.online",
     "mcloud.to",
+    "myembed.biz",
+    "2embed.cc",
   ];
   return embedPatterns.some((pattern) => url.includes(pattern));
 }

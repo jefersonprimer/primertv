@@ -14,6 +14,7 @@ export const revalidate = 3600;
 
 interface MovieDetailsPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ player?: string }>;
 }
 
 export async function generateMetadata({
@@ -46,8 +47,10 @@ export async function generateMetadata({
 
 export default async function MovieDetailsPage({
   params,
+  searchParams,
 }: MovieDetailsPageProps) {
   const { slug } = await params;
+  const { player } = await searchParams;
 
   const movie = await prisma.movie.findUnique({
     where: { slug },
@@ -84,9 +87,60 @@ export default async function MovieDetailsPage({
   }
   const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
 
+  // Resolve active player URL
+  const isMgebUrl = movie.videoUrl?.includes("mgeb.top");
+  const isSuperflixUrl = movie.videoUrl?.includes("superflixapi.lifestyle");
+  const isMyembedUrl = movie.videoUrl?.includes("myembed.biz");
+  const is2embedUrl = movie.videoUrl?.includes("2embed.cc");
+  const hasScrapedUrl = movie.videoUrl && !isMgebUrl && !isSuperflixUrl && !isMyembedUrl && !is2embedUrl;
+
+  let currentVideoUrl = movie.videoUrl;
+  let activePlayer = 1;
+
+  // Decide default player if none is explicitly selected
+  let defaultPlayer = 1;
+  if (hasScrapedUrl) {
+    defaultPlayer = 1;
+  } else if (movie.tmdbId) {
+    defaultPlayer = 2; // Default to MGEB if no scraped URL exists
+  }
+
+  // Set active player and current URL
+  const selectedPlayerStr = player;
+  if (selectedPlayerStr === "2" && movie.tmdbId) {
+    activePlayer = 2;
+    currentVideoUrl = `https://mgeb.top/embed/${movie.tmdbId}`;
+  } else if (selectedPlayerStr === "3" && movie.tmdbId) {
+    activePlayer = 3;
+    currentVideoUrl = `https://superflixapi.lifestyle/filme/${movie.tmdbId}`;
+  } else if (selectedPlayerStr === "4" && movie.tmdbId) {
+    activePlayer = 4;
+    currentVideoUrl = `https://myembed.biz/filme/${movie.tmdbId}`;
+  } else if (selectedPlayerStr === "5" && movie.tmdbId) {
+    activePlayer = 5;
+    currentVideoUrl = `https://www.2embed.cc/embed/${movie.tmdbId}`;
+  } else if (selectedPlayerStr === "1" && hasScrapedUrl) {
+    activePlayer = 1;
+    currentVideoUrl = movie.videoUrl;
+  } else {
+    // If no option or invalid option selected, use the default player
+    activePlayer = defaultPlayer;
+    if (activePlayer === 2 && movie.tmdbId) {
+      currentVideoUrl = `https://mgeb.top/embed/${movie.tmdbId}`;
+    } else if (activePlayer === 3 && movie.tmdbId) {
+      currentVideoUrl = `https://superflixapi.lifestyle/filme/${movie.tmdbId}`;
+    } else if (activePlayer === 4 && movie.tmdbId) {
+      currentVideoUrl = `https://myembed.biz/filme/${movie.tmdbId}`;
+    } else if (activePlayer === 5 && movie.tmdbId) {
+      currentVideoUrl = `https://www.2embed.cc/embed/${movie.tmdbId}`;
+    } else {
+      currentVideoUrl = movie.videoUrl;
+    }
+  }
+
   // Simple heuristic to check if it's a video file or an embed
   const isDirectVideo =
-    movie.videoUrl?.endsWith(".mp4") || movie.videoUrl?.endsWith(".m3u8");
+    currentVideoUrl?.endsWith(".mp4") || currentVideoUrl?.endsWith(".m3u8");
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -249,30 +303,107 @@ export default async function MovieDetailsPage({
       </div>
 
       {/* Player Section */}
-      <main id="player" className="mx-auto max-w-[1223px]">
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-            Player
-          </h2>
-          <div className="flex items-center gap-2 text-sm font-medium text-zinc-500">
-            <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            Servidor Principal (HD)
+      <main id="player" className="mx-auto max-w-[1223px] py-6">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              Player
+            </h2>
+            <div className="mt-1 flex items-center gap-2 text-sm font-medium text-zinc-500">
+              <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              {activePlayer === 1
+                ? "Servidor Principal (HD)"
+                : activePlayer === 2
+                ? "Servidor MGEB (HD)"
+                : activePlayer === 3
+                ? "Servidor SuperFlix (HD)"
+                : activePlayer === 4
+                ? "Servidor MyEmbed (HD)"
+                : activePlayer === 5
+                ? "Servidor 2Embed (HD)"
+                : "Servidor Desconhecido"}
+            </div>
           </div>
+
+          {(hasScrapedUrl || movie.tmdbId) && (
+            <div className="flex flex-wrap gap-2">
+              {hasScrapedUrl && (
+                <a
+                  href="?player=1#player"
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activePlayer === 1
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                      : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                  }`}
+                >
+                  Principal
+                </a>
+              )}
+              {movie.tmdbId && (
+                <a
+                  href="?player=2#player"
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activePlayer === 2
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                      : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                  }`}
+                >
+                  MGEB Player
+                </a>
+              )}
+              {movie.tmdbId && (
+                <a
+                  href="?player=3#player"
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activePlayer === 3
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                      : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                  }`}
+                >
+                  SuperFlix Player
+                </a>
+              )}
+              {movie.tmdbId && (
+                <a
+                  href="?player=4#player"
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activePlayer === 4
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                      : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                  }`}
+                >
+                  MyEmbed Player
+                </a>
+              )}
+              {movie.tmdbId && (
+                <a
+                  href="?player=5#player"
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    activePlayer === 5
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                      : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                  }`}
+                >
+                  2Embed Player
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
-          {movie.videoUrl ? (
+          {currentVideoUrl ? (
             isDirectVideo ? (
               <video
-                src={movie.videoUrl}
+                src={currentVideoUrl}
                 controls
                 className="h-full w-full"
                 poster={movie.imageUrl || undefined}
               />
             ) : (
               <iframe
-                src={movie.videoUrl}
-                className="absolute inset-0 h-full w-full overflow-y-auto"
+                src={currentVideoUrl}
+                className="absolute inset-0 h-full w-full overflow-y-auto border-0"
                 allowFullScreen
                 scrolling="auto"
                 allow="autoplay; fullscreen; picture-in-picture"

@@ -13,7 +13,6 @@ export function ExplorarDropdown() {
     { href: "/new", label: "Novidades" },
     { href: "/seasons", label: "Temporadas" },
     { href: "/calendario", label: "Calendário" },
-    { href: "/livetv", label: "Canais" },
     { href: "/novelas", label: "Novelas" },
   ];
 
