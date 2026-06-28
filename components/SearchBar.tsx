@@ -105,7 +105,7 @@ export function SearchBar() {
                 </h3>
                 <button
                   onClick={handleClearAll}
-                  className="text-sm text-[#bbb] font-bold transition-colors hover:text-[#f2f2f2] uppercase"
+                  className="flex items-center gap-2 text-sm text-[#bbb] font-bold ransition-colors hover:text-[#f2f2f2] uppercase"
                 >
                   Limpar
                   <span className="hidden sm:flex">Buscas</span>

@@ -29,6 +29,7 @@ interface SeasonSelectorProps {
   animeTitle?: string | null;
   animeRating?: string | null;
   animeDuration?: string | null;
+  baseUrl?: string;
 }
 
 export default function SeasonSelector({
@@ -37,6 +38,7 @@ export default function SeasonSelector({
   animeTitle,
   animeRating,
   animeDuration,
+  baseUrl,
 }: SeasonSelectorProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -165,7 +167,7 @@ export default function SeasonSelector({
       <EpisodeList
         key={`${currentSeason.id}-${sortBy}`}
         items={sortedEpisodes}
-        baseUrl={`/animes/${animeSlug}/episode`}
+        baseUrl={baseUrl || `/animes/${animeSlug}/episode`}
         itemType="episode"
         animeTitle={animeTitle}
         animeRating={animeRating}

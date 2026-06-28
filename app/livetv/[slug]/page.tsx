@@ -44,7 +44,7 @@ export default async function ChannelPage({ params }: ChannelPageProps) {
   }
 
   return (
-    <main className="mx-auto max-w-[1223px] py-4">
+    <main className="mx-auto max-w-[1223px]">
       <ChannelPlayer channel={channel} />
     </main>
   );
