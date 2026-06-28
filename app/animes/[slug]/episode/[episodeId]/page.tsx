@@ -8,6 +8,7 @@ import { recordAnimeWatchHistory } from "@/lib/history";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import EpisodeSidebar from "./EpisodeSidebar";
+import ExpandableDescription from "@/components/ExpandableDescription";
 
 interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
@@ -124,7 +125,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
-      <main className="mx-auto max-w-7xl px-4 pb-6 md:pb-10">
+      <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Main Content: Player and Info */}
           <div className="lg:col-span-3">
@@ -175,7 +176,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
             </div>
 
             {/* Controls & Title Below Player */}
-            <div className="mt-6 flex flex-col gap-6">
+            <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   {prevEpisode && (
@@ -204,10 +205,10 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
               <div>
                 <div className="flex flex-col items-start gap-2">
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
                     <Link
                       href={`/animes/${slug}`}
-                      className="inline-block hover:text-blue-500 dark:hover:text-blue-400 transition-colors hover:underline"
+                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
                     >
                       <h4 className="text-base font-bold">
                         {episode.season.anime.title}
@@ -229,18 +230,20 @@ export default async function WatchPage({ params }: WatchPageProps) {
                     {episode.number}
                   </h1>
                 </div>
-                <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-800">
-                  <p className="mt-2 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    {episode.season.anime.description ||
-                      "Sem descrição disponível."}
-                  </p>
+                <div className="mt-6">
+                  <ExpandableDescription
+                    description={
+                      episode.season.anime.description ||
+                      "Sem descrição disponível."
+                    }
+                  />
                 </div>
               </div>
             </div>
           </div>
 
           {/* Sidebar: Episode List */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 px-4 sm:px-0">
             <div className="sticky  overflow-hidden pt-8">
               <EpisodeSidebar
                 seasons={episode.season.anime.seasons}

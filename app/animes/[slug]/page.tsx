@@ -379,7 +379,7 @@ export default async function AnimeDetailsPage({
 
       {/* Similar Animes Carousel */}
       {similarAnimes.length > 0 && (
-        <div className="pb-12">
+        <div className="pl-2 lg:pl-0 pb-12">
           <MediaCarousel
             title="Animes Semelhantes"
             subtitle="Baseado nos gêneros deste anime"
