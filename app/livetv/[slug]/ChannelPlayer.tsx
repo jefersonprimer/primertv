@@ -39,7 +39,7 @@ export function ChannelPlayer({ channel }: ChannelPlayerProps) {
 
   return (
     <div className="space-y-6">
-      <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
+      <div className="group relative aspect-video overflow-hidden bg-black shadow-2xl max-w-5xl mx-auto">
         {currentUrl ? (
           isDirectVideo ? (
             <video

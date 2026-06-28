@@ -134,6 +134,7 @@ model Series {
   rating        String?
   score         Float?
   year          Int?
+  tmdbId        String?
   lastScrapedAt DateTime?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
