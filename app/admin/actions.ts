@@ -403,6 +403,7 @@ export async function saveEpisode(
   const number = readNumber(formData, "number");
   const title = readString(formData, "title") || null;
   const videoUrl = readString(formData, "videoUrl") || null;
+  const imageUrl = readString(formData, "imageUrl") || null;
 
   if (!collection || !["animes", "series", "novelas"].includes(collection)) {
     return { error: "Coleção inválida." };
@@ -429,6 +430,7 @@ export async function saveEpisode(
       const updateData: any = { number, title, videoUrl };
       if (collection === "animes") {
         updateData.customPlayers = customPlayers;
+        updateData.imageUrl = imageUrl;
       }
       await model.update({
         where: { id },
@@ -439,7 +441,7 @@ export async function saveEpisode(
       const created =
         collection === "animes"
           ? await prisma.episode.create({
-              data: { number, title, videoUrl, seasonId, customPlayers },
+              data: { number, title, videoUrl, imageUrl, seasonId, customPlayers },
             })
           : collection === "series"
             ? await prisma.seriesEpisode.create({

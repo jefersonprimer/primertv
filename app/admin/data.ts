@@ -24,6 +24,7 @@ export type AdminEpisodeItem = {
   title: string | null;
   videoUrl: string | null;
   customPlayers?: string[];
+  imageUrl?: string | null;
   seasonId: string;
 };
 
@@ -255,6 +256,7 @@ export async function getCollectionDetail(
             title: episode.title,
             videoUrl: episode.videoUrl,
             customPlayers: episode.customPlayers,
+            imageUrl: episode.imageUrl,
             seasonId: episode.seasonId,
           })),
         })),

@@ -372,6 +372,12 @@ export default async function AdminCollectionPage({
                     ? [
                         ...episodeFields,
                         {
+                          name: "imageUrl",
+                          label: "URL da Imagem do Episódio",
+                          type: "text",
+                          placeholder: "https://...",
+                        },
+                        {
                           name: "customPlayers",
                           label: "Players Adicionais (uma URL por linha)",
                           type: "textarea",
@@ -393,6 +399,7 @@ export default async function AdminCollectionPage({
                         number: String(selectedEpisode.number),
                         title: selectedEpisode.title || "",
                         videoUrl: selectedEpisode.videoUrl || "",
+                        imageUrl: (selectedEpisode as any).imageUrl || "",
                         customPlayers: (selectedEpisode as any).customPlayers?.join("\n") || "",
                       }
                     : {}
