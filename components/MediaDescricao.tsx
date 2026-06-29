@@ -11,6 +11,8 @@ interface MediaDescricaoProps {
   genres?: string[];
   year?: number | null;
   awards?: string[];
+  audio?: string[];
+  subtitles?: string[];
 }
 
 export default function MediaDescricao({
@@ -20,6 +22,8 @@ export default function MediaDescricao({
   genres,
   year,
   awards,
+  audio,
+  subtitles,
 }: MediaDescricaoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 300;
@@ -31,7 +35,13 @@ export default function MediaDescricao({
     ? description
     : description.slice(0, maxLength);
 
-  const hasExtraInfo = rating || (genres && genres.length > 0) || year || (awards && awards.length > 0);
+  const hasExtraInfo =
+    rating ||
+    (genres && genres.length > 0) ||
+    year ||
+    (awards && awards.length > 0) ||
+    (audio && audio.length > 0) ||
+    (subtitles && subtitles.length > 0);
 
   return (
     <div className="flex flex-col md:flex-row gap-8 w-full border-b-2 border-zinc-700 pb-4">
@@ -80,6 +90,22 @@ export default function MediaDescricao({
                   {index < genres.length - 1 && ", "}
                 </span>
               ))}
+            </div>
+          )}
+          {audio && audio.length > 0 && (
+            <div>
+              Áudio:{" "}
+              <span className="text-zinc-700 dark:text-zinc-300">
+                {audio.join(", ")}
+              </span>
+            </div>
+          )}
+          {subtitles && subtitles.length > 0 && (
+            <div>
+              Legendas:{" "}
+              <span className="text-zinc-700 dark:text-zinc-300">
+                {subtitles.join(", ")}
+              </span>
             </div>
           )}
           {awards && awards.length > 0 && (

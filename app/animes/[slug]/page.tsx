@@ -202,9 +202,16 @@ export default async function AnimeDetailsPage({
                     <h1 className="sr-only">{anime.title}</h1>
                   </div>
                 ) : (
-                  <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 max-w-[380px]">
-                    {anime.title}
-                  </h1>
+                  <div className="flex flex-col gap-1 w-full items-center md:items-start">
+                    <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 max-w-[380px]">
+                      {anime.title}
+                    </h1>
+                    {anime.titleEnglish && (
+                      <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 line-clamp-1 max-w-[380px]">
+                        {anime.titleEnglish}
+                      </h2>
+                    )}
+                  </div>
                 )}
 
                 <div className="mt-2 flex items-center justify-center md:justify-start gap-3 flex-wrap">
@@ -354,6 +361,8 @@ export default async function AnimeDetailsPage({
                     rating={anime.rating || undefined}
                     genres={anime.genres}
                     awards={anime.awards}
+                    audio={anime.audio}
+                    subtitles={anime.subtitles}
                   />
                 </div>
               )}
