@@ -103,7 +103,11 @@ export function AdminMediaForm({
               ? joinGenres(Array.isArray(value) ? value : undefined)
               : field.name === "awards"
                 ? joinAwards(Array.isArray(value) ? (value as string[]) : undefined)
-                : field.type === "number"
+                : field.name === "audio"
+                  ? joinGenres(Array.isArray(value) ? (value as string[]) : undefined)
+                  : field.name === "subtitles"
+                    ? joinGenres(Array.isArray(value) ? (value as string[]) : undefined)
+                    : field.type === "number"
                 ? value == null
                   ? ""
                   : String(value)

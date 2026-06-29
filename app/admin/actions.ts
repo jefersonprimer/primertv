@@ -157,6 +157,8 @@ export async function saveMedia(
           rating: readString(formData, "rating") || null,
           status: readString(formData, "status") || null,
           awards: splitAwards(formData.get("awards")),
+          audio: splitGenres(formData.get("audio")),
+          subtitles: splitGenres(formData.get("subtitles")),
         };
 
         if (existing) {
@@ -414,18 +416,30 @@ export async function saveEpisode(
   const existing = id ? await model.findUnique({ where: { id } }) : null;
   let savedId = id;
 
+  const customPlayersRaw = readString(formData, "customPlayers") || "";
+  const customPlayers = customPlayersRaw
+    ? customPlayersRaw
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+    : [];
+
   try {
     if (existing) {
+      const updateData: any = { number, title, videoUrl };
+      if (collection === "animes") {
+        updateData.customPlayers = customPlayers;
+      }
       await model.update({
         where: { id },
-        data: { number, title, videoUrl },
+        data: updateData,
       });
       savedId = id;
     } else {
       const created =
         collection === "animes"
           ? await prisma.episode.create({
-              data: { number, title, videoUrl, seasonId },
+              data: { number, title, videoUrl, seasonId, customPlayers },
             })
           : collection === "series"
             ? await prisma.seriesEpisode.create({

@@ -97,16 +97,17 @@ model Season {
 }
 
 model Episode {
-  id           String         @id @default(cuid())
-  number       Int
-  title        String?
-  videoUrl     String?
-  imageUrl     String?
-  seasonId     String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  season       Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  watchHistory WatchHistory[]
+  id            String         @id @default(cuid())
+  number        Int
+  title         String?
+  videoUrl      String?
+  imageUrl      String?
+  customPlayers String[]       @default([])
+  seasonId      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  season        Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  watchHistory  WatchHistory[]
 
   @@unique([seasonId, number])
   @@index([seasonId])

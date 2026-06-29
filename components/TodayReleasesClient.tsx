@@ -86,7 +86,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
     return (
       <div
         key={`${anime.id}-${anime.releaseDay}`}
-        className="group flex gap-4 p-3 hover:bg-zinc-50/50 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:dark:bg-zinc-900/30 hover:cursor-pointer"
+        className="group flex gap-4 p-2 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:bg-[#272727] hover:cursor-pointer"
       >
         {/* Left: Image Banner */}
         <div
@@ -161,15 +161,16 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             {/* Anime Title */}
             <Link
               href={cardHref}
-              className="text-sm font-bold text-[#bbb] hover:text-white transition-colors line-clamp-1 leading-snug"
+              className={`text-sm font-bold text-[#f2f2f2] hover:text-white transition-colors line-clamp-2 leading-snug
+                ${multipleEpisodeRelease ? "" : "hover:underline"}`}
             >
               {anime.title}
             </Link>
 
             {/* Episode pills progress */}
-            <div className="mt-2 flex flex-wrap items-center gap-1">
-              <span className="text-sm font-medium text-zinc-500 mr-0.5">
-                Episódios:
+            <div className="mt-1 flex flex-wrap items-center gap-1">
+              <span className="text-sm font-medium text-[#bbb]">
+                {episodeNumbers.length > 1 ? "Episódios: " : " Episódio:"}
               </span>
               {episodeNumbers.length === 0 ? (
                 <span className="text-sm text-zinc-500">Sem episódios</span>
@@ -178,7 +179,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                   {displayPills.map((num) => (
                     <span
                       key={num}
-                      className="flex h-4 min-w-4 items-center justify-center rounded bg-zinc-150 px-1 text-[9px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                      className="flex h-4 min-w-4 items-center justify-center rounded bg-zinc-150 text-xs font-medium text-[#bbb]"
                     >
                       {num}
                     </span>
@@ -194,7 +195,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                         ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
                         : `/animes/${anime.slug}`
                     }
-                    className="flex h-4 min-w-4 items-center justify-center rounded border border-blue-200 bg-blue-50/50 hover:bg-blue-100/50 px-1 text-[9px] font-bold text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400 transition-colors"
+                    className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"
                   >
                     {anime.lastEpisode}
                   </Link>
@@ -204,8 +205,8 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           </div>
 
           {/* Release time */}
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 mt-3">
-            <Clock className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#bbb] mt-3">
+            <Clock className="h-3 w-3" />
             <span className={isToday ? "font-medium" : ""}>
               {dayLabel} às {anime.releaseTime}
             </span>
@@ -216,7 +217,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6">
       {/* Title Header */}
       <div className="mb-4 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-white text-[22px] md:text-[28px] font-bold tracking-tight ">
@@ -238,7 +239,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
       <div className="space-y-8">
         {/* Today Section */}
         {todayAnimes.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-2">
             <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
               Hoje
             </h3>
@@ -260,7 +261,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {/* Yesterday Section */}
         {showMore &&
           (yesterdayAnimes.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
                 Ontem
               </h3>
@@ -271,7 +272,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
                 Ontem
               </h3>
@@ -284,7 +285,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {/* Day Before Yesterday Section */}
         {showMore &&
           (dayBeforeAnimes.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
                 {getDayName(dayBeforeYesterday)}
               </h3>
@@ -295,7 +296,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
                 {getDayName(dayBeforeYesterday)}
               </h3>

@@ -53,6 +53,8 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
             logoUrl: true,
             genres: true,
             rating: true,
+            videoUrl: true,
+            tmdbId: true,
           },
           orderBy: { createdAt: "desc" },
           take: 6,
@@ -128,6 +130,8 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
         firstEpisodeId,
         inWatchlist: watchlistIds.has(media.id),
         type,
+        videoUrl: (media as any).videoUrl ?? null,
+        tmdbId: (media as any).tmdbId ?? null,
       };
     })
   );

@@ -367,7 +367,19 @@ export default async function AdminCollectionPage({
                 description="Salve um episódio manualmente nesta temporada."
                 action={saveEpisode}
                 submitLabel={selectedEpisode ? "Atualizar episódio" : "Criar episódio"}
-                fields={episodeFields}
+                fields={
+                  collection === "animes"
+                    ? [
+                        ...episodeFields,
+                        {
+                          name: "customPlayers",
+                          label: "Players Adicionais (uma URL por linha)",
+                          type: "textarea",
+                          placeholder: "Insira as URLs dos players (ex: https://streamtape.com/e/...), uma por linha.",
+                        },
+                      ]
+                    : episodeFields
+                }
                 hiddenFields={[
                   { name: "collection", value: collection },
                   { name: "parentId", value: id || "" },
@@ -381,6 +393,7 @@ export default async function AdminCollectionPage({
                         number: String(selectedEpisode.number),
                         title: selectedEpisode.title || "",
                         videoUrl: selectedEpisode.videoUrl || "",
+                        customPlayers: (selectedEpisode as any).customPlayers?.join("\n") || "",
                       }
                     : {}
                 }

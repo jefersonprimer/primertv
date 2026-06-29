@@ -102,6 +102,20 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         helpText: "Separe por vírgula.",
       },
       {
+        name: "audio",
+        label: "Áudio",
+        type: "text",
+        placeholder: "Dublado, Legendado, Japão",
+        helpText: "Separe por vírgula.",
+      },
+      {
+        name: "subtitles",
+        label: "Legendas",
+        type: "text",
+        placeholder: "Português, Inglês",
+        helpText: "Separe por vírgula.",
+      },
+      {
         name: "awards",
         label: "Prêmios (Awards)",
         type: "text",

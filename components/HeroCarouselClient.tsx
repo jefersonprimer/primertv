@@ -20,6 +20,8 @@ export interface HeroCarouselItem {
   firstEpisodeId: string | null;
   inWatchlist: boolean;
   type?: "anime" | "series" | "movie";
+  videoUrl?: string | null;
+  tmdbId?: string | null;
 }
 
 interface HeroCarouselClientProps {
@@ -55,13 +57,49 @@ export function HeroCarouselClient({
     return () => clearInterval(id);
   }, [isPaused, goNext]);
 
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      goNext();
+    } else if (isRightSwipe) {
+      goPrev();
+    }
+  };
+
   const current = items[currentIndex];
+  const detailUrl = current
+    ? current.type === "series"
+      ? `/series/${current.slug}`
+      : current.type === "movie"
+        ? `/filmes/${current.slug}`
+        : `/animes/${current.slug}`
+    : "";
 
   return (
     <section
       className="relative h-[80vh] sm:h-screen md:h-[80v] lg:h-screen w-full overflow-hidden bg-zinc-900"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
     >
       <style>{`
         @keyframes progress-fill {
@@ -130,7 +168,10 @@ export function HeroCarouselClient({
         <div className="mx-auto w-full max-w-[1223px] md:px-10 lg:px-16 xl:px-0 lg:-translate-y-20">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl">
             {current.logoUrl ? (
-              <div className="relative aspect-[3/1] w-full max-w-[200px] mx-auto md:mx-0 md:max-w-[400px]">
+              <Link
+                href={detailUrl}
+                className="relative block aspect-[3/1] w-full max-w-[200px] mx-auto md:mx-0 md:max-w-[400px] hover:opacity-90 transition-opacity"
+              >
                 <Image
                   src={current.logoUrl}
                   alt={current.title}
@@ -139,10 +180,10 @@ export function HeroCarouselClient({
                   className="object-contain"
                 />
                 <h1 className="sr-only">{current.title}</h1>
-              </div>
+              </Link>
             ) : (
-              <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 md:max-w-[380px]">
-                {current.title}
+              <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 md:max-w-[380px] hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                <Link href={detailUrl}>{current.title}</Link>
               </h1>
             )}
 
@@ -164,29 +205,29 @@ export function HeroCarouselClient({
             )}
 
             <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
-              {current.firstEpisodeId ? (
+              {current.type === "movie" && (current.videoUrl || current.tmdbId) ? (
+                <Link
+                  href={`/filmes/${current.slug}/watch`}
+                  className="flex w-full max-w-[340px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6 uppercase"
+                >
+                  <Play className="h-5 w-5 fill-current" />
+                  Assistir
+                </Link>
+              ) : current.firstEpisodeId ? (
                 <Link
                   href={
                     current.type === "series"
                       ? `/series/${current.slug}/episode/${current.firstEpisodeId}`
-                      : current.type === "movie"
-                        ? `/filmes/${current.slug}`
-                        : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
+                      : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
                   }
-                  className="flex w-full max-w-[340px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6"
+                  className="flex w-full max-w-[340px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6 uppercase"
                 >
                   <Play className="h-5 w-5 fill-current" />
                   Começar a assistir EP1
                 </Link>
               ) : (
                 <Link
-                  href={
-                    current.type === "series"
-                      ? `/series/${current.slug}`
-                      : current.type === "movie"
-                        ? `/filmes/${current.slug}`
-                        : `/animes/${current.slug}`
-                  }
+                  href={detailUrl}
                   className="flex h-10 items-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:px-6"
                 >
                   Ver detalhes

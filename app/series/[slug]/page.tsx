@@ -175,15 +175,12 @@ export default async function SeriesDetailsPage({
 
             {/* Info Section */}
             <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 w-full">
-              {/* Mobile Background with Gradient Mask to fade out the top boundary line */}
+              {/* Mobile Background: borderless subtle gradient from transparent to black */}
               <div
-                className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-50/20 via-zinc-50/85 to-zinc-50 dark:from-black/20 dark:via-black/85 dark:to-black backdrop-blur-[3px] rounded-t-2xl md:hidden"
+                className="absolute inset-x-0 bottom-0 -top-[6px] -z-10 md:hidden"
                 style={{
-                  maskImage:
-                    "linear-gradient(to bottom, transparent, black 120px)",
-                  WebkitMaskImage:
-                    "linear-gradient(to bottom, transparent, black 120px)",
-                }}
+                  backgroundImage: "linear-gradient(to bottom, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0.5) 50px, rgba(0, 0, 0, 0.8) 140px, #000 260px)",
+                } as React.CSSProperties}
               />
               <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:max-w-2xl">
                 {finalLogoUrl ? (
@@ -198,7 +195,7 @@ export default async function SeriesDetailsPage({
                     <h1 className="sr-only">{series.title}</h1>
                   </div>
                 ) : (
-                  <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 max-w-[380px]">
+                  <h1 className="text-2xl font-bold text-zinc-50 md:text-zinc-900 md:dark:text-zinc-50 md:text-[34px] line-clamp-2 max-w-[380px]">
                     {series.title}
                   </h1>
                 )}
@@ -207,12 +204,12 @@ export default async function SeriesDetailsPage({
                   {series.score !== null && series.score !== undefined && (
                     <div
                       title={`Nota #${series.score.toFixed(1)} no IMDb`}
-                      className="inline-flex items-center rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 text-xs font-bold shadow-sm cursor-help"
+                      className="inline-flex items-center rounded overflow-hidden border border-zinc-800 dark:border-zinc-800 text-xs font-bold shadow-sm cursor-help"
                     >
                       <span className="bg-[#f5c518] px-2 py-1.5 text-black uppercase tracking-wider text-[10px] leading-none">
                         IMDb
                       </span>
-                      <span className="bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 px-2 py-1.5 flex items-center gap-1 leading-none">
+                      <span className="bg-zinc-900 md:bg-zinc-100 md:dark:bg-zinc-900 text-zinc-200 md:text-zinc-800 md:dark:text-zinc-200 px-2 py-1.5 flex items-center gap-1 leading-none">
                         {series.score.toFixed(1)}
                       </span>
                     </div>
@@ -240,7 +237,7 @@ export default async function SeriesDetailsPage({
                           </svg>
                         </span>
                       )}
-                    <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                    <span className="text-xs font-medium text-zinc-300 md:text-zinc-700 md:dark:text-zinc-300">
                       {series.genres?.map((genre, index) => (
                         <span key={genre}>
                           <span className="underline">{genre}</span>

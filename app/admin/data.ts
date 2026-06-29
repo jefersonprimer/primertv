@@ -23,6 +23,7 @@ export type AdminEpisodeItem = {
   number: number;
   title: string | null;
   videoUrl: string | null;
+  customPlayers?: string[];
   seasonId: string;
 };
 
@@ -42,6 +43,8 @@ export type AdminMediaDetail = {
   imageUrl: string | null;
   genres: string[];
   awards?: string[];
+  audio?: string[];
+  subtitles?: string[];
   aired?: string | null;
   rating?: string | null;
   status?: string | null;
@@ -238,6 +241,8 @@ export async function getCollectionDetail(
         imageUrl: anime.imageUrl,
         genres: anime.genres,
         awards: anime.awards,
+        audio: anime.audio,
+        subtitles: anime.subtitles,
         aired: anime.aired,
         rating: anime.rating,
         status: anime.status,
@@ -249,6 +254,7 @@ export async function getCollectionDetail(
             number: episode.number,
             title: episode.title,
             videoUrl: episode.videoUrl,
+            customPlayers: episode.customPlayers,
             seasonId: episode.seasonId,
           })),
         })),

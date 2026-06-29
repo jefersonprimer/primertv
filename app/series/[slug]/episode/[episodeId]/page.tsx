@@ -309,27 +309,6 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  {prevEpisode && (
-                    <Link
-                      href={`/series/${slug}/episode/${prevEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-                    >
-                      Anterior
-                    </Link>
-                  )}
-                  {nextEpisode && (
-                    <Link
-                      href={`/series/${slug}/episode/${nextEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
-                    >
-                      Próximo
-                    </Link>
-                  )}
-                </div>
-              </div>
-
               <div>
                 <div className="flex flex-col items-start gap-2">
                   <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">

@@ -67,8 +67,8 @@ export function MediaCarousel({
         <div
           className="mb-3 sm:mb-4 flex items-end justify-between w-full"
           style={{
-            paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-            paddingRight: "max(8px, (100vw - 1223px) / 2)",
+            paddingLeft: "max(8px, (100vw - 1240px) / 2)",
+            paddingRight: "max(8px, (100vw - 1240px) / 2)",
           }}
         >
           <div>
@@ -100,8 +100,8 @@ export function MediaCarousel({
           onScroll={checkScroll}
           className="flex gap-4 sm:gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
           style={{
-            paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-            paddingRight: "max(8px, (100vw - 1223px) / 2)",
+            paddingLeft: "max(8px, (100vw - 1240px) / 2)",
+            paddingRight: "max(8px, (100vw - 1240px) / 2)",
           }}
         >
           {items.map((item, index) => (

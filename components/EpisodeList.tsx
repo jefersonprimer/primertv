@@ -94,12 +94,6 @@ export default function EpisodeList({
                     </div>
                   )}
 
-                  {item.videoUrl && (
-                    <div className="absolute top-2 right-2 bg-black/60 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white backdrop-blur-sm">
-                      HD
-                    </div>
-                  )}
-
                   {/* Duration badge on bottom-right */}
                   {displayAnimeDuration && (
                     <div className="absolute bottom-1 right-1 bg-black/60 px-1.5 py-0.5 text-sm font-bold text-white backdrop-blur-sm">

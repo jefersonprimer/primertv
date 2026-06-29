@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
 import { connection } from "next/server";
+import { resolvePlayableUrl } from "@/lib/playable-url";
+import EpisodeSidebar from "./EpisodeSidebar";
+import ExpandableDescription from "@/components/ExpandableDescription";
 
 interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
@@ -62,9 +65,17 @@ export default async function WatchPage({ params }: WatchPageProps) {
     include: {
       season: {
         include: {
-          novela: true,
-          episodes: {
-            orderBy: { number: "asc" },
+          novela: {
+            include: {
+              seasons: {
+                orderBy: { number: "asc" },
+                include: {
+                  episodes: {
+                    orderBy: { number: "asc" },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -75,68 +86,55 @@ export default async function WatchPage({ params }: WatchPageProps) {
     notFound();
   }
 
-  const episodes = episode.season.episodes;
-  const currentIndex = episodes.findIndex((e) => e.id === episode.id);
-  const prevEpisode = currentIndex > 0 ? episodes[currentIndex - 1] : null;
+  const seasons = episode.season.novela.seasons;
+  const allEpisodes = seasons.flatMap((s) =>
+    s.episodes.map((ep) => ({
+      ...ep,
+      seasonNumber: s.number,
+      seasonId: s.id,
+    })),
+  );
+  const currentIndex = allEpisodes.findIndex((e) => e.id === episode.id);
+  const prevEpisode = currentIndex > 0 ? allEpisodes[currentIndex - 1] : null;
   const nextEpisode =
-    currentIndex < episodes.length - 1 ? episodes[currentIndex + 1] : null;
+    currentIndex < allEpisodes.length - 1
+      ? allEpisodes[currentIndex + 1]
+      : null;
 
-  const isDirectVideo =
-    episode.videoUrl?.endsWith(".mp4") || episode.videoUrl?.endsWith(".m3u8");
+  const playersList: { id: string; label: string; url: string }[] = [];
+
+  if (episode.videoUrl) {
+    playersList.push({
+      id: "principal",
+      label: "Principal (Scraper)",
+      url: episode.videoUrl,
+    });
+  }
+
+  const playableUrl = episode.videoUrl
+    ? ((await resolvePlayableUrl(episode.videoUrl)) ?? episode.videoUrl)
+    : null;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
-      <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link
-            href={`/novelas/${slug}`}
-            className="flex items-center gap-2 text-sm font-medium text-blue-500 transition-colors hover:text-blue-600"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            <span className="hidden sm:inline">
-              Voltar para {episode.season.novela.title}
-            </span>
-            <span className="sm:hidden">Voltar</span>
-          </Link>
-          <div className="flex flex-col items-center text-center">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-500">
-              Temporada {episode.season.number}
-            </span>
-            <h1 className="text-sm font-bold sm:text-base">
-              Capítulo {episode.number} {episode.title && `- ${episode.title}`}
-            </h1>
-          </div>
-          <div className="w-20 sm:w-32" />
-        </div>
-      </nav>
-
-      <main className="mx-auto max-w-7xl px-4 py-6 md:py-10">
+      <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
         <div className="grid gap-8 lg:grid-cols-4">
+          {/* Main Content: Player and Info */}
           <div className="lg:col-span-3">
-            <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
-              {episode.videoUrl ? (
-                isDirectVideo ? (
+            {/* Player Container */}
+            <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+              {playableUrl ? (
+                playableUrl.endsWith(".mp4") ||
+                playableUrl.endsWith(".m3u8") ? (
                   <video
-                    src={episode.videoUrl}
+                    src={playableUrl}
                     controls
                     className="h-full w-full"
                     poster={episode.season.novela.imageUrl || undefined}
                   />
                 ) : (
                   <iframe
-                    src={episode.videoUrl}
+                    src={playableUrl}
                     className="absolute inset-0 h-full w-full overflow-y-auto"
                     allowFullScreen
                     scrolling="auto"
@@ -165,13 +163,14 @@ export default async function WatchPage({ params }: WatchPageProps) {
               )}
             </div>
 
-            <div className="mt-6 flex flex-col gap-6">
+            {/* Controls & Title Below Player */}
+            <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   {prevEpisode && (
                     <Link
                       href={`/novelas/${slug}/episode/${prevEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                      className="inline-flex h-11 items-center justify-center bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                     >
                       Anterior
                     </Link>
@@ -179,85 +178,60 @@ export default async function WatchPage({ params }: WatchPageProps) {
                   {nextEpisode && (
                     <Link
                       href={`/novelas/${slug}/episode/${nextEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
+                      className="inline-flex h-11 items-center justify-center bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
                     >
                       Próximo
                     </Link>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                  <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  Servidor Principal (HD)
-                </div>
+                {playersList.length <= 1 && (
+                  <div className="flex items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                    Servidor Principal (HD)
+                  </div>
+                )}
               </div>
 
-              <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl font-bold">
-                      {episode.season.novela.title}
-                    </h2>
-                    <p className="mt-1 text-zinc-500">
-                      Temporada {episode.season.number} • Capítulo{" "}
-                      {episode.number}
-                    </p>
+              <div>
+                <div className="flex flex-col items-start gap-2">
+                  <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
+                    <Link
+                      href={`/novelas/${slug}`}
+                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                    >
+                      <h4 className="text-base font-bold">
+                        {episode.season.novela.title}
+                      </h4>
+                    </Link>
                   </div>
+
+                  <h1 className="text-[22px] font-bold text-zinc-500">
+                    Temporada {episode.season.number} • Capítulo{" "}
+                    {episode.number}
+                  </h1>
                 </div>
-                <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-800">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-400">
-                    Sinopse da Novela
-                  </h3>
-                  <p className="mt-2 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    {episode.season.novela.description ||
-                      "Sem descrição disponível."}
-                  </p>
+                <div className="mt-6">
+                  <ExpandableDescription
+                    description={
+                      episode.season.novela.description ||
+                      "Sem descrição disponível."
+                    }
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
-              <div className="border-b border-zinc-100 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-800/50">
-                <h3 className="font-bold">Lista de Capítulos</h3>
-                <p className="text-xs text-zinc-500">
-                  Temporada {episode.season.number}
-                </p>
-              </div>
-              <div className="max-h-[600px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
-                <div className="grid gap-1">
-                  {episodes.map((ep) => (
-                    <Link
-                      key={ep.id}
-                      href={`/novelas/${slug}/episode/${ep.id}`}
-                      className={`flex items-center gap-3 rounded-lg p-3 text-sm transition-colors ${
-                        ep.id === episode.id
-                          ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                          : "hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                      }`}
-                    >
-                      <div
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
-                          ep.id === episode.id
-                            ? "bg-blue-600 text-white"
-                            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800"
-                        }`}
-                      >
-                        {ep.number}
-                      </div>
-                      <div className="flex-1 overflow-hidden">
-                        <p className="truncate font-medium">
-                          {ep.title || `Capítulo ${ep.number}`}
-                        </p>
-                      </div>
-                      {ep.id === episode.id && (
-                        <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+          {/* Sidebar: Episode List */}
+          <div className="lg:col-span-1 px-4 sm:px-0">
+            <div className="sticky overflow-hidden pt-8">
+              <EpisodeSidebar
+                seasons={episode.season.novela.seasons}
+                currentEpisodeId={episode.id}
+                novelaSlug={slug}
+                novelaImageUrl={episode.season.novela.imageUrl}
+              />
             </div>
           </div>
         </div>

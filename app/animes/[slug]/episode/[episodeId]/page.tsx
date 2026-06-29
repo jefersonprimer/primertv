@@ -12,6 +12,27 @@ import ExpandableDescription from "@/components/ExpandableDescription";
 
 interface WatchPageProps {
   params: Promise<{ slug: string; episodeId: string }>;
+  searchParams?: Promise<{ player?: string }>;
+}
+
+function getPlayerLabel(url: string, index: number): string {
+  const lowercaseUrl = url.toLowerCase();
+  if (
+    lowercaseUrl.includes("streamtape.com") ||
+    lowercaseUrl.includes("streamtape")
+  ) {
+    return "Streamtape";
+  }
+  if (lowercaseUrl.includes("fembed")) {
+    return "Fembed";
+  }
+  if (lowercaseUrl.includes("mixdrop")) {
+    return "Mixdrop";
+  }
+  if (lowercaseUrl.includes("doodstream") || lowercaseUrl.includes("dood")) {
+    return "Doodstream";
+  }
+  return `Player ${index}`;
 }
 
 export async function generateMetadata({
@@ -58,10 +79,14 @@ export async function generateMetadata({
   };
 }
 
-export default async function WatchPage({ params }: WatchPageProps) {
+export default async function WatchPage({
+  params,
+  searchParams,
+}: WatchPageProps) {
   await connection();
 
   const { slug, episodeId } = await params;
+  const { player } = (await searchParams) || {};
 
   // Search for the episode. We'll use findFirst to be safe.
   const episode = await prisma.episode.findFirst({
@@ -117,8 +142,39 @@ export default async function WatchPage({ params }: WatchPageProps) {
       ? allEpisodes[currentIndex + 1]
       : null;
 
-  const playableUrl =
-    (await resolvePlayableUrl(episode.videoUrl)) ?? episode.videoUrl;
+  const playersList: { id: string; label: string; url: string }[] = [];
+
+  if (episode.videoUrl) {
+    playersList.push({
+      id: "principal",
+      label: "Principal (Scraper)",
+      url: episode.videoUrl,
+    });
+  }
+
+  if (episode.customPlayers && episode.customPlayers.length > 0) {
+    episode.customPlayers.forEach((playerUrl, idx) => {
+      const trimmedUrl = playerUrl.trim();
+      if (trimmedUrl) {
+        playersList.push({
+          id: `custom-${idx}`,
+          label: getPlayerLabel(trimmedUrl, idx + 2),
+          url: trimmedUrl,
+        });
+      }
+    });
+  }
+
+  const selectedPlayerId =
+    player || (playersList.length > 0 ? playersList[0].id : "");
+  const activePlayerObj =
+    playersList.find((p) => p.id === selectedPlayerId) || playersList[0];
+
+  const playableUrl = activePlayerObj
+    ? activePlayerObj.id === "principal"
+      ? ((await resolvePlayableUrl(activePlayerObj.url)) ?? activePlayerObj.url)
+      : activePlayerObj.url
+    : null;
 
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("ANIME", episode.season.anime.id);
@@ -130,7 +186,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
           {/* Main Content: Player and Info */}
           <div className="lg:col-span-3">
             {/* Player Container */}
-            <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
+            <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
               {playableUrl ? (
                 playableUrl.endsWith(".mp4") ||
                 playableUrl.endsWith(".m3u8") ? (
@@ -156,20 +212,6 @@ export default async function WatchPage({ params }: WatchPageProps) {
                 )
               ) : (
                 <div className="flex h-full flex-col items-center justify-center gap-4 text-zinc-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="48"
-                    height="48"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m10 10 4 4m0-4-4 4" />
-                    <circle cx="12" cy="12" r="10" />
-                  </svg>
                   <p>Vídeo não disponível para este episódio.</p>
                 </div>
               )}
@@ -177,31 +219,36 @@ export default async function WatchPage({ params }: WatchPageProps) {
 
             {/* Controls & Title Below Player */}
             <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  {prevEpisode && (
-                    <Link
-                      href={`/animes/${slug}/episode/${prevEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center bg-zinc-200 px-6 text-sm font-bold transition-all hover:bg-zinc-300 active:scale-95 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-                    >
-                      Anterior
-                    </Link>
-                  )}
-                  {nextEpisode && (
-                    <Link
-                      href={`/animes/${slug}/episode/${nextEpisode.id}`}
-                      className="inline-flex h-11 items-center justify-center bg-blue-600 px-8 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:shadow-blue-500/40 active:scale-95"
-                    >
-                      Próximo
-                    </Link>
-                  )}
-                </div>
+              {/* Player Selector Tabs */}
+              {playersList.length > 1 && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
+                      Selecione o Player
+                    </h3>
+                    <div className="mt-1 flex items-center gap-2 text-sm font-medium text-zinc-500">
+                      <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                      {activePlayerObj?.label || "Servidor Principal (HD)"}
+                    </div>
+                  </div>
 
-                <div className="flex items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                  <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  Servidor Principal (HD)
+                  <div className="flex flex-wrap gap-2">
+                    {playersList.map((p) => (
+                      <Link
+                        key={p.id}
+                        href={`?player=${p.id}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          activePlayerObj?.id === p.id
+                            ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                            : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                        }`}
+                      >
+                        {p.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div>
                 <div className="flex flex-col items-start gap-2">
