@@ -19,6 +19,52 @@ function getDeterministicDay(id: string): number {
   return Math.abs(hash) % 7;
 }
 
+const dayMap: Record<string, number> = {
+  sunday: 0, sundays: 0,
+  monday: 1, mondays: 1,
+  tuesday: 2, tuesdays: 2,
+  wednesday: 3, wednesdays: 3,
+  thursday: 4, thursdays: 4,
+  friday: 5, fridays: 5,
+  saturday: 6, saturdays: 6,
+};
+
+function parseBroadcastToBrasilia(
+  broadcastDay: string | null,
+  broadcastTime: string | null
+): { releaseDay: number; releaseTime: string } | null {
+  if (!broadcastDay || !broadcastTime) return null;
+
+  const cleanDay = broadcastDay.toLowerCase().trim();
+  let baseDay = dayMap[cleanDay];
+  if (baseDay === undefined) return null;
+
+  const timeParts = broadcastTime.trim().split(":");
+  if (timeParts.length < 2) return null;
+
+  const jstHour = parseInt(timeParts[0], 10);
+  const jstMinute = parseInt(timeParts[1], 10);
+  if (isNaN(jstHour) || isNaN(jstMinute)) return null;
+
+  // JST (UTC+9) is 12 hours ahead of America/Sao_Paulo (UTC-3)
+  // Therefore, Brasília time = JST time - 12 hours.
+  let brHour = jstHour - 12;
+  let brDay = baseDay;
+
+  if (brHour < 0) {
+    brHour += 24;
+    brDay = (brDay - 1 + 7) % 7;
+  }
+
+  // Format releaseTime as am/pm (e.g. "9:30 am" or "12:30 pm")
+  const ampm = brHour >= 12 ? "pm" : "am";
+  const displayHour = brHour % 12 === 0 ? 12 : brHour % 12;
+  const minStr = jstMinute < 10 ? "0" + jstMinute : jstMinute;
+  const releaseTime = `${displayHour}:${minStr} ${ampm}`;
+
+  return { releaseDay: brDay, releaseTime };
+}
+
 export default async function CalendarioPage() {
   // Check if user is logged in and fetch their watchlist
   const userId = await getAuthenticatedUserId();
@@ -32,12 +78,25 @@ export default async function CalendarioPage() {
 
   // Fetch real animes from the database
   const dbAnimes = await prisma.anime.findMany({
+    where: {
+      OR: [
+        { status: "Currently Airing" },
+        { status: "Not yet aired" },
+        { status: null },
+      ],
+    },
     select: {
       id: true,
       slug: true,
       title: true,
       imageUrl: true,
       description: true,
+      aired: true,
+      status: true,
+      broadcastDay: true,
+      broadcastTime: true,
+      broadcastTimezone: true,
+      broadcastString: true,
       seasons: {
         select: {
           episodes: {
@@ -70,6 +129,7 @@ export default async function CalendarioPage() {
     let lastEp = 20;
     let latestEpisodeId: string | null = null;
     let episodeImageUrl: string | null = null;
+    let isComingSoon = false;
 
     const latestSeason = anime.seasons?.[0];
     const episodes = latestSeason?.episodes || [];
@@ -104,15 +164,32 @@ export default async function CalendarioPage() {
         releaseTime = `${hours}:${minStr} ${ampm}`;
       }
     } else {
+      isComingSoon = true;
+      lastEp = 1;
+      
+      // Tenta decodificar o dia da semana baseado na data de estreia (aired)
+      if (anime.aired) {
+        const startPart = anime.aired.split(" to ")[0].trim();
+        const date = new Date(startPart);
+        if (!isNaN(date.getTime())) {
+          releaseDay = date.getDay();
+        }
+      }
+
       // Fallback determinístico caso o anime não possua nenhum episódio cadastrado
       const idHash = anime.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      lastEp = idHash % 2 === 0 ? 20 : 10;
-      
       const fallbackHours = [6, 9, 14, 18];
       const selectedHour = fallbackHours[idHash % fallbackHours.length];
       const ampm = selectedHour >= 12 ? "pm" : "am";
       const displayHour = selectedHour > 12 ? selectedHour - 12 : selectedHour;
       releaseTime = `${displayHour}:00 ${ampm}`;
+    }
+
+    // Sobrescreve com o cronograma de transmissão oficial se disponível (convertido de JST para Brasília)
+    const officialSchedule = parseBroadcastToBrasilia(anime.broadcastDay, anime.broadcastTime);
+    if (officialSchedule) {
+      releaseDay = officialSchedule.releaseDay;
+      releaseTime = officialSchedule.releaseTime;
     }
 
     const episodeNumbers = episodes.map((ep) => ep.number);
@@ -130,6 +207,7 @@ export default async function CalendarioPage() {
       episodeImageUrl,
       inWatchlist: watchlistIds.has(anime.id),
       episodeNumbers,
+      isComingSoon,
     };
   });
 
@@ -142,8 +220,8 @@ export default async function CalendarioPage() {
     currentDay = new Date().getDay();
   }
 
-  // Filtrar para mostrar apenas os animes que já foram lançados nesta semana (até o dia atual)
-  const filteredDbAnimes = processedDbAnimes.filter((anime) => anime.releaseDay <= currentDay);
+  // Mostrar todos os animes do calendário semanal, sem limitar ao dia atual
+  const filteredDbAnimes = processedDbAnimes;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

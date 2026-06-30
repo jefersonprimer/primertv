@@ -73,7 +73,8 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
       title: true,
       imageUrl: true,
       aired: true,
-      premiered: true,
+      season: true,
+      year: true,
     },
     orderBy: {
       title: "asc",
@@ -85,7 +86,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
 
   // Filter animes matching the selected season and year
   const filteredAnimes = allAnimes.filter((anime) => {
-    const info = parseSeasonAndYear(anime.premiered, anime.aired);
+    const info = parseSeasonAndYear(anime.season, anime.year, anime.aired);
     if (!info) return false;
     return info.season === selectedSeason && info.year === selectedYear;
   });

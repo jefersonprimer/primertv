@@ -1,48 +1,44 @@
 import "dotenv/config";
 import { prisma } from "./lib/prisma";
+import { parseSeasonAndYear } from "./lib/seasons";
 
 async function main() {
   try {
-    // Update some anime to Summer 2026 (Current Season)
-    await prisma.anime.updateMany({
-      where: {
-        title: {
-          in: [
-            "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season",
-            "Steel Ball Run: JoJo no Kimyou na Bouken",
-            "Kingdom 3rd Season"
-          ]
-        }
-      },
-      data: {
-        premiered: "Summer 2026",
-        status: "Currently Airing"
+    const animes = await prisma.anime.findMany({
+      select: {
+        id: true,
+        title: true,
+        aired: true,
       }
     });
 
-    // Update some anime to Fall 2026 (Next Season)
-    await prisma.anime.updateMany({
-      where: {
-        title: {
-          in: [
-            "Sousou no Frieren 2nd Season",
-            "Monster",
-            "Owarimonogatari 2nd Season"
-          ]
-        }
-      },
-      data: {
-        premiered: "Fall 2026",
-        status: "Not yet aired"
-      }
-    });
+    console.log(`Migrating ${animes.length} animes...`);
 
-    console.log("Database updated successfully!");
+    let migratedCount = 0;
+    for (const anime of animes) {
+      const info = parseSeasonAndYear(null, null, anime.aired);
+      if (info) {
+        await prisma.anime.update({
+          where: { id: anime.id },
+          data: {
+            season: info.season,
+            year: info.year,
+          }
+        });
+        migratedCount++;
+      }
+    }
+
+    console.log(`Migrated ${migratedCount} animes successfully!`);
   } catch (err) {
-    console.error("Error updating db:", err);
+    console.error("Error migrating db:", err);
   } finally {
     await prisma.$disconnect();
   }
 }
 main();
+
+
+
+
 

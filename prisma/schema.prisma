@@ -64,7 +64,12 @@ model Anime {
   score           Float?
   status          String?
   duration        String?
-  premiered       String?
+  season          String?
+  year            Int?
+  broadcastDay    String?
+  broadcastTime   String?
+  broadcastTimezone String?
+  broadcastString   String?
   rank            Int?
   popularity      Int?
   members         Int?

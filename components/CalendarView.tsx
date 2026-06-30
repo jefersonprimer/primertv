@@ -19,6 +19,7 @@ interface AnimeItem {
   episodeImageUrl: string | null;
   inWatchlist?: boolean;
   episodeNumbers?: number[];
+  isComingSoon?: boolean;
 }
 
 interface CalendarViewProps {
@@ -279,7 +280,9 @@ function AnimeCalendarCard({
 
       {/* Status do Episódio */}
       <div className="mt-1 text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
-        {isToday ? (
+        {anime.isComingSoon ? (
+          <span className="text-blue-500 font-semibold dark:text-blue-400">Estreia em breve (Coming Soon)</span>
+        ) : isToday ? (
           <span>Episódio {anime.lastEpisode} Disponível</span>
         ) : (
           <span>
@@ -381,17 +384,27 @@ function AnimeCalendarCard({
 
                 {/* Buttons Row */}
                 <div className="mt-auto pt-3 flex items-center gap-2">
-                  <Link
-                    href={
-                      anime.latestEpisodeId
-                        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
-                        : `/animes/${anime.slug}`
-                    }
-                    className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-sm"
-                  >
-                    <Play className="h-3 w-3 fill-current ml-0.5" />
-                    Assistir EP {anime.lastEpisode}
-                  </Link>
+                  {anime.isComingSoon ? (
+                    <Link
+                      href={`/animes/${anime.slug}`}
+                      className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs transition-colors shadow-sm dark:bg-zinc-900 dark:hover:bg-zinc-850"
+                    >
+                      <Tv className="h-3.5 w-3.5" />
+                      Ver Detalhes
+                    </Link>
+                  ) : (
+                    <Link
+                      href={
+                        anime.latestEpisodeId
+                          ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                          : `/animes/${anime.slug}`
+                      }
+                      className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-sm"
+                    >
+                      <Play className="h-3 w-3 fill-current ml-0.5" />
+                      Assistir EP {anime.lastEpisode}
+                    </Link>
+                  )}
                   <WatchlistButton
                     mediaType="ANIME"
                     mediaId={anime.id}
@@ -405,55 +418,57 @@ function AnimeCalendarCard({
             </div>
 
             {/* Below all: Episode Image + Episode badge */}
-            <div className="mt-4 border-t border-zinc-100 dark:border-zinc-900 pt-4 flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
-                Último Episódio Lançado
-              </span>
-              <Link
-                href={
-                  anime.latestEpisodeId
-                    ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
-                    : `/animes/${anime.slug}`
-                }
-                className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"
-              >
-                {anime.episodeImageUrl ? (
-                  <Image
-                    src={anime.episodeImageUrl}
-                    alt={`Episódio ${anime.lastEpisode}`}
-                    fill
-                    sizes="348px"
-                    className="object-cover transition-transform duration-500 group-hover/episode_popover:scale-105"
-                  />
-                ) : anime.imageUrl ? (
-                  <Image
-                    src={anime.imageUrl}
-                    alt={`Episódio ${anime.lastEpisode}`}
-                    fill
-                    sizes="348px"
-                    className="object-cover opacity-60 blur-xs transition-transform duration-500 group-hover/episode_popover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
-                    Sem Imagem do Episódio
+            {!anime.isComingSoon && (
+              <div className="mt-4 border-t border-zinc-100 dark:border-zinc-900 pt-4 flex flex-col">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
+                  Último Episódio Lançado
+                </span>
+                <Link
+                  href={
+                    anime.latestEpisodeId
+                      ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                      : `/animes/${anime.slug}`
+                  }
+                  className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"
+                >
+                  {anime.episodeImageUrl ? (
+                    <Image
+                      src={anime.episodeImageUrl}
+                      alt={`Episódio ${anime.lastEpisode}`}
+                      fill
+                      sizes="348px"
+                      className="object-cover transition-transform duration-500 group-hover/episode_popover:scale-105"
+                    />
+                  ) : anime.imageUrl ? (
+                    <Image
+                      src={anime.imageUrl}
+                      alt={`Episódio ${anime.lastEpisode}`}
+                      fill
+                      sizes="348px"
+                      className="object-cover opacity-60 blur-xs transition-transform duration-500 group-hover/episode_popover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
+                      Sem Imagem do Episódio
+                    </div>
+                  )}
+
+                  {/* Episode Number Badge in top-left */}
+                  <div className="absolute top-0 left-0 bg-black/80 text-white font-black text-xs px-2 py-0.5 shadow-lg rounded-br tracking-wide z-20">
+                    {anime.lastEpisode}
                   </div>
-                )}
 
-                {/* Episode Number Badge in top-left */}
-                <div className="absolute top-0 left-0 bg-black/80 text-white font-black text-xs px-2 py-0.5 shadow-lg rounded-br tracking-wide z-20">
-                  {anime.lastEpisode}
-                </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
-
-                {/* Hover Play Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover/episode_popover:opacity-100 z-20">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform duration-300 scale-90 group-hover/episode_popover:scale-100">
-                    <Play className="h-6 w-6 fill-current ml-0.5" />
+                  {/* Hover Play Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover/episode_popover:opacity-100 z-20">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform duration-300 scale-90 group-hover/episode_popover:scale-100">
+                      <Play className="h-6 w-6 fill-current ml-0.5" />
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </div>
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>

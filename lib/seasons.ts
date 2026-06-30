@@ -13,17 +13,14 @@ export interface SeasonInfo {
  * Normalizes and parses the season and year from an anime's premiered or aired field.
  */
 export function parseSeasonAndYear(
-  premiered: string | null | undefined,
-  aired: string | null | undefined
+  season: string | null | undefined,
+  year: number | null | undefined,
+  aired?: string | null | undefined
 ): { season: string; year: number } | null {
-  if (premiered) {
-    const parts = premiered.trim().toLowerCase().split(/\s+/);
-    if (parts.length === 2) {
-      const s = parts[0];
-      const y = parseInt(parts[1], 10);
-      if (["winter", "spring", "summer", "fall"].includes(s) && !isNaN(y)) {
-        return { season: s, year: y };
-      }
+  if (season && year) {
+    const s = season.toLowerCase().trim();
+    if (["winter", "spring", "summer", "fall"].includes(s)) {
+      return { season: s, year };
     }
   }
 
@@ -120,7 +117,7 @@ export function getCurrentSeasonSlug(): string {
 /**
  * Compiles a sorted list of unique seasons from animes, combining default seasons around the current year.
  */
-export function getUniqueSeasons(animes: { premiered?: string | null; aired?: string | null }[]): SeasonInfo[] {
+export function getUniqueSeasons(animes: { season?: string | null; year?: number | null; aired?: string | null }[]): SeasonInfo[] {
   const seasonsMap = new Map<string, SeasonInfo>();
   const current = new Date();
   const currentYear = current.getFullYear();
@@ -137,7 +134,7 @@ export function getUniqueSeasons(animes: { premiered?: string | null; aired?: st
 
   // Populate actual parsed seasons from data
   for (const anime of animes) {
-    const info = parseSeasonAndYear(anime.premiered, anime.aired);
+    const info = parseSeasonAndYear(anime.season, anime.year, anime.aired);
     if (info) {
       const { season, year } = info;
       const slug = `${season}-${year}`;

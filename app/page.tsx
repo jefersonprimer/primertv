@@ -55,13 +55,14 @@ async function CurrentSeasonCarousel() {
       slug: true,
       title: true,
       imageUrl: true,
-      premiered: true,
+      season: true,
+      year: true,
       aired: true,
     },
   });
 
   const filteredItems = allAnimes.filter((anime) => {
-    const info = parseSeasonAndYear(anime.premiered, anime.aired);
+    const info = parseSeasonAndYear(anime.season, anime.year, anime.aired);
     if (!info) return false;
     return info.season === currentSeason && info.year === currentYear;
   });
@@ -100,13 +101,14 @@ async function NextSeasonCarousel() {
       slug: true,
       title: true,
       imageUrl: true,
-      premiered: true,
+      season: true,
+      year: true,
       aired: true,
     },
   });
 
   const filteredItems = allAnimes.filter((anime) => {
-    const info = parseSeasonAndYear(anime.premiered, anime.aired);
+    const info = parseSeasonAndYear(anime.season, anime.year, anime.aired);
     if (!info) return false;
     return info.season === nextSeason && info.year === nextYear;
   });
