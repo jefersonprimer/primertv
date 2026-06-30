@@ -331,7 +331,7 @@ export default async function AnimeDetailsPage({
                   {firstEpisodeId && (
                     <Link
                       href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
-                      className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit uppercase"
+                      className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2.5 md:w-fit uppercase"
                     >
                       <Play className="h-5 w-5 fill-current" />
                       Começar a assistir EP1
