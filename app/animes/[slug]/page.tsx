@@ -259,7 +259,7 @@ export default async function AnimeDetailsPage({
 
                 {(anime.rating ||
                   (anime.genres && anime.genres.length > 0)) && (
-                  <div className="mt-2 flex items-center justify-center md:justify-start flex-wrap gap-2">
+                  <div className="mt-2 flex items-center justify-center md:justify-start flex-wrap gap-1.5">
                     {anime.rating && (
                       <RatingBadge rating={anime.rating} className="h-5 w-5" />
                     )}
@@ -267,7 +267,7 @@ export default async function AnimeDetailsPage({
                       anime.genres &&
                       anime.genres.length > 0 && (
                         <span
-                          className="text-zinc-400 dark:text-zinc-600 flex items-center justify-center"
+                          className="text-[#bbb] flex items-center justify-center"
                           aria-hidden="true"
                         >
                           <svg

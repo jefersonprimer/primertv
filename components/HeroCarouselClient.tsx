@@ -187,10 +187,18 @@ export function HeroCarouselClient({
               </h1>
             )}
 
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
               {current.rating && (
                 <RatingBadge rating={current.rating} size={20} />
               )}
+              <span
+                className="text-[#8c8c8c] flex items-center justify-center"
+                aria-hidden="true"
+              >
+                <svg className="h-2 w-2 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2L22 12L12 22L2 12Z" />
+                </svg>
+              </span>
               {current.genres.length > 0 && (
                 <span className="text-sm font-normal text-[#8c8c8c]">
                   {current.genres.join(", ")}
@@ -205,7 +213,8 @@ export function HeroCarouselClient({
             )}
 
             <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
-              {current.type === "movie" && (current.videoUrl || current.tmdbId) ? (
+              {current.type === "movie" &&
+              (current.videoUrl || current.tmdbId) ? (
                 <Link
                   href={`/filmes/${current.slug}/watch`}
                   className="flex w-full max-w-[340px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6 uppercase"
