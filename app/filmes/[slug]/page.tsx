@@ -11,6 +11,8 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import AddToListButton from "@/components/AddToListButton";
 import ShareButton from "@/components/ShareButton";
+import { getSession } from "@/lib/auth";
+import { EditMediaButton } from "@/components/admin/EditMediaButton";
 
 export const revalidate = 3600;
 
@@ -58,6 +60,9 @@ export default async function MovieDetailsPage({
   if (!movie) {
     notFound();
   }
+
+  const session = await getSession();
+  const isAdmin = session?.user?.role === "admin";
 
   let bannerUrl = movie.bannerUrl;
   if (!bannerUrl) {
@@ -227,6 +232,12 @@ export default async function MovieDetailsPage({
                   roundedFull={true}
                 />
                 <ShareButton hasBorder={true} roundedFull={true} />
+                {isAdmin && (
+                  <EditMediaButton
+                    collection="movies"
+                    item={movie}
+                  />
+                )}
               </div>
               {(movieDetails.description || movie.description) && (
                 <div className="w-full">

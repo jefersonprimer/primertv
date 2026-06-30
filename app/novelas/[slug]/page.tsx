@@ -9,6 +9,8 @@ import EpisodeList from "@/components/EpisodeList";
 import MediaDescricao from "@/components/MediaDescricao";
 import ShareButton from "@/components/ShareButton";
 import { MediaCarousel } from "@/components/MediaCarousel";
+import { getSession } from "@/lib/auth";
+import { EditMediaButton } from "@/components/admin/EditMediaButton";
 
 export const revalidate = 3600;
 
@@ -56,6 +58,9 @@ export default async function NovelaDetailsPage({
   if (!novela) {
     notFound();
   }
+
+  const session = await getSession();
+  const isAdmin = session?.user?.role === "admin";
 
   const firstEpisodeId = novela.seasons[0]?.episodes[0]?.id;
 
@@ -172,6 +177,13 @@ export default async function NovelaDetailsPage({
                 </div>
                 <div className="flex flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-start">
                   <ShareButton />
+                  {isAdmin && (
+                    <EditMediaButton
+                      collection="novelas"
+                      item={novela}
+                      className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
+                    />
+                  )}
                 </div>
               </div>
 

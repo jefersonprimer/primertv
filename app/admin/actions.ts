@@ -245,7 +245,14 @@ export async function saveMedia(
   }
 
   revalidatePublicRoutes(collection, finalSlug, oldSlug || undefined);
-  redirect(`/admin/${collection}?id=${savedId}&saved=1`);
+  const redirectTo = readString(formData, "redirectTo");
+  if (redirectTo === "public") {
+    redirect(getPublicPath(collection, finalSlug));
+  } else if (redirectTo) {
+    redirect(redirectTo.replace("[slug]", finalSlug));
+  } else {
+    redirect(`/admin/${collection}?id=${savedId}&saved=1`);
+  }
 }
 
 async function getExistingRecord(collection: AdminCollection, id: string) {
@@ -359,7 +366,14 @@ export async function saveSeason(
   }
 
   revalidatePath(seasonParentPath(collection, parentSlug));
-  redirect(`/admin/${collection}?id=${parentId}&seasonId=${savedId}&saved=1`);
+  const redirectTo = readString(formData, "redirectTo");
+  if (redirectTo === "public") {
+    redirect(seasonParentPath(collection, parentSlug));
+  } else if (redirectTo) {
+    redirect(redirectTo.replace("[slug]", parentSlug));
+  } else {
+    redirect(`/admin/${collection}?id=${parentId}&seasonId=${savedId}&saved=1`);
+  }
 }
 
 export async function deleteSeason(
@@ -386,7 +400,14 @@ export async function deleteSeason(
   }
 
   revalidatePath(seasonParentPath(collection, parentSlug));
-  redirect(`/admin/${collection}?id=${parentId}&saved=1`);
+  const redirectTo = readString(formData, "redirectTo");
+  if (redirectTo === "public") {
+    redirect(seasonParentPath(collection, parentSlug));
+  } else if (redirectTo) {
+    redirect(redirectTo.replace("[slug]", parentSlug));
+  } else {
+    redirect(`/admin/${collection}?id=${parentId}&saved=1`);
+  }
 }
 
 export async function saveEpisode(
@@ -459,7 +480,14 @@ export async function saveEpisode(
 
   revalidatePath(seasonParentPath(collection, parentSlug));
   revalidatePath(childPublicPath(collection, parentSlug, savedId));
-  redirect(`/admin/${collection}?id=${parentId}&seasonId=${seasonId}&episodeId=${savedId}&saved=1`);
+  const redirectTo = readString(formData, "redirectTo");
+  if (redirectTo === "public") {
+    redirect(seasonParentPath(collection, parentSlug));
+  } else if (redirectTo) {
+    redirect(redirectTo.replace("[slug]", parentSlug));
+  } else {
+    redirect(`/admin/${collection}?id=${parentId}&seasonId=${seasonId}&episodeId=${savedId}&saved=1`);
+  }
 }
 
 export async function deleteEpisode(
@@ -487,7 +515,14 @@ export async function deleteEpisode(
   }
 
   revalidatePath(seasonParentPath(collection, parentSlug));
-  redirect(`/admin/${collection}?id=${parentId}&seasonId=${seasonId}&saved=1`);
+  const redirectTo = readString(formData, "redirectTo");
+  if (redirectTo === "public") {
+    redirect(seasonParentPath(collection, parentSlug));
+  } else if (redirectTo) {
+    redirect(redirectTo.replace("[slug]", parentSlug));
+  } else {
+    redirect(`/admin/${collection}?id=${parentId}&seasonId=${seasonId}&saved=1`);
+  }
 }
 
 export async function saveChapter(
@@ -540,7 +575,14 @@ export async function saveChapter(
 
   revalidatePath(seasonParentPath("mangas", parentSlug));
   revalidatePath(chapterPublicPath(parentSlug, savedId));
-  redirect(`/admin/mangas?id=${parentId}&chapterId=${savedId}&saved=1`);
+  const redirectTo = readString(formData, "redirectTo");
+  if (redirectTo === "public") {
+    redirect(seasonParentPath("mangas", parentSlug));
+  } else if (redirectTo) {
+    redirect(redirectTo.replace("[slug]", parentSlug));
+  } else {
+    redirect(`/admin/mangas?id=${parentId}&chapterId=${savedId}&saved=1`);
+  }
 }
 
 export async function deleteChapter(
@@ -564,5 +606,12 @@ export async function deleteChapter(
   }
 
   revalidatePath(seasonParentPath("mangas", parentSlug));
-  redirect(`/admin/mangas?id=${parentId}&saved=1`);
+  const redirectTo = readString(formData, "redirectTo");
+  if (redirectTo === "public") {
+    redirect(seasonParentPath("mangas", parentSlug));
+  } else if (redirectTo) {
+    redirect(redirectTo.replace("[slug]", parentSlug));
+  } else {
+    redirect(`/admin/mangas?id=${parentId}&saved=1`);
+  }
 }

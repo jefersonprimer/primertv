@@ -5,6 +5,8 @@ import { MobileSidebar } from "./MobileSidebar";
 import { UserMenu } from "./UserMenu";
 import { ExplorarDropdown } from "./ExplorarDropdown";
 
+import { AddMediaButton } from "./admin/AddMediaButton";
+
 const DESKTOP_LINKS = [
   { href: "/series", label: "Séries" },
   { href: "/filmes", label: "Filmes" },
@@ -71,7 +73,9 @@ export async function Header() {
 
           {user ? (
             <div className="flex h-full items-center">
-              {user.role !== "admin" && (
+              {user.role === "admin" ? (
+                <AddMediaButton />
+              ) : (
                 <Link
                   href="/watchlist"
                   className="hidden md:flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"

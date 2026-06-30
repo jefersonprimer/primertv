@@ -13,6 +13,8 @@ import ShareButton from "@/components/ShareButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
 import { getMangaBanner } from "@/lib/banners";
+import { getSession } from "@/lib/auth";
+import { EditMediaButton } from "@/components/admin/EditMediaButton";
 
 export const revalidate = 3600;
 
@@ -75,6 +77,8 @@ export default async function MangaDetailsPage({
   const firstChapterId = manga.chapters[0]?.id;
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("MANGA", manga.id);
+  const session = await getSession();
+  const isAdmin = session?.user?.role === "admin";
 
   const similarMangas =
     manga.genres && manga.genres.length > 0
@@ -226,6 +230,13 @@ export default async function MangaDetailsPage({
                 </div>
                 <div className="flex flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-start">
                   <ShareButton />
+                  {isAdmin && (
+                    <EditMediaButton
+                      collection="mangas"
+                      item={manga}
+                      className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
+                    />
+                  )}
                 </div>
               </div>
 

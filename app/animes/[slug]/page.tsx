@@ -14,6 +14,8 @@ import AddToListButton from "@/components/AddToListButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
 import { getAnimeBanner, getAnimeLogo } from "@/lib/banners";
+import { getSession } from "@/lib/auth";
+import { EditMediaButton } from "@/components/admin/EditMediaButton";
 
 export const revalidate = 3600;
 
@@ -99,6 +101,8 @@ export default async function AnimeDetailsPage({
   const firstEpisodeId = anime.seasons[0]?.episodes[0]?.id;
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("ANIME", anime.id);
+  const session = await getSession();
+  const isAdmin = session?.user?.role === "admin";
 
   const similarAnimes =
     anime.genres && anime.genres.length > 0
@@ -351,6 +355,13 @@ export default async function AnimeDetailsPage({
                     isLoggedIn={Boolean(userId)}
                   />
                   <ShareButton />
+                  {isAdmin && (
+                    <EditMediaButton
+                      collection="animes"
+                      item={anime}
+                      className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
+                    />
+                  )}
                 </div>
               </div>
 

@@ -1,13 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  User,
-  LogOut,
-  LayoutDashboard,
-  History,
-  Bookmark,
-  List,
-} from "lucide-react";
+import { User, LogOut, History, Bookmark, List } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { SessionUser } from "@/lib/auth";
@@ -60,9 +53,7 @@ export function UserMenu({ user }: UserMenuProps) {
               </div>
             </div>
 
-            <div className="my-1.5 border-t border-zinc-200 dark:border-zinc-700/60" />
-
-            <div className="space-y-0.5">
+            <div className="space-y-0.5 border-t border-zinc-700/60">
               {user.role !== "admin" && (
                 <>
                   <Link
@@ -92,18 +83,7 @@ export function UserMenu({ user }: UserMenuProps) {
                 </>
               )}
 
-              {user.role === "admin" && (
-                <Link
-                  href="/admin"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
-                >
-                  <LayoutDashboard size={18} />
-                  <span>Painel Admin</span>
-                </Link>
-              )}
-
-              <div className="my-1.5 border-t border-zinc-200 dark:border-zinc-700/60" />
+              <div className="my-1.5 border-t border-zinc-700/60" />
 
               <button
                 onClick={async () => {

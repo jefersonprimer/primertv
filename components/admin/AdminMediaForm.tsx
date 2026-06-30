@@ -15,6 +15,9 @@ type AdminMediaFormProps = {
   collection: AdminCollection;
   config: AdminCollectionConfig;
   item?: Record<string, unknown> | null;
+  redirectTo?: string;
+  onCancel?: () => void;
+  className?: string;
 };
 
 type FormState = {
@@ -59,6 +62,9 @@ export function AdminMediaForm({
   collection,
   config,
   item,
+  redirectTo,
+  onCancel,
+  className,
 }: AdminMediaFormProps) {
   const [state, action, isPending] = useActionState<FormState, FormData>(
     saveMedia,
@@ -72,10 +78,11 @@ export function AdminMediaForm({
   return (
     <form
       action={action}
-      className="rounded-[32px] border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 md:p-8"
+      className={className || "rounded-[32px] border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 md:p-8"}
     >
       <input type="hidden" name="collection" value={collection} />
       <input type="hidden" name="id" value={typeof item?.id === "string" ? item.id : ""} />
+      {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
 
       <div className="mb-8 flex flex-col gap-2 border-b border-zinc-100 pb-6 dark:border-zinc-800">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600 dark:text-blue-400">
@@ -145,6 +152,15 @@ export function AdminMediaForm({
         >
           {isPending ? "Salvando..." : item ? "Atualizar mídia" : "Criar mídia"}
         </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-5 py-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-900"
+          >
+            Cancelar
+          </button>
+        )}
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
           {item ? "Salva as alterações do item selecionado." : "Cria um novo item nesse catálogo."}
         </p>
