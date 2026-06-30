@@ -156,6 +156,17 @@ export function Footer() {
               </li>
               <li>
                 <Link
+                  href="/contato"
+                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                >
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                    ›
+                  </span>
+                  Contato
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/status"
                   className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
                 >
@@ -185,6 +196,17 @@ export function Footer() {
                     ›
                   </span>
                   Privacidade
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dmca"
+                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                >
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                    ›
+                  </span>
+                  DMCA
                 </Link>
               </li>
             </ul>
@@ -246,6 +268,11 @@ export function Footer() {
 
         {/* Divider */}
         <hr className="my-8 border-zinc-200 dark:border-zinc-800/80" />
+
+        {/* Disclaimer */}
+        <p className="text-xs text-zinc-500 dark:text-zinc-500/80 leading-relaxed mb-6">
+          Este site não hospeda nenhum vídeo em seu servidor. Todo conteúdo é provido de terceiros não afiliados.
+        </p>
 
         {/* Footer Bottom */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-400 dark:text-zinc-500">
