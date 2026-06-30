@@ -25,10 +25,20 @@ export default async function SearchPage({
   const [animes, series, movies, mangas, novelas] = await Promise.all([
     prisma.anime.findMany({
       where: {
-        title: {
-          contains: query,
-          mode: "insensitive",
-        },
+        OR: [
+          {
+            title: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+          {
+            titleEnglish: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+        ],
       },
       select: {
         id: true,

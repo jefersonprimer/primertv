@@ -39,6 +39,7 @@ export type AdminChapterItem = {
 export type AdminMediaDetail = {
   id: string;
   title: string;
+  titleEnglish?: string | null;
   slug: string;
   description: string | null;
   imageUrl: string | null;
@@ -237,6 +238,7 @@ export async function getCollectionDetail(
       return {
         id: anime.id,
         title: anime.title,
+        titleEnglish: anime.titleEnglish,
         slug: anime.slug,
         description: anime.description,
         imageUrl: anime.imageUrl,

@@ -150,6 +150,7 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          titleEnglish: readString(formData, "titleEnglish") || null,
           logoUrl: readString(formData, "logoUrl") || null,
           bannerUrl: readString(formData, "bannerUrl") || null,
           compactImageUrl: readString(formData, "compactImageUrl") || null,

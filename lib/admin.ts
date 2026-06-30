@@ -83,6 +83,7 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
     publicPath: "/animes",
     fields: [
       { name: "title", label: "Título", type: "text", required: true },
+      { name: "titleEnglish", label: "Título em Inglês", type: "text" },
       { name: "slug", label: "Slug", type: "text", required: true },
       {
         name: "description",
