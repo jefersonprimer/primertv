@@ -15,26 +15,6 @@ interface WatchPageProps {
   searchParams?: Promise<{ player?: string }>;
 }
 
-function getPlayerLabel(url: string, index: number): string {
-  const lowercaseUrl = url.toLowerCase();
-  if (
-    lowercaseUrl.includes("streamtape.com") ||
-    lowercaseUrl.includes("streamtape")
-  ) {
-    return "Streamtape";
-  }
-  if (lowercaseUrl.includes("fembed")) {
-    return "Fembed";
-  }
-  if (lowercaseUrl.includes("mixdrop")) {
-    return "Mixdrop";
-  }
-  if (lowercaseUrl.includes("doodstream") || lowercaseUrl.includes("dood")) {
-    return "Doodstream";
-  }
-  return `Player ${index}`;
-}
-
 export async function generateMetadata({
   params,
 }: WatchPageProps): Promise<Metadata> {
@@ -147,7 +127,7 @@ export default async function WatchPage({
   if (episode.videoUrl) {
     playersList.push({
       id: "principal",
-      label: "Principal (Scraper)",
+      label: "Player 1",
       url: episode.videoUrl,
     });
   }
@@ -158,7 +138,7 @@ export default async function WatchPage({
       if (trimmedUrl) {
         playersList.push({
           id: `custom-${idx}`,
-          label: getPlayerLabel(trimmedUrl, idx + 2),
+          label: `Player ${playersList.length + 1}`,
           url: trimmedUrl,
         });
       }
