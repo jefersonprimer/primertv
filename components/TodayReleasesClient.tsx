@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, ChevronRight, Clock, Play } from "lucide-react";
+import RatingBadge from "@/components/RatingBadge";
 
 interface AnimeItem {
   id: string;
@@ -12,6 +13,7 @@ interface AnimeItem {
   imageUrl: string | null;
   bannerUrl: string | null;
   description: string | null;
+  rating?: string | null;
   releaseDay: number;
   releaseTime: string;
   lastEpisode: number;
@@ -40,12 +42,23 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
   const dayBeforeYesterday = (currentDay - 2 + 7) % 7;
 
   // Filter animes
-  const todayAnimes = animes.filter((anime) => anime.releaseDay === currentDay);
+  const todayAnimes = animes.filter(
+    (anime) =>
+      anime.releaseDay === currentDay &&
+      anime.episodeNumbers &&
+      anime.episodeNumbers.length > 0,
+  );
   const yesterdayAnimes = animes.filter(
-    (anime) => anime.releaseDay === yesterday,
+    (anime) =>
+      anime.releaseDay === yesterday &&
+      anime.episodeNumbers &&
+      anime.episodeNumbers.length > 0,
   );
   const dayBeforeAnimes = animes.filter(
-    (anime) => anime.releaseDay === dayBeforeYesterday,
+    (anime) =>
+      anime.releaseDay === dayBeforeYesterday &&
+      anime.episodeNumbers &&
+      anime.episodeNumbers.length > 0,
   );
 
   function getDayName(releaseDay: number) {
@@ -89,18 +102,16 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         className="group flex gap-4 p-0 sm:p-2 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:bg-[#272727] hover:cursor-pointer"
       >
         {/* Left: Image Banner */}
-        <div
-          className={`relative flex-shrink-0 ${
-            multipleEpisodeRelease ? "pt-2 pr-3" : ""
-          }`}
-        >
+        <div className="relative flex-shrink-0 w-38 sm:w-36 aspect-[16/9]">
           {multipleEpisodeRelease &&
             [3, 2, 1].map((depth) => (
               <div
                 key={depth}
                 aria-hidden
-                className="pointer-events-none absolute bottom-0 left-0 aspect-[16/10] w-28 sm:w-36 overflow-hidden border border-zinc-200/70 shadow-sm dark:border-zinc-700/60"
+                className="pointer-events-none absolute bottom-0 left-0 overflow-hidden border border-zinc-200/70 shadow-sm dark:border-zinc-700/60 bg-zinc-200 dark:bg-zinc-950"
                 style={{
+                  width: "calc(100% - 9px)",
+                  height: "calc(100% - 7.5px)",
                   transform: `translate(${depth * 3}px, ${-depth * 2.5}px)`,
                   zIndex: 4 - depth,
                 }}
@@ -117,12 +128,21 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
 
           <Link
             href={cardHref}
-            className={`relative block aspect-[16/9] w-38 sm:w-36 overflow-hidden bg-zinc-200 shadow-sm dark:bg-zinc-950 ${
+            className={`absolute bottom-0 left-0 block overflow-hidden bg-zinc-200 shadow-sm dark:bg-zinc-950 ${
               multipleEpisodeRelease
                 ? "z-10 ring-1 ring-black/5 shadow-md dark:ring-white/10"
                 : ""
             }`}
+            style={{
+              width: multipleEpisodeRelease ? "calc(100% - 9px)" : "100%",
+              height: multipleEpisodeRelease ? "calc(100% - 7.5px)" : "100%",
+            }}
           >
+            {anime.rating && (
+              <div className="absolute top-1 left-1 z-20 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <RatingBadge rating={anime.rating} size={16} />
+              </div>
+            )}
             {bannerImageUrl ? (
               <Image
                 src={bannerImageUrl}
@@ -149,9 +169,14 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                 className="absolute inset-0 object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-              <Play className="h-6 w-6 text-white fill-current" />
-            </div>
+
+            {singleEpisodeRelease && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div className="bg-black/60 p-3 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 scale-90 group-hover:scale-100">
+                  <Play className="h-6 w-6 text-white fill-current ml-0.5" />
+                </div>
+              </div>
+            )}
           </Link>
         </div>
 
@@ -169,13 +194,36 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
 
             {/* Episode pills progress */}
             <div className="mt-1 flex flex-wrap items-center gap-1">
-              <span className="text-sm font-medium text-[#bbb]">
-                {episodeNumbers.length > 1 ? "Episódios: " : " Episódio:"}
-              </span>
               {episodeNumbers.length === 0 ? (
-                <span className="text-sm text-zinc-500">Sem episódios</span>
+                <>
+                  <span className="text-sm font-medium text-[#bbb]">
+                    {" "}
+                    Episódio{" "}
+                  </span>
+                  <span className="text-sm text-zinc-500">Sem episódios</span>
+                </>
+              ) : episodeNumbers.length > 1 ? (
+                <>
+                  <Link
+                    href={
+                      anime.latestEpisodeId
+                        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                        : `/animes/${anime.slug}`
+                    }
+                    className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"
+                  >
+                    {anime.lastEpisode}
+                  </Link>
+                  <span className="text-sm font-medium text-[#bbb]">
+                    Episódios
+                  </span>
+                </>
               ) : (
                 <>
+                  <span className="text-sm font-medium text-[#bbb]">
+                    {" "}
+                    Episódio{" "}
+                  </span>
                   {displayPills.map((num) => (
                     <span
                       key={num}
@@ -205,7 +253,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           </div>
 
           {/* Release time */}
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#bbb] mt-3">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#bbb]">
             <Clock className="h-3 w-3" />
             <span className={isToday ? "font-medium" : ""}>
               {dayLabel} às {anime.releaseTime}

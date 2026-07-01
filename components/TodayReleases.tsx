@@ -33,6 +33,7 @@ export async function TodayReleases() {
       imageUrl: true,
       bannerUrl: true,
       description: true,
+      rating: true,
       seasons: {
         select: {
           episodes: {
@@ -129,6 +130,7 @@ export async function TodayReleases() {
       imageUrl: anime.imageUrl,
       bannerUrl: anime.bannerUrl === "none" ? null : anime.bannerUrl,
       description: anime.description,
+      rating: anime.rating,
       releaseDay,
       releaseTime,
       lastEpisode: lastEp,
