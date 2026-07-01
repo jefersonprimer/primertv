@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { Metadata } from "next";
-import { Tv, Film, Clapperboard, BookOpen } from "lucide-react";
 import { getNewReleases } from "@/app/actions/newReleases";
 import { NewReleasesList } from "@/components/NewReleasesList";
 
@@ -14,11 +13,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const TABS = [
-  { id: "animes", label: "Animes", icon: Tv },
-  { id: "series", label: "Séries", icon: Tv },
-  { id: "novelas", label: "Novelas", icon: Clapperboard },
-  { id: "filmes", label: "Filmes", icon: Film },
-  { id: "mangas", label: "Mangás", icon: BookOpen },
+  { id: "animes", label: "Animes" },
+  { id: "series", label: "Séries" },
+  { id: "novelas", label: "Novelas" },
+  { id: "filmes", label: "Filmes" },
+  { id: "mangas", label: "Mangás" },
 ] as const;
 
 interface PageProps {
@@ -50,19 +49,17 @@ export default async function NewReleasesPage({ searchParams }: PageProps) {
       {/* Navigation Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-800">
         {TABS.map((tab) => {
-          const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
             <Link
               key={tab.id}
               href={`/new?type=${tab.id}`}
-              className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-95 ${
                 isActive
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25"
                   : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
               }`}
             >
-              <Icon className="h-4 w-4" />
               {tab.label}
             </Link>
           );
@@ -70,7 +67,7 @@ export default async function NewReleasesPage({ searchParams }: PageProps) {
       </div>
 
       {/* Releases Grid */}
-      <main className="min-h-[400px]">
+      <main className="min-h-[400px] mt-6">
         <NewReleasesList
           key={activeTab}
           initialItems={items}

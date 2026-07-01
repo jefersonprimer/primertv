@@ -15,8 +15,8 @@ async function NovelasGridContent() {
       <div
         className="flex h-64 items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 mx-2"
         style={{
-          marginLeft: "max(8px, (100vw - 1223px) / 2)",
-          marginRight: "max(8px, (100vw - 1223px) / 2)",
+          marginLeft: "max(8px, (100vw - 1130px) / 2)",
+          marginRight: "max(8px, (100vw - 1130px) / 2)",
         }}
       >
         <p className="text-zinc-500">Nenhuma novela encontrada.</p>
@@ -33,8 +33,8 @@ export default async function NovelasPage() {
       <header
         className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4"
         style={{
-          paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-          paddingRight: "max(8px, (100vw - 1223px) / 2)",
+          paddingLeft: "max(8px, (100vw - 1130px) / 2)",
+          paddingRight: "max(8px, (100vw - 1130px) / 2)",
         }}
       >
         <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-[28px]">
@@ -45,8 +45,8 @@ export default async function NovelasPage() {
       <main
         className="px-4"
         style={{
-          paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-          paddingRight: "max(8px, (100vw - 1223px) / 2)",
+          paddingLeft: "max(8px, (100vw - 1130px) / 2)",
+          paddingRight: "max(8px, (100vw - 1130px) / 2)",
         }}
       >
         <Suspense fallback={<PosterGridSkeleton count={24} />}>

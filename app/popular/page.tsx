@@ -29,7 +29,7 @@ export default async function PopularAnimesPage() {
       </div>
 
       {/* Popularity Grid */}
-      <main className="min-h-[400px]">
+      <main className="min-h-[400px] mt-6">
         <PopularAnimesList initialItems={animes} initialHasMore={hasMore} />
       </main>
     </div>
