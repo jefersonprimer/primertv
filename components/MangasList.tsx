@@ -9,10 +9,7 @@ interface MangasListProps {
   initialHasMore: boolean;
 }
 
-export function MangasList({
-  initialItems,
-  initialHasMore,
-}: MangasListProps) {
+export function MangasList({ initialItems, initialHasMore }: MangasListProps) {
   const [items, setItems] = useState<MangaItem[]>(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
@@ -81,7 +78,7 @@ export function MangasList({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {items.map((item) => (
           <MediaCard key={item.id} item={item} type="manga" />
         ))}
@@ -99,9 +96,7 @@ export function MangasList({
           ))}
       </div>
 
-      {hasMore && (
-        <div ref={observerRef} className="h-px w-full" aria-hidden />
-      )}
+      {hasMore && <div ref={observerRef} className="h-px w-full" aria-hidden />}
     </div>
   );
 }

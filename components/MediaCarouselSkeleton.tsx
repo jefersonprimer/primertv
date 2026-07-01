@@ -29,7 +29,7 @@ export function MediaCarouselSkeleton({
       )}
 
       <div
-        className="flex gap-4 sm:gap-6 overflow-hidden pb-4"
+        className="flex gap-3 sm:gap-6 overflow-hidden pb-4"
         style={{
           paddingLeft: "max(8px, (100vw - 1240px) / 2)",
           paddingRight: "max(8px, (100vw - 1240px) / 2)",
@@ -38,7 +38,7 @@ export function MediaCarouselSkeleton({
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="w-[160px] flex-shrink-0 sm:w-[200px] lg:w-[225.4px]"
+            className="w-[180px] flex-shrink-0 sm:w-[200px] lg:w-[225.4px]"
           >
             <MediaCardSkeleton />
           </div>

@@ -94,7 +94,7 @@ export function HeroCarouselClient({
 
   return (
     <section
-      className="relative h-[80vh] sm:h-screen md:h-[80v] lg:h-screen w-full overflow-hidden bg-zinc-900"
+      className="relative h-[70vh] sm:h-screen md:h-[80vh] lg:h-screen w-full overflow-hidden bg-zinc-900"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={onTouchStart}
@@ -164,7 +164,7 @@ export function HeroCarouselClient({
       {/* Mobile bottom blur & gradient overlay for screens < sm */}
       <div className="mobile-bottom-blur sm:hidden" />
 
-      <div className="absolute inset-0 flex items-end pb-40 sm:pb-0 md:pb-[24px] md:items-center md:pb-0">
+      <div className="absolute inset-0 flex items-end pb-30 sm:pb-14 md:pb-[24px] md:items-center">
         <div className="mx-auto w-full max-w-[1223px] md:px-10 lg:px-16 xl:px-0 lg:-translate-y-20">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl">
             {current.logoUrl ? (

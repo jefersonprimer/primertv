@@ -19,7 +19,7 @@ async function MangasGridContent() {
   if (items.length === 0) {
     return (
       <div
-        className="flex h-64 items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 mx-2"
+        className="flex h-64 items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 mx-2"
         style={{
           marginLeft: "max(8px, (100vw - 1223px) / 2)",
           marginRight: "max(8px, (100vw - 1223px) / 2)",
@@ -35,7 +35,7 @@ async function MangasGridContent() {
 
 export default async function MangasPage() {
   return (
-    <div className="py-8">
+    <div className="py-8 px-2 sm:px-0">
       <header
         className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4"
         style={{
@@ -49,7 +49,7 @@ export default async function MangasPage() {
       </header>
 
       <main
-        className="px-4"
+        className="px-2 sm:px-4"
         style={{
           paddingLeft: "max(8px, (100vw - 1223px) / 2)",
           paddingRight: "max(8px, (100vw - 1223px) / 2)",

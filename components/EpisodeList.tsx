@@ -72,7 +72,7 @@ export default function EpisodeList({
               }`}
             >
               {itemType === "episode" && (
-                <div className="relative aspect-video w-32 sm:w-full flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                <div className="relative aspect-video w-38 sm:w-full flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                   {item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
@@ -107,15 +107,15 @@ export default function EpisodeList({
               {itemType === "episode" ? (
                 <div className="flex flex-col gap-1 flex-1 justify-center sm:justify-start">
                   {displayAnimeTitle && (
-                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider line-clamp-1">
+                    <span className="text-[10px] font-normal sm:font-bold text-[#8c8c8c] uppercase tracking-wider line-clamp-1">
                       {displayAnimeTitle}
                     </span>
                   )}
-                  <h4 className="line-clamp-2 sm:line-clamp-1 text-base font-normal text-zinc-900 dark:text-zinc-100">
+                  <h3 className="line-clamp-2 sm:line-clamp-1 text-sm sm:text-base font-bold text-white">
                     {item.title && item.title.trim()
                       ? item.title
                       : `${label} ${item.number}`}
-                  </h4>
+                  </h3>
                 </div>
               ) : (
                 <div className="flex flex-col gap-1 flex-1">

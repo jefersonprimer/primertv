@@ -22,7 +22,7 @@ export default async function PopularAnimesPage() {
   return (
     <div className="mx-auto max-w-[1130px] px-4 py-8 md:py-12">
       {/* Page Header */}
-      <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-200 pb-6 dark:border-zinc-800">
+      <div className=" flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-200 pb-6 dark:border-zinc-800">
         <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-[28px]">
           Animes Mais Populares
         </h1>
@@ -35,4 +35,3 @@ export default async function PopularAnimesPage() {
     </div>
   );
 }
-

@@ -81,7 +81,7 @@ export function NovelasList({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
         {items.map((item) => (
           <MediaCard key={item.id} item={item} type="novela" />
         ))}
@@ -93,15 +93,13 @@ export function NovelasList({
               key={`skeleton-${idx}`}
               className="flex flex-col gap-3 animate-pulse"
             >
-              <div className="relative aspect-[2/3] w-full bg-zinc-200 dark:bg-zinc-800 rounded-2xl shadow-md" />
-              <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+              <div className="relative aspect-[2/3] w-full bg-zinc-200 dark:bg-zinc-800 shadow-md" />
+              <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800" />
             </div>
           ))}
       </div>
 
-      {hasMore && (
-        <div ref={observerRef} className="h-px w-full" aria-hidden />
-      )}
+      {hasMore && <div ref={observerRef} className="h-px w-full" aria-hidden />}
     </div>
   );
 }

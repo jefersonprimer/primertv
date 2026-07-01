@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, ChevronLeft, ChevronRight, Clock, Play } from "lucide-react";
+import { Calendar, ChevronRight, Clock, Play } from "lucide-react";
 
 interface AnimeItem {
   id: string;
@@ -86,7 +86,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
     return (
       <div
         key={`${anime.id}-${anime.releaseDay}`}
-        className="group flex gap-4 p-2 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:bg-[#272727] hover:cursor-pointer"
+        className="group flex gap-4 p-0 sm:p-2 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:bg-[#272727] hover:cursor-pointer"
       >
         {/* Left: Image Banner */}
         <div
@@ -117,7 +117,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
 
           <Link
             href={cardHref}
-            className={`relative block aspect-[16/10] w-28 sm:w-36 overflow-hidden bg-zinc-200 shadow-sm dark:bg-zinc-950 ${
+            className={`relative block aspect-[16/9] w-38 sm:w-36 overflow-hidden bg-zinc-200 shadow-sm dark:bg-zinc-950 ${
               multipleEpisodeRelease
                 ? "z-10 ring-1 ring-black/5 shadow-md dark:ring-white/10"
                 : ""
@@ -217,7 +217,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <div className="mx-auto max-w-7xl px-2 sm:px-6">
       {/* Title Header */}
       <div className="mb-4 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-white text-[22px] md:text-[28px] font-bold tracking-tight ">
@@ -312,16 +312,16 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {!showMore ? (
           <button
             onClick={() => setShowMore(true)}
-            className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
           >
-            Mostrar mais
+            mostrar mais
           </button>
         ) : (
           <Link
             href="/calendario"
-            className="flex items-center justify-center bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="flex items-center justify-center bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
           >
-            Ver calendário de lançamentos
+            ver calendário de lançamentos
           </Link>
         )}
       </div>

@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { getNovelas } from "@/app/actions/novelas";
 import { NovelasList } from "@/components/NovelasList";
 import { PosterGridSkeleton } from "@/components/PosterGridSkeleton";
-import Link from "next/link";
 import { connection } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +29,7 @@ async function NovelasGridContent() {
 
 export default async function NovelasPage() {
   return (
-    <div className="py-8">
+    <div className="py-8 px-2 sm:px-0">
       <header
         className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4"
         style={{

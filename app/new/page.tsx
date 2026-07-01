@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { Metadata } from "next";
-import {
-  Tv,
-  Film,
-  Clapperboard,
-  BookOpen,
-} from "lucide-react";
+import { Tv, Film, Clapperboard, BookOpen } from "lucide-react";
 import { getNewReleases } from "@/app/actions/newReleases";
 import { NewReleasesList } from "@/components/NewReleasesList";
 
@@ -53,7 +48,7 @@ export default async function NewReleasesPage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-[1130px] px-4 py-8 md:py-12">
       {/* Navigation Tabs */}
-      <div className="mb-10 flex flex-wrap gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-800">
+      <div className="flex flex-wrap gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-800">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -86,4 +81,3 @@ export default async function NewReleasesPage({ searchParams }: PageProps) {
     </div>
   );
 }
-

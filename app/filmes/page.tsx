@@ -167,8 +167,8 @@ export default function MoviesPage() {
       <Suspense fallback={<HeroCarouselSkeleton />}>
         <HeroCarousel type="movie" />
       </Suspense>
-      <div className="pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-26 sm:-translate-y-2 md:-translate-y-18 lg:-translate-y-32 xl:-translate-y-40">
-        <main className="space-y-16">
+      <div className="pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-18 sm:translate-y-0 md:-translate-y-18 lg:-translate-y-32 xl:-translate-y-40">
+        <main className="space-y-8 lg:space-y-16">
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <RecentMoviesCarousel />
           </Suspense>

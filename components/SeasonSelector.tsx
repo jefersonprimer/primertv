@@ -184,7 +184,10 @@ export default function SeasonSelector({
             className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
           >
             <ChevronLeft className="h-5 w-5" />
-            <span>Temporada Anterior</span>
+            <span className="flex items-center gap-1">
+              <span className="hidden sm:flex">Temporada </span>
+              Anterior
+            </span>
           </button>
 
           <button
@@ -195,7 +198,11 @@ export default function SeasonSelector({
             disabled={currentIndex === seasons.length - 1}
             className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
           >
-            <span>Próxima Temporada</span>
+            <span className="flex items-center gap-1">
+              Próxima
+              <span className="hidden sm:flex">Temporada </span>
+            </span>
+
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
