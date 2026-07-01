@@ -361,12 +361,13 @@ export default async function AnimeDetailsPage({
                     isLoggedIn={Boolean(userId)}
                   />
                 </div>
-                <div className="flex flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-start">
+                <div className="flex flex-row items-center gap-6 md:gap-3 w-full md:w-auto justify-center md:justify-start">
                   <AddToListButton
                     animeId={anime.id}
                     isLoggedIn={Boolean(userId)}
+                    mobileVertical={true}
                   />
-                  <ShareButton />
+                  <ShareButton mobileVertical={true} />
                   {isAdmin && (
                     <EditMediaButton
                       collection="animes"

@@ -112,9 +112,9 @@ export function HeroCarouselClient({
             bottom: 0;
             left: 0;
             right: 0;
-            height: 180px;
+            height: 480px;
             pointer-events: none;
-            background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.15) 75%, transparent 100%);
+            background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.8) 100%, rgba(0, 0, 0, 0.15) 75%, transparent 100%);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             mask-image: linear-gradient(to top, black 25%, transparent 100%);

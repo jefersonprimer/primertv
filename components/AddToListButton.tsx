@@ -15,6 +15,7 @@ interface ListSelectorProps {
   compact?: boolean;
   hasBorder?: boolean;
   roundedFull?: boolean;
+  mobileVertical?: boolean;
 }
 
 interface UserList {
@@ -31,6 +32,7 @@ export default function AddToListButton({
   compact = false,
   hasBorder,
   roundedFull = false,
+  mobileVertical = false,
 }: ListSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [lists, setLists] = useState<UserList[]>([]);
@@ -46,6 +48,25 @@ export default function AddToListButton({
       return `flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 flex-shrink-0 cursor-pointer transition-colors relative group${
         roundedFull ? " rounded-full" : ""
       }`;
+    }
+
+    if (mobileVertical) {
+      let base =
+        "flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-semibold text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0 cursor-pointer relative group text-xs md:text-sm h-auto py-1 md:h-10 md:w-fit md:px-2 md:py-1.5";
+
+      if (roundedFull) {
+        base += " rounded-full";
+      }
+
+      if (hasBorder === true) {
+        base += " border-2 border-blue-600 hover:border-blue-700";
+      } else if (hasBorder === false) {
+        base += " border-0";
+      } else {
+        base += " border-0 md:border-0";
+      }
+
+      return base;
     }
 
     let base =
@@ -157,6 +178,9 @@ export default function AddToListButton({
         aria-label="Adicionar a uma lista personalizada"
       >
         <Plus className="h-6 w-6" />
+        {mobileVertical && (
+          <span className="text-xs md:hidden font-medium">Minha Lista</span>
+        )}
         {tooltipElement}
       </a>
     );
@@ -170,6 +194,9 @@ export default function AddToListButton({
         aria-label="Adicionar a uma lista personalizada"
       >
         <Plus className="h-6 w-6" />
+        {mobileVertical && (
+          <span className="text-xs md:hidden font-medium">Minha Lista</span>
+        )}
         {tooltipElement}
       </button>
 

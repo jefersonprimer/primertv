@@ -144,9 +144,12 @@ export default async function MovieDetailsPage({
             <div className="relative z-10 flex flex-1 flex-col gap-4 md:gap-8 -mt-70 md:mt-0 py-6 px-4 md:p-0 w-full">
               <div
                 className="absolute inset-x-0 bottom-0 -top-[6px] -z-10 md:hidden"
-                style={{
-                  backgroundImage: "linear-gradient(to bottom, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0.5) 50px, rgba(0, 0, 0, 0.8) 140px, #000 260px)",
-                } as React.CSSProperties}
+                style={
+                  {
+                    backgroundImage:
+                      "linear-gradient(to bottom, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0.5) 50px, rgba(0, 0, 0, 0.8) 140px, #000 260px)",
+                  } as React.CSSProperties
+                }
               />
               <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:max-w-2xl">
                 {finalLogoUrl ? (
@@ -233,10 +236,7 @@ export default async function MovieDetailsPage({
                 />
                 <ShareButton hasBorder={true} roundedFull={true} />
                 {isAdmin && (
-                  <EditMediaButton
-                    collection="movies"
-                    item={movie}
-                  />
+                  <EditMediaButton collection="movies" item={movie} />
                 )}
               </div>
               {(movieDetails.description || movie.description) && (
@@ -261,7 +261,7 @@ export default async function MovieDetailsPage({
       </div>
 
       {similarMovies.length > 0 && (
-        <div className="mt-12">
+        <div className="pl-2 lg:pl-0 pb-12">
           <MediaCarousel
             title="Recomendados"
             subtitle="Baseado nos gêneros deste filme"

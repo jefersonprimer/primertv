@@ -142,7 +142,7 @@ export default async function MovieWatchPage({
         </div>
 
         {/* Controls & Title Below Player */}
-        <div className="mt-6 flex flex-col gap-6">
+        <div className="mt-6 flex flex-col gap-6 px-2 sm:px-0">
           {/* Player Selector Tabs */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
             <div>
@@ -152,18 +152,18 @@ export default async function MovieWatchPage({
               <div className="mt-1 flex items-center gap-2 text-sm font-medium text-zinc-500">
                 <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                 {activePlayer === 1
-                  ? "Servidor Principal (HD)"
+                  ? "Player 1"
                   : activePlayer === 2
-                    ? "Servidor MGEB (HD)"
+                    ? "Player 2"
                     : activePlayer === 3
-                      ? "Servidor SuperFlix (HD)"
+                      ? "Player 3"
                       : activePlayer === 4
-                        ? "Servidor MyEmbed (HD)"
+                        ? "Player 4"
                         : activePlayer === 5
-                          ? "Servidor 2Embed (HD)"
+                          ? "Player 5"
                           : activePlayer === 6
-                            ? "Servidor EmbedPlay (HD)"
-                            : "Servidor Desconhecido"}
+                            ? "Player 6"
+                            : "Player Desconhecido"}
               </div>
             </div>
 
@@ -178,7 +178,7 @@ export default async function MovieWatchPage({
                         : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                     }`}
                   >
-                    Principal
+                    Player 1
                   </Link>
                 )}
                 {movie.tmdbId && (
@@ -190,7 +190,7 @@ export default async function MovieWatchPage({
                         : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                     }`}
                   >
-                    MGEB Player
+                    Player 2
                   </Link>
                 )}
                 {movie.tmdbId && (
@@ -202,7 +202,7 @@ export default async function MovieWatchPage({
                         : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                     }`}
                   >
-                    SuperFlix Player
+                    Player 3
                   </Link>
                 )}
                 {movie.tmdbId && (
@@ -214,7 +214,7 @@ export default async function MovieWatchPage({
                         : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                     }`}
                   >
-                    MyEmbed Player
+                    Player 4
                   </Link>
                 )}
                 {movie.tmdbId && (
@@ -226,7 +226,7 @@ export default async function MovieWatchPage({
                         : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                     }`}
                   >
-                    2Embed Player
+                    Player 5
                   </Link>
                 )}
                 {movie.tmdbId && (
@@ -238,7 +238,7 @@ export default async function MovieWatchPage({
                         : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                     }`}
                   >
-                    EmbedPlay Player
+                    Player 6
                   </Link>
                 )}
               </div>
@@ -260,7 +260,6 @@ export default async function MovieWatchPage({
                   isLoggedIn={Boolean(userId)}
                   hasBorder={false}
                 />
-                <ShareButton hasBorder={false} />
               </div>
             </div>
             {movie.description && (

@@ -253,14 +253,14 @@ function EpisodeCard({
   return (
     <Link
       href={`/animes/${animeSlug}/episode/${ep.id}`}
-      className={`flex items-center gap-3 p-2 transition-colors ${
+      className={`flex items-center gap-3 sm:p-2 transition-colors ${
         isCurrent
           ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-500"
           : "border-zinc-200 dark:border-zinc-800 hover:bg-zinc-800"
       }`}
     >
       {/* Left: Image Container */}
-      <div className="relative aspect-video w-32 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
+      <div className="relative aspect-video w-38 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
         {ep.imageUrl ? (
           <Image
             src={ep.imageUrl}
@@ -282,7 +282,7 @@ function EpisodeCard({
         )}
         {/* Duration bottom-right */}
         {animeDuration && (
-          <div className="absolute bottom-1 right-1 bg-black/75 px-1 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+          <div className="absolute bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
             {formatDuration(animeDuration)}
           </div>
         )}

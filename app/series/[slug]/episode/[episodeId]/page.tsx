@@ -230,16 +230,16 @@ export default async function WatchPage({
                   <div className="mt-1 flex items-center gap-2 text-sm font-medium text-zinc-500">
                     <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                     {activePlayer === 1
-                      ? "Servidor Principal (HD)"
+                      ? "Player 1"
                       : activePlayer === 2
-                        ? "Servidor SuperFlix (HD)"
+                        ? "Player 2"
                         : activePlayer === 3
-                          ? "Servidor MyEmbed (HD)"
+                          ? "Player 3"
                           : activePlayer === 4
-                            ? "Servidor MGEB (HD)"
+                            ? "Player 4"
                             : activePlayer === 5
-                              ? "Servidor EmbedPlay (HD)"
-                              : "Servidor Desconhecido"}
+                              ? "Player 5"
+                              : "Player Desconhecido"}
                   </div>
                 </div>
 
@@ -254,7 +254,7 @@ export default async function WatchPage({
                             : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                         }`}
                       >
-                        Principal
+                        Player 1
                       </Link>
                     )}
                     {tmdbId && (
@@ -266,7 +266,7 @@ export default async function WatchPage({
                             : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                         }`}
                       >
-                        SuperFlix Player
+                        Player 2
                       </Link>
                     )}
                     {tmdbId && (
@@ -278,7 +278,7 @@ export default async function WatchPage({
                             : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                         }`}
                       >
-                        MyEmbed Player
+                        Player 3
                       </Link>
                     )}
                     {tmdbId && (
@@ -290,7 +290,7 @@ export default async function WatchPage({
                             : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                         }`}
                       >
-                        MGEB Player
+                        Player 4
                       </Link>
                     )}
                     {tmdbId && (
@@ -302,7 +302,7 @@ export default async function WatchPage({
                             : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
                         }`}
                       >
-                        EmbedPlay Player
+                        Player 5
                       </Link>
                     )}
                   </div>

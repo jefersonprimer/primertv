@@ -241,7 +241,7 @@ function EpisodeCard({
       }`}
     >
       {/* Left: Image Container */}
-      <div className="relative aspect-video w-32 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
+      <div className="relative aspect-video w-38 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
         {novelaImageUrl ? (
           <Image
             src={novelaImageUrl}

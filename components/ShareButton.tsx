@@ -9,6 +9,7 @@ interface ShareButtonProps {
   className?: string;
   hasBorder?: boolean;
   roundedFull?: boolean;
+  mobileVertical?: boolean;
 }
 
 export default function ShareButton({
@@ -17,6 +18,7 @@ export default function ShareButton({
   className = "",
   hasBorder,
   roundedFull = false,
+  mobileVertical = false,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
@@ -38,6 +40,32 @@ export default function ShareButton({
           ? "text-emerald-600 hover:text-emerald-700"
           : "text-blue-600 hover:text-blue-700"
       }${roundedFull ? " rounded-full" : ""}`;
+    }
+
+    if (mobileVertical) {
+      let base = `flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-semibold transition-colors duration-300 flex-shrink-0 cursor-pointer relative group text-xs md:text-sm h-auto py-1 md:h-10 md:w-fit md:px-2 md:py-1.5 ${
+        copied
+          ? "text-emerald-600 hover:text-emerald-700"
+          : "text-blue-600 hover:text-blue-700"
+      }`;
+
+      if (roundedFull) {
+        base += " rounded-full";
+      }
+
+      if (hasBorder === true) {
+        if (copied) {
+          base += " border-2 border-emerald-600";
+        } else {
+          base += " border-2 border-blue-600";
+        }
+      } else if (hasBorder === false) {
+        base += " border-0";
+      } else {
+        base += " border-0 md:border-0";
+      }
+
+      return base;
     }
 
     let base =
@@ -92,7 +120,7 @@ export default function ShareButton({
         <Share2 className={compact ? "h-6 w-6" : "h-6 w-6"} />
       )}
       {!compact && (
-        <span className="md:hidden">
+        <span className={mobileVertical ? "text-xs md:hidden font-medium" : "md:hidden"}>
           {copied ? "Copiado!" : "Compartilhar"}
         </span>
       )}
