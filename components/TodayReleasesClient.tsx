@@ -240,7 +240,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {/* Today Section */}
         {todayAnimes.length > 0 ? (
           <div className="space-y-2">
-            <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
+            <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
               Hoje
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -262,7 +262,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {showMore &&
           (yesterdayAnimes.length > 0 ? (
             <div className="space-y-2">
-              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
+              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
                 Ontem
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -273,7 +273,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             </div>
           ) : (
             <div className="space-y-2">
-              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
+              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
                 Ontem
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
@@ -286,7 +286,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {showMore &&
           (dayBeforeAnimes.length > 0 ? (
             <div className="space-y-2">
-              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800 flex items-center gap-2">
+              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
                 {getDayName(dayBeforeYesterday)}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -297,7 +297,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             </div>
           ) : (
             <div className="space-y-2">
-              <h3 className="text-base sm:text-[22px] font-bold text-zinc-900 dark:text-white border-b-2 border-zinc-150 pb-2 dark:border-zinc-800 flex items-center gap-2">
+              <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
                 {getDayName(dayBeforeYesterday)}
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
