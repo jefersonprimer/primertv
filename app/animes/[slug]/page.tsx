@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { Play, Star, Trophy } from "lucide-react";
+import { Play, Star } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
 import MediaDescricao from "@/components/MediaDescricao";
@@ -16,6 +16,7 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { getAnimeBanner, getAnimeLogo } from "@/lib/banners";
 import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
+import { DeleteAnimeButton } from "@/components/admin/DeleteAnimeButton";
 
 export const revalidate = 3600;
 
@@ -369,11 +370,19 @@ export default async function AnimeDetailsPage({
                   />
                   <ShareButton mobileVertical={true} />
                   {isAdmin && (
-                    <EditMediaButton
-                      collection="animes"
-                      item={anime}
-                      className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
-                    />
+                    <div className="flex items-center gap-3">
+                      <EditMediaButton
+                        collection="animes"
+                        item={anime}
+                        className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
+                      />
+                      <DeleteAnimeButton
+                        animeId={anime.id}
+                        animeSlug={anime.slug}
+                        className="flex h-10 items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-950 dark:bg-zinc-950 dark:text-red-300 dark:hover:bg-red-950/30 md:h-auto md:py-2.5 uppercase"
+                        redirectTo="/animes"
+                      />
+                    </div>
                   )}
                 </div>
               </div>

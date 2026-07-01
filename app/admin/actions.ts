@@ -20,6 +20,31 @@ type FormState = {
 type CollectionWithChildren = "animes" | "series" | "novelas";
 type EpisodeCollection = "animes" | "series" | "novelas";
 type ChapterCollection = "mangas";
+type SeasonRecord = { id: string };
+type EpisodeRecord = { id: string };
+type SeasonModel = {
+  findUnique(args: { where: { id: string } }): Promise<SeasonRecord | null>;
+  update(args: {
+    where: { id: string };
+    data: { number: number };
+  }): Promise<unknown>;
+  delete(args: { where: { id: string } }): Promise<unknown>;
+};
+type EpisodeUpdateData = {
+  number: number;
+  title: string | null;
+  videoUrl: string | null;
+  customPlayers?: string[];
+  imageUrl?: string | null;
+};
+type EpisodeModel = {
+  findUnique(args: { where: { id: string } }): Promise<EpisodeRecord | null>;
+  update(args: {
+    where: { id: string };
+    data: EpisodeUpdateData;
+  }): Promise<unknown>;
+  delete(args: { where: { id: string } }): Promise<unknown>;
+};
 
 function requireAdminSession() {
   return getSession().then((session) => {
@@ -256,6 +281,38 @@ export async function saveMedia(
   }
 }
 
+export async function deleteAnime(formData: FormData): Promise<void> {
+  await requireAdminSession();
+
+  const id = readString(formData, "id");
+  const slug = readString(formData, "slug");
+  const redirectTo = readString(formData, "redirectTo");
+
+  if (!id || !slug) {
+    return;
+  }
+
+  try {
+    await prisma.anime.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+
+  revalidatePath("/");
+  revalidatePath("/search");
+  revalidatePath("/animes");
+  revalidatePath(`/animes/${slug}`);
+
+  if (redirectTo) {
+    redirect(redirectTo);
+  }
+
+  redirect("/animes");
+}
+
 async function getExistingRecord(collection: AdminCollection, id: string) {
   switch (collection) {
     case "movies":
@@ -299,7 +356,7 @@ function seasonParentPath(collection: AdminCollection, slug: string) {
   return `${adminCollections[collection].publicPath}/${slug}`;
 }
 
-function getSeasonModel(collection: CollectionWithChildren): any {
+function getSeasonModel(collection: CollectionWithChildren): SeasonModel {
   return collection === "animes"
     ? prisma.season
     : collection === "series"
@@ -307,7 +364,7 @@ function getSeasonModel(collection: CollectionWithChildren): any {
       : prisma.novelaSeason;
 }
 
-function getEpisodeModel(collection: EpisodeCollection): any {
+function getEpisodeModel(collection: EpisodeCollection): EpisodeModel {
   return collection === "animes"
     ? prisma.episode
     : collection === "series"
@@ -449,7 +506,7 @@ export async function saveEpisode(
 
   try {
     if (existing) {
-      const updateData: any = { number, title, videoUrl };
+      const updateData: EpisodeUpdateData = { number, title, videoUrl };
       if (collection === "animes") {
         updateData.customPlayers = customPlayers;
         updateData.imageUrl = imageUrl;

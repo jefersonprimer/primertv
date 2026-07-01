@@ -76,7 +76,7 @@ export async function login(_prevState: AuthState | undefined, formData: FormDat
 
     (await cookies()).set("session", token, sessionCookieOptions(expires));
 
-    redirect("/admin");
+    redirect("/");
   }
 
   const user = await prisma.user.findUnique({
