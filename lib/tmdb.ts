@@ -85,12 +85,6 @@ interface TmdbImagesResponse {
   logos?: TmdbLogo[];
 }
 
-function extractYear(releaseDate?: string): number | null {
-  if (!releaseDate) return null;
-  const year = parseInt(releaseDate.slice(0, 4), 10);
-  return isNaN(year) ? null : year;
-}
-
 export interface MovieDetailsResult {
   runtime: number | null;
   releaseDate: Date | null;

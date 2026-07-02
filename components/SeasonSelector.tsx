@@ -5,7 +5,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown,
 } from "lucide-react";
 import EpisodeList from "./EpisodeList";
 
@@ -15,6 +14,8 @@ interface Episode {
   title: string | null;
   videoUrl?: string | null;
   imageUrl?: string | null;
+  publicId?: string | null;
+  slug?: string | null;
 }
 
 interface Season {
@@ -49,13 +50,20 @@ export default function SeasonSelector({
 
   if (!currentSeason) return null;
 
-  const sortedEpisodes = [...currentSeason.episodes].sort((a, b) => {
-    if (sortBy === "oldest") {
-      return a.number - b.number;
-    } else {
-      return b.number - a.number;
-    }
-  });
+  const sortedEpisodes = [...currentSeason.episodes]
+    .sort((a, b) => {
+      if (sortBy === "oldest") {
+        return a.number - b.number;
+      } else {
+        return b.number - a.number;
+      }
+    })
+    .map((ep) => ({
+      ...ep,
+      href: ep.publicId
+        ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
+        : (baseUrl ? `${baseUrl}/${ep.id}` : `/animes/${animeSlug}/episode/${ep.id}`),
+    }));
 
   return (
     <div className="flex flex-col gap-4">

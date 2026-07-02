@@ -1,5 +1,24 @@
-import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+import { getAnimeScheduleRows } from "@/lib/anime-schedule";
 import { TodayReleasesClient } from "./TodayReleasesClient";
+
+type TodayReleaseAnime = {
+  id: string;
+  slug: string;
+  title: string;
+  imageUrl: string | null;
+  bannerUrl: string | null;
+  description: string | null;
+  rating: string | null;
+  releaseDay: number;
+  releaseTime: string;
+  lastEpisode: number;
+  latestEpisodeId: string | null;
+  latestEpisodePublicId: string | null;
+  latestEpisodeSlug: string | null;
+  episodeImageUrl: string | null;
+  episodeNumbers: number[];
+};
 
 function getSaoPauloDateKey(date: Date): string {
   try {
@@ -14,7 +33,6 @@ function getSaoPauloDateKey(date: Date): string {
   }
 }
 
-// Deterministic day assignment helper
 function getDeterministicDay(id: string): number {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
@@ -23,135 +41,132 @@ function getDeterministicDay(id: string): number {
   return Math.abs(hash) % 7;
 }
 
+function formatReleaseTime(date: Date): string {
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Sao_Paulo",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return formatter.format(date).toLowerCase();
+  } catch {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minStr = minutes < 10 ? "0" + minutes : minutes;
+    return `${hours}:${minStr} ${ampm}`;
+  }
+}
+
 export async function TodayReleases() {
-  // Fetch animes from the database
-  const dbAnimes = await prisma.anime.findMany({
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      imageUrl: true,
-      bannerUrl: true,
-      description: true,
-      rating: true,
-      seasons: {
-        select: {
-          episodes: {
-            select: {
-              id: true,
-              number: true,
-              imageUrl: true,
-              createdAt: true,
-            },
-            orderBy: {
-              number: "asc",
-            },
-          },
-        },
-        orderBy: {
-          number: "desc",
-        },
-        take: 1,
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+  const rows = await getAnimeScheduleRows({
+    limit: 100,
+    whereSql: Prisma.sql`
+      a."status" = 'Currently Airing'
+      OR a."status" = 'Not yet aired'
+      OR a."status" IS NULL
+    `,
   });
 
-  // Process data to calculate releaseDay and releaseTime
-  const processedDbAnimes = dbAnimes.map((anime) => {
-    let releaseDay = getDeterministicDay(anime.id);
-    let releaseTime = "6:00am";
-    let lastEp = 20;
-    let latestEpisodeId: string | null = null;
-    let episodeImageUrl: string | null = null;
+  const animeMap = new Map<
+    string,
+    TodayReleaseAnime & {
+      latestEpisodeAt: Date | null;
+      episodeCreatedAtEntries: Array<{ number: number; createdAt: Date }>;
+    }
+  >();
 
-    const latestSeason = anime.seasons?.[0];
-    const episodes = latestSeason?.episodes || [];
-    const latestEpisode = episodes[episodes.length - 1];
-
-    if (latestEpisode) {
-      latestEpisodeId = latestEpisode.id;
-      lastEp = latestEpisode.number;
-      episodeImageUrl = latestEpisode.imageUrl;
-      const date = new Date(latestEpisode.createdAt);
-
-      // Release day based on the creation date of the latest episode
-      releaseDay = date.getDay();
-
-      // Release time formatted based on Sao Paulo timezone
-      try {
-        const formatter = new Intl.DateTimeFormat("en-US", {
-          timeZone: "America/Sao_Paulo",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        });
-        releaseTime = formatter.format(date).toLowerCase();
-      } catch (e) {
-        let hours = date.getHours();
-        const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? "pm" : "am";
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        const minStr = minutes < 10 ? "0" + minutes : minutes;
-        releaseTime = `${hours}:${minStr} ${ampm}`;
-      }
-    } else {
-      // Fallback if no episodes are loaded
-      const idHash = anime.id
-        .split("")
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      lastEp = idHash % 2 === 0 ? 20 : 10;
-
-      const fallbackHours = [6, 9, 14, 18];
-      const selectedHour = fallbackHours[idHash % fallbackHours.length];
-      const ampm = selectedHour >= 12 ? "pm" : "am";
-      const displayHour = selectedHour > 12 ? selectedHour - 12 : selectedHour;
-      releaseTime = `${displayHour}:00 ${ampm}`;
+  for (const row of rows) {
+    const existing = animeMap.get(row.id);
+    if (!existing) {
+      const latestEpisodeAt = row.latestEpisodeAt ?? null;
+      animeMap.set(row.id, {
+        id: row.id,
+        slug: row.slug,
+        title: row.title,
+        imageUrl: row.imageUrl,
+        bannerUrl: row.bannerUrl === "none" ? null : row.bannerUrl,
+        description: row.description,
+        rating: row.rating,
+        releaseDay: latestEpisodeAt ? latestEpisodeAt.getDay() : getDeterministicDay(row.id),
+        releaseTime: latestEpisodeAt ? formatReleaseTime(latestEpisodeAt) : "6:00am",
+        lastEpisode: row.latestEpisodeNumber ?? row.episodeNumber ?? 20,
+        latestEpisodeId: row.latestEpisodeId ?? row.episodeId,
+        latestEpisodePublicId: row.episodePublicId,
+        latestEpisodeSlug: row.episodeSlug,
+        episodeImageUrl: row.episodeImageUrl,
+        episodeNumbers: row.episodeNumber !== null ? [row.episodeNumber] : [],
+        latestEpisodeAt,
+        episodeCreatedAtEntries:
+          row.episodeNumber !== null && row.episodeCreatedAt
+            ? [{ number: row.episodeNumber, createdAt: row.episodeCreatedAt }]
+            : [],
+      });
+      continue;
     }
 
-    const releaseDateKey = latestEpisode
-      ? getSaoPauloDateKey(new Date(latestEpisode.createdAt))
+    if (row.episodeNumber !== null) {
+      existing.episodeNumbers.push(row.episodeNumber);
+      if (row.episodeCreatedAt) {
+        existing.episodeCreatedAtEntries.push({
+          number: row.episodeNumber,
+          createdAt: row.episodeCreatedAt,
+        });
+      }
+
+      const candidateNumber = row.latestEpisodeNumber ?? row.episodeNumber;
+      if (candidateNumber > existing.lastEpisode) {
+        existing.lastEpisode = candidateNumber;
+        existing.latestEpisodeId = row.latestEpisodeId ?? row.episodeId;
+        existing.latestEpisodePublicId = row.episodePublicId;
+        existing.latestEpisodeSlug = row.episodeSlug;
+        existing.episodeImageUrl = row.episodeImageUrl;
+      }
+    }
+  }
+
+  const processedDbAnimes = Array.from(animeMap.values()).map((anime) => {
+    const releaseDateKey = anime.latestEpisodeAt
+      ? getSaoPauloDateKey(anime.latestEpisodeAt)
       : null;
     const sameDayEpisodes = releaseDateKey
-      ? episodes.filter(
-          (ep) =>
-            getSaoPauloDateKey(new Date(ep.createdAt)) === releaseDateKey,
+      ? anime.episodeCreatedAtEntries.filter(
+          (ep) => getSaoPauloDateKey(ep.createdAt) === releaseDateKey,
         )
-      : episodes;
-    const episodeNumbers = sameDayEpisodes.map((ep) => ep.number);
+      : anime.episodeCreatedAtEntries;
 
     return {
       id: anime.id,
       slug: anime.slug,
       title: anime.title,
       imageUrl: anime.imageUrl,
-      bannerUrl: anime.bannerUrl === "none" ? null : anime.bannerUrl,
+      bannerUrl: anime.bannerUrl,
       description: anime.description,
       rating: anime.rating,
-      releaseDay,
-      releaseTime,
-      lastEpisode: lastEp,
-      latestEpisodeId,
-      episodeImageUrl,
-      episodeNumbers,
+      releaseDay: anime.releaseDay,
+      releaseTime: anime.releaseTime,
+      lastEpisode: anime.lastEpisode,
+      latestEpisodeId: anime.latestEpisodeId,
+      latestEpisodePublicId: anime.latestEpisodePublicId,
+      latestEpisodeSlug: anime.latestEpisodeSlug,
+      episodeImageUrl: anime.episodeImageUrl,
+      episodeNumbers: sameDayEpisodes.map((ep) => ep.number),
     };
   });
 
-  // Obter o dia da semana atual no fuso horário de Brasília (UTC-3)
   let currentDay = new Date().getDay();
   try {
     const spDateStr = new Date().toLocaleString("en-US", {
       timeZone: "America/Sao_Paulo",
     });
     currentDay = new Date(spDateStr).getDay();
-  } catch (e) {
+  } catch {
     currentDay = new Date().getDay();
   }
 
-  // Filtrar para mostrar apenas os animes que já foram lançados nesta semana (até o dia atual)
   const filteredDbAnimes = processedDbAnimes.filter(
     (anime) => anime.releaseDay <= currentDay,
   );

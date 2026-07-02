@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { getLatestReleaseRows } from "@/lib/media-performance";
 
 export interface ReleaseItem {
   id: string;
@@ -53,171 +53,33 @@ export async function getNewReleases({
   page: number;
   limit?: number;
 }): Promise<{ items: ReleaseItem[]; hasMore: boolean }> {
-  let items: any[] = [];
-  const maxItemsToFetch = 360; // 15 pages of 24, plenty of scroll space!
+  type ReleaseItemData = Omit<ReleaseItem, "addedAt" | "timeAgo"> & {
+    addedAt: Date;
+  };
+
+  let items: ReleaseItemData[] = [];
+  const maxItemsToFetch = 120;
 
   try {
-    if (type === "animes") {
-      const recentAnimes = await prisma.anime.findMany({
-        orderBy: { updatedAt: "desc" },
-        include: {
-          seasons: {
-            include: {
-              episodes: {
-                orderBy: { createdAt: "desc" },
-                take: 1,
-              },
-            },
-          },
-        },
-        take: maxItemsToFetch,
-      });
+    const recentItems = await getLatestReleaseRows(type, maxItemsToFetch);
 
-      const processed = recentAnimes.map((anime) => {
-        let latestDate = anime.updatedAt;
-        for (const season of anime.seasons) {
-          if (season.episodes.length > 0) {
-            const epDate = new Date(season.episodes[0].createdAt);
-            if (epDate > latestDate) {
-              latestDate = epDate;
-            }
-          }
-        }
-        return {
-          id: anime.id,
-          slug: anime.slug,
-          title: anime.title,
-          imageUrl: anime.imageUrl,
-          addedAt: latestDate,
-          href: `/animes/${anime.slug}`,
-        };
-      });
-
-      processed.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-      items = processed;
-    } else if (type === "series") {
-      const recentSeries = await prisma.series.findMany({
-        orderBy: { updatedAt: "desc" },
-        include: {
-          seasons: {
-            include: {
-              episodes: {
-                orderBy: { createdAt: "desc" },
-                take: 1,
-              },
-            },
-          },
-        },
-        take: maxItemsToFetch,
-      });
-
-      const processed = recentSeries.map((series) => {
-        let latestDate = series.updatedAt;
-        for (const season of series.seasons) {
-          if (season.episodes.length > 0) {
-            const epDate = new Date(season.episodes[0].createdAt);
-            if (epDate > latestDate) {
-              latestDate = epDate;
-            }
-          }
-        }
-        return {
-          id: series.id,
-          slug: series.slug,
-          title: series.title,
-          imageUrl: series.imageUrl,
-          addedAt: latestDate,
-          href: `/series/${series.slug}`,
-        };
-      });
-
-      processed.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-      items = processed;
-    } else if (type === "novelas") {
-      const recentNovelas = await prisma.novela.findMany({
-        orderBy: { updatedAt: "desc" },
-        include: {
-          seasons: {
-            include: {
-              episodes: {
-                orderBy: { createdAt: "desc" },
-                take: 1,
-              },
-            },
-          },
-        },
-        take: maxItemsToFetch,
-      });
-
-      const processed = recentNovelas.map((novela) => {
-        let latestDate = novela.updatedAt;
-        for (const season of novela.seasons) {
-          if (season.episodes.length > 0) {
-            const epDate = new Date(season.episodes[0].createdAt);
-            if (epDate > latestDate) {
-              latestDate = epDate;
-            }
-          }
-        }
-        return {
-          id: novela.id,
-          slug: novela.slug,
-          title: novela.title,
-          imageUrl: novela.imageUrl,
-          addedAt: latestDate,
-          href: `/novelas/${novela.slug}`,
-        };
-      });
-
-      processed.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-      items = processed;
-    } else if (type === "filmes") {
-      const movies = await prisma.movie.findMany({
-        orderBy: { createdAt: "desc" },
-        take: maxItemsToFetch,
-      });
-
-      items = movies.map((movie) => ({
-        id: movie.id,
-        slug: movie.slug,
-        title: movie.title,
-        imageUrl: movie.imageUrl,
-        addedAt: movie.createdAt,
-        href: `/filmes/${movie.slug}`,
-      }));
-    } else if (type === "mangas") {
-      const recentMangas = await prisma.manga.findMany({
-        orderBy: { updatedAt: "desc" },
-        include: {
-          chapters: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-          },
-        },
-        take: maxItemsToFetch,
-      });
-
-      const processed = recentMangas.map((manga) => {
-        let latestDate = manga.updatedAt;
-        if (manga.chapters.length > 0) {
-          const chDate = new Date(manga.chapters[0].createdAt);
-          if (chDate > latestDate) {
-            latestDate = chDate;
-          }
-        }
-        return {
-          id: manga.id,
-          slug: manga.slug,
-          title: manga.title,
-          imageUrl: manga.imageUrl,
-          addedAt: latestDate,
-          href: `/mangas/${manga.slug}`,
-        };
-      });
-
-      processed.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-      items = processed;
-    }
+    items = recentItems.map((item) => ({
+      id: item.id,
+      slug: item.slug,
+      title: item.title,
+      imageUrl: item.imageUrl,
+      addedAt: item.addedAt,
+      href:
+        type === "animes"
+          ? `/animes/${item.slug}`
+          : type === "series"
+            ? `/series/${item.slug}`
+            : type === "novelas"
+              ? `/novelas/${item.slug}`
+              : type === "filmes"
+                ? `/filmes/${item.slug}`
+                : `/mangas/${item.slug}`,
+    }));
   } catch (error) {
     console.error("Error loading new releases in server action:", error);
     return { items: [], hasMore: false };

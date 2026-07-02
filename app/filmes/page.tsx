@@ -4,6 +4,7 @@ import { MediaCarouselSkeleton } from "@/components/MediaCarouselSkeleton";
 import { Suspense } from "react";
 import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 import { Metadata } from "next";
+import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Filmes - PrimerTv",
@@ -161,7 +162,9 @@ async function SciFiSuspenseMoviesCarousel() {
   );
 }
 
-export default function MoviesPage() {
+export default async function MoviesPage() {
+  await connection();
+
   return (
     <>
       <Suspense fallback={<HeroCarouselSkeleton />}>

@@ -94,7 +94,9 @@ async function tryExtractDooplay(
   );
 
   if (optionMatch) {
-    const [_, type, post, nume] = optionMatch;
+    const type = optionMatch[1];
+    const post = optionMatch[2];
+    const nume = optionMatch[3];
     const ajaxUrl = new URL("/wp-admin/admin-ajax.php", baseUrl).toString();
 
     try {

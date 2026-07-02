@@ -3,12 +3,32 @@ import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { HeroCarouselClient } from "./HeroCarouselClient";
 import { getAnimeLogo, getSeriesLogo } from "@/lib/banners";
 import { getMovieLogo } from "@/lib/tmdb";
+import {
+  FirstEpisodeRow,
+  getFirstAnimeEpisodes,
+  getFirstSeriesEpisodes,
+} from "@/lib/media-performance";
+
+type HeroCarouselMedia = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  bannerUrl: string | null;
+  imageUrl: string | null;
+  logoUrl: string | null;
+  genres: string[];
+  rating: string | null;
+  videoUrl?: string | null;
+  tmdbId?: string | null;
+  publicId?: string | null;
+};
 
 export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "series" | "movie" } = {}) {
   const isSeries = type === "series";
   const isMovie = type === "movie";
 
-  const mediaList = isSeries
+  const mediaList: HeroCarouselMedia[] = isSeries
     ? await prisma.series.findMany({
         where: {
           bannerUrl: { not: null },
@@ -23,17 +43,6 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
           logoUrl: true,
           genres: true,
           rating: true,
-          seasons: {
-            orderBy: { number: "asc" },
-            select: {
-              episodes: {
-                orderBy: { number: "asc" },
-                select: { id: true },
-                take: 1,
-              },
-            },
-            take: 1,
-          },
         },
         orderBy: { createdAt: "desc" },
         take: 6,
@@ -55,6 +64,7 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
             rating: true,
             videoUrl: true,
             tmdbId: true,
+            publicId: true,
           },
           orderBy: { createdAt: "desc" },
           take: 6,
@@ -73,34 +83,66 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
             logoUrl: true,
             genres: true,
             rating: true,
-            seasons: {
-              orderBy: { number: "asc" },
-              select: {
-                episodes: {
-                  orderBy: { number: "asc" },
-                  select: { id: true },
-                  take: 1,
-                },
-              },
-              take: 1,
-            },
           },
           orderBy: { createdAt: "desc" },
           take: 6,
         });
 
   const userId = await getAuthenticatedUserId();
+  const mediaIds = mediaList.map((media) => media.id);
 
-  let watchlistIds = new Set<string>();
-  if (userId && !isMovie) {
-    const items = await prisma.watchlistItem.findMany({
-      where: { userId, mediaType: isSeries ? "SERIES" : "ANIME" },
-      select: { animeId: true, seriesId: true },
-    });
-    watchlistIds = new Set(
-      items.map((i) => (isSeries ? i.seriesId : i.animeId)).filter(Boolean) as string[],
-    );
-  }
+  const [watchlistIds, firstEpisodeByMediaId] = await Promise.all([
+    userId && !isMovie && mediaIds.length > 0
+      ? prisma.watchlistItem
+          .findMany({
+            where: {
+              userId,
+              mediaType: isSeries ? "SERIES" : "ANIME",
+              ...(isSeries
+                ? { seriesId: { in: mediaIds } }
+                : { animeId: { in: mediaIds } }),
+            },
+            select: isSeries ? { seriesId: true } : { animeId: true },
+          })
+          .then((items: any[]) => {
+            return new Set(
+              items
+                .map((item) => (isSeries ? item.seriesId : item.animeId))
+                .filter(Boolean) as string[],
+            );
+          })
+      : Promise.resolve(new Set<string>()),
+    isMovie
+      ? Promise.resolve(new Map<string, FirstEpisodeRow>())
+      : isSeries
+        ? getFirstSeriesEpisodes(mediaIds)
+        : getFirstAnimeEpisodes(mediaIds),
+  ]);
+
+  const firstEpisodeIds = Array.from(firstEpisodeByMediaId.values())
+    .map((row) => row.firstEpisodeId)
+    .filter(Boolean) as string[];
+
+  const episodeDetails =
+    !isMovie
+      ? isSeries
+        ? firstEpisodeIds.length > 0
+          ? await prisma.seriesEpisode.findMany({
+              where: { id: { in: firstEpisodeIds } },
+              select: { id: true, publicId: true, slug: true, number: true },
+            })
+          : []
+        : firstEpisodeIds.length > 0
+          ? await prisma.episode.findMany({
+              where: { id: { in: firstEpisodeIds } },
+              select: { id: true, publicId: true, slug: true, number: true },
+            })
+          : []
+      : [];
+
+  const episodeDetailsMap = new Map(
+    episodeDetails.map((ep) => [ep.id, ep])
+  );
 
   const items = await Promise.all(
     mediaList.map(async (media) => {
@@ -114,8 +156,12 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
       }
       const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
 
-      const seasons = (media as any).seasons;
-      const firstEpisodeId = seasons?.[0]?.episodes?.[0]?.id ?? null;
+      const firstEpisodeId =
+        firstEpisodeByMediaId.get(media.id)?.firstEpisodeId ?? null;
+
+      const epDetails = firstEpisodeId ? episodeDetailsMap.get(firstEpisodeId) : null;
+      const firstEpisodePublicId = epDetails?.publicId ?? null;
+      const firstEpisodeSlug = epDetails ? (epDetails.slug || `episodio-${epDetails.number}`) : null;
 
       return {
         id: media.id,
@@ -128,10 +174,13 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
         genres: media.genres,
         rating: media.rating,
         firstEpisodeId,
+        firstEpisodePublicId,
+        firstEpisodeSlug,
         inWatchlist: watchlistIds.has(media.id),
         type,
-        videoUrl: (media as any).videoUrl ?? null,
-        tmdbId: (media as any).tmdbId ?? null,
+        videoUrl: media.videoUrl ?? null,
+        tmdbId: media.tmdbId ?? null,
+        publicId: media.publicId ?? null,
       };
     })
   );

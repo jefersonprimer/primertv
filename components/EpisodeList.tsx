@@ -175,9 +175,9 @@ export default function EpisodeList({
         <div className="w-full max-w-[1018px] mx-auto">
           <button
             onClick={showMore}
-            className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
           >
-            Mostrar Mais
+            mostrar mais
           </button>
         </div>
       )}

@@ -10,6 +10,8 @@ export interface FavoriteItem {
   bannerUrl: string | null;
   firstEpisodeId: string | null;
   firstEpisodeImageUrl: string | null;
+  firstEpisodePublicId?: string | null;
+  firstEpisodeSlug?: string | null;
   rating: string | null;
   duration: string | null;
 }
@@ -32,8 +34,8 @@ export default function FavoriteCard({
   item,
   className = "",
 }: FavoriteCardProps) {
-  const cardHref = item.firstEpisodeId
-    ? `/animes/${item.slug}/episode/${item.firstEpisodeId}`
+  const cardHref = item.firstEpisodePublicId
+    ? `/watch/${item.firstEpisodePublicId}/${item.firstEpisodeSlug || "episodio-1"}`
     : `/animes/${item.slug}`;
 
   return (

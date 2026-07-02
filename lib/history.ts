@@ -3,6 +3,20 @@ import { getAuthenticatedUserId } from "@/lib/watchlist";
 
 export const MAX_HISTORY_ITEMS = 24;
 
+type AnimeWatchHistoryRow = {
+  id: string;
+  watchedAt: Date;
+  episodeId: string;
+  episodeNumber: number;
+  episodeTitle: string | null;
+  episodeImageUrl: string | null;
+  seasonNumber: number;
+  animeId: string;
+  animeSlug: string;
+  animeTitle: string;
+  animeImageUrl: string | null;
+};
+
 export async function recordAnimeWatchHistory(episodeId: string) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return;
@@ -32,32 +46,45 @@ export async function recordAnimeWatchHistory(episodeId: string) {
 }
 
 export async function getAnimeWatchHistory(userId: string) {
-  return prisma.watchHistory.findMany({
-    where: { userId },
-    orderBy: { watchedAt: "desc" },
-    take: MAX_HISTORY_ITEMS,
-    include: {
-      episode: {
-        select: {
-          id: true,
-          number: true,
-          title: true,
-          imageUrl: true,
-          season: {
-            select: {
-              number: true,
-              anime: {
-                select: {
-                  id: true,
-                  slug: true,
-                  title: true,
-                  imageUrl: true,
-                },
-              },
-            },
-          },
+  const rows = await prisma.$queryRaw<AnimeWatchHistoryRow[]>`
+    SELECT
+      wh.id,
+      wh."watchedAt",
+      e.id AS "episodeId",
+      e.number AS "episodeNumber",
+      e.title AS "episodeTitle",
+      e."imageUrl" AS "episodeImageUrl",
+      s.number AS "seasonNumber",
+      a.id AS "animeId",
+      a.slug AS "animeSlug",
+      a.title AS "animeTitle",
+      a."imageUrl" AS "animeImageUrl"
+    FROM "WatchHistory" wh
+    JOIN "Episode" e ON e.id = wh."episodeId"
+    JOIN "Season" s ON s.id = e."seasonId"
+    JOIN "Anime" a ON a.id = s."animeId"
+    WHERE wh."userId" = ${userId}
+    ORDER BY wh."watchedAt" DESC
+    LIMIT ${MAX_HISTORY_ITEMS}
+  `;
+
+  return rows.map((row) => ({
+    id: row.id,
+    watchedAt: row.watchedAt,
+    episode: {
+      id: row.episodeId,
+      number: row.episodeNumber,
+      title: row.episodeTitle,
+      imageUrl: row.episodeImageUrl,
+      season: {
+        number: row.seasonNumber,
+        anime: {
+          id: row.animeId,
+          slug: row.animeSlug,
+          title: row.animeTitle,
+          imageUrl: row.animeImageUrl,
         },
       },
     },
-  });
+  }));
 }

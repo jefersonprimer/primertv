@@ -19,7 +19,9 @@ export function MangasList({ initialItems, initialHasMore }: MangasListProps) {
   const loadingRef = useRef(false);
   const hasMoreRef = useRef(initialHasMore);
 
-  hasMoreRef.current = hasMore;
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+  }, [hasMore]);
 
   const loadMore = useCallback(async () => {
     if (loadingRef.current || !hasMoreRef.current) return;

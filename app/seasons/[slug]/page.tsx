@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { SeasonDropdown } from "@/components/SeasonDropdown";
-import { parseSeasonAndYear, getUniqueSeasons } from "@/lib/seasons";
+import { getUniqueSeasons } from "@/lib/seasons";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const revalidate = 3600; // Revalidate every hour
@@ -65,16 +65,25 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
   }
   const nextSlug = `${nextSeason}-${nextYear}`;
 
-  // Fetch all animes from the database
-  const allAnimes = await prisma.anime.findMany({
+  // Fetch season metadata for the dropdown and filtered results for the grid
+  const seasonsSource = await prisma.anime.findMany({
+    select: {
+      season: true,
+      year: true,
+      aired: true,
+    },
+  });
+
+  const filteredAnimes = await prisma.anime.findMany({
+    where: {
+      season: selectedSeason,
+      year: selectedYear,
+    },
     select: {
       id: true,
       slug: true,
       title: true,
       imageUrl: true,
-      aired: true,
-      season: true,
-      year: true,
     },
     orderBy: {
       title: "asc",
@@ -82,14 +91,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
   });
 
   // Calculate unique seasons for the dropdown list
-  const seasonsOptions = getUniqueSeasons(allAnimes);
-
-  // Filter animes matching the selected season and year
-  const filteredAnimes = allAnimes.filter((anime) => {
-    const info = parseSeasonAndYear(anime.season, anime.year, anime.aired);
-    if (!info) return false;
-    return info.season === selectedSeason && info.year === selectedYear;
-  });
+  const seasonsOptions = getUniqueSeasons(seasonsSource);
 
   const formattedSeasonTitle =
     selectedSeason.charAt(0).toUpperCase() + selectedSeason.slice(1);

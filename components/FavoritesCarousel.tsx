@@ -2,43 +2,84 @@ import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { prisma } from "@/lib/prisma";
 import { getAnimeBanner } from "@/lib/banners";
 import { FavoritesCarouselClient } from "./FavoritesCarouselClient";
+import { getFirstAnimeEpisodes } from "@/lib/media-performance";
+
+type FavoriteAnime = {
+  id: string;
+  slug: string;
+  title: string;
+  imageUrl: string | null;
+  bannerUrl: string | null;
+  rating: string | null;
+  duration: string | null;
+};
 
 export async function FavoritesCarousel() {
   const userId = await getAuthenticatedUserId();
   if (!userId) return null;
 
-  // Query the watchlist items of type ANIME
-  const items = await prisma.watchlistItem.findMany({
+  const watchlistItems = await prisma.watchlistItem.findMany({
     where: {
       userId,
       mediaType: "ANIME",
+      animeId: { not: null },
     },
     orderBy: { createdAt: "desc" },
-    include: {
-      anime: {
-        include: {
-          seasons: {
-            orderBy: { number: "asc" },
-            take: 1,
-            include: {
-              episodes: {
-                orderBy: { number: "asc" },
-                take: 1,
-              },
-            },
-          },
-        },
-      },
+    select: {
+      animeId: true,
     },
   });
 
-  const favorites = items
-    .filter((item) => item.anime !== null)
-    .map((item) => item.anime!);
+  const animeIds = watchlistItems.map((item) => item.animeId).filter(
+    (animeId): animeId is string => Boolean(animeId),
+  );
+
+  if (animeIds.length === 0) return null;
+
+  const favoritesById = new Map(
+    (
+      await prisma.anime.findMany({
+        where: {
+          id: { in: animeIds },
+        },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          imageUrl: true,
+          bannerUrl: true,
+          rating: true,
+          duration: true,
+        },
+      })
+    ).map((anime) => [anime.id, anime]),
+  );
+
+  const favorites: FavoriteAnime[] = animeIds
+    .map((animeId) => favoritesById.get(animeId))
+    .filter((anime): anime is FavoriteAnime => Boolean(anime));
 
   if (favorites.length === 0) return null;
 
-  // Resolve banners, episode images, ratings, and first episode IDs for each anime
+  const firstEpisodeByAnimeId = await getFirstAnimeEpisodes(
+    favorites.map((anime) => anime.id),
+  );
+
+  const firstEpisodeIds = Array.from(firstEpisodeByAnimeId.values())
+    .map((row) => row.firstEpisodeId)
+    .filter(Boolean) as string[];
+
+  const episodeDetails = firstEpisodeIds.length > 0
+    ? await prisma.episode.findMany({
+        where: { id: { in: firstEpisodeIds } },
+        select: { id: true, publicId: true, slug: true, number: true },
+      })
+    : [];
+
+  const episodeDetailsMap = new Map(
+    episodeDetails.map((ep) => [ep.id, ep])
+  );
+
   const resolvedItems = await Promise.all(
     favorites.map(async (anime) => {
       let banner = anime.bannerUrl;
@@ -47,9 +88,13 @@ export async function FavoritesCarousel() {
       }
       const finalBannerUrl = banner === "none" ? null : banner;
 
-      const firstEpisode = anime.seasons[0]?.episodes[0];
-      const firstEpisodeId = firstEpisode?.id || null;
-      const firstEpisodeImageUrl = firstEpisode?.imageUrl || null;
+      const firstEpisode = firstEpisodeByAnimeId.get(anime.id);
+      const firstEpisodeId = firstEpisode?.firstEpisodeId || null;
+      const firstEpisodeImageUrl = firstEpisode?.firstEpisodeImageUrl || null;
+
+      const epDetails = firstEpisodeId ? episodeDetailsMap.get(firstEpisodeId) : null;
+      const firstEpisodePublicId = epDetails?.publicId ?? null;
+      const firstEpisodeSlug = epDetails ? (epDetails.slug || `episodio-${epDetails.number}`) : null;
 
       return {
         id: anime.id,
@@ -58,6 +103,8 @@ export async function FavoritesCarousel() {
         bannerUrl: finalBannerUrl || anime.imageUrl,
         firstEpisodeId,
         firstEpisodeImageUrl,
+        firstEpisodePublicId,
+        firstEpisodeSlug,
         rating: anime.rating,
         duration: anime.duration,
       };

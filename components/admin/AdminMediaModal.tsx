@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X, Plus, Edit2, Trash2 } from "lucide-react";
 import {
@@ -113,7 +113,6 @@ export function AdminMediaModal({
 }: AdminMediaModalProps) {
   const [selectedCollection, setSelectedCollection] =
     useState<AdminCollection | null>(initialCollection);
-  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "structure">("info");
 
   // Structure management states
@@ -131,26 +130,18 @@ export function AdminMediaModal({
   );
   const [isAddingChapter, setIsAddingChapter] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const seasons = (item?.seasons as SeasonData[]) || [];
   const chapters = (item?.chapters as ChapterData[]) || [];
 
-  // Automatically select the first season if none is selected
-  useEffect(() => {
-    if (seasons.length > 0 && !selectedSeasonId) {
-      setSelectedSeasonId(seasons[0].id);
-    }
-  }, [seasons, selectedSeasonId]);
+  const effectiveSeasonId = selectedSeasonId ?? seasons[0]?.id ?? null;
+  const currentSeason =
+    seasons.find((s) => s.id === effectiveSeasonId) || null;
 
-  if (!isOpen || !mounted) return null;
+  if (!isOpen) return null;
 
   const config = selectedCollection
     ? adminCollections[selectedCollection]
     : null;
-  const currentSeason = seasons.find((s) => s.id === selectedSeasonId) || null;
 
   const handleClose = () => {
     if (!initialCollection) {
@@ -192,7 +183,7 @@ export function AdminMediaModal({
     { name: "collection", value: selectedCollection || "" },
     { name: "parentId", value: String(item?.id || "") },
     { name: "parentSlug", value: String(item?.slug || "") },
-    { name: "seasonId", value: selectedSeasonId || "" },
+    { name: "seasonId", value: effectiveSeasonId || "" },
     { name: "id", value: editingEpisode?.id || "" },
     { name: "redirectTo", value: "public" },
   ];
@@ -563,8 +554,8 @@ export function AdminMediaModal({
                   </div>
                 ) : (
                   <div className="flex h-40 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 text-zinc-500 text-sm">
-                    Selecione um capítulo ao lado para editar ou clique no "+"
-                    para adicionar.
+                  Selecione um capítulo ao lado para editar ou clique no
+                  &quot;+&quot; para adicionar.
                   </div>
                 )
               ) : /* Anime / Series / Novel Structure Forms */
@@ -656,7 +647,7 @@ export function AdminMediaModal({
                     <input
                       type="hidden"
                       name="seasonId"
-                      value={selectedSeasonId || ""}
+                      value={effectiveSeasonId || ""}
                     />
                     <input type="hidden" name="id" value={editingEpisode.id} />
                     <input type="hidden" name="redirectTo" value="public" />
@@ -671,7 +662,7 @@ export function AdminMediaModal({
               ) : (
                 <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 text-zinc-500 text-sm p-6 text-center">
                   Selecione uma temporada ou episódio ao lado para editar, ou
-                  clique nos botões "+" correspondentes para adicionar novos
+                  clique nos botões &quot;+&quot; correspondentes para adicionar novos
                   registros.
                 </div>
               )}

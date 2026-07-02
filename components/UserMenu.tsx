@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { User, LogOut, History, Bookmark, List } from "lucide-react";
+import { LogOut, History, Bookmark, List } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/actions/auth";
 import { SessionUser } from "@/lib/auth";

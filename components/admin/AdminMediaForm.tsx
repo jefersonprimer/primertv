@@ -58,6 +58,37 @@ function FieldInput({
   );
 }
 
+function formatDefaultValue(
+  field: AdminField,
+  value: unknown,
+): string {
+  if (field.name === "genres") {
+    return joinGenres(Array.isArray(value) ? (value as string[]) : undefined);
+  }
+
+  if (field.name === "awards") {
+    return joinAwards(Array.isArray(value) ? (value as string[]) : undefined);
+  }
+
+  if (field.name === "audio" || field.name === "subtitles") {
+    return joinGenres(Array.isArray(value) ? (value as string[]) : undefined);
+  }
+
+  if (field.type === "number") {
+    return value == null ? "" : String(value);
+  }
+
+  if (field.type === "datetime-local") {
+    return toDateTimeLocal(
+      value instanceof Date || typeof value === "string" || value == null
+        ? value
+        : undefined,
+    );
+  }
+
+  return value == null ? "" : String(value);
+}
+
 export function AdminMediaForm({
   collection,
   config,
@@ -105,24 +136,7 @@ export function AdminMediaForm({
       <div className="grid gap-5 md:grid-cols-2">
         {config.fields.map((field) => {
           const value = item?.[field.name];
-          const defaultValue =
-            field.name === "genres"
-              ? joinGenres(Array.isArray(value) ? value : undefined)
-              : field.name === "awards"
-                ? joinAwards(Array.isArray(value) ? (value as string[]) : undefined)
-                : field.name === "audio"
-                  ? joinGenres(Array.isArray(value) ? (value as string[]) : undefined)
-                  : field.name === "subtitles"
-                    ? joinGenres(Array.isArray(value) ? (value as string[]) : undefined)
-                    : field.type === "number"
-                ? value == null
-                  ? ""
-                  : String(value)
-                : field.type === "datetime-local"
-                  ? toDateTimeLocal(value as any)
-                  : value == null
-                    ? ""
-                    : String(value);
+          const defaultValue = formatDefaultValue(field, value);
 
           return (
             <label

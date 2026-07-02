@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { X, Plus, Check, Loader2, Info } from "lucide-react";
 import {
   createList,
@@ -93,14 +93,7 @@ export default function AddToListButton({
     </span>
   );
 
-  // Load lists when modal opens
-  useEffect(() => {
-    if (isOpen && isLoggedIn) {
-      loadLists();
-    }
-  }, [isOpen, isLoggedIn]);
-
-  const loadLists = async () => {
+  const loadLists = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -112,7 +105,7 @@ export default function AddToListButton({
     } finally {
       setLoading(false);
     }
-  };
+  }, [animeId, seriesId]);
 
   const handleToggle = async (listId: string) => {
     setError(null);
@@ -170,6 +163,11 @@ export default function AddToListButton({
     }
   };
 
+  const handleOpen = () => {
+    setIsOpen(true);
+    void loadLists();
+  };
+
   if (!isLoggedIn) {
     return (
       <a
@@ -189,7 +187,7 @@ export default function AddToListButton({
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className={buttonClass}
         aria-label="Adicionar a uma lista personalizada"
       >

@@ -20,7 +20,7 @@ export async function Header() {
   const user = session?.user;
 
   return (
-    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727] backdrop-blur-md dark:border-zinc-800">
+    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727] backdrop-blur-md border-zinc-800">
       <div className="mx-auto flex h-16 max-w-full items-center justify-between">
         <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-1">
@@ -29,9 +29,9 @@ export async function Header() {
               href="/"
               className="flex items-center transition-opacity hover:opacity-80 lg:pl-4"
             >
-              <span className="text-xl font-bold tracking-tighter text-zinc-900 dark:text-white">
+              <span className="text-xl font-bold tracking-tighter text-white">
                 Primer
-                <span className="font-light text-blue-600 dark:text-blue-500">
+                <span className="font-normal text-blue-500">
                   Tv
                 </span>
               </span>
@@ -90,7 +90,7 @@ export async function Header() {
               href="/login"
               className="flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800">
                 <User size={20} />
               </div>
             </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, ChevronRight, Clock, Play } from "lucide-react";
@@ -18,6 +18,8 @@ interface AnimeItem {
   releaseTime: string;
   lastEpisode: number;
   latestEpisodeId: string | null;
+  latestEpisodePublicId?: string | null;
+  latestEpisodeSlug?: string | null;
   episodeImageUrl: string | null;
   episodeNumbers?: number[];
 }
@@ -28,15 +30,7 @@ interface TodayReleasesClientProps {
 
 export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
   const [showMore, setShowMore] = useState(false);
-  const [currentDay, setCurrentDay] = useState<number>(-1);
-
-  useEffect(() => {
-    setCurrentDay(new Date().getDay());
-  }, []);
-
-  if (currentDay === -1) {
-    return null;
-  }
+  const [currentDay] = useState(() => new Date().getDay());
 
   const yesterday = (currentDay - 1 + 7) % 7;
   const dayBeforeYesterday = (currentDay - 2 + 7) % 7;
@@ -92,7 +86,9 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
       Boolean(bannerImageUrl);
     const cardHref =
       singleEpisodeRelease && anime.latestEpisodeId
-        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+        ? anime.latestEpisodePublicId
+          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+          : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
         : `/animes/${anime.slug}`;
     const multipleEpisodeRelease = episodeNumbers.length > 1;
 
@@ -207,7 +203,9 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                   <Link
                     href={
                       anime.latestEpisodeId
-                        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                        ? anime.latestEpisodePublicId
+                          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                          : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
                         : `/animes/${anime.slug}`
                     }
                     className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"
@@ -240,7 +238,9 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                   <Link
                     href={
                       anime.latestEpisodeId
-                        ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                        ? anime.latestEpisodePublicId
+                          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                          : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
                         : `/animes/${anime.slug}`
                     }
                     className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"
@@ -297,7 +297,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           </div>
         ) : (
           !showMore && (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 py-12 text-center dark:border-zinc-800">
+            <div className="flex flex-col items-center justify-center border border-dashed border-zinc-200 py-12 text-center dark:border-zinc-800">
               <Clock className="h-10 w-10 text-zinc-400" />
               <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
                 Nenhum lançamento registrado para hoje.

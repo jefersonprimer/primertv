@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, Tv, Play, Loader2 } from "lucide-react";
@@ -16,6 +16,8 @@ interface AnimeItem {
   releaseTime: string; // ex: "6:00 am"
   lastEpisode: number;
   latestEpisodeId: string | null;
+  latestEpisodePublicId?: string | null;
+  latestEpisodeSlug?: string | null;
   episodeImageUrl: string | null;
   inWatchlist?: boolean;
   episodeNumbers?: number[];
@@ -38,19 +40,15 @@ const DAYS_OF_WEEK = [
 ];
 
 export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
-  const [activeDay, setActiveDay] = useState<number>(0);
-  const [currentDay, setCurrentDay] = useState<number>(-1);
+  const [currentDay] = useState(() => new Date().getDay());
+  const [activeDay, setActiveDay] = useState<number>(() => new Date().getDay());
 
-  useEffect(() => {
-    const today = new Date().getDay();
-    setCurrentDay(today);
-    setActiveDay(today);
-  }, []);
-
-  // Group animes by release day
-  const groupedAnimes = DAYS_OF_WEEK.reduce(
-    (acc, day) => {
-      acc[day.value] = animes.filter((anime) => anime.releaseDay === day.value);
+  const groupedAnimes = animes.reduce(
+    (acc, anime) => {
+      if (!acc[anime.releaseDay]) {
+        acc[anime.releaseDay] = [];
+      }
+      acc[anime.releaseDay].push(anime);
       return acc;
     },
     {} as Record<number, AnimeItem[]>,
@@ -222,19 +220,27 @@ function AnimeCalendarCard({
   isLoggedIn: boolean;
   isToday: boolean;
 }) {
-  const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (isHovered) {
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 600); // Exibe o spinner/loading por 600ms antes de mostrar os detalhes reais
-      return () => clearTimeout(timer);
-    } else {
-      setIsLoading(true);
+  const handleMouseEnter = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
     }
-  }, [isHovered]);
+
+    setIsLoading(true);
+    hoverTimerRef.current = setTimeout(() => {
+      setIsLoading(false);
+    }, 600);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    setIsLoading(true);
+  };
 
   // Decide position of hover popover: left-full or right-full
   const popoverPositionClass =
@@ -251,8 +257,8 @@ function AnimeCalendarCard({
   return (
     <div
       className="group relative hover:z-50 flex flex-col transition-all duration-300"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Timeline Dot (Bolinha no horário) */}
       <div
@@ -298,7 +304,9 @@ function AnimeCalendarCard({
         <Link
           href={
             anime.latestEpisodeId
-              ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+              ? anime.latestEpisodePublicId
+                ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
               : `/animes/${anime.slug}`
           }
           className="relative mt-2 block aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-800/80 shadow-xs group/episode"
@@ -396,7 +404,9 @@ function AnimeCalendarCard({
                     <Link
                       href={
                         anime.latestEpisodeId
-                          ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                          ? anime.latestEpisodePublicId
+                            ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                            : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
                           : `/animes/${anime.slug}`
                       }
                       className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-sm"
@@ -426,7 +436,9 @@ function AnimeCalendarCard({
                 <Link
                   href={
                     anime.latestEpisodeId
-                      ? `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                      ? anime.latestEpisodePublicId
+                        ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                        : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
                       : `/animes/${anime.slug}`
                   }
                   className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"

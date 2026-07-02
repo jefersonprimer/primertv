@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { Play, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
 import MediaDescricao from "@/components/MediaDescricao";
@@ -16,7 +16,10 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { getAnimeBanner, getAnimeLogo } from "@/lib/banners";
 import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
+import { getFirstAnimeEpisodes } from "@/lib/media-performance";
 import { DeleteAnimeButton } from "@/components/admin/DeleteAnimeButton";
+import { getAnimeDetailsBySlug } from "@/lib/media-details";
+import { StartWatchingButton } from "@/components/StartWatchingButton";
 
 export const revalidate = 3600;
 
@@ -40,7 +43,7 @@ export async function generateMetadata({
   params,
 }: AnimeDetailsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const anime = await prisma.anime.findUnique({ where: { slug } });
+  const anime = await getAnimeDetailsBySlug(slug);
 
   if (!anime) return { title: "Anime não encontrado" };
 
@@ -68,20 +71,7 @@ export default async function AnimeDetailsPage({
   params,
 }: AnimeDetailsPageProps) {
   const { slug } = await params;
-
-  const anime = await prisma.anime.findUnique({
-    where: { slug },
-    include: {
-      seasons: {
-        orderBy: { number: "asc" },
-        include: {
-          episodes: {
-            orderBy: { number: "asc" },
-          },
-        },
-      },
-    },
-  });
+  const anime = await getAnimeDetailsBySlug(slug);
 
   if (!anime) {
     notFound();
@@ -99,7 +89,22 @@ export default async function AnimeDetailsPage({
   }
   const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
 
-  const firstEpisodeId = anime.seasons[0]?.episodes[0]?.id;
+  const firstEpisodeId =
+    (await getFirstAnimeEpisodes([anime.id])).get(anime.id)?.firstEpisodeId ??
+    null;
+
+  let firstEpisodeLink = null;
+  if (firstEpisodeId) {
+    const firstEp = await prisma.episode.findUnique({
+      where: { id: firstEpisodeId },
+      select: { publicId: true, slug: true, number: true },
+    });
+    if (firstEp && firstEp.publicId) {
+      firstEpisodeLink = `/watch/${firstEp.publicId}/${firstEp.slug || "episodio-" + firstEp.number}`;
+    } else {
+      firstEpisodeLink = `/animes/${anime.slug}/episode/${firstEpisodeId}`;
+    }
+  }
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("ANIME", anime.id);
   const session = await getSession();
@@ -125,6 +130,11 @@ export default async function AnimeDetailsPage({
           take: 15,
         })
       : [];
+
+  const totalEpisodes = anime.seasons.reduce(
+    (acc, season) => acc + (season.episodes?.length || 0),
+    0,
+  );
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -220,28 +230,29 @@ export default async function AnimeDetailsPage({
                 )}
 
                 <div className="mt-2 flex items-center justify-center md:justify-start gap-3 flex-wrap">
-                  {anime.rank !== null && anime.rank !== undefined && (
-                    <div
-                      title={`Top #${anime.rank} no ranking do MyAnimeList.net`}
-                      className="inline-flex items-center rounded overflow-hidden border border-zinc-800 dark:border-zinc-800 text-xs font-bold shadow-sm cursor-help"
-                    >
-                      <span className="bg-[#2E51A2] px-2 py-1.5 text-white uppercase tracking-wider text-[10px] leading-none">
-                        MAL
-                      </span>
-                      <span className="bg-zinc-900 md:bg-zinc-100 md:dark:bg-zinc-900 text-zinc-200 md:text-zinc-800 md:dark:text-zinc-200 px-2 py-1.5 flex items-center gap-1 leading-none">
-                        #{anime.rank}
-                      </span>
-                      {anime.score !== null && anime.score !== undefined && (
-                        <div className="flex sm:hidden">
-                          <div className="h-4 border border-zinc-600" />
-                          <span className="text-sm font-semibold text-white gap-2">
-                            {anime.score.toFixed(1)} (
-                            {formatMembers(anime.members)})
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {anime.rank !== null &&
+                    anime.rank !== undefined &&
+                    anime.rank <= 1000 && (
+                      <div
+                        title={`Top #${anime.rank} no ranking, score ${anime.score} e ${formatMembers(anime.members)} de membros no MyAnimeList.net`}
+                        className="inline-flex items-center overflow-hidden text-xs font-bold shadow-sm cursor-help"
+                      >
+                        <span className="bg-[#2E51A2] px-2 py-1.5 text-white uppercase tracking-wider text-[10px] leading-none">
+                          MAL
+                        </span>
+                        <span className="bg-zinc-900 md:bg-zinc-100 md:dark:bg-zinc-900 text-zinc-200 md:text-zinc-800 md:dark:text-zinc-200 px-2 py-1.5 flex items-center gap-1 leading-none">
+                          #{anime.rank}
+                        </span>
+                        {anime.score !== null && anime.score !== undefined && (
+                          <div className="px-2 hidden sm:flex">
+                            <span className="text-sm font-semibold text-white gap-2">
+                              {anime.score.toFixed(1)} (
+                              {formatMembers(anime.members)})
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                   {anime.awards &&
                     anime.awards.length > 0 &&
@@ -332,27 +343,17 @@ export default async function AnimeDetailsPage({
                         );
                       })}
                     </div>
-                    <div className="hidden sm:flex">
-                      <div className="h-4 border border-zinc-600" />
-                      <span className="text-sm font-semibold text-white gap-2">
-                        {anime.score.toFixed(1)} ({formatMembers(anime.members)}
-                        )
-                      </span>
-                    </div>
                   </div>
                 )}
               </div>
 
               <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                 <div className="flex flex-row items-center gap-3 w-full md:w-auto">
-                  {firstEpisodeId && (
-                    <Link
-                      href={`/animes/${anime.slug}/episode/${firstEpisodeId}`}
-                      className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2.5 md:w-fit uppercase"
-                    >
-                      <Play className="h-5 w-5 fill-current" />
-                      Começar a assistir EP1
-                    </Link>
+                  {firstEpisodeLink && (
+                    <StartWatchingButton
+                      href={firstEpisodeLink}
+                      className="flex-1 md:h-auto md:flex-initial md:px-4 md:py-2.5 md:w-fit text-sm"
+                    />
                   )}
                   <WatchlistButton
                     mediaType="ANIME"
@@ -406,8 +407,12 @@ export default async function AnimeDetailsPage({
 
       {/* Episodes Section */}
       <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
-        {anime.seasons.length === 0 ? (
-          <p className="text-zinc-500">Nenhum episódio encontrado.</p>
+        {totalEpisodes === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center border-t border-zinc-200 dark:border-zinc-800">
+            <p className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
+              Episódios em breve
+            </p>
+          </div>
         ) : (
           <SeasonSelector
             seasons={anime.seasons}

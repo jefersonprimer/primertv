@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
-import { ChevronLeft, List, FolderOpen } from "lucide-react";
+import { ChevronLeft, FolderOpen } from "lucide-react";
 import { MediaCard } from "@/components/MediaCard";
 import RemoveFromListButton from "@/components/RemoveFromListButton";
 
@@ -13,7 +13,9 @@ interface ListDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ListDetailsPage({ params }: ListDetailsPageProps) {
+export default async function ListDetailsPage({
+  params,
+}: ListDetailsPageProps) {
   await connection();
 
   const { id } = await params;
@@ -71,7 +73,6 @@ export default async function ListDetailsPage({ params }: ListDetailsPageProps) 
 
         <header className="mb-12">
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-            <List className="h-8 w-8 text-blue-500" />
             {list.name}
           </h1>
           {list.description && (
@@ -88,9 +89,7 @@ export default async function ListDetailsPage({ params }: ListDetailsPageProps) 
           {isEmpty ? (
             <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40">
               <FolderOpen className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
-              <p className="text-xl text-zinc-500">
-                Esta lista está vazia.
-              </p>
+              <p className="text-xl text-zinc-500">Esta lista está vazia.</p>
               <p className="mt-2 text-zinc-400">
                 Explore{" "}
                 <Link href="/animes" className="text-blue-500 hover:underline">
@@ -110,7 +109,10 @@ export default async function ListDetailsPage({ params }: ListDetailsPageProps) 
                 const mediaType = item.anime ? "anime" : "series";
                 if (!mediaItem) return null;
                 return (
-                  <div key={item.id} className="relative group animate-in fade-in zoom-in-95 duration-200">
+                  <div
+                    key={item.id}
+                    className="relative group animate-in fade-in zoom-in-95 duration-200"
+                  >
                     <RemoveFromListButton
                       listId={list.id}
                       animeId={item.anime?.id}

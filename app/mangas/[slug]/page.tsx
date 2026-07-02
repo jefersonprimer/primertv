@@ -15,6 +15,8 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { getMangaBanner } from "@/lib/banners";
 import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
+import { getFirstMangaChapter } from "@/lib/media-performance";
+import { getMangaDetailsBySlug } from "@/lib/media-details";
 
 export const revalidate = 3600;
 
@@ -26,7 +28,7 @@ export async function generateMetadata({
   params,
 }: MangaDetailsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const manga = await prisma.manga.findUnique({ where: { slug } });
+  const manga = await getMangaDetailsBySlug(slug);
 
   if (!manga) return { title: "Mangá não encontrado" };
 
@@ -54,15 +56,7 @@ export default async function MangaDetailsPage({
   params,
 }: MangaDetailsPageProps) {
   const { slug } = await params;
-
-  const manga = await prisma.manga.findUnique({
-    where: { slug },
-    include: {
-      chapters: {
-        orderBy: { number: "asc" },
-      },
-    },
-  });
+  const manga = await getMangaDetailsBySlug(slug);
 
   if (!manga) {
     notFound();
@@ -74,7 +68,7 @@ export default async function MangaDetailsPage({
   }
   const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
 
-  const firstChapterId = manga.chapters[0]?.id;
+  const firstChapter = await getFirstMangaChapter(manga.id);
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("MANGA", manga.id);
   const session = await getSession();
@@ -211,9 +205,9 @@ export default async function MangaDetailsPage({
 
               <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                 <div className="flex flex-row items-center gap-3 w-full md:w-auto">
-                  {firstChapterId && (
+                  {firstChapter && firstChapter.publicId && (
                     <Link
-                      href={`/mangas/${manga.slug}/chapter/${firstChapterId}`}
+                      href={`/read/${firstChapter.publicId}/${firstChapter.slug || `chapter-${firstChapter.number}`}`}
                       className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
                     >
                       <BookOpen className="h-5 w-5" />
@@ -263,8 +257,10 @@ export default async function MangaDetailsPage({
           <p className="text-zinc-500">Nenhum capítulo encontrado.</p>
         ) : (
           <EpisodeList
-            items={manga.chapters}
-            baseUrl={`/mangas/${manga.slug}/chapter`}
+            items={manga.chapters.map(chapter => ({
+              ...chapter,
+              href: chapter.publicId ? `/read/${chapter.publicId}/${chapter.slug || `chapter-${chapter.number}`}` : undefined
+            }))}
             label="Capítulo"
             itemType="chapter"
           />

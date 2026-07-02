@@ -4,7 +4,7 @@ import { Globe } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="w-full bg-white/80 text-zinc-600 backdrop-blur-md dark:bg-black/80 dark:text-zinc-400">
+    <footer className="w-full bg-black/80 text-zinc-400 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand & Description */}
@@ -13,11 +13,11 @@ export function Footer() {
               href="/"
               className="flex items-center transition-opacity hover:opacity-80"
             >
-              <span className="text-2xl font-bold tracking-tighter text-zinc-900 dark:text-white">
+              <span className="text-2xl font-bold tracking-tighter text-white">
                 PrimerTv
               </span>
             </Link>
-            <p className="max-w-md text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            <p className="max-w-md text-sm text-zinc-400 leading-relaxed">
               A sua plataforma definitiva para assistir aos melhores canais,
               novelas, séries, filmes, animes e ler mangás. Desfrute da melhor
               experiência de entretenimento digital.
@@ -28,7 +28,7 @@ export function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 transition-all duration-200 hover:border-blue-500 hover:bg-blue-500/5 hover:text-blue-600 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-blue-500/30 dark:hover:bg-blue-500/10 dark:hover:text-blue-500"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 transition-all duration-200 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500"
                 aria-label="Instagram"
               >
                 <svg
@@ -51,7 +51,7 @@ export function Footer() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 transition-all duration-200 hover:border-blue-500 hover:bg-blue-500/5 hover:text-blue-600 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-blue-500/30 dark:hover:bg-blue-500/10 dark:hover:text-blue-500"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 transition-all duration-200 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500"
                 aria-label="Twitter"
               >
                 <svg
@@ -72,7 +72,7 @@ export function Footer() {
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 transition-all duration-200 hover:border-blue-500 hover:bg-blue-500/5 hover:text-blue-600 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-blue-500/30 dark:hover:bg-blue-500/10 dark:hover:text-blue-500"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 transition-all duration-200 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500"
                 aria-label="YouTube"
               >
                 <svg
@@ -94,7 +94,7 @@ export function Footer() {
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 transition-all duration-200 hover:border-blue-500 hover:bg-blue-500/5 hover:text-blue-600 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-blue-500/30 dark:hover:bg-blue-500/10 dark:hover:text-blue-500"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 transition-all duration-200 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500"
                 aria-label="GitHub"
               >
                 <svg
@@ -117,7 +117,7 @@ export function Footer() {
 
           {/* Navigation Links */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-100 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
               Navegação
             </h3>
             <ul className="space-y-2.5">
@@ -125,9 +125,9 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                    className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                   >
-                    <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                    <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                       ›
                     </span>
                     {link.label}
@@ -139,16 +139,16 @@ export function Footer() {
 
           {/* Support Links */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-100 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
               Suporte
             </h3>
             <ul className="space-y-2.5">
               <li>
                 <Link
                   href="/faq"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Central de Ajuda
@@ -157,9 +157,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/contato"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Contato
@@ -168,9 +168,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/status"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Status do Servidor
@@ -179,9 +179,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/termos"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Termos de Uso
@@ -190,9 +190,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/privacidade"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Privacidade
@@ -201,9 +201,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/dmca"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   DMCA
@@ -214,16 +214,16 @@ export function Footer() {
 
           {/* User Account / Membership */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-100 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
               Minha Conta
             </h3>
             <ul className="space-y-2.5">
               <li>
                 <Link
                   href="/login"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Entrar
@@ -232,9 +232,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/signup"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Criar Conta
@@ -243,9 +243,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/watchlist"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Minha Lista
@@ -254,9 +254,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/historico"
-                  className="group flex items-center text-sm text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-600 dark:text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
                   Histórico
@@ -267,15 +267,15 @@ export function Footer() {
         </div>
 
         {/* Divider */}
-        <hr className="my-8 border-zinc-200 dark:border-zinc-800/80" />
+        <hr className="my-8 border-zinc-800/80" />
 
         {/* Disclaimer */}
-        <p className="text-xs text-zinc-500 dark:text-zinc-500/80 leading-relaxed mb-6">
+        <p className="text-xs text-zinc-500/80 leading-relaxed mb-6">
           Este site não hospeda nenhum vídeo em seu servidor. Todo conteúdo é provido de terceiros não afiliados.
         </p>
 
         {/* Footer Bottom */}
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-400 dark:text-zinc-500">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-500">
           <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
             <span>© {new Date().getFullYear()} PrimerTv.</span>
             <span className="hidden sm:inline">•</span>
@@ -284,8 +284,8 @@ export function Footer() {
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {/* Language Selector Indicator */}
-            <div className="flex items-center gap-1.5 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-default">
-              <Globe size={14} className="text-zinc-400 dark:text-zinc-500" />
+            <div className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors cursor-default">
+              <Globe size={14} className="text-zinc-500" />
               <span>Português (Brasil)</span>
             </div>
 

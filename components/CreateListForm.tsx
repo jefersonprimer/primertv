@@ -4,7 +4,12 @@ import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { createList } from "@/app/actions/lists";
 
-export default function CreateListForm() {
+interface CreateListFormProps {
+  onSuccess?: () => void;
+  isModal?: boolean;
+}
+
+export default function CreateListForm({ onSuccess, isModal = false }: CreateListFormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,6 +27,7 @@ export default function CreateListForm() {
       if (res.success) {
         setName("");
         setDescription("");
+        onSuccess?.();
       } else {
         setError(res.error || "Erro ao criar lista.");
       }
@@ -34,11 +40,22 @@ export default function CreateListForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-full justify-between p-6 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/20">
+    <form
+      onSubmit={handleSubmit}
+      className={`flex flex-col h-full justify-between p-6 ${
+        isModal
+          ? "bg-transparent"
+          : "border-2 border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/20"
+      }`}
+    >
       <div className="space-y-4 w-full">
-        <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200">Criar Nova Lista</h3>
+        <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200">
+          Criar Nova Lista
+        </h3>
         {error && (
-          <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">{error}</p>
+          <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">
+            {error}
+          </p>
         )}
         <div className="space-y-2">
           <input
@@ -65,7 +82,11 @@ export default function CreateListForm() {
         disabled={loading || !name.trim()}
         className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
       >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Plus className="h-4 w-4" />
+        )}
         Criar Lista
       </button>
     </form>

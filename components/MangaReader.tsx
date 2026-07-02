@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Maximize, Minimize, Layout, Menu } from "lucide-react";
@@ -203,11 +204,14 @@ export default function MangaReader({
                 ref={(el) => { pageRefs.current[index] = el; }}
                 className="relative w-full flex justify-center bg-black min-h-[50vh]"
               >
-                <img
+                <Image
                   src={url}
                   alt={`Página ${index + 1}`}
+                  width={1600}
+                  height={2400}
+                  sizes="100vw"
                   className="h-auto w-full object-contain select-none pointer-events-none"
-                  loading={index < 3 ? "eager" : "lazy"}
+                  priority={index < 3}
                 />
                 {/* Click detection overlay */}
                 <div className="absolute inset-0 flex">

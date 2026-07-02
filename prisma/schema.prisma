@@ -42,50 +42,59 @@ model WatchlistItem {
   @@unique([userId, animeId])
   @@unique([userId, mangaId])
   @@unique([userId, seriesId])
-  @@index([userId])
+  @@index([userId, mediaType, createdAt])
 }
 
 model Anime {
-  id              String           @id @default(cuid())
-  slug            String           @unique
-  title           String           @unique
-  titleEnglish    String?
-  description     String?
-  imageUrl        String?
-  bannerUrl       String?
-  logoUrl         String?
-  compactImageUrl String?
-  genres          String[]         @default([])
-  audio           String[]         @default([])
-  subtitles       String[]         @default([])
-  awards          String[]         @default([])
-  aired           String?
-  rating          String?
-  score           Float?
-  status          String?
-  duration        String?
-  season          String?
-  year            Int?
-  broadcastDay    String?
-  broadcastTime   String?
+  id                String           @id @default(cuid())
+  slug              String           @unique
+  title             String           @unique
+  titleEnglish      String?
+  description       String?
+  imageUrl          String?
+  bannerUrl         String?
+  logoUrl           String?
+  compactImageUrl   String?
+  genres            String[]         @default([])
+  audio             String[]         @default([])
+  subtitles         String[]         @default([])
+  awards            String[]         @default([])
+  aired             String?
+  rating            String?
+  score             Float?
+  status            String?
+  duration          String?
+  season            String?
+  year              Int?
+  broadcastDay      String?
+  broadcastTime     String?
   broadcastTimezone String?
   broadcastString   String?
-  rank            Int?
-  popularity      Int?
-  members         Int?
-  lastScrapedAt   DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  seasons         Season[]
-  watchlistItems  WatchlistItem[]
-  customListItems CustomListItem[]
+  rank              Int?
+  popularity        Int?
+  members           Int?
+  lastScrapedAt     DateTime?
+  latestSeasonId    String?
+  latestEpisodeId   String?
+  latestEpisodeNumber Int?
+  latestEpisodeAt   DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  seasons           Season[]
+  watchlistItems    WatchlistItem[]
+  customListItems   CustomListItem[]
 
   @@index([createdAt])
+  @@index([bannerUrl, createdAt])
+  @@index([status, createdAt])
+  @@index([season, year])
   @@index([title])
   @@index([titleEnglish])
   @@index([rank])
   @@index([popularity])
   @@index([members])
+  @@index([latestEpisodeAt])
+  @@index([updatedAt])
 }
 
 model Season {
@@ -105,6 +114,8 @@ model Episode {
   id            String         @id @default(cuid())
   number        Int
   title         String?
+  slug          String?
+  publicId      String?        @unique
   videoUrl      String?
   imageUrl      String?
   customPlayers String[]       @default([])
@@ -133,27 +144,35 @@ model WatchHistory {
 }
 
 model Series {
-  id            String         @id @default(cuid())
-  slug          String         @unique
-  title         String         @unique
-  description   String?
-  imageUrl      String?
-  bannerUrl     String?
-  logoUrl       String?
-  genres        String[]       @default([])
-  rating        String?
-  score         Float?
-  year          Int?
-  tmdbId        String?
-  lastScrapedAt DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  seasons       SeriesSeason[]
+  id              String           @id @default(cuid())
+  slug            String           @unique
+  title           String           @unique
+  description     String?
+  imageUrl        String?
+  bannerUrl       String?
+  logoUrl         String?
+  genres          String[]         @default([])
+  rating          String?
+  score           Float?
+  year            Int?
+  tmdbId          String?
+  lastScrapedAt   DateTime?
+  latestSeasonId    String?
+  latestEpisodeId   String?
+  latestEpisodeNumber Int?
+  latestEpisodeAt   DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  seasons         SeriesSeason[]
   watchlistItems  WatchlistItem[]
   customListItems CustomListItem[]
 
   @@index([createdAt])
+  @@index([bannerUrl, createdAt])
+  @@index([score, createdAt])
   @@index([title])
+  @@index([latestEpisodeAt])
+  @@index([updatedAt])
 }
 
 model SeriesSeason {
@@ -173,6 +192,8 @@ model SeriesEpisode {
   id        String       @id @default(cuid())
   number    Int
   title     String?
+  slug      String?
+  publicId  String?      @unique
   videoUrl  String?
   seasonId  String
   createdAt DateTime     @default(now())
@@ -187,6 +208,7 @@ model SeriesEpisode {
 model Movie {
   id            String    @id @default(cuid())
   slug          String    @unique
+  publicId      String?   @unique
   title         String    @unique
   description   String?
   imageUrl      String?
@@ -204,28 +226,36 @@ model Movie {
   tmdbId        String?
 
   @@index([createdAt])
+  @@index([bannerUrl, createdAt])
+  @@index([score, createdAt])
   @@index([title])
+  @@index([updatedAt])
 }
 
 model Manga {
-  id            String    @id @default(cuid())
-  slug          String    @unique
-  title         String    @unique
-  description   String?
-  imageUrl      String?
-  bannerUrl     String?
-  genres        String[]  @default([])
-  aired         String?
-  rating        String?
-  status        String?
-  lastScrapedAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  title          String          @unique
+  description    String?
+  imageUrl       String?
+  bannerUrl      String?
+  genres         String[]        @default([])
+  aired          String?
+  rating         String?
+  status         String?
+  lastScrapedAt  DateTime?
+  latestChapterId String?
+  latestChapterNumber Float?
+  latestChapterAt DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   chapters       Chapter[]
   watchlistItems WatchlistItem[]
 
   @@index([createdAt])
   @@index([title])
+  @@index([latestChapterAt])
+  @@index([updatedAt])
 }
 
 model Chapter {
@@ -234,6 +264,8 @@ model Chapter {
   title     String?
   pages     String[]
   mangaId   String
+  publicId  String?  @unique
+  slug      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   manga     Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
@@ -250,6 +282,10 @@ model Novela {
   description   String?
   imageUrl      String?
   genres        String[]       @default([])
+  latestSeasonId String?
+  latestEpisodeId String?
+  latestEpisodeNumber Int?
+  latestEpisodeAt DateTime?
   lastScrapedAt DateTime?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -257,6 +293,8 @@ model Novela {
 
   @@index([createdAt])
   @@index([title])
+  @@index([latestEpisodeAt])
+  @@index([updatedAt])
 }
 
 model NovelaSeason {
@@ -344,8 +382,7 @@ model CustomListItem {
 
   @@unique([listId, animeId])
   @@unique([listId, seriesId])
-  @@index([listId])
+  @@index([listId, createdAt])
   @@index([animeId])
   @@index([seriesId])
 }
-

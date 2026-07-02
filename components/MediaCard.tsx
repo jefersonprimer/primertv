@@ -1,13 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 
+export type MediaCardItem = {
+  id: string;
+  slug: string;
+  title: string;
+  imageUrl: string | null;
+};
+
 export function MediaCard({
   item,
   type,
   priority = false,
   sizes = "(max-width: 640px) 160px, 200px",
 }: {
-  item: any;
+  item: MediaCardItem;
   type: "anime" | "series" | "movie" | "manga" | "novela" | "channel";
   priority?: boolean;
   sizes?: string;

@@ -8,6 +8,40 @@ import { getAnimeBanner } from "@/lib/banners";
 import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
+import { getFirstAnimeEpisodes } from "@/lib/media-performance";
+
+type WatchlistRow = {
+  id: string;
+  mediaType: "ANIME" | "MANGA" | "SERIES";
+  animeId: string | null;
+  mangaId: string | null;
+  seriesId: string | null;
+  createdAt: Date;
+};
+
+type WatchlistAnime = {
+  id: string;
+  slug: string;
+  title: string;
+  imageUrl: string | null;
+  bannerUrl: string | null;
+  rating: string | null;
+  duration: string | null;
+};
+
+type WatchlistSeries = {
+  id: string;
+  slug: string;
+  title: string;
+  imageUrl: string | null;
+};
+
+type WatchlistManga = {
+  id: string;
+  slug: string;
+  title: string;
+  imageUrl: string | null;
+};
 
 export default async function WatchlistPage() {
   await connection();
@@ -20,55 +54,106 @@ export default async function WatchlistPage() {
   const items = await prisma.watchlistItem.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
-    include: {
-      anime: {
-        include: {
-          seasons: {
-            orderBy: { number: "asc" },
-            take: 1,
-            include: {
-              episodes: {
-                orderBy: { number: "asc" },
-                take: 1,
-              },
-            },
-          },
-        },
-      },
-      manga: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          imageUrl: true,
-        },
-      },
-      series: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          imageUrl: true,
-        },
-      },
+    select: {
+      id: true,
+      mediaType: true,
+      animeId: true,
+      mangaId: true,
+      seriesId: true,
+      createdAt: true,
     },
   });
 
-  const rawAnimes = items
-    .filter((item) => item.mediaType === "ANIME" && item.anime)
-    .map((item) => item.anime!);
+  const typedItems = items as WatchlistRow[];
+
+  const animeIds = typedItems
+    .filter((item): item is WatchlistRow & { mediaType: "ANIME"; animeId: string } =>
+      item.mediaType === "ANIME" && Boolean(item.animeId),
+    )
+    .map((item) => item.animeId);
+
+  const mangaIds = typedItems
+    .filter((item): item is WatchlistRow & { mediaType: "MANGA"; mangaId: string } =>
+      item.mediaType === "MANGA" && Boolean(item.mangaId),
+    )
+    .map((item) => item.mangaId);
+
+  const seriesIds = typedItems
+    .filter((item): item is WatchlistRow & { mediaType: "SERIES"; seriesId: string } =>
+      item.mediaType === "SERIES" && Boolean(item.seriesId),
+    )
+    .map((item) => item.seriesId);
+
+  const [animeRecords, mangaRecords, seriesRecords] = await Promise.all([
+    animeIds.length > 0
+      ? prisma.anime.findMany({
+          where: { id: { in: animeIds } },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            imageUrl: true,
+            bannerUrl: true,
+            rating: true,
+            duration: true,
+          },
+        })
+      : Promise.resolve([] as WatchlistAnime[]),
+    mangaIds.length > 0
+      ? prisma.manga.findMany({
+          where: { id: { in: mangaIds } },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            imageUrl: true,
+          },
+        })
+      : Promise.resolve([] as WatchlistManga[]),
+    seriesIds.length > 0
+      ? prisma.series.findMany({
+          where: { id: { in: seriesIds } },
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            imageUrl: true,
+          },
+        })
+      : Promise.resolve([] as WatchlistSeries[]),
+  ]);
+
+  const animeById = new Map(animeRecords.map((anime) => [anime.id, anime]));
+  const mangaById = new Map(mangaRecords.map((manga) => [manga.id, manga]));
+  const seriesById = new Map(seriesRecords.map((serie) => [serie.id, serie]));
+
+  const orderedAnimes = animeIds
+    .map((animeId) => animeById.get(animeId))
+    .filter((anime): anime is WatchlistAnime => Boolean(anime));
+
+  const orderedMangas = mangaIds
+    .map((mangaId) => mangaById.get(mangaId))
+    .filter((manga): manga is WatchlistManga => Boolean(manga));
+
+  const orderedSeries = seriesIds
+    .map((seriesId) => seriesById.get(seriesId))
+    .filter((serie): serie is WatchlistSeries => Boolean(serie));
+
+  const firstEpisodeByAnimeId = await getFirstAnimeEpisodes(
+    orderedAnimes.map((anime) => anime.id),
+  );
 
   const animes = await Promise.all(
-    rawAnimes.map(async (anime) => {
+    orderedAnimes.map(async (anime) => {
       let banner = anime.bannerUrl;
       if (!banner) {
         banner = await getAnimeBanner(anime.id, anime.title);
       }
       const finalBannerUrl = banner === "none" ? null : banner;
 
-      const firstEpisode = anime.seasons[0]?.episodes[0];
-      const firstEpisodeId = firstEpisode?.id || null;
-      const firstEpisodeImageUrl = firstEpisode?.imageUrl || null;
+      const firstEpisode = firstEpisodeByAnimeId.get(anime.id);
+      const firstEpisodeId = firstEpisode?.firstEpisodeId || null;
+      const firstEpisodeImageUrl = firstEpisode?.firstEpisodeImageUrl || null;
 
       return {
         id: anime.id,
@@ -83,13 +168,8 @@ export default async function WatchlistPage() {
     }),
   );
 
-  const mangas = items
-    .filter((item) => item.mediaType === "MANGA" && item.manga)
-    .map((item) => item.manga!);
-
-  const seriesList = items
-    .filter((item) => item.mediaType === "SERIES" && item.series)
-    .map((item) => item.series!);
+  const mangas = orderedMangas;
+  const seriesList = orderedSeries;
 
   const isEmpty = animes.length === 0 && mangas.length === 0 && seriesList.length === 0;
 

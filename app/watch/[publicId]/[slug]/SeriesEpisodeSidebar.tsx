@@ -11,6 +11,8 @@ interface Episode {
   number: number;
   title: string | null;
   videoUrl: string | null;
+  publicId: string | null;
+  slug: string | null;
 }
 
 interface Season {
@@ -27,7 +29,7 @@ interface EpisodeSidebarProps {
   seriesImageUrl: string | null;
 }
 
-export default function EpisodeSidebar({
+export default function SeriesEpisodeSidebar({
   seasons,
   currentEpisodeId,
   seriesSlug,
@@ -240,9 +242,13 @@ function EpisodeCard({
   seriesImageUrl,
   isCurrent = false,
 }: EpisodeCardProps) {
+  const watchHref = ep.publicId
+    ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
+    : `/series/${seriesSlug}/episode/${ep.id}`;
+
   return (
     <Link
-      href={`/series/${seriesSlug}/episode/${ep.id}`}
+      href={watchHref}
       className={`flex items-center gap-3 sm:p-2 transition-colors ${
         isCurrent
           ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-500"

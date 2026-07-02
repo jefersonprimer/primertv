@@ -2,12 +2,12 @@
 
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { MediaCard } from "./MediaCard";
+import { MediaCard, type MediaCardItem } from "./MediaCard";
 
 interface MediaCarouselProps {
   title?: string;
   subtitle?: string;
-  items: any[];
+  items: MediaCardItem[];
   type: "anime" | "series" | "movie" | "manga" | "novela" | "channel";
   priority?: boolean;
 }

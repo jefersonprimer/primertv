@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { MediaCard } from "@/components/MediaCard";
-import { connection } from "next/server";
 import { SearchBar } from "@/components/SearchBar";
 
 export default async function SearchPage({
@@ -10,8 +9,6 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  await connection();
-
   const { q: query } = await searchParams;
 
   if (!query) {
@@ -28,13 +25,13 @@ export default async function SearchPage({
         OR: [
           {
             title: {
-              contains: query,
+              startsWith: query,
               mode: "insensitive",
             },
           },
           {
             titleEnglish: {
-              contains: query,
+              startsWith: query,
               mode: "insensitive",
             },
           },
@@ -51,7 +48,7 @@ export default async function SearchPage({
     prisma.series.findMany({
       where: {
         title: {
-          contains: query,
+          startsWith: query,
           mode: "insensitive",
         },
       },
@@ -66,7 +63,7 @@ export default async function SearchPage({
     prisma.movie.findMany({
       where: {
         title: {
-          contains: query,
+          startsWith: query,
           mode: "insensitive",
         },
       },
@@ -81,7 +78,7 @@ export default async function SearchPage({
     prisma.manga.findMany({
       where: {
         title: {
-          contains: query,
+          startsWith: query,
           mode: "insensitive",
         },
       },
@@ -96,7 +93,7 @@ export default async function SearchPage({
     prisma.novela.findMany({
       where: {
         title: {
-          contains: query,
+          startsWith: query,
           mode: "insensitive",
         },
       },
@@ -126,7 +123,7 @@ export default async function SearchPage({
           {!hasResults && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <p className="text-xl text-zinc-500">
-                Nenhum resultado encontrado para "{query}".
+                Nenhum resultado encontrado para &quot;{query}&quot;.
               </p>
               <p className="text-zinc-400">
                 Tente buscar por termos diferentes ou verifique a ortografia.

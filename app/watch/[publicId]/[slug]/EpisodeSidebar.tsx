@@ -12,6 +12,8 @@ interface Episode {
   title: string | null;
   imageUrl: string | null;
   videoUrl: string | null;
+  publicId: string | null;
+  slug: string | null;
 }
 
 interface Season {
@@ -250,9 +252,13 @@ function EpisodeCard({
   animeDuration,
   isCurrent = false,
 }: EpisodeCardProps) {
+  const watchHref = ep.publicId
+    ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
+    : `/animes/${animeSlug}/episode/${ep.id}`;
+
   return (
     <Link
-      href={`/animes/${animeSlug}/episode/${ep.id}`}
+      href={watchHref}
       className={`flex items-center gap-3 sm:p-2 transition-colors ${
         isCurrent
           ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-500"

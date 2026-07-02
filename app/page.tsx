@@ -13,7 +13,8 @@ import {
 import { TodayReleases } from "@/components/TodayReleases";
 import { TodayReleasesSkeleton } from "@/components/TodayReleasesSkeleton";
 import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
-import { getCurrentSeasonSlug, parseSeasonAndYear } from "@/lib/seasons";
+import { getCurrentSeasonSlug } from "@/lib/seasons";
+import { connection } from "next/server";
 
 export const revalidate = 3600; // revalida a cada hora
 
@@ -49,22 +50,19 @@ async function CurrentSeasonCarousel() {
   const [currentSeason, currentYearStr] = currentSlug.split("-");
   const currentYear = parseInt(currentYearStr, 10);
 
-  const allAnimes = await prisma.anime.findMany({
+  const items = await prisma.anime.findMany({
+    where: {
+      season: currentSeason,
+      year: currentYear,
+    },
     select: {
       id: true,
       slug: true,
       title: true,
       imageUrl: true,
-      season: true,
-      year: true,
-      aired: true,
     },
-  });
-
-  const filteredItems = allAnimes.filter((anime) => {
-    const info = parseSeasonAndYear(anime.season, anime.year, anime.aired);
-    if (!info) return false;
-    return info.season === currentSeason && info.year === currentYear;
+    orderBy: { createdAt: "desc" },
+    take: 30,
   });
 
   const seasonLabel = seasonTranslations[currentSeason] || currentSeason;
@@ -73,7 +71,7 @@ async function CurrentSeasonCarousel() {
     <MediaCarousel
       title="Animes desta Temporada"
       subtitle={`Lançamentos de ${seasonLabel} de ${currentYear}`}
-      items={filteredItems}
+      items={items}
       type="anime"
     />
   );
@@ -94,22 +92,19 @@ async function NextSeasonCarousel() {
     nextYear = currentYear;
   }
 
-  const allAnimes = await prisma.anime.findMany({
+  const items = await prisma.anime.findMany({
+    where: {
+      season: nextSeason,
+      year: nextYear,
+    },
     select: {
       id: true,
       slug: true,
       title: true,
       imageUrl: true,
-      season: true,
-      year: true,
-      aired: true,
     },
-  });
-
-  const filteredItems = allAnimes.filter((anime) => {
-    const info = parseSeasonAndYear(anime.season, anime.year, anime.aired);
-    if (!info) return false;
-    return info.season === nextSeason && info.year === nextYear;
+    orderBy: { createdAt: "desc" },
+    take: 30,
   });
 
   const seasonLabel = seasonTranslations[nextSeason] || nextSeason;
@@ -118,7 +113,7 @@ async function NextSeasonCarousel() {
     <MediaCarousel
       title="Animes da Próxima Temporada"
       subtitle={`Lançamentos de ${seasonLabel} de ${nextYear}`}
-      items={filteredItems}
+      items={items}
       type="anime"
     />
   );
@@ -208,7 +203,9 @@ async function MangaCarousel() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  await connection();
+
   return (
     <>
       <Suspense fallback={<HeroCarouselSkeleton />}>

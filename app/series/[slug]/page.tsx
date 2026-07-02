@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { Play, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
 import MediaDescricao from "@/components/MediaDescricao";
@@ -16,6 +16,9 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { getSeriesBanner, getSeriesLogo } from "@/lib/banners";
 import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
+import { getFirstSeriesEpisodes } from "@/lib/media-performance";
+import { getSeriesDetailsBySlug } from "@/lib/media-details";
+import { StartWatchingButton } from "@/components/StartWatchingButton";
 
 export const revalidate = 3600;
 
@@ -27,7 +30,7 @@ export async function generateMetadata({
   params,
 }: SeriesDetailsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const serie = await prisma.series.findUnique({ where: { slug } });
+  const serie = await getSeriesDetailsBySlug(slug);
 
   if (!serie) return { title: "Série não encontrada" };
 
@@ -55,20 +58,7 @@ export default async function SeriesDetailsPage({
   params,
 }: SeriesDetailsPageProps) {
   const { slug } = await params;
-
-  const series = await prisma.series.findUnique({
-    where: { slug },
-    include: {
-      seasons: {
-        orderBy: { number: "asc" },
-        include: {
-          episodes: {
-            orderBy: { number: "asc" },
-          },
-        },
-      },
-    },
-  });
+  const series = await getSeriesDetailsBySlug(slug);
 
   if (!series) {
     notFound();
@@ -86,7 +76,22 @@ export default async function SeriesDetailsPage({
   }
   const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
 
-  const firstEpisodeId = series.seasons[0]?.episodes[0]?.id;
+  const firstEpisodeId =
+    (await getFirstSeriesEpisodes([series.id])).get(series.id)?.firstEpisodeId ??
+    null;
+
+  let firstEpisodeLink = null;
+  if (firstEpisodeId) {
+    const firstEp = await prisma.seriesEpisode.findUnique({
+      where: { id: firstEpisodeId },
+      select: { publicId: true, slug: true, number: true },
+    });
+    if (firstEp && firstEp.publicId) {
+      firstEpisodeLink = `/watch/${firstEp.publicId}/${firstEp.slug || "episodio-" + firstEp.number}`;
+    } else {
+      firstEpisodeLink = `/series/${series.slug}/episode/${firstEpisodeId}`;
+    }
+  }
   const userId = await getAuthenticatedUserId();
   const inWatchlist = await isInWatchlist("SERIES", series.id);
   const session = await getSession();
@@ -120,6 +125,11 @@ export default async function SeriesDetailsPage({
       imageUrl: series.imageUrl,
     })),
   }));
+
+  const totalEpisodes = series.seasons.reduce(
+    (acc, season) => acc + (season.episodes?.length || 0),
+    0,
+  );
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -295,14 +305,12 @@ export default async function SeriesDetailsPage({
 
               <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                 <div className="flex flex-row items-center gap-3 w-full md:w-auto">
-                  {firstEpisodeId && (
-                    <Link
-                      href={`/series/${series.slug}/episode/${firstEpisodeId}`}
-                      className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
-                    >
-                      <Play className="h-5 w-5 fill-current" />
-                      Começar a assistir EP1
-                    </Link>
+                  {firstEpisodeLink && (
+                    <StartWatchingButton
+                      href={firstEpisodeLink}
+                      className="flex-1 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
+                      uppercase={false}
+                    />
                   )}
                   <WatchlistButton
                     mediaType="SERIES"
@@ -345,8 +353,12 @@ export default async function SeriesDetailsPage({
 
       {/* Episodes Section */}
       <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
-        {series.seasons.length === 0 ? (
-          <p className="text-zinc-500">Nenhum episódio encontrado.</p>
+        {totalEpisodes === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center border-t border-zinc-200 dark:border-zinc-800">
+            <p className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
+              Episódios em breve
+            </p>
+          </div>
         ) : (
           <SeasonSelector
             seasons={mappedSeasons}

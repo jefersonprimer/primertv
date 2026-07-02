@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { Play } from "lucide-react";
+
 
 import EpisodeList from "@/components/EpisodeList";
 import MediaDescricao from "@/components/MediaDescricao";
@@ -11,6 +11,9 @@ import ShareButton from "@/components/ShareButton";
 import { MediaCarousel } from "@/components/MediaCarousel";
 import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
+import { getFirstNovelaEpisodes } from "@/lib/media-performance";
+import { getNovelaDetailsBySlug } from "@/lib/media-details";
+import { StartWatchingButton } from "@/components/StartWatchingButton";
 
 export const revalidate = 3600;
 
@@ -22,7 +25,7 @@ export async function generateMetadata({
   params,
 }: NovelaDetailsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const novela = await prisma.novela.findUnique({ where: { slug } });
+  const novela = await getNovelaDetailsBySlug(slug);
 
   if (!novela) return { title: "Novela não encontrada" };
 
@@ -40,20 +43,7 @@ export default async function NovelaDetailsPage({
   params,
 }: NovelaDetailsPageProps) {
   const { slug } = await params;
-
-  const novela = await prisma.novela.findUnique({
-    where: { slug },
-    include: {
-      seasons: {
-        orderBy: { number: "asc" },
-        include: {
-          episodes: {
-            orderBy: { number: "asc" },
-          },
-        },
-      },
-    },
-  });
+  const novela = await getNovelaDetailsBySlug(slug);
 
   if (!novela) {
     notFound();
@@ -62,7 +52,9 @@ export default async function NovelaDetailsPage({
   const session = await getSession();
   const isAdmin = session?.user?.role === "admin";
 
-  const firstEpisodeId = novela.seasons[0]?.episodes[0]?.id;
+  const firstEpisodeId =
+    (await getFirstNovelaEpisodes([novela.id])).get(novela.id)?.firstEpisodeId ??
+    null;
 
   const similarNovelas =
     novela.genres && novela.genres.length > 0
@@ -166,13 +158,11 @@ export default async function NovelaDetailsPage({
               <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                 <div className="flex flex-row items-center gap-3 w-full md:w-auto">
                   {firstEpisodeId && (
-                    <Link
+                    <StartWatchingButton
                       href={`/novelas/${novela.slug}/episode/${firstEpisodeId}`}
-                      className="flex h-10 flex-1 items-center justify-center gap-2 bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
-                    >
-                      <Play className="h-5 w-5 fill-current" />
-                      Começar a assistir EP1
-                    </Link>
+                      className="flex-1 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
+                      uppercase={false}
+                    />
                   )}
                 </div>
                 <div className="flex flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-start">

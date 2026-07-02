@@ -8,11 +8,6 @@ import { NAV_LINKS } from "./nav-links";
 
 export function MobileSidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -60,7 +55,9 @@ export function MobileSidebar() {
         <Menu size={22} />
       </button>
 
-      {mounted && panel ? createPortal(panel, document.body) : null}
+      {typeof document !== "undefined" && panel
+        ? createPortal(panel, document.body)
+        : null}
     </>
   );
 }

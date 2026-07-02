@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
+import { StartWatchingButton } from "@/components/StartWatchingButton";
 
 export interface HeroCarouselItem {
   id: string;
@@ -18,10 +19,13 @@ export interface HeroCarouselItem {
   genres: string[];
   rating: string | null;
   firstEpisodeId: string | null;
+  firstEpisodePublicId?: string | null;
+  firstEpisodeSlug?: string | null;
   inWatchlist: boolean;
   type?: "anime" | "series" | "movie";
   videoUrl?: string | null;
   tmdbId?: string | null;
+  publicId?: string | null;
 }
 
 interface HeroCarouselClientProps {
@@ -215,25 +219,26 @@ export function HeroCarouselClient({
             <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
               {current.type === "movie" &&
               (current.videoUrl || current.tmdbId) ? (
-                <Link
-                  href={`/filmes/${current.slug}/watch`}
-                  className="flex w-full max-w-[340px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6 uppercase"
-                >
-                  <Play className="h-5 w-5 fill-current" />
-                  Assistir
-                </Link>
-              ) : current.firstEpisodeId ? (
-                <Link
+                <StartWatchingButton
                   href={
-                    current.type === "series"
-                      ? `/series/${current.slug}/episode/${current.firstEpisodeId}`
-                      : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
+                    current.publicId
+                      ? `/watch/${current.publicId}/${current.slug}`
+                      : `/filmes/${current.slug}/watch`
                   }
-                  className="flex w-full max-w-[340px] md:max-w-[410px] h-10 items-center justify-center gap-2 bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 md:w-auto sm:max-w-none md:px-6 uppercase"
-                >
-                  <Play className="h-5 w-5 fill-current" />
-                  Começar a assistir EP1
-                </Link>
+                  className="w-full max-w-[340px] md:max-w-[410px] px-4 text-sm md:w-auto sm:max-w-none md:px-6"
+                  text="Assistir"
+                />
+              ) : current.firstEpisodeId ? (
+                <StartWatchingButton
+                  href={
+                    current.firstEpisodePublicId
+                      ? `/watch/${current.firstEpisodePublicId}/${current.firstEpisodeSlug || "episodio-1"}`
+                      : current.type === "series"
+                        ? `/series/${current.slug}/episode/${current.firstEpisodeId}`
+                        : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
+                  }
+                  className="w-full max-w-[340px] md:max-w-[410px] px-4 text-sm md:w-auto sm:max-w-none md:px-6"
+                />
               ) : (
                 <Link
                   href={detailUrl}

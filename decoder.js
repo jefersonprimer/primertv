@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 
 function decode() {
@@ -15,7 +16,6 @@ function decode() {
     let content = html.substring(startIndex + startMarker.length - 1);
     
     // Find the matching closing parenthesis
-    let bracketCount = 0;
     let parenCount = 0;
     let inString = false;
     let escape = false;
@@ -36,9 +36,7 @@ function decode() {
             continue;
         }
         if (!inString) {
-            if (char === '[') bracketCount++;
-            else if (char === ']') bracketCount--;
-            else if (char === '(') parenCount++;
+            if (char === '(') parenCount++;
             else if (char === ')') {
                 parenCount--;
                 if (parenCount === -1) {
