@@ -25,10 +25,7 @@ export async function Header() {
         <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-1">
             <MobileSidebar />
-            <Link
-              href="/"
-              className="flex items-center transition-opacity hover:opacity-80 lg:pl-4"
-            >
+            <Link href="/" className="flex items-center lg:pl-4">
               <span className="text-xl font-semibold text-[#f2f2f2] hover:text-white">
                 primer tv
               </span>

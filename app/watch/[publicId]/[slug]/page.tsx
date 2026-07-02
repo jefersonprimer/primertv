@@ -23,7 +23,7 @@ export async function generateMetadata({
   await connection();
 
   const { publicId } = await params;
-  
+
   let title = "Episódio não encontrado";
   let description = "";
   let imageUrl = null;
@@ -164,15 +164,19 @@ export default async function WatchPage({
 
     const playableUrl = activePlayerObj
       ? activePlayerObj.id === "principal"
-        ? ((await resolvePlayableUrl(activePlayerObj.url)) ?? activePlayerObj.url)
+        ? ((await resolvePlayableUrl(activePlayerObj.url)) ??
+          activePlayerObj.url)
         : activePlayerObj.url
       : null;
 
     const userId = await getAuthenticatedUserId();
-    const inWatchlist = await isInWatchlist("ANIME", animeEpisode.season.anime.id);
+    const inWatchlist = await isInWatchlist(
+      "ANIME",
+      animeEpisode.season.anime.id,
+    );
 
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
+      <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
           <div className="grid gap-8 lg:grid-cols-4">
             {/* Main Content: Player and Info */}
@@ -210,7 +214,7 @@ export default async function WatchPage({
               </div>
 
               {/* Controls & Title Below Player */}
-              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
+              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0]">
                 {/* Player Selector Tabs */}
                 {playersList.length > 1 && (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
@@ -327,7 +331,8 @@ export default async function WatchPage({
 
   if (seriesEpisode) {
     // Enforce correct slug for SEO
-    const expectedSlug = seriesEpisode.slug || `episodio-${seriesEpisode.number}`;
+    const expectedSlug =
+      seriesEpisode.slug || `episodio-${seriesEpisode.number}`;
     if (slug !== expectedSlug) {
       redirect(`/watch/${publicId}/${expectedSlug}`);
     }
@@ -394,10 +399,13 @@ export default async function WatchPage({
         : currentVideoUrl;
 
     const userId = await getAuthenticatedUserId();
-    const inWatchlist = await isInWatchlist("SERIES", seriesEpisode.season.series.id);
+    const inWatchlist = await isInWatchlist(
+      "SERIES",
+      seriesEpisode.season.series.id,
+    );
 
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
+      <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
           <div className="grid gap-8 lg:grid-cols-4">
             {/* Main Content: Player and Info */}
@@ -691,13 +699,19 @@ export default async function WatchPage({
               genres: { hasSome: movie.genres },
               id: { not: movie.id },
             },
-            select: { id: true, slug: true, title: true, imageUrl: true, publicId: true },
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              imageUrl: true,
+              publicId: true,
+            },
             take: 6,
           })
         : [];
 
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50">
+      <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
           <div className="grid gap-8 lg:grid-cols-4">
             {/* Main Content: Player and Info */}
@@ -838,9 +852,7 @@ export default async function WatchPage({
                         href={`/filmes/${movie.slug}`}
                         className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
                       >
-                        <h4 className="text-base font-bold">
-                          {movie.title}
-                        </h4>
+                        <h4 className="text-base font-bold">{movie.title}</h4>
                       </Link>
 
                       <WatchlistButton
@@ -863,8 +875,7 @@ export default async function WatchPage({
                   <div className="mt-6">
                     <ExpandableDescription
                       description={
-                        movie.description ||
-                        "Sem descrição disponível."
+                        movie.description || "Sem descrição disponível."
                       }
                     />
                   </div>
@@ -877,12 +888,18 @@ export default async function WatchPage({
               <div className="sticky overflow-hidden pt-8">
                 {similarMovies.length > 0 && (
                   <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4">
-                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4">Recomendados</h3>
+                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4">
+                      Recomendados
+                    </h3>
                     <div className="flex flex-col gap-4">
                       {similarMovies.map((sim) => (
                         <Link
                           key={sim.id}
-                          href={sim.publicId ? `/watch/${sim.publicId}/${sim.slug}` : `/filmes/${sim.slug}`}
+                          href={
+                            sim.publicId
+                              ? `/watch/${sim.publicId}/${sim.slug}`
+                              : `/filmes/${sim.slug}`
+                          }
                           className="flex gap-3 group animate-fade-in"
                         >
                           <div className="relative w-16 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0 bg-zinc-900">
@@ -898,7 +915,9 @@ export default async function WatchPage({
                             <h4 className="font-semibold text-sm line-clamp-2 text-zinc-900 dark:text-zinc-100 group-hover:text-blue-400 transition-colors">
                               {sim.title}
                             </h4>
-                            <span className="text-xs text-zinc-500 mt-1">Filme</span>
+                            <span className="text-xs text-zinc-500 mt-1">
+                              Filme
+                            </span>
                           </div>
                         </Link>
                       ))}
