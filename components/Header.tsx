@@ -9,7 +9,7 @@ import { AddMediaButton } from "./admin/AddMediaButton";
 
 const DESKTOP_LINKS = [
   { href: "/series", label: "Séries" },
-  { href: "/filmes", label: "Filmes" },
+  { href: "/movies", label: "Filmes" },
   { href: "/animes", label: "Animes" },
   { href: "/mangas", label: "Mangas" },
   { href: "/livetv", label: "Live Tv" },
@@ -20,7 +20,7 @@ export async function Header() {
   const user = session?.user;
 
   return (
-    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727] backdrop-blur-md border-zinc-800">
+    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727]">
       <div className="mx-auto flex h-16 max-w-full items-center justify-between">
         <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-1">
@@ -29,11 +29,8 @@ export async function Header() {
               href="/"
               className="flex items-center transition-opacity hover:opacity-80 lg:pl-4"
             >
-              <span className="text-xl font-bold tracking-tighter text-white">
-                Primer
-                <span className="font-normal text-blue-500">
-                  Tv
-                </span>
+              <span className="text-xl font-semibold text-[#f2f2f2] hover:text-white">
+                primer tv
               </span>
             </Link>
           </div>

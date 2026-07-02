@@ -4,7 +4,8 @@ import { Shield, Scale, AlertTriangle, ArrowRight, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "DMCA - PrimerTv",
-  description: "Legal Disclaimer and DMCA Notice of Copyright Infringement for PrimerTv.",
+  description:
+    "Legal Disclaimer and DMCA Notice of Copyright Infringement for PrimerTv.",
 };
 
 export default function DmcaPage() {
@@ -55,7 +56,8 @@ export default function DmcaPage() {
             DMCA & Disclaimer
           </h1>
           <p className="max-w-xl mx-auto text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
-            Please read our Legal Disclaimer and DMCA Copyright Infringement notice below.
+            Please read our Legal Disclaimer and DMCA Copyright Infringement
+            notice below.
           </p>
         </div>
 
@@ -71,31 +73,42 @@ export default function DmcaPage() {
                 Legal Disclaimer
               </h2>
             </div>
-            
+
             <div className="space-y-6 text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
               <p>
-                The author is not responsible for any contents linked or referred to from his pages - 
-                If any damage occurs by the use of information presented there, only the author of the 
-                respective pages might be liable, not the one who has linked to these pages.{" "}
+                The author is not responsible for any contents linked or
+                referred to from his pages - If any damage occurs by the use of
+                information presented there, only the author of the respective
+                pages might be liable, not the one who has linked to these
+                pages.{" "}
                 <span className="font-semibold text-zinc-950 dark:text-white">
                   primertv.vercel.app doesn&apos;t host any content.
                 </span>
               </p>
-              
+
               <div className="p-4 sm:p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 text-zinc-500 dark:text-zinc-400 italic text-sm">
-                All primertv does is link or embed content that was uploaded to popular Online Video hosting sites 
-                like Youtube.com / Google Video. All youtube/googlevideo users signed a contract with the sites 
-                when they set up their accounts which forces them not to upload illegal content. By clicking on 
-                any Links to videos while surfing on{" "}
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">primertv</span> you watch content 
-                hosted on third parties and{" "}
-                <span className="font-medium text-zinc-700 dark:text-zinc-350">primertv</span> can&apos;t 
-                take the responsibility for any content hosted on other sites.
+                All primertv does is link or embed content that was uploaded to
+                popular Online Video hosting sites like Youtube.com / Google
+                Video. All youtube/googlevideo users signed a contract with the
+                sites when they set up their accounts which forces them not to
+                upload illegal content. By clicking on any Links to videos while
+                surfing on{" "}
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  primertv
+                </span>{" "}
+                you watch content hosted on third parties and{" "}
+                <span className="font-medium text-zinc-700 dark:text-zinc-350">
+                  primertv
+                </span>{" "}
+                can&apos;t take the responsibility for any content hosted on
+                other sites.
               </div>
-              
+
               <p>
-                We do not upload any videos nor do we know who and where videos are coming from. We do not promote 
-                any illegal conduct of any kind. Links to the videos are submitted by users and managed by users.
+                We do not upload any videos nor do we know who and where videos
+                are coming from. We do not promote any illegal conduct of any
+                kind. Links to the videos are submitted by users and managed by
+                users.
               </p>
             </div>
           </section>
@@ -110,30 +123,39 @@ export default function DmcaPage() {
                 DMCA Notice of Copyright Infringement
               </h2>
             </div>
-            
+
             <div className="space-y-6 text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-300 mb-8">
               <p>
-                <span className="font-medium text-zinc-950 dark:text-white">primertv</span> is an online service 
-                provider as defined in the Digital Millennium Copyright Act.
+                <span className="font-medium text-zinc-950 dark:text-white">
+                  primertv
+                </span>{" "}
+                is an online service provider as defined in the Digital
+                Millennium Copyright Act.
               </p>
               <p>
-                We take copyright violation very seriously and will vigorously protect the rights of legal copyright owners. 
-                If you are the copyright owner of content which appears on the{" "}
-                <span className="font-medium text-zinc-950 dark:text-white">primertv</span> website 
-                and you did not authorize the use of the content you must notify us in writing in order for us to identify 
-                the allegedly infringing content and take action.
+                We take copyright violation very seriously and will vigorously
+                protect the rights of legal copyright owners. If you are the
+                copyright owner of content which appears on the{" "}
+                <span className="font-medium text-zinc-950 dark:text-white">
+                  primertv
+                </span>{" "}
+                website and you did not authorize the use of the content you
+                must notify us in writing in order for us to identify the
+                allegedly infringing content and take action.
               </p>
               <p>
-                We will be unable to take any action if you do not provide us with the required information, so please fill 
-                out all fields accurately and completely. You may make a written notice via the contact form as listed below. 
-                Your written notice must include the following:
+                We will be unable to take any action if you do not provide us
+                with the required information, so please fill out all fields
+                accurately and completely. You may make a written notice via the
+                contact form as listed below. Your written notice must include
+                the following:
               </p>
             </div>
 
             {/* Requirement Steps */}
             <div className="grid grid-cols-1 gap-4 mb-8">
               {steps.map((step) => (
-                <div 
+                <div
                   key={step.num}
                   className="group relative flex flex-col sm:flex-row gap-4 p-5 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-50/30 dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/60 transition-all duration-200"
                 >
@@ -156,14 +178,20 @@ export default function DmcaPage() {
             <div className="p-5 rounded-xl border border-blue-500/20 bg-blue-500/5 dark:bg-blue-500/10/5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <Mail className="text-blue-500 dark:text-blue-400 flex-shrink-0" size={20} />
+                  <Mail
+                    className="text-blue-500 dark:text-blue-400 flex-shrink-0"
+                    size={20}
+                  />
                   <span>
                     Written notice should be sent to our designated agent in the{" "}
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">contact page</span>.
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">
+                      contact page
+                    </span>
+                    .
                   </span>
                 </div>
                 <Link
-                  href="/contato"
+                  href="/contact"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-750 text-white font-medium text-xs transition-colors shadow-sm cursor-pointer whitespace-nowrap"
                 >
                   Contact Page

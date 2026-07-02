@@ -57,7 +57,7 @@ export function UserMenu({ user }: UserMenuProps) {
               {user.role !== "admin" && (
                 <>
                   <Link
-                    href="/historico"
+                    href="/history"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
                   >
@@ -73,7 +73,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     <span>Watchlist</span>
                   </Link>
                   <Link
-                    href="/listas"
+                    href="/lists"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
                   >

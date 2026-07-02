@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NAV_LINKS } from "./nav-links";
-import { Globe } from "lucide-react";
+import { ChevronDown, Globe } from "lucide-react";
 
 export function Footer() {
   return (
@@ -14,7 +14,7 @@ export function Footer() {
               className="flex items-center transition-opacity hover:opacity-80"
             >
               <span className="text-2xl font-bold tracking-tighter text-white">
-                PrimerTv
+                primer tv
               </span>
             </Link>
             <p className="max-w-md text-sm text-zinc-400 leading-relaxed">
@@ -113,6 +113,12 @@ export function Footer() {
                 </svg>
               </a>
             </div>
+            {/* Language Selector Indicator */}
+            <button className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors cursor-default border p-2 w-fit">
+              <Globe size={20} className="text-zinc-500" />
+              <span>Português (Brasil)</span>
+              <ChevronDown size={20} />
+            </button>
           </div>
 
           {/* Navigation Links */}
@@ -271,24 +277,19 @@ export function Footer() {
 
         {/* Disclaimer */}
         <p className="text-xs text-zinc-500/80 leading-relaxed mb-6">
-          Este site não hospeda nenhum vídeo em seu servidor. Todo conteúdo é provido de terceiros não afiliados.
+          Este site não hospeda nenhum vídeo em seu servidor. Todo conteúdo é
+          provido de terceiros não afiliados.
         </p>
 
         {/* Footer Bottom */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-500">
           <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-            <span>© {new Date().getFullYear()} PrimerTv.</span>
+            <span>© {new Date().getFullYear()} primer tv.</span>
             <span className="hidden sm:inline">•</span>
             <span>Todos os direitos reservados.</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            {/* Language Selector Indicator */}
-            <div className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors cursor-default">
-              <Globe size={14} className="text-zinc-500" />
-              <span>Português (Brasil)</span>
-            </div>
-
             {/* Created with Heart */}
             <div className="flex items-center gap-1.5">
               Desenvolvido por PrimerLabs

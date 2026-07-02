@@ -12,7 +12,7 @@ export function ExplorarDropdown() {
     { href: "/popular", label: "Populares" },
     { href: "/new", label: "Novidades" },
     { href: "/seasons", label: "Temporadas" },
-    { href: "/calendario", label: "Calendário" },
+    { href: "/calendar", label: "Calendário" },
     { href: "/novelas", label: "Novelas" },
   ];
 
