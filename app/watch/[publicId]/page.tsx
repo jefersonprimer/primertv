@@ -17,11 +17,21 @@ export default async function WatchRedirectPage({
   });
 
   if (!episode) {
-    // If not found, look up in Series episodes
-    const seriesEpisode = await prisma.seriesEpisode.findUnique({
-      where: { publicId },
+    episode = await prisma.episode.findUnique({
+      where: { id: publicId },
       select: { slug: true, number: true },
     });
+  }
+
+  if (!episode) {
+    // If not found, look up in Series episodes
+    const seriesEpisode = (await prisma.seriesEpisode.findUnique({
+      where: { publicId },
+      select: { slug: true, number: true },
+    })) || (await prisma.seriesEpisode.findUnique({
+      where: { id: publicId },
+      select: { slug: true, number: true },
+    }));
     if (seriesEpisode) {
       episode = seriesEpisode;
     }
@@ -29,10 +39,13 @@ export default async function WatchRedirectPage({
 
   if (!episode) {
     // If not found, look up in Movies
-    const movie = await prisma.movie.findUnique({
+    const movie = (await prisma.movie.findUnique({
       where: { publicId },
       select: { slug: true },
-    });
+    })) || (await prisma.movie.findUnique({
+      where: { id: publicId },
+      select: { slug: true },
+    }));
     if (movie) {
       redirect(`/watch/${publicId}/${movie.slug}`);
     }

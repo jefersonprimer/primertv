@@ -50,6 +50,8 @@ model Anime {
   slug              String           @unique
   title             String           @unique
   titleEnglish      String?
+  anilistId         Int?             @unique
+  malId             Int?             @unique
   description       String?
   imageUrl          String?
   bannerUrl         String?
@@ -90,6 +92,8 @@ model Anime {
   @@index([season, year])
   @@index([title])
   @@index([titleEnglish])
+  @@index([anilistId])
+  @@index([malId])
   @@index([rank])
   @@index([popularity])
   @@index([members])

@@ -88,7 +88,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
       singleEpisodeRelease && anime.latestEpisodeId
         ? anime.latestEpisodePublicId
           ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-          : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
         : `/animes/${anime.slug}`;
     const multipleEpisodeRelease = episodeNumbers.length > 1;
 
@@ -205,7 +205,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                       anime.latestEpisodeId
                         ? anime.latestEpisodePublicId
                           ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                          : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
                         : `/animes/${anime.slug}`
                     }
                     className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"
@@ -240,7 +240,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                       anime.latestEpisodeId
                         ? anime.latestEpisodePublicId
                           ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                          : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
                         : `/animes/${anime.slug}`
                     }
                     className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"

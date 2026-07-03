@@ -29,6 +29,8 @@ export default async function HistoricoPage() {
       episodeNumber: episode.number,
       episodeTitle: episode.title,
       episodeImageUrl: episode.imageUrl,
+      episodePublicId: episode.publicId,
+      episodeSlug: episode.slug,
       seasonNumber: season.number,
       animeId: anime.id,
       animeSlug: anime.slug,

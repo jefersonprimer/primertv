@@ -233,9 +233,7 @@ export function HeroCarouselClient({
                   href={
                     current.firstEpisodePublicId
                       ? `/watch/${current.firstEpisodePublicId}/${current.firstEpisodeSlug || "episodio-1"}`
-                      : current.type === "series"
-                        ? `/series/${current.slug}/episode/${current.firstEpisodeId}`
-                        : `/animes/${current.slug}/episode/${current.firstEpisodeId}`
+                      : `/watch/${current.firstEpisodeId}/${current.firstEpisodeSlug || "episodio-1"}`
                   }
                   className="w-full max-w-[340px] md:max-w-[410px] px-4 text-sm md:w-auto sm:max-w-none md:px-6"
                 />

@@ -306,7 +306,7 @@ function AnimeCalendarCard({
             anime.latestEpisodeId
               ? anime.latestEpisodePublicId
                 ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
               : `/animes/${anime.slug}`
           }
           className="relative mt-2 block aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-800/80 shadow-xs group/episode"
@@ -406,7 +406,7 @@ function AnimeCalendarCard({
                         anime.latestEpisodeId
                           ? anime.latestEpisodePublicId
                             ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                            : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                            : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
                           : `/animes/${anime.slug}`
                       }
                       className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-sm"
@@ -438,7 +438,7 @@ function AnimeCalendarCard({
                     anime.latestEpisodeId
                       ? anime.latestEpisodePublicId
                         ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                        : `/animes/${anime.slug}/episode/${anime.latestEpisodeId}`
+                        : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
                       : `/animes/${anime.slug}`
                   }
                   className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"

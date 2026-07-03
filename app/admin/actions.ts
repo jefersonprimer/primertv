@@ -132,8 +132,9 @@ export async function saveMedia(
     switch (collection) {
       case "movies": {
         const videoUrl = readString(formData, "videoUrl") || null;
-        const movieExisting = existing as any;
-        const currentPublicId = movieExisting?.publicId || (await generateUniquePublicId());
+        const movieExisting = existing as { publicId?: string | null } | null;
+        const currentPublicId =
+          movieExisting?.publicId || (await generateUniquePublicId());
 
         const payload = {
           ...common,
@@ -182,6 +183,8 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          anilistId: readNumber(formData, "anilistId"),
+          malId: readNumber(formData, "malId"),
           titleEnglish: readString(formData, "titleEnglish") || null,
           logoUrl: readString(formData, "logoUrl") || null,
           bannerUrl: readString(formData, "bannerUrl") || null,
@@ -379,79 +382,117 @@ function getEpisodeModel(collection: EpisodeCollection): EpisodeModel {
       : prisma.novelaEpisode;
 }
 
-function getSeasonModelClient(client: DbClient, collection: CollectionWithChildren) {
-  return collection === "animes"
-    ? client.season
-    : collection === "series"
-      ? client.seriesSeason
-      : client.novelaSeason;
-}
-
-function getEpisodeModelClient(client: DbClient, collection: EpisodeCollection) {
-  return collection === "animes"
-    ? client.episode
-    : collection === "series"
-      ? client.seriesEpisode
-      : client.novelaEpisode;
-}
-
-function getParentModelClient(client: DbClient, collection: CollectionWithChildren) {
-  return collection === "animes"
-    ? client.anime
-    : collection === "series"
-      ? client.series
-      : client.novela;
-}
-
 async function refreshLatestEpisodePointers(
   client: DbClient,
   collection: CollectionWithChildren,
   parentId: string,
 ) {
-  const seasonModel = getSeasonModelClient(client, collection) as any;
-  const episodeModel = getEpisodeModelClient(client, collection) as any;
-  const parentModel = getParentModelClient(client, collection) as any;
-  const seasonWhere =
-    collection === "animes"
-      ? { animeId: parentId }
-      : collection === "series"
-        ? { seriesId: parentId }
-        : { novelaId: parentId };
+  if (collection === "animes") {
+    const latestSeason = await client.season.findFirst({
+      where: { animeId: parentId },
+      orderBy: { number: "desc" },
+      select: { id: true },
+    });
 
-  const latestSeason = await seasonModel.findFirst({
-    where: seasonWhere,
-    orderBy: { number: "desc" },
-    select: { id: true },
-  });
+    if (!latestSeason) {
+      await client.anime.update({
+        where: { id: parentId },
+        data: {
+          latestSeasonId: null,
+          latestEpisodeId: null,
+          latestEpisodeNumber: null,
+          latestEpisodeAt: null,
+        },
+      });
+      return;
+    }
 
-  if (!latestSeason) {
-    await parentModel.update({
+    const latestEpisode = await client.episode.findFirst({
+      where: { seasonId: latestSeason.id },
+      orderBy: [{ createdAt: "desc" }, { number: "desc" }],
+      select: { id: true, number: true, createdAt: true },
+    });
+
+    await client.anime.update({
       where: { id: parentId },
       data: {
-        latestSeasonId: null,
-        latestEpisodeId: null,
-        latestEpisodeNumber: null,
-        latestEpisodeAt: null,
+        latestSeasonId: latestSeason.id,
+        latestEpisodeId: latestEpisode?.id ?? null,
+        latestEpisodeNumber: latestEpisode?.number ?? null,
+        latestEpisodeAt: latestEpisode?.createdAt ?? null,
       },
     });
-    return;
+  } else if (collection === "series") {
+    const latestSeason = await client.seriesSeason.findFirst({
+      where: { seriesId: parentId },
+      orderBy: { number: "desc" },
+      select: { id: true },
+    });
+
+    if (!latestSeason) {
+      await client.series.update({
+        where: { id: parentId },
+        data: {
+          latestSeasonId: null,
+          latestEpisodeId: null,
+          latestEpisodeNumber: null,
+          latestEpisodeAt: null,
+        },
+      });
+      return;
+    }
+
+    const latestEpisode = await client.seriesEpisode.findFirst({
+      where: { seasonId: latestSeason.id },
+      orderBy: [{ createdAt: "desc" }, { number: "desc" }],
+      select: { id: true, number: true, createdAt: true },
+    });
+
+    await client.series.update({
+      where: { id: parentId },
+      data: {
+        latestSeasonId: latestSeason.id,
+        latestEpisodeId: latestEpisode?.id ?? null,
+        latestEpisodeNumber: latestEpisode?.number ?? null,
+        latestEpisodeAt: latestEpisode?.createdAt ?? null,
+      },
+    });
+  } else if (collection === "novelas") {
+    const latestSeason = await client.novelaSeason.findFirst({
+      where: { novelaId: parentId },
+      orderBy: { number: "desc" },
+      select: { id: true },
+    });
+
+    if (!latestSeason) {
+      await client.novela.update({
+        where: { id: parentId },
+        data: {
+          latestSeasonId: null,
+          latestEpisodeId: null,
+          latestEpisodeNumber: null,
+          latestEpisodeAt: null,
+        },
+      });
+      return;
+    }
+
+    const latestEpisode = await client.novelaEpisode.findFirst({
+      where: { seasonId: latestSeason.id },
+      orderBy: [{ createdAt: "desc" }, { number: "desc" }],
+      select: { id: true, number: true, createdAt: true },
+    });
+
+    await client.novela.update({
+      where: { id: parentId },
+      data: {
+        latestSeasonId: latestSeason.id,
+        latestEpisodeId: latestEpisode?.id ?? null,
+        latestEpisodeNumber: latestEpisode?.number ?? null,
+        latestEpisodeAt: latestEpisode?.createdAt ?? null,
+      },
+    });
   }
-
-  const latestEpisode = await episodeModel.findFirst({
-    where: { seasonId: latestSeason.id },
-    orderBy: [{ createdAt: "desc" }, { number: "desc" }],
-    select: { id: true, number: true, createdAt: true },
-  });
-
-  await parentModel.update({
-    where: { id: parentId },
-    data: {
-      latestSeasonId: latestSeason.id,
-      latestEpisodeId: latestEpisode?.id ?? null,
-      latestEpisodeNumber: latestEpisode?.number ?? null,
-      latestEpisodeAt: latestEpisode?.createdAt ?? null,
-    },
-  });
 }
 
 async function refreshLatestChapterPointers(client: DbClient, mangaId: string) {

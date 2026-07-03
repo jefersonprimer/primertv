@@ -10,12 +10,15 @@ type AnimeWatchHistoryRow = {
   episodeNumber: number;
   episodeTitle: string | null;
   episodeImageUrl: string | null;
+  episodePublicId: string | null;
+  episodeSlug: string | null;
   seasonNumber: number;
   animeId: string;
   animeSlug: string;
   animeTitle: string;
   animeImageUrl: string | null;
 };
+
 
 export async function recordAnimeWatchHistory(episodeId: string) {
   const userId = await getAuthenticatedUserId();
@@ -54,6 +57,8 @@ export async function getAnimeWatchHistory(userId: string) {
       e.number AS "episodeNumber",
       e.title AS "episodeTitle",
       e."imageUrl" AS "episodeImageUrl",
+      e."publicId" AS "episodePublicId",
+      e.slug AS "episodeSlug",
       s.number AS "seasonNumber",
       a.id AS "animeId",
       a.slug AS "animeSlug",
@@ -76,6 +81,8 @@ export async function getAnimeWatchHistory(userId: string) {
       number: row.episodeNumber,
       title: row.episodeTitle,
       imageUrl: row.episodeImageUrl,
+      publicId: row.episodePublicId,
+      slug: row.episodeSlug,
       season: {
         number: row.seasonNumber,
         anime: {

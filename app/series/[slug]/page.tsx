@@ -89,7 +89,7 @@ export default async function SeriesDetailsPage({
     if (firstEp && firstEp.publicId) {
       firstEpisodeLink = `/watch/${firstEp.publicId}/${firstEp.slug || "episodio-" + firstEp.number}`;
     } else {
-      firstEpisodeLink = `/series/${series.slug}/episode/${firstEpisodeId}`;
+      firstEpisodeLink = `/watch/${firstEpisodeId}`;
     }
   }
   const userId = await getAuthenticatedUserId();

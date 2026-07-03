@@ -8,6 +8,8 @@ export interface HistoryItem {
   episodeNumber: number;
   episodeTitle: string | null;
   episodeImageUrl: string | null;
+  episodePublicId?: string | null;
+  episodeSlug?: string | null;
   seasonNumber: number;
   animeId: string;
   animeSlug: string;
@@ -25,7 +27,9 @@ export function HistoryCard({
   item,
   className = "w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]",
 }: HistoryCardProps) {
-  const cardHref = `/animes/${item.animeSlug}/episode/${item.episodeId}`;
+  const cardHref = item.episodePublicId
+    ? `/watch/${item.episodePublicId}/${item.episodeSlug || "episodio-" + item.episodeNumber}`
+    : `/watch/${item.episodeId}/${item.episodeSlug || "episodio-" + item.episodeNumber}`;
   const displayImageUrl = item.episodeImageUrl || item.animeImageUrl;
 
   return (

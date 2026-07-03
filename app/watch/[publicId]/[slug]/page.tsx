@@ -4,6 +4,10 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { connection } from "next/server";
 import { resolvePlayableUrl } from "@/lib/playable-url";
+import {
+  getMegaPlayAnimeCatalog,
+  getMegaPlayAnimePlayers,
+} from "@/lib/anikoto";
 import { recordAnimeWatchHistory } from "@/lib/history";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
@@ -11,25 +15,28 @@ import AnimeEpisodeSidebar from "./EpisodeSidebar";
 import SeriesEpisodeSidebar from "./SeriesEpisodeSidebar";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ShareButton from "@/components/ShareButton";
+import { getAnimeDetailsBySlug } from "@/lib/media-details";
 
 interface WatchPageProps {
   params: Promise<{ publicId: string; slug: string }>;
-  searchParams?: Promise<{ player?: string }>;
+  searchParams?: Promise<{ player?: string; source?: string; episode?: string }>;
 }
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: WatchPageProps): Promise<Metadata> {
   await connection();
 
   const { publicId } = await params;
+  const { source, episode } = (await searchParams) || {};
 
   let title = "Episódio não encontrado";
   let description = "";
   let imageUrl = null;
 
   // First try Anime
-  const animeEpisode = await prisma.episode.findUnique({
+  let animeEpisode = await prisma.episode.findUnique({
     where: { publicId },
     include: {
       season: {
@@ -40,13 +47,34 @@ export async function generateMetadata({
     },
   });
 
+  if (!animeEpisode) {
+    animeEpisode = await prisma.episode.findUnique({
+      where: { id: publicId },
+      include: {
+        season: {
+          include: {
+            anime: true,
+          },
+        },
+      },
+    });
+  }
+
   if (animeEpisode) {
     title = `Assistir ${animeEpisode.season.anime.title} - Episódio ${animeEpisode.number} Online`;
     description = `Assista agora ao episódio ${animeEpisode.number} de ${animeEpisode.season.anime.title} em HD. Assista animes online grátis no Primerflix.`;
     imageUrl = animeEpisode.season.anime.imageUrl;
+  } else if (source === "megaplay") {
+    const anime = await getAnimeDetailsBySlug(publicId);
+    const episodeNumber = Number(episode || 0);
+    if (anime && Number.isFinite(episodeNumber) && episodeNumber > 0) {
+      title = `Assistir ${anime.title} - Episódio ${episodeNumber} Online`;
+      description = `Assista agora ao episódio ${episodeNumber} de ${anime.title} via MegaPlay.`;
+      imageUrl = anime.imageUrl;
+    }
   } else {
     // Try Series
-    const seriesEpisode = await prisma.seriesEpisode.findUnique({
+    let seriesEpisode = await prisma.seriesEpisode.findUnique({
       where: { publicId },
       include: {
         season: {
@@ -57,15 +85,30 @@ export async function generateMetadata({
       },
     });
 
+    if (!seriesEpisode) {
+      seriesEpisode = await prisma.seriesEpisode.findUnique({
+        where: { id: publicId },
+        include: {
+          season: {
+            include: {
+              series: true,
+            },
+          },
+        },
+      });
+    }
+
     if (seriesEpisode) {
       title = `Assistir ${seriesEpisode.season.series.title} - Episódio ${seriesEpisode.number} Online`;
       description = `Assista agora ao episódio ${seriesEpisode.number} de ${seriesEpisode.season.series.title} em HD. Assista séries online grátis no Primerflix.`;
       imageUrl = seriesEpisode.season.series.imageUrl;
     } else {
       // Try Movie
-      const movie = await prisma.movie.findUnique({
+      const movie = (await prisma.movie.findUnique({
         where: { publicId },
-      });
+      })) || (await prisma.movie.findUnique({
+        where: { id: publicId },
+      }));
 
       if (movie) {
         title = `Assistir ${movie.title} Online em HD - PrimerTv`;
@@ -100,10 +143,10 @@ export default async function WatchPage({
   await connection();
 
   const { publicId, slug } = await params;
-  const { player } = (await searchParams) || {};
+  const { player, source, episode } = (await searchParams) || {};
 
   // 1. Try fetching Anime Episode
-  const animeEpisode = await prisma.episode.findUnique({
+  let animeEpisode = await prisma.episode.findUnique({
     where: { publicId },
     include: {
       season: {
@@ -124,6 +167,30 @@ export default async function WatchPage({
       },
     },
   });
+
+  if (!animeEpisode) {
+    animeEpisode = await prisma.episode.findUnique({
+      where: { id: publicId },
+      include: {
+        season: {
+          include: {
+            anime: {
+              include: {
+                seasons: {
+                  orderBy: { number: "asc" },
+                  include: {
+                    episodes: {
+                      orderBy: { number: "asc" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 
   if (animeEpisode) {
     // Enforce correct slug for SEO
@@ -156,6 +223,21 @@ export default async function WatchPage({
         }
       });
     }
+
+    const megaPlayPlayers = await getMegaPlayAnimePlayers(
+      JSON.stringify({
+        anilistId: animeEpisode.season.anime.anilistId,
+        malId: animeEpisode.season.anime.malId,
+        title: animeEpisode.season.anime.title,
+        titleEnglish: animeEpisode.season.anime.titleEnglish,
+        slug: animeEpisode.season.anime.slug,
+      }),
+      animeEpisode.number,
+    );
+
+    megaPlayPlayers.forEach((playerObj) => {
+      playersList.push(playerObj);
+    });
 
     const selectedPlayerId =
       player || (playersList.length > 0 ? playersList[0].id : "");
@@ -214,7 +296,7 @@ export default async function WatchPage({
               </div>
 
               {/* Controls & Title Below Player */}
-              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0]">
+              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
                 {/* Player Selector Tabs */}
                 {playersList.length > 1 && (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
@@ -297,6 +379,10 @@ export default async function WatchPage({
                   animeSlug={animeEpisode.season.anime.slug}
                   animeRating={animeEpisode.season.anime.rating}
                   animeDuration={animeEpisode.season.anime.duration}
+                  fallbackImageUrl={
+                    animeEpisode.season.anime.bannerUrl ||
+                    animeEpisode.season.anime.imageUrl
+                  }
                 />
               </div>
             </div>
@@ -306,8 +392,187 @@ export default async function WatchPage({
     );
   }
 
+  if (source === "megaplay") {
+    const anime = await getAnimeDetailsBySlug(publicId);
+    if (!anime) {
+      notFound();
+    }
+
+    const episodeNumber = Number(episode || slug.match(/\d+/)?.[0] || 0);
+    if (!Number.isFinite(episodeNumber) || episodeNumber <= 0) {
+      notFound();
+    }
+
+    const sourceKey = JSON.stringify({
+      anilistId: anime.anilistId,
+      malId: anime.malId,
+      title: anime.title,
+      titleEnglish: anime.titleEnglish,
+      slug: anime.slug,
+    });
+
+    const catalog = await getMegaPlayAnimeCatalog(sourceKey);
+    const episodeItems =
+      catalog?.episodes.map((catalogEpisode) => ({
+        id: `megaplay-${catalogEpisode.number}`,
+        number: catalogEpisode.number,
+        title: catalogEpisode.title,
+        href: `/watch/${anime.slug}/episodio-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}`,
+        videoUrl: `/watch/${anime.slug}/episodio-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}`,
+      })) || [];
+
+    const playersList = await getMegaPlayAnimePlayers(sourceKey, episodeNumber);
+    const selectedPlayerId =
+      player || (playersList.length > 0 ? playersList[0].id : "");
+    const activePlayerObj =
+      playersList.find((candidate) => candidate.id === selectedPlayerId) ||
+      playersList[0];
+    const playableUrl = activePlayerObj?.url || null;
+
+    const currentIndex = episodeItems.findIndex(
+      (item) => item.number === episodeNumber,
+    );
+    const prevEpisode = currentIndex > 0 ? episodeItems[currentIndex - 1] : null;
+    const nextEpisode =
+      currentIndex >= 0 && currentIndex < episodeItems.length - 1
+        ? episodeItems[currentIndex + 1]
+        : null;
+
+    const userId = await getAuthenticatedUserId();
+    const inWatchlist = await isInWatchlist("ANIME", anime.id);
+
+    return (
+      <div className="min-h-screen bg-black text-zinc-50">
+        <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
+          <div className="grid gap-8 lg:grid-cols-4">
+            <div className="lg:col-span-3">
+              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+                {playableUrl ? (
+                  <iframe
+                    src={playableUrl}
+                    className="absolute inset-0 h-full w-full overflow-y-auto"
+                    allowFullScreen
+                    scrolling="auto"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    title={`MegaPlay para ${anime.title} Episódio ${episodeNumber}`}
+                  />
+                ) : (
+                  <div className="flex h-full flex-col items-center justify-center gap-4 text-zinc-500">
+                    <p>Vídeo não disponível para este episódio no MegaPlay.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
+                {playersList.length > 1 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
+                        Selecione o Player
+                      </h3>
+                      <div className="mt-1 flex items-center gap-2 text-sm font-medium text-zinc-500">
+                        <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                        {activePlayerObj?.label || "MegaPlay"}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {playersList.map((candidate) => (
+                        <Link
+                          key={candidate.id}
+                          href={`?source=megaplay&episode=${episodeNumber}&player=${candidate.id}`}
+                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                            activePlayerObj?.id === candidate.id
+                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                          }`}
+                        >
+                          {candidate.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <div className="flex flex-col items-start gap-2">
+                    <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
+                      <Link
+                        href={`/animes/${anime.slug}`}
+                        className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                      >
+                        <h4 className="text-base font-bold">{anime.title}</h4>
+                      </Link>
+
+                      <WatchlistButton
+                        mediaType="ANIME"
+                        mediaId={anime.id}
+                        slug={anime.slug}
+                        initialInWatchlist={inWatchlist}
+                        isLoggedIn={Boolean(userId)}
+                        hasBorder={false}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between w-full">
+                      <h1 className="text-[22px] font-bold text-zinc-500">
+                        MegaPlay • Episódio {episodeNumber}
+                      </h1>
+                      <ShareButton compact />
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <ExpandableDescription
+                      description={
+                        anime.description || "Sem descrição disponível."
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-1 px-4 sm:px-0">
+              <div className="sticky overflow-hidden pt-8">
+                {episodeItems.length > 0 ? (
+                  <AnimeEpisodeSidebar
+                    seasons={[
+                      {
+                        id: "megaplay-season-1",
+                        number: 1,
+                        episodes: episodeItems.map((item) => ({
+                          id: item.id,
+                          number: item.number,
+                          title: item.title,
+                          imageUrl: null,
+                          videoUrl: item.videoUrl,
+                          publicId: null,
+                          slug: `episodio-${item.number}`,
+                        })),
+                      },
+                    ]}
+                    currentEpisodeId={`megaplay-${episodeNumber}`}
+                    animeSlug={anime.slug}
+                    animeRating={anime.rating}
+                    animeDuration={anime.duration}
+                    fallbackImageUrl={anime.imageUrl}
+                    isMegaplay={true}
+                  />
+                ) : (
+                  <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400">
+                    O catálogo do MegaPlay não retornou lista para este anime, mas o player foi aberto pelo id externo.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   // 2. Try fetching Series Episode
-  const seriesEpisode = await prisma.seriesEpisode.findUnique({
+  let seriesEpisode = await prisma.seriesEpisode.findUnique({
     where: { publicId },
     include: {
       season: {
@@ -328,6 +593,30 @@ export default async function WatchPage({
       },
     },
   });
+
+  if (!seriesEpisode) {
+    seriesEpisode = await prisma.seriesEpisode.findUnique({
+      where: { id: publicId },
+      include: {
+        season: {
+          include: {
+            series: {
+              include: {
+                seasons: {
+                  orderBy: { number: "asc" },
+                  include: {
+                    episodes: {
+                      orderBy: { number: "asc" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 
   if (seriesEpisode) {
     // Enforce correct slug for SEO
@@ -608,9 +897,13 @@ export default async function WatchPage({
   }
 
   // 3. Try fetching Movie
-  const movie = await prisma.movie.findUnique({
-    where: { publicId },
-  });
+  const movie =
+    (await prisma.movie.findUnique({
+      where: { publicId },
+    })) ||
+    (await prisma.movie.findUnique({
+      where: { id: publicId },
+    }));
 
   if (movie) {
     // Enforce correct slug for SEO

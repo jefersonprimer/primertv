@@ -85,6 +85,8 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
       { name: "title", label: "Título", type: "text", required: true },
       { name: "titleEnglish", label: "Título em Inglês", type: "text" },
       { name: "slug", label: "Slug", type: "text", required: true },
+      { name: "anilistId", label: "AniList ID", type: "number", step: "1", helpText: "Opcional. Usado para resolver o player do MegaPlay com precisão." },
+      { name: "malId", label: "MAL ID", type: "number", step: "1", helpText: "Opcional. Fallback se não houver AniList ID." },
       {
         name: "description",
         label: "Descrição",

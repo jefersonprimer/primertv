@@ -8,6 +8,8 @@ const animeDetailsSelect = {
   slug: true,
   title: true,
   titleEnglish: true,
+  anilistId: true,
+  malId: true,
   description: true,
   imageUrl: true,
   bannerUrl: true,

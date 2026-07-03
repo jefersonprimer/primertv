@@ -244,7 +244,7 @@ function EpisodeCard({
 }: EpisodeCardProps) {
   const watchHref = ep.publicId
     ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
-    : `/series/${seriesSlug}/episode/${ep.id}`;
+    : `/watch/${ep.id}/${ep.slug || "episodio-" + ep.number}`;
 
   return (
     <Link

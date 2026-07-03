@@ -26,6 +26,7 @@ interface EpisodeListProps {
   animeTitle?: string | null;
   animeRating?: string | null;
   animeDuration?: string | null;
+  fallbackImageUrl?: string | null;
 }
 
 function formatDuration(duration: string | null | undefined): string {
@@ -45,6 +46,7 @@ export default function EpisodeList({
   animeTitle,
   animeRating,
   animeDuration,
+  fallbackImageUrl,
 }: EpisodeListProps) {
   const [visibleCount, setVisibleCount] = useState(12);
 
@@ -73,9 +75,9 @@ export default function EpisodeList({
             >
               {itemType === "episode" && (
                 <div className="relative aspect-video w-38 sm:w-full flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {item.imageUrl ? (
+                  {item.imageUrl || fallbackImageUrl ? (
                     <Image
-                      src={item.imageUrl}
+                      src={item.imageUrl || fallbackImageUrl || ""}
                       alt={item.title || `${label} ${item.number}`}
                       fill
                       sizes="(max-width: 768px) 100vw, 240px"

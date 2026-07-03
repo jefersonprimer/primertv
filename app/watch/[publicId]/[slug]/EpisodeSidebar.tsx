@@ -28,6 +28,8 @@ interface EpisodeSidebarProps {
   animeSlug: string;
   animeRating: string | null;
   animeDuration: string | null;
+  fallbackImageUrl?: string | null;
+  isMegaplay?: boolean;
 }
 
 function formatDuration(duration: string | null | undefined): string {
@@ -45,6 +47,8 @@ export default function EpisodeSidebar({
   animeSlug,
   animeRating,
   animeDuration,
+  fallbackImageUrl,
+  isMegaplay = false,
 }: EpisodeSidebarProps) {
   // Find current episode and flatten list of episodes across all seasons
   const allEpisodes = seasons.flatMap((s) =>
@@ -116,6 +120,8 @@ export default function EpisodeSidebar({
                     animeSlug={animeSlug}
                     animeRating={animeRating}
                     animeDuration={animeDuration}
+                    fallbackImageUrl={fallbackImageUrl}
+                    isMegaplay={isMegaplay}
                   />
                 </div>
               )}
@@ -133,6 +139,8 @@ export default function EpisodeSidebar({
                     animeSlug={animeSlug}
                     animeRating={animeRating}
                     animeDuration={animeDuration}
+                    fallbackImageUrl={fallbackImageUrl}
+                    isMegaplay={isMegaplay}
                   />
                 </div>
               )}
@@ -146,6 +154,8 @@ export default function EpisodeSidebar({
                     animeSlug={animeSlug}
                     animeRating={animeRating}
                     animeDuration={animeDuration}
+                    fallbackImageUrl={fallbackImageUrl}
+                    isMegaplay={isMegaplay}
                   />
                 </div>
               )}
@@ -216,7 +226,9 @@ export default function EpisodeSidebar({
                     animeSlug={animeSlug}
                     animeRating={animeRating}
                     animeDuration={animeDuration}
+                    fallbackImageUrl={fallbackImageUrl}
                     isCurrent={isCurrent}
+                    isMegaplay={isMegaplay}
                   />
                 );
               })}
@@ -242,7 +254,9 @@ interface EpisodeCardProps {
   animeSlug: string;
   animeRating: string | null;
   animeDuration: string | null;
+  fallbackImageUrl?: string | null;
   isCurrent?: boolean;
+  isMegaplay?: boolean;
 }
 
 function EpisodeCard({
@@ -250,11 +264,15 @@ function EpisodeCard({
   animeSlug,
   animeRating,
   animeDuration,
+  fallbackImageUrl,
   isCurrent = false,
+  isMegaplay = false,
 }: EpisodeCardProps) {
-  const watchHref = ep.publicId
-    ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
-    : `/animes/${animeSlug}/episode/${ep.id}`;
+  const watchHref = isMegaplay
+    ? `/watch/${animeSlug}/episodio-${ep.number}?source=megaplay&episode=${ep.number}`
+    : ep.publicId
+      ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
+      : `/watch/${ep.id}/${ep.slug || "episodio-" + ep.number}`;
 
   return (
     <Link
@@ -267,9 +285,9 @@ function EpisodeCard({
     >
       {/* Left: Image Container */}
       <div className="relative aspect-video w-38 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-        {ep.imageUrl ? (
+        {ep.imageUrl || fallbackImageUrl ? (
           <Image
-            src={ep.imageUrl}
+            src={ep.imageUrl || fallbackImageUrl || ""}
             alt={ep.title || `Episódio ${ep.number}`}
             fill
             sizes="128px"

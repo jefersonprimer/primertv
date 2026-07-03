@@ -16,6 +16,7 @@ interface Episode {
   imageUrl?: string | null;
   publicId?: string | null;
   slug?: string | null;
+  href?: string | null;
 }
 
 interface Season {
@@ -31,6 +32,7 @@ interface SeasonSelectorProps {
   animeRating?: string | null;
   animeDuration?: string | null;
   baseUrl?: string;
+  fallbackImageUrl?: string | null;
 }
 
 export default function SeasonSelector({
@@ -40,6 +42,7 @@ export default function SeasonSelector({
   animeRating,
   animeDuration,
   baseUrl,
+  fallbackImageUrl,
 }: SeasonSelectorProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -60,9 +63,13 @@ export default function SeasonSelector({
     })
     .map((ep) => ({
       ...ep,
-      href: ep.publicId
-        ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
-        : (baseUrl ? `${baseUrl}/${ep.id}` : `/animes/${animeSlug}/episode/${ep.id}`),
+      href:
+        ep.href ||
+        (ep.publicId
+          ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
+          : baseUrl
+            ? `${baseUrl}/${ep.id}`
+            : `/watch/${ep.id}/${ep.slug || "episodio-" + ep.number}`),
     }));
 
   return (
@@ -180,6 +187,7 @@ export default function SeasonSelector({
         animeTitle={animeTitle}
         animeRating={animeRating}
         animeDuration={animeDuration}
+        fallbackImageUrl={fallbackImageUrl}
       />
 
       {seasons.length > 1 && (
