@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 
 const MAX_RECENT = 12;
 const STORAGE_KEY = "recent-searches";
@@ -80,12 +80,8 @@ export function SearchBar() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar animes, séries, filmes, mangás ou novelas..."
-              className="w-full border-b-2 border-zinc-200 bg-transparent py-4 pl-12 pr-12 text-xl lg:text-3xl text-zinc-900 outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-blue-500"
-            />
-            <Search
-              className="absolute left-2 top-1/2 -translate-y-1/2 text-zinc-400"
-              size={24}
+              placeholder="Buscar..."
+              className="w-full border-b-2 border-zinc-200 bg-transparent py-2 pl-1 text-xl lg:text-3xl text-zinc-900 outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-blue-500"
             />
 
             {query && (

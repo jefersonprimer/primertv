@@ -276,7 +276,7 @@ export function Footer() {
         <hr className="my-8 border-zinc-800/80" />
 
         {/* Disclaimer */}
-        <p className="text-xs text-zinc-500/80 leading-relaxed mb-6">
+        <p className="text-xs text-zinc-500/80 leading-relaxed mb-4">
           Este site não hospeda nenhum vídeo em seu servidor. Todo conteúdo é
           provido de terceiros não afiliados.
         </p>
@@ -287,13 +287,12 @@ export function Footer() {
             <span>© {new Date().getFullYear()} primer tv.</span>
             <span className="hidden sm:inline">•</span>
             <span>Todos os direitos reservados.</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            {/* Created with Heart */}
-            <div className="flex items-center gap-1.5">
+            <Link
+              href="https://primerlabs.vercel.app"
+              className="flex items-center gap-1.5 hover:underline hover:text-white"
+            >
               Desenvolvido por PrimerLabs
-            </div>
+            </Link>
           </div>
         </div>
       </div>

@@ -14,7 +14,21 @@ export async function generateMetadata({
   params,
 }: ChannelPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const channel = await prisma.channel.findUnique({ where: { slug } });
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+  const channel = await prisma.channel.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
+  });
 
   if (!channel) return { title: "Canal não encontrado" };
 
@@ -31,9 +45,21 @@ export async function generateMetadata({
 export default async function ChannelPage({ params }: ChannelPageProps) {
   await connection();
   const { slug } = await params;
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
 
-  const channel = await prisma.channel.findUnique({
-    where: { slug },
+  const channel = await prisma.channel.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
     include: {
       sources: true,
     },

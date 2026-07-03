@@ -145,29 +145,77 @@ const mangaDetailsSelect = {
 } satisfies Prisma.MangaSelect;
 
 export const getAnimeDetailsBySlug = cache(async (slug: string) => {
-  return prisma.anime.findUnique({
-    where: { slug },
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+  return prisma.anime.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
     select: animeDetailsSelect,
   });
 });
 
 export const getSeriesDetailsBySlug = cache(async (slug: string) => {
-  return prisma.series.findUnique({
-    where: { slug },
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+  return prisma.series.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
     select: seriesDetailsSelect,
   });
 });
 
 export const getNovelaDetailsBySlug = cache(async (slug: string) => {
-  return prisma.novela.findUnique({
-    where: { slug },
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+  return prisma.novela.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
     select: novelaDetailsSelect,
   });
 });
 
 export const getMangaDetailsBySlug = cache(async (slug: string) => {
-  return prisma.manga.findUnique({
-    where: { slug },
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+  return prisma.manga.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
     select: mangaDetailsSelect,
   });
 });

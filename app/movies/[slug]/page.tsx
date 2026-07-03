@@ -24,7 +24,21 @@ export async function generateMetadata({
   params,
 }: MovieDetailsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const movie = await prisma.movie.findUnique({ where: { slug } });
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+  const movie = await prisma.movie.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
+  });
 
   if (!movie) return { title: "Filme não encontrado" };
 
@@ -52,9 +66,21 @@ export default async function MovieDetailsPage({
   params,
 }: MovieDetailsPageProps) {
   const { slug } = await params;
+  const decoded = decodeURIComponent(slug);
+  const normalizedNFC = decoded.normalize("NFC");
+  const normalizedNFD = decoded.normalize("NFD");
+  const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
 
-  const movie = await prisma.movie.findUnique({
-    where: { slug },
+  const movie = await prisma.movie.findFirst({
+    where: {
+      OR: [
+        { slug: normalizedNFC },
+        { slug: normalizedNFD },
+        { slug: decoded },
+        { slug: slugified },
+        { slug: slug },
+      ],
+    },
   });
 
   if (!movie) {

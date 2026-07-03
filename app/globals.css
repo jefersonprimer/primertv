@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #ededed;
   --font-geist-sans: Arial, Helvetica, sans-serif;
   --font-geist-mono: "Courier New", Courier, monospace;
 }
@@ -12,13 +12,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -41,12 +34,6 @@ button {
 }
 
 .stroke-text {
-  color: #09090b; /* zinc-950 */
-  -webkit-text-stroke: 2px #52525b; /* zinc-600 */
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
-}
-
-.dark .stroke-text {
   color: #09090b; /* zinc-950 */
   -webkit-text-stroke: 2px #e4e4e7; /* zinc-200 */
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9));
