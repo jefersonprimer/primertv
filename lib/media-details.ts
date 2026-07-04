@@ -47,6 +47,7 @@ const animeDetailsSelect = {
           imageUrl: true,
           publicId: true,
           slug: true,
+          customPlayers: true,
         },
       },
     },
