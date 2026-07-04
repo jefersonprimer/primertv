@@ -2,6 +2,7 @@
 
 import { Share2, Check } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface ShareButtonProps {
   url?: string;
@@ -20,6 +21,7 @@ export default function ShareButton({
   roundedFull = false,
   mobileVertical = false,
 }: ShareButtonProps) {
+  const t = useTranslations("Buttons");
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
@@ -104,7 +106,7 @@ export default function ShareButton({
 
   const tooltipElement = (
     <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
-      {copied ? "Link copiado!" : "Compartilhar"}
+      {copied ? t("linkCopied") : t("share")}
     </span>
   );
 
@@ -112,7 +114,7 @@ export default function ShareButton({
     <button
       onClick={handleShare}
       className={`${getButtonClass()} ${className}`}
-      aria-label={copied ? "Link copiado" : "Compartilhar"}
+      aria-label={copied ? t("linkCopied") : t("share")}
     >
       {copied ? (
         <Check className={compact ? "h-4 w-4" : "h-5 w-5"} />
@@ -121,7 +123,7 @@ export default function ShareButton({
       )}
       {!compact && (
         <span className={mobileVertical ? "text-xs md:hidden font-medium" : "md:hidden"}>
-          {copied ? "Copiado!" : "Compartilhar"}
+          {copied ? t("copied") : t("share")}
         </span>
       )}
       {tooltipElement}

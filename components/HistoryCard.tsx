@@ -1,6 +1,7 @@
 import { Play } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export interface HistoryItem {
   id: string;
@@ -27,13 +28,14 @@ export function HistoryCard({
   item,
   className = "w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]",
 }: HistoryCardProps) {
+  const t = useTranslations("History");
   const cardHref = item.episodePublicId
-    ? `/watch/${item.episodePublicId}/${item.episodeSlug || "episodio-" + item.episodeNumber}`
-    : `/watch/${item.episodeId}/${item.episodeSlug || "episodio-" + item.episodeNumber}`;
+    ? `/watch/${item.episodePublicId}/${item.episodeSlug || "episode-" + item.episodeNumber}`
+    : `/watch/${item.episodeId}/${item.episodeSlug || "episode-" + item.episodeNumber}`;
   const displayImageUrl = item.episodeImageUrl || item.animeImageUrl;
 
   return (
-    <div className={`hover:bg-zinc-800 p-2 ${className}`}>
+    <div className={`hover:bg-zinc-800 md:p-2 ${className}`}>
       <div className="group flex flex-col gap-2">
         <Link
           href={cardHref}
@@ -43,7 +45,7 @@ export function HistoryCard({
           {displayImageUrl ? (
             <Image
               src={displayImageUrl}
-              alt={`Episódio ${item.episodeNumber} de ${item.animeTitle}`}
+              alt={t("episodeAlt", { number: item.episodeNumber, title: item.animeTitle })}
               fill
               sizes="(max-width: 640px) 260px, (max-width: 1024px) 300px, 287.75px"
               className="object-cover transition-transform duration-500"
@@ -56,7 +58,7 @@ export function HistoryCard({
 
           {/* Season / Episode overlay badge */}
           <div className="absolute top-0 left-0 z-20 bg-black/75 backdrop-blur-xs text-[#f2f2f2] px-2 py-0.5 text-sm font-normal">
-            T{item.seasonNumber} : EP {item.episodeNumber}
+            {t("seasonEpisodeBadge", { season: item.seasonNumber, episode: item.episodeNumber })}
           </div>
 
           {/* Hover Play Overlay */}
@@ -77,7 +79,7 @@ export function HistoryCard({
             href={cardHref}
             className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"
           >
-            Continuar a assistir EP{item.episodeNumber}
+            {t("continueWatchingEp", { number: item.episodeNumber })}
           </Link>
         </div>
       </div>

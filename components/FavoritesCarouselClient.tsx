@@ -2,7 +2,8 @@
 
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import FavoriteCard, { FavoriteItem } from "@/components/FavoriteCard";
 
 interface FavoritesCarouselClientProps {
@@ -12,6 +13,7 @@ interface FavoritesCarouselClientProps {
 export function FavoritesCarouselClient({
   items,
 }: FavoritesCarouselClientProps) {
+  const t = useTranslations("Watchlist");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
@@ -59,13 +61,13 @@ export function FavoritesCarouselClient({
         }}
       >
         <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2] flex items-center gap-2">
-          Sua Lista
+          {t("myList")}
         </h2>
         <Link
           href="/watchlist"
           className="flex items-center gap-1.5 text-sm font-bold text-[#bbb] hover:text-white hover:underline uppercase"
         >
-          <span>Ver Fila</span>
+          <span>{t("viewQueue")}</span>
           <ChevronRight size={20} />
         </Link>
       </div>

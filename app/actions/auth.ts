@@ -16,11 +16,11 @@ export async function signup(_prevState: AuthState | undefined, formData: FormDa
   const password = formData.get("password") as string;
 
   if (!name || !email || !password) {
-    return { error: "Todos os campos são obrigatórios." };
+    return { error: "fieldsRequired" };
   }
 
   if (isAdminEmail(email)) {
-    return { error: "Use o acesso de administrador para este email." };
+    return { error: "useAdminAccess" };
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -28,7 +28,7 @@ export async function signup(_prevState: AuthState | undefined, formData: FormDa
   });
 
   if (existingUser) {
-    return { error: "Este email já está em uso." };
+    return { error: "emailInUse" };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -59,12 +59,12 @@ export async function login(_prevState: AuthState | undefined, formData: FormDat
   const adminPassword = process.env.ADMIN_PASSWORD?.trim();
 
   if (!email || !password) {
-    return { error: "Email e senha são obrigatórios." };
+    return { error: "emailPasswordRequired" };
   }
 
   if (isAdminEmail(email)) {
     if (!adminPassword || password !== adminPassword) {
-      return { error: "Credenciais inválidas." };
+      return { error: "invalidCredentials" };
     }
 
     const { token, expires } = await createSessionToken({
@@ -84,13 +84,13 @@ export async function login(_prevState: AuthState | undefined, formData: FormDat
   });
 
   if (!user) {
-    return { error: "Credenciais inválidas." };
+    return { error: "invalidCredentials" };
   }
 
   const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch) {
-    return { error: "Credenciais inválidas." };
+    return { error: "invalidCredentials" };
   }
 
   const { token, expires } = await createSessionToken({

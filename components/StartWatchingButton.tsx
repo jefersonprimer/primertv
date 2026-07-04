@@ -1,5 +1,8 @@
+"use client";
+
 import { Play } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 interface StartWatchingButtonProps {
   href: string;
@@ -12,8 +15,17 @@ export function StartWatchingButton({
   href,
   className = "",
   uppercase = true,
-  text = "Começar a assistir EP1",
+  text,
 }: StartWatchingButtonProps) {
+  const t = useTranslations("Buttons");
+
+  let displayText = text;
+  if (!text) {
+    displayText = t("startWatching");
+  } else if (text === "Assistir") {
+    displayText = t("watch");
+  }
+
   return (
     <Link
       href={href}
@@ -22,7 +34,7 @@ export function StartWatchingButton({
       } ${className}`}
     >
       <Play className="h-5 w-5 fill-current" />
-      {text}
+      {displayText}
     </Link>
   );
 }

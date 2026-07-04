@@ -1,8 +1,25 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { NAV_LINKS } from "./nav-links";
-import { ChevronDown, Globe } from "lucide-react";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { getTranslations } from "next-intl/server";
 
-export function Footer() {
+export async function Footer() {
+  const t = await getTranslations("Footer");
+  const tHeader = await getTranslations("Header");
+
+  const linkKeyMap: Record<string, string> = {
+    "/series": "series",
+    "/movies": "movies",
+    "/animes": "animes",
+    "/mangas": "mangas",
+    "/livetv": "livetv",
+    "/seasons": "seasons",
+    "/calendar": "calendar",
+    "/novelas": "novelas",
+    "/popular": "popular",
+    "/new": "new",
+  };
+
   return (
     <footer className="w-full bg-black/80 text-zinc-400 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
@@ -14,13 +31,11 @@ export function Footer() {
               className="flex items-center transition-opacity hover:opacity-80"
             >
               <span className="text-2xl font-bold tracking-tighter text-white">
-                primer tv
+                PrimerTv
               </span>
             </Link>
             <p className="max-w-md text-sm text-zinc-400 leading-relaxed">
-              A sua plataforma definitiva para assistir aos melhores canais,
-              novelas, séries, filmes, animes e ler mangás. Desfrute da melhor
-              experiência de entretenimento digital.
+              {t("description")}
             </p>
             {/* Social Icons */}
             <div className="flex gap-4 mt-2">
@@ -114,17 +129,13 @@ export function Footer() {
               </a>
             </div>
             {/* Language Selector Indicator */}
-            <button className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors cursor-default border p-2 w-fit">
-              <Globe size={20} className="text-zinc-500" />
-              <span>Português (Brasil)</span>
-              <ChevronDown size={20} />
-            </button>
+            <LanguageSwitcher />
           </div>
 
           {/* Navigation Links */}
-          <div>
+          <div className="hidden md:block">
             <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
-              Navegação
+              {t("navHeading")}
             </h3>
             <ul className="space-y-2.5">
               {NAV_LINKS.map((link) => (
@@ -136,7 +147,7 @@ export function Footer() {
                     <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                       ›
                     </span>
-                    {link.label}
+                    {tHeader(linkKeyMap[link.href] || link.label)}
                   </Link>
                 </li>
               ))}
@@ -144,9 +155,9 @@ export function Footer() {
           </div>
 
           {/* Support Links */}
-          <div>
+          <div className="hidden md:block">
             <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
-              Suporte
+              {t("supportHeading")}
             </h3>
             <ul className="space-y-2.5">
               <li>
@@ -157,7 +168,7 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Central de Ajuda
+                  {t("helpCenter")}
                 </Link>
               </li>
               <li>
@@ -168,7 +179,7 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Contato
+                  {t("contact")}
                 </Link>
               </li>
               <li>
@@ -179,7 +190,7 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Status do Servidor
+                  {t("serverStatus")}
                 </Link>
               </li>
               <li>
@@ -190,7 +201,7 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Termos de Uso
+                  {t("terms")}
                 </Link>
               </li>
               <li>
@@ -201,7 +212,7 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Privacidade
+                  {t("privacy")}
                 </Link>
               </li>
               <li>
@@ -212,16 +223,16 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  DMCA
+                  {t("dmca")}
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* User Account / Membership */}
-          <div>
+          <div className="hidden md:block">
             <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
-              Minha Conta
+              {t("accountHeading")}
             </h3>
             <ul className="space-y-2.5">
               <li>
@@ -232,7 +243,7 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Entrar
+                  {t("login")}
                 </Link>
               </li>
               <li>
@@ -243,7 +254,7 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Criar Conta
+                  {t("signup")}
                 </Link>
               </li>
               <li>
@@ -254,18 +265,18 @@ export function Footer() {
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Minha Lista
+                  {t("watchlist")}
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/historico"
+                  href="/history"
                   className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
                 >
                   <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
                     ›
                   </span>
-                  Histórico
+                  {t("history")}
                 </Link>
               </li>
             </ul>
@@ -277,21 +288,20 @@ export function Footer() {
 
         {/* Disclaimer */}
         <p className="text-xs text-zinc-500/80 leading-relaxed mb-4">
-          Este site não hospeda nenhum vídeo em seu servidor. Todo conteúdo é
-          provido de terceiros não afiliados.
+          {t("disclaimer")}
         </p>
 
         {/* Footer Bottom */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-500">
           <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-            <span>© {new Date().getFullYear()} primer tv.</span>
+            <span>© {new Date().getFullYear()} PrimerTv.</span>
             <span className="hidden sm:inline">•</span>
-            <span>Todos os direitos reservados.</span>
+            <span>{t("allRightsReserved")}</span>
             <Link
               href="https://primerlabs.vercel.app"
               className="flex items-center gap-1.5 hover:underline hover:text-white"
             >
-              Desenvolvido por PrimerLabs
+              {t("developedBy")}
             </Link>
           </div>
         </div>

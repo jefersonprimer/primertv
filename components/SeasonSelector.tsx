@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import EpisodeList from "./EpisodeList";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Episode {
   id: string;
@@ -44,6 +41,8 @@ export default function SeasonSelector({
   baseUrl,
   fallbackImageUrl,
 }: SeasonSelectorProps) {
+  const t = useTranslations("SeasonSelector");
+  const locale = useLocale();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -66,10 +65,10 @@ export default function SeasonSelector({
       href:
         ep.href ||
         (ep.publicId
-          ? `/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`
+          ? `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`
           : baseUrl
             ? `${baseUrl}/${ep.id}`
-            : `/watch/${ep.id}/${ep.slug || "episodio-" + ep.number}`),
+            : `/watch/${ep.id}/${ep.slug || "episode-" + ep.number}`),
     }));
 
   return (
@@ -84,7 +83,7 @@ export default function SeasonSelector({
                 : ""
             }`}
           >
-            Temporada {currentSeason.number}
+            {t("season", { number: currentSeason.number })}
             {seasons.length > 1 && (
               <ChevronDown
                 className={`h-6 w-6 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -112,9 +111,9 @@ export default function SeasonSelector({
                         : "text-zinc-700 dark:text-zinc-300"
                     }`}
                   >
-                    <span>Temporada {season.number}</span>
+                    <span>{t("season", { number: season.number })}</span>
                     <span className="text-xs text-zinc-500 dark:text-zinc-400 font-normal">
-                      {season.episodes.length} episódios
+                      {t("episodesCount", { count: season.episodes.length })}
                     </span>
                   </button>
                 ))}
@@ -132,9 +131,7 @@ export default function SeasonSelector({
                 : "text-zinc-700 dark:text-zinc-300 hover:text-blue-500 hover:bg-zinc-100 hover:dark:bg-zinc-900"
             }`}
           >
-            <span>
-              {sortBy === "oldest" ? "mais antigos" : "mais recentes"}
-            </span>
+            <span>{sortBy === "oldest" ? t("oldest") : t("newest")}</span>
             <ChevronDown
               className={`h-5 w-5 transition-transform ${isSortOpen ? "rotate-180" : ""}`}
             />
@@ -158,7 +155,7 @@ export default function SeasonSelector({
                       : "text-zinc-700 dark:text-zinc-300"
                   }`}
                 >
-                  <span>Mais antigos</span>
+                  <span>{t("sortByOldest")}</span>
                 </button>
                 <button
                   onClick={() => {
@@ -171,7 +168,7 @@ export default function SeasonSelector({
                       : "text-zinc-700 dark:text-zinc-300"
                   }`}
                 >
-                  <span>Mais recentes</span>
+                  <span>{t("sortByNewest")}</span>
                 </button>
               </div>
             </>
@@ -201,8 +198,17 @@ export default function SeasonSelector({
           >
             <ChevronLeft className="h-5 w-5" />
             <span className="flex items-center gap-1">
-              <span className="hidden sm:flex">Temporada </span>
-              Anterior
+              {locale === "en" ? (
+                <>
+                  {t("prev")}
+                  <span className="hidden sm:flex"> {t("seasonLabel")}</span>
+                </>
+              ) : (
+                <>
+                  <span className="hidden sm:flex">{t("seasonLabel")} </span>
+                  {t("prev")}
+                </>
+              )}
             </span>
           </button>
 
@@ -215,8 +221,8 @@ export default function SeasonSelector({
             className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
           >
             <span className="flex items-center gap-1">
-              Próxima
-              <span className="hidden sm:flex">Temporada </span>
+              {t("next")}
+              <span className="hidden sm:flex"> {t("seasonLabel")}</span>
             </span>
 
             <ChevronRight className="h-5 w-5" />

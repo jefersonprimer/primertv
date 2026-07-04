@@ -2,7 +2,8 @@
 
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { HistoryCard, type HistoryItem } from "./HistoryCard";
 
 interface HistoryCarouselClientProps {
@@ -10,6 +11,7 @@ interface HistoryCarouselClientProps {
 }
 
 export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
+  const t = useTranslations("History");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
@@ -57,13 +59,13 @@ export function HistoryCarouselClient({ items }: HistoryCarouselClientProps) {
         }}
       >
         <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2]  flex items-center gap-2">
-          Continuar Assistindo
+          {t("continueWatching")}
         </h2>
         <Link
-          href="/historico"
+          href="/history"
           className="flex items-center gap-1.5 text-sm font-bold text-[#bbb] hover:text-white hover:underline uppercase"
         >
-          <span>Ver histórico</span>
+          <span>{t("viewHistory")}</span>
           <ChevronRight size={20} />
         </Link>
       </div>

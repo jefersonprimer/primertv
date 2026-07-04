@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface ExpandableDescriptionProps {
   description: string;
@@ -9,6 +10,7 @@ interface ExpandableDescriptionProps {
 export default function ExpandableDescription({
   description,
 }: ExpandableDescriptionProps) {
+  const t = useTranslations("ExpandableDescription");
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!description) return null;
@@ -28,9 +30,9 @@ export default function ExpandableDescription({
       {isLongDescription && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="mt-2 text-sm font-semibold text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+          className="mt-2 text-sm font-semibold text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors uppercase"
         >
-          {isExpanded ? "Ver Menos" : "Ver Mais"}
+          {isExpanded ? t("showLess") : t("showMore")}
         </button>
       )}
     </div>

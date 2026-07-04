@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { LogOut, History, Bookmark, List } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { logout } from "@/app/actions/auth";
 import { SessionUser } from "@/lib/auth";
 
@@ -11,6 +12,7 @@ interface UserMenuProps {
 
 export function UserMenu({ user }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("UserMenu");
 
   return (
     <div className="relative flex h-full items-center">
@@ -42,9 +44,6 @@ export function UserMenu({ user }: UserMenuProps) {
                     <p className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
                       {user.name}
                     </p>
-                    <span className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                      {user.role === "admin" ? "Admin" : "Membro"}
-                    </span>
                   </div>
                   <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
                     {user.email}
@@ -62,7 +61,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
                   >
                     <History size={18} />
-                    <span>Histórico</span>
+                    <span>{t("history")}</span>
                   </Link>
                   <Link
                     href="/watchlist"
@@ -70,7 +69,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
                   >
                     <Bookmark size={18} />
-                    <span>Watchlist</span>
+                    <span>{t("watchlist")}</span>
                   </Link>
                   <Link
                     href="/lists"
@@ -78,7 +77,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
                   >
                     <List size={18} />
-                    <span>Minhas Listas</span>
+                    <span>{t("myLists")}</span>
                   </Link>
                 </>
               )}
@@ -93,7 +92,7 @@ export function UserMenu({ user }: UserMenuProps) {
                 className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300 transition-all duration-200"
               >
                 <LogOut size={18} />
-                <span>Sair da conta</span>
+                <span>{t("logout")}</span>
               </button>
             </div>
           </div>

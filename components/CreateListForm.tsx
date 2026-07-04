@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { createList } from "@/app/actions/lists";
+import { useTranslations } from "next-intl";
 
 interface CreateListFormProps {
   onSuccess?: () => void;
@@ -10,6 +11,7 @@ interface CreateListFormProps {
 }
 
 export default function CreateListForm({ onSuccess, isModal = false }: CreateListFormProps) {
+  const t = useTranslations("Lists");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,11 +31,11 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
         setDescription("");
         onSuccess?.();
       } else {
-        setError(res.error || "Erro ao criar lista.");
+        setError(res.error || t("errorCreate"));
       }
     } catch (err) {
       console.error(err);
-      setError("Erro ao criar lista.");
+      setError(t("errorCreate"));
     } finally {
       setLoading(false);
     }
@@ -50,7 +52,7 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
     >
       <div className="space-y-4 w-full">
         <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200">
-          Criar Nova Lista
+          {t("createList")}
         </h3>
         {error && (
           <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">
@@ -60,7 +62,7 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
         <div className="space-y-2">
           <input
             type="text"
-            placeholder="Nome da lista (ex: Favoritos)"
+            placeholder={t("listNamePlaceholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full text-sm px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-zinc-400 dark:placeholder-zinc-600 text-zinc-800 dark:text-zinc-100"
@@ -69,7 +71,7 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
           />
           <input
             type="text"
-            placeholder="Descrição (opcional)"
+            placeholder={t("descriptionPlaceholder")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full text-sm px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-zinc-400 dark:placeholder-zinc-600 text-zinc-800 dark:text-zinc-100"
@@ -87,7 +89,7 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
         ) : (
           <Plus className="h-4 w-4" />
         )}
-        Criar Lista
+        {t("createList")}
       </button>
     </form>
   );

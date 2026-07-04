@@ -1,14 +1,39 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const MAX_RECENT = 12;
 const STORAGE_KEY = "recent-searches";
 
-export function SearchBar() {
-  const [query, setQuery] = useState("");
+interface SearchBarProps {
+  value?: string;
+  onChange?: (val: string) => void;
+  placeholder?: string;
+  showRecent?: boolean;
+}
+
+export function SearchBar({
+  value,
+  onChange,
+  placeholder,
+  showRecent = true,
+}: SearchBarProps = {}) {
+  const t = useTranslations("Search");
+  const [localQuery, setLocalQuery] = useState("");
+  const isControlled = value !== undefined && onChange !== undefined;
+  const query = isControlled ? value : localQuery;
+
+  const setQuery = (val: string) => {
+    if (isControlled) {
+      onChange?.(val);
+    } else {
+      setLocalQuery(val);
+    }
+  };
+
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
 
@@ -25,8 +50,10 @@ export function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (!isControlled) {
+      inputRef.current?.focus();
+    }
+  }, [isControlled]);
 
   const saveSearches = (searches: string[]) => {
     setRecentSearches(searches);
@@ -35,6 +62,7 @@ export function SearchBar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isControlled) return;
     const trimmed = query.trim();
     if (trimmed) {
       const upper = trimmed.toUpperCase();
@@ -50,7 +78,9 @@ export function SearchBar() {
   const handleClear = () => {
     setQuery("");
     inputRef.current?.focus();
-    router.push("/search");
+    if (!isControlled) {
+      router.push("/search");
+    }
   };
 
   const handleRemoveSearch = (search: string) => {
@@ -80,16 +110,16 @@ export function SearchBar() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar..."
-              className="w-full border-b-2 border-zinc-200 bg-transparent py-2 pl-1 text-xl lg:text-3xl text-zinc-900 outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-blue-500"
+              placeholder={placeholder || t("placeholder")}
+              className="w-full border-b-2 border-zinc-200 bg-transparent py-2 pl-1 text-xl lg:text-3xl text-white outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:focus:border-blue-500"
             />
 
             {query && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-200"
-                aria-label="Limpar pesquisa"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-600"
+                aria-label={t("clearSearch")}
               >
                 <X size={24} />
               </button>
@@ -97,47 +127,50 @@ export function SearchBar() {
           </form>
         </div>
 
-        {recentSearches.length > 0 && query.length === 0 && (
-          <div className="w-full bg-black pt-4 sm:pt-6 pb-18 sm:pb-24 py-6 px-4 md:px-0">
-            <div className="mx-auto mt-6 max-w-[1050px]">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-base sm:text-xl font-bold tracking-widest text-[#f2f2f2]">
-                  Resultados Recentes de Busca
-                </h3>
-                <button
-                  onClick={handleClearAll}
-                  className="flex items-center gap-2 text-sm text-[#bbb] font-bold ransition-colors hover:text-[#f2f2f2] uppercase"
-                >
-                  Limpar
-                  <span className="hidden sm:flex">Buscas</span>
-                </button>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
-                {recentSearches.map((search) => (
-                  <div
-                    key={search}
-                    className="group flex sm:inline-flex justify-between sm:justify-start cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80"
-                    onClick={() => handleRecentClick(search)}
+        {showRecent &&
+          !isControlled &&
+          recentSearches.length > 0 &&
+          query.length === 0 && (
+            <div className="w-full bg-black pt-4 sm:pt-6 pb-18 sm:pb-24 py-6 px-4 md:px-0">
+              <div className="mx-auto mt-6 max-w-[1050px]">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-base sm:text-xl font-bold tracking-widest text-[#f2f2f2]">
+                    {t("recentSearches")}
+                  </h3>
+                  <button
+                    onClick={handleClearAll}
+                    className="flex items-center gap-2 text-sm text-[#bbb] font-bold ransition-colors hover:text-[#f2f2f2] uppercase"
                   >
-                    <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2 py-0">
-                      {search}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveSearch(search);
-                      }}
-                      className="border-l border-[#272727] text-[#bbb] transition-all hover:text-[#f2f2f2] p-0"
-                      aria-label={`Remover ${search}`}
+                    {t("clear")}
+                    <span className="hidden sm:flex">{t("searches")}</span>
+                  </button>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
+                  {recentSearches.map((search) => (
+                    <div
+                      key={search}
+                      className="group flex sm:inline-flex justify-between sm:justify-start cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80"
+                      onClick={() => handleRecentClick(search)}
                     >
-                      <X size={24} />
-                    </button>
-                  </div>
-                ))}
+                      <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2 py-0">
+                        {search}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveSearch(search);
+                        }}
+                        className="border-l border-[#272727] text-[#bbb] transition-all hover:text-[#f2f2f2] p-0"
+                        aria-label={t("removeSearch", { query: search })}
+                      >
+                        <X size={24} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );

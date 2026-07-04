@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 
 interface SeasonOption {
@@ -16,17 +17,22 @@ interface SeasonDropdownProps {
 
 export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
   const router = useRouter();
+  const t = useTranslations("SeasonsPage");
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Retrieve current active season or construct fallback
-  const selectedSeason = seasons.find((s) => s.slug === currentSlug) || {
-    slug: currentSlug,
-    label: currentSlug
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" "),
+  const getLocalizedSeasonLabel = (slug: string) => {
+    const parts = slug.split("-");
+    if (parts.length < 2) return slug;
+    const season = parts[0].toLowerCase();
+    const year = parts[1];
+    return t("seasonLabelFormat", {
+      season: t(`seasons.${season}`),
+      year,
+    });
   };
+
+  const selectedSeasonLabel = getLocalizedSeasonLabel(currentSlug);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -57,7 +63,7 @@ export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
-          <span>{selectedSeason.label}</span>
+          <span>{selectedSeasonLabel}</span>
           <ChevronDown
             className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           />
@@ -86,7 +92,7 @@ export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
                 }`}
                 role="menuitem"
               >
-                {season.label}
+                {getLocalizedSeasonLabel(season.slug)}
               </button>
             ))}
           </div>

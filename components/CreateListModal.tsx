@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import CreateListForm from "./CreateListForm";
+import { useTranslations } from "next-intl";
 
 export default function CreateListModal() {
+  const t = useTranslations("Lists");
   const [isOpen, setIsOpen] = useState(false);
 
   const openModal = () => setIsOpen(true);
@@ -16,7 +18,7 @@ export default function CreateListModal() {
         onClick={openModal}
         className="flex items-center gap-2 bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 cursor-pointer"
       >
-        Criar Nova Lista
+        {t("createList")}
       </button>
 
       {isOpen && (
@@ -33,7 +35,7 @@ export default function CreateListModal() {
             <button
               onClick={closeModal}
               className="absolute right-4 top-4 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-900 dark:hover:text-zinc-300 transition-colors cursor-pointer z-20"
-              aria-label="Fechar"
+              aria-label={t("close")}
             >
               <X className="h-5 w-5" />
             </button>

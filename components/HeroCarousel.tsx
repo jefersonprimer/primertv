@@ -24,7 +24,9 @@ type HeroCarouselMedia = {
   publicId?: string | null;
 };
 
-export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "series" | "movie" } = {}) {
+export async function HeroCarousel({
+  type = "anime",
+}: { type?: "anime" | "series" | "movie" } = {}) {
   const isSeries = type === "series";
   const isMovie = type === "movie";
 
@@ -123,26 +125,23 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
     .map((row) => row.firstEpisodeId)
     .filter(Boolean) as string[];
 
-  const episodeDetails =
-    !isMovie
-      ? isSeries
-        ? firstEpisodeIds.length > 0
-          ? await prisma.seriesEpisode.findMany({
-              where: { id: { in: firstEpisodeIds } },
-              select: { id: true, publicId: true, slug: true, number: true },
-            })
-          : []
-        : firstEpisodeIds.length > 0
-          ? await prisma.episode.findMany({
-              where: { id: { in: firstEpisodeIds } },
-              select: { id: true, publicId: true, slug: true, number: true },
-            })
-          : []
-      : [];
+  const episodeDetails = !isMovie
+    ? isSeries
+      ? firstEpisodeIds.length > 0
+        ? await prisma.seriesEpisode.findMany({
+            where: { id: { in: firstEpisodeIds } },
+            select: { id: true, publicId: true, slug: true, number: true },
+          })
+        : []
+      : firstEpisodeIds.length > 0
+        ? await prisma.episode.findMany({
+            where: { id: { in: firstEpisodeIds } },
+            select: { id: true, publicId: true, slug: true, number: true },
+          })
+        : []
+    : [];
 
-  const episodeDetailsMap = new Map(
-    episodeDetails.map((ep) => [ep.id, ep])
-  );
+  const episodeDetailsMap = new Map(episodeDetails.map((ep) => [ep.id, ep]));
 
   const items = await Promise.all(
     mediaList.map(async (media) => {
@@ -159,9 +158,13 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
       const firstEpisodeId =
         firstEpisodeByMediaId.get(media.id)?.firstEpisodeId ?? null;
 
-      const epDetails = firstEpisodeId ? episodeDetailsMap.get(firstEpisodeId) : null;
+      const epDetails = firstEpisodeId
+        ? episodeDetailsMap.get(firstEpisodeId)
+        : null;
       const firstEpisodePublicId = epDetails?.publicId ?? null;
-      const firstEpisodeSlug = epDetails ? (epDetails.slug || `episodio-${epDetails.number}`) : null;
+      const firstEpisodeSlug = epDetails
+        ? epDetails.slug || `episode-${epDetails.number}`
+        : null;
 
       return {
         id: media.id,
@@ -182,7 +185,7 @@ export async function HeroCarousel({ type = "anime" }: { type?: "anime" | "serie
         tmdbId: media.tmdbId ?? null,
         publicId: media.publicId ?? null,
       };
-    })
+    }),
   );
 
   if (items.length === 0) return null;
@@ -231,18 +234,17 @@ export function HeroCarouselSkeleton() {
             </div>
 
             <div className="flex items-center justify-center md:justify-start gap-2">
-              <div className="h-5 w-5 animate-pulse bg-zinc-700" />
-              <div className="h-4 w-48 animate-pulse bg-zinc-700" />
+              <div className="h-4 w-2/3 animate-pulse bg-zinc-700" />
             </div>
 
             <div className="hidden lg:block space-y-2">
-              <div className="h-4 w-full animate-pulse bg-zinc-700" />
               <div className="h-4 w-3/4 animate-pulse bg-zinc-700" />
-              <div className="h-4 w-1/2 animate-pulse bg-zinc-700" />
+              <div className="h-4 w-3/4 animate-pulse bg-zinc-700" />
+              <div className="h-4 w-3/4 animate-pulse bg-zinc-700" />
             </div>
 
             <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
-              <div className="h-10 w-full max-w-[340px] md:max-w-[410px] animate-pulse bg-zinc-700 md:w-auto sm:max-w-none md:px-6" />
+              <div className="h-10 w-[340px] md:w-[240px] animate-pulse bg-zinc-700 md:px-6" />
               <div className="h-10 w-10 animate-pulse bg-zinc-700 md:h-10 md:w-10" />
             </div>
 

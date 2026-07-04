@@ -1,23 +1,25 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { User, Bookmark, Search } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import { MobileSidebar } from "./MobileSidebar";
 import { UserMenu } from "./UserMenu";
-import { ExplorarDropdown } from "./ExplorarDropdown";
+import { ExploreDropdown } from "./ExploreDropdown";
+import { getTranslations } from "next-intl/server";
 
 import { AddMediaButton } from "./admin/AddMediaButton";
-
-const DESKTOP_LINKS = [
-  { href: "/series", label: "Séries" },
-  { href: "/movies", label: "Filmes" },
-  { href: "/animes", label: "Animes" },
-  { href: "/mangas", label: "Mangas" },
-  { href: "/livetv", label: "Live Tv" },
-];
 
 export async function Header() {
   const session = await getSession();
   const user = session?.user;
+  const t = await getTranslations("Header");
+
+  const desktopLinks = [
+    { href: "/series", label: t("series") },
+    { href: "/movies", label: t("movies") },
+    { href: "/animes", label: t("animes") },
+    { href: "/mangas", label: t("mangas") },
+    { href: "/livetv", label: t("livetv") },
+  ];
 
   return (
     <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727]">
@@ -25,14 +27,16 @@ export async function Header() {
         <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-1">
             <MobileSidebar />
-            <Link href="/" className="flex items-center lg:pl-4">
-              <span className="text-xl font-semibold text-[#f2f2f2] hover:text-white">
-                primer tv
-              </span>
+            <Link
+              href="/"
+              className="flex items-center lg:pl-4 text-xl font-semibold text-[#f2f2f2] hover:text-white"
+            >
+              Primer
+              <span className="font-medium text-[#3b82f6]">Tv</span>
             </Link>
           </div>
           <nav className="hidden h-full items-center sm:flex">
-            {DESKTOP_LINKS.slice(0, 3).map((link) => (
+            {desktopLinks.slice(0, 3).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -42,7 +46,7 @@ export async function Header() {
               </Link>
             ))}
             <div className="hidden md:flex h-full items-center">
-              {DESKTOP_LINKS.slice(3).map((link) => (
+              {desktopLinks.slice(3).map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -52,7 +56,7 @@ export async function Header() {
                 </Link>
               ))}
               <div className="h-4 w-px bg-zinc-700 mx-2" />
-              <ExplorarDropdown />
+              <ExploreDropdown />
             </div>
           </nav>
         </div>

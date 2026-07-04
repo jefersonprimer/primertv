@@ -88,7 +88,11 @@ function readCommonData(formData: FormData) {
   };
 }
 
-function revalidatePublicRoutes(collection: AdminCollection, slug: string, oldSlug?: string) {
+function revalidatePublicRoutes(
+  collection: AdminCollection,
+  slug: string,
+  oldSlug?: string,
+) {
   revalidatePath("/");
   revalidatePath("/search");
   revalidatePath(getListPath(collection));
@@ -354,7 +358,11 @@ function readPages(formData: FormData) {
     : [];
 }
 
-function childPublicPath(collection: EpisodeCollection, parentSlug: string, childId: string) {
+function childPublicPath(
+  collection: EpisodeCollection,
+  parentSlug: string,
+  childId: string,
+) {
   return `${adminCollections[collection].publicPath}/${parentSlug}/episode/${childId}`;
 }
 
@@ -518,7 +526,10 @@ export async function saveSeason(
 ): Promise<FormState> {
   await requireAdminSession();
 
-  const collection = readString(formData, "collection") as CollectionWithChildren;
+  const collection = readString(
+    formData,
+    "collection",
+  ) as CollectionWithChildren;
   const parentId = readId(formData, "parentId");
   const parentSlug = readString(formData, "parentSlug");
   const id = readId(formData, "id");
@@ -576,12 +587,13 @@ export async function saveSeason(
   }
 }
 
-export async function deleteSeason(
-  formData: FormData,
-): Promise<void> {
+export async function deleteSeason(formData: FormData): Promise<void> {
   await requireAdminSession();
 
-  const collection = readString(formData, "collection") as CollectionWithChildren;
+  const collection = readString(
+    formData,
+    "collection",
+  ) as CollectionWithChildren;
   const parentId = readId(formData, "parentId");
   const parentSlug = readString(formData, "parentSlug");
   const id = readId(formData, "id");
@@ -618,12 +630,13 @@ async function generateUniquePublicId(): Promise<string> {
     for (let i = 0; i < 9; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    const [existsAnime, existsSeries, existsChapter, existsMovie] = await Promise.all([
-      prisma.episode.findUnique({ where: { publicId: result } }),
-      prisma.seriesEpisode.findUnique({ where: { publicId: result } }),
-      prisma.chapter.findUnique({ where: { publicId: result } }),
-      prisma.movie.findUnique({ where: { publicId: result } }),
-    ]);
+    const [existsAnime, existsSeries, existsChapter, existsMovie] =
+      await Promise.all([
+        prisma.episode.findUnique({ where: { publicId: result } }),
+        prisma.seriesEpisode.findUnique({ where: { publicId: result } }),
+        prisma.chapter.findUnique({ where: { publicId: result } }),
+        prisma.movie.findUnique({ where: { publicId: result } }),
+      ]);
     if (!existsAnime && !existsSeries && !existsChapter && !existsMovie) {
       return result;
     }
@@ -669,9 +682,12 @@ export async function saveEpisode(
   try {
     if (existing) {
       if (collection === "animes") {
-        const currentEpisode = await prisma.episode.findUnique({ where: { id } });
-        const currentPublicId = currentEpisode?.publicId || (await generateUniquePublicId());
-        const newSlug = slugify(title || "") || `episodio-${number}`;
+        const currentEpisode = await prisma.episode.findUnique({
+          where: { id },
+        });
+        const currentPublicId =
+          currentEpisode?.publicId || (await generateUniquePublicId());
+        const newSlug = slugify(title || "") || `episode-${number}`;
         await prisma.episode.update({
           where: { id },
           data: {
@@ -685,9 +701,12 @@ export async function saveEpisode(
           },
         });
       } else if (collection === "series") {
-        const currentEpisode = await prisma.seriesEpisode.findUnique({ where: { id } });
-        const currentPublicId = currentEpisode?.publicId || (await generateUniquePublicId());
-        const newSlug = slugify(title || "") || `episodio-${number}`;
+        const currentEpisode = await prisma.seriesEpisode.findUnique({
+          where: { id },
+        });
+        const currentPublicId =
+          currentEpisode?.publicId || (await generateUniquePublicId());
+        const newSlug = slugify(title || "") || `episode-${number}`;
         await prisma.seriesEpisode.update({
           where: { id },
           data: {
@@ -710,7 +729,7 @@ export async function saveEpisode(
       let created;
       if (collection === "animes") {
         const newPublicId = await generateUniquePublicId();
-        const newSlug = slugify(title || "") || `episodio-${number}`;
+        const newSlug = slugify(title || "") || `episode-${number}`;
         created = await prisma.episode.create({
           data: {
             number,
@@ -725,7 +744,7 @@ export async function saveEpisode(
         });
       } else if (collection === "series") {
         const newPublicId = await generateUniquePublicId();
-        const newSlug = slugify(title || "") || `episodio-${number}`;
+        const newSlug = slugify(title || "") || `episode-${number}`;
         created = await prisma.seriesEpisode.create({
           data: {
             number,
@@ -757,7 +776,9 @@ export async function saveEpisode(
       select: { publicId: true, slug: true, number: true },
     });
     if (ep && ep.publicId) {
-      revalidatePath(`/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`);
+      revalidatePath(
+        `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`,
+      );
     }
   } else if (collection === "series") {
     const ep = await prisma.seriesEpisode.findUnique({
@@ -765,7 +786,9 @@ export async function saveEpisode(
       select: { publicId: true, slug: true, number: true },
     });
     if (ep && ep.publicId) {
-      revalidatePath(`/watch/${ep.publicId}/${ep.slug || "episodio-" + ep.number}`);
+      revalidatePath(
+        `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`,
+      );
     }
   } else {
     revalidatePath(childPublicPath(collection, parentSlug, savedId));
@@ -776,13 +799,13 @@ export async function saveEpisode(
   } else if (redirectTo) {
     redirect(redirectTo.replace("[slug]", parentSlug));
   } else {
-    redirect(`/admin/${collection}?id=${parentId}&seasonId=${seasonId}&episodeId=${savedId}&saved=1`);
+    redirect(
+      `/admin/${collection}?id=${parentId}&seasonId=${seasonId}&episodeId=${savedId}&saved=1`,
+    );
   }
 }
 
-export async function deleteEpisode(
-  formData: FormData,
-): Promise<void> {
+export async function deleteEpisode(formData: FormData): Promise<void> {
   await requireAdminSession();
 
   const collection = readString(formData, "collection") as EpisodeCollection;
@@ -812,7 +835,9 @@ export async function deleteEpisode(
   } else if (redirectTo) {
     redirect(redirectTo.replace("[slug]", parentSlug));
   } else {
-    redirect(`/admin/${collection}?id=${parentId}&seasonId=${seasonId}&saved=1`);
+    redirect(
+      `/admin/${collection}?id=${parentId}&seasonId=${seasonId}&saved=1`,
+    );
   }
 }
 
@@ -838,14 +863,17 @@ export async function saveChapter(
     return { error: "Número do capítulo é obrigatório." };
   }
 
-  const existing = id ? await prisma.chapter.findUnique({ where: { id } }) : null;
+  const existing = id
+    ? await prisma.chapter.findUnique({ where: { id } })
+    : null;
   let savedId = id;
   let savedPublicId = "";
   let savedSlug = "";
 
   try {
     if (existing) {
-      const currentPublicId = existing.publicId || (await generateUniquePublicId());
+      const currentPublicId =
+        existing.publicId || (await generateUniquePublicId());
       const newSlug = slugify(title || "") || `chapter-${number}`;
       const updated = await prisma.chapter.update({
         where: { id },
@@ -898,9 +926,7 @@ export async function saveChapter(
   }
 }
 
-export async function deleteChapter(
-  formData: FormData,
-): Promise<void> {
+export async function deleteChapter(formData: FormData): Promise<void> {
   await requireAdminSession();
 
   const parentId = readId(formData, "parentId");

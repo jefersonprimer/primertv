@@ -32,7 +32,7 @@ export async function createList(name: string, description?: string) {
       },
     });
 
-    revalidatePath("/listas");
+    revalidatePath("/lists");
     return { success: true, list };
   } catch (err) {
     console.error("Erro ao criar lista: ", err);
@@ -79,8 +79,8 @@ export async function toggleAnimeInList(listId: string, animeId?: string, series
         id: existing.id,
       },
     });
-    revalidatePath("/listas");
-    revalidatePath(`/listas/${listId}`);
+    revalidatePath("/lists");
+    revalidatePath(`/lists/${listId}`);
     return { success: true, inList: false };
   } else {
     // Add - check limit
@@ -95,8 +95,8 @@ export async function toggleAnimeInList(listId: string, animeId?: string, series
         seriesId: seriesId || null,
       },
     });
-    revalidatePath("/listas");
-    revalidatePath(`/listas/${listId}`);
+    revalidatePath("/lists");
+    revalidatePath(`/lists/${listId}`);
     return { success: true, inList: true };
   }
 }
@@ -150,7 +150,7 @@ export async function deleteList(listId: string) {
       where: { id: listId },
     });
 
-    revalidatePath("/listas");
+    revalidatePath("/lists");
     return { success: true };
   } catch (err) {
     console.error("Erro ao deletar lista: ", err);

@@ -7,6 +7,7 @@ import {
   toggleAnimeInList,
   getUserListsWithAnimeState,
 } from "@/app/actions/lists";
+import { useTranslations } from "next-intl";
 
 interface ListSelectorProps {
   animeId?: string;
@@ -34,6 +35,7 @@ export default function AddToListButton({
   roundedFull = false,
   mobileVertical = false,
 }: ListSelectorProps) {
+  const t = useTranslations("Lists");
   const [isOpen, setIsOpen] = useState(false);
   const [lists, setLists] = useState<UserList[]>([]);
   const [loading, setLoading] = useState(false);
@@ -89,7 +91,7 @@ export default function AddToListButton({
 
   const tooltipElement = (
     <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
-      Adicionar a Lista
+      {t("tooltip")}
     </span>
   );
 
@@ -101,11 +103,11 @@ export default function AddToListButton({
       setLists(data);
     } catch (err) {
       console.error(err);
-      setError("Erro ao carregar suas listas.");
+      setError(t("errorLoad"));
     } finally {
       setLoading(false);
     }
-  }, [animeId, seriesId]);
+  }, [animeId, seriesId, t]);
 
   const handleToggle = async (listId: string) => {
     setError(null);
@@ -125,7 +127,7 @@ export default function AddToListButton({
             l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
           ),
         );
-        setError(res.error || "Erro ao atualizar a lista.");
+        setError(res.error || t("errorUpdate"));
       }
     } catch (err) {
       console.error(err);
@@ -135,7 +137,7 @@ export default function AddToListButton({
           l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
         ),
       );
-      setError("Erro ao atualizar a lista.");
+      setError(t("errorUpdate"));
     }
   };
 
@@ -153,11 +155,11 @@ export default function AddToListButton({
         // Refresh list
         await loadLists();
       } else {
-        setError(res.error || "Erro ao criar lista.");
+        setError(res.error || t("errorCreate"));
       }
     } catch (err) {
       console.error(err);
-      setError("Erro ao criar lista.");
+      setError(t("errorCreate"));
     } finally {
       setIsCreating(false);
     }
@@ -177,7 +179,7 @@ export default function AddToListButton({
       >
         <Plus className="h-6 w-6" />
         {mobileVertical && (
-          <span className="text-xs md:hidden font-medium">Minha Lista</span>
+          <span className="text-xs md:hidden font-medium">{t("title")}</span>
         )}
         {tooltipElement}
       </a>
@@ -193,7 +195,7 @@ export default function AddToListButton({
       >
         <Plus className="h-6 w-6" />
         {mobileVertical && (
-          <span className="text-xs md:hidden font-medium">Minha Lista</span>
+          <span className="text-xs md:hidden font-medium">{t("title")}</span>
         )}
         {tooltipElement}
       </button>
@@ -205,7 +207,7 @@ export default function AddToListButton({
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
               <h2 className="text-lg font-bold text-zinc-50 flex items-center gap-2">
-                Minhas Listas
+                {t("title")}
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
@@ -226,7 +228,7 @@ export default function AddToListButton({
               {/* Lists Checklist */}
               <div>
                 <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-                  Escolha uma lista
+                  {t("chooseList")}
                 </h3>
 
                 {loading ? (
@@ -235,7 +237,7 @@ export default function AddToListButton({
                   </div>
                 ) : lists.length === 0 ? (
                   <div className="text-center py-6 text-zinc-500 text-sm">
-                    Você ainda não tem nenhuma lista personalizada.
+                    {t("noLists")}
                   </div>
                 ) : (
                   <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
@@ -280,12 +282,12 @@ export default function AddToListButton({
                   className="space-y-3 pt-4 border-t border-zinc-800"
                 >
                   <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                    Criar nova lista
+                    {t("createList")}
                   </h3>
                   <div className="space-y-2">
                     <input
                       type="text"
-                      placeholder="Nome da lista (ex: Animes dessa Temporada)"
+                      placeholder={t("listNamePlaceholder")}
                       value={newListName}
                       onChange={(e) => setNewListName(e.target.value)}
                       maxLength={50}
@@ -294,7 +296,7 @@ export default function AddToListButton({
                     />
                     <input
                       type="text"
-                      placeholder="Descrição (opcional)"
+                      placeholder={t("descriptionPlaceholder")}
                       value={newListDesc}
                       onChange={(e) => setNewListDesc(e.target.value)}
                       maxLength={150}
@@ -311,23 +313,22 @@ export default function AddToListButton({
                     ) : (
                       <Plus className="h-4 w-4" />
                     )}
-                    Criar Lista
+                    {t("createList")}
                   </button>
                 </form>
               ) : (
-                <div className="flex items-start gap-2 rounded-xl bg-zinc-950/60 border border-zinc-850 p-3 text-xs text-zinc-400">
+                <div className="flex items-start gap-2 rounded-xl bg-zinc-950/60 border border-zinc-855 p-3 text-xs text-zinc-400">
                   <Info className="h-4 w-4 text-zinc-500 flex-shrink-0 mt-0.5" />
                   <p>
-                    Você atingiu o limite de 10 listas personalizadas. Delete
-                    alguma para poder criar novas.
+                    {t("limitInfo")}
                   </p>
                 </div>
               )}
 
               {/* Info limits */}
               <div className="text-[10px] text-zinc-500 flex justify-between pt-2 border-t border-zinc-800">
-                <span>Limite: 10 listas por usuário</span>
-                <span>Max: 100 itens por lista</span>
+                <span>{t("limitLabel")}</span>
+                <span>{t("maxItemsLabel")}</span>
               </div>
             </div>
           </div>

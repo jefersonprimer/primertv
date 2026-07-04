@@ -7,6 +7,7 @@ import Link from "next/link";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { StartWatchingButton } from "@/components/StartWatchingButton";
+import { useTranslations } from "next-intl";
 
 export interface HeroCarouselItem {
   id: string;
@@ -37,6 +38,7 @@ export function HeroCarouselClient({
   items,
   isLoggedIn,
 }: HeroCarouselClientProps) {
+  const t = useTranslations("Buttons");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -232,8 +234,8 @@ export function HeroCarouselClient({
                 <StartWatchingButton
                   href={
                     current.firstEpisodePublicId
-                      ? `/watch/${current.firstEpisodePublicId}/${current.firstEpisodeSlug || "episodio-1"}`
-                      : `/watch/${current.firstEpisodeId}/${current.firstEpisodeSlug || "episodio-1"}`
+                      ? `/watch/${current.firstEpisodePublicId}/${current.firstEpisodeSlug || "episode-1"}`
+                      : `/watch/${current.firstEpisodeId}/${current.firstEpisodeSlug || "episode-1"}`
                   }
                   className="w-full max-w-[340px] md:max-w-[410px] px-4 text-sm md:w-auto sm:max-w-none md:px-6"
                 />
@@ -242,7 +244,7 @@ export function HeroCarouselClient({
                   href={detailUrl}
                   className="flex h-10 items-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:px-6"
                 >
-                  Ver detalhes
+                  {t("viewDetails")}
                 </Link>
               )}
               {current.type !== "movie" ? (

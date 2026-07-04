@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { PlayIcon } from "lucide-react";
 import RatingBadge from "./RatingBadge";
+import { useTranslations } from "next-intl";
 
 interface Item {
   id: string;
@@ -48,7 +49,24 @@ export default function EpisodeList({
   animeDuration,
   fallbackImageUrl,
 }: EpisodeListProps) {
+  const t = useTranslations("Labels");
   const [visibleCount, setVisibleCount] = useState(12);
+
+  const getTranslatedLabel = (l: string) => {
+    switch (l.toLowerCase()) {
+      case "capítulo":
+      case "chapter":
+        return t("chapter");
+      case "filme":
+      case "movie":
+        return t("movie");
+      case "episódio":
+      case "episode":
+      default:
+        return t("episode");
+    }
+  };
+  const displayLabel = getTranslatedLabel(label);
 
   const showMore = () => {
     setVisibleCount((prev) => prev + 12);
@@ -78,14 +96,14 @@ export default function EpisodeList({
                   {item.imageUrl || fallbackImageUrl ? (
                     <Image
                       src={item.imageUrl || fallbackImageUrl || ""}
-                      alt={item.title || `${label} ${item.number}`}
+                      alt={item.title || `${displayLabel} ${item.number}`}
                       fill
                       sizes="(max-width: 768px) 100vw, 240px"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-xs text-zinc-500">
-                      Sem imagem
+                      {t("noImage")}
                     </div>
                   )}
 
@@ -116,14 +134,14 @@ export default function EpisodeList({
                   <h3 className="line-clamp-2 sm:line-clamp-1 text-sm sm:text-base font-bold text-white">
                     {item.title && item.title.trim()
                       ? item.title
-                      : `${label} ${item.number}`}
+                      : `${displayLabel} ${item.number}`}
                   </h3>
                 </div>
               ) : (
                 <div className="flex flex-col gap-1 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-blue-500">
-                      {label} {item.number}
+                      {displayLabel} {item.number}
                     </span>
                     {itemType === "chapter" && item.videoUrl && (
                       <span className="bg-blue-100 px-2 py-0.5 text-[10px] font-bold uppercase text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
@@ -132,7 +150,7 @@ export default function EpisodeList({
                     )}
                   </div>
                   <h4 className="line-clamp-1 font-medium text-zinc-900 dark:text-zinc-100">
-                    {item.title || `${label} ${item.number}`}
+                    {item.title || `${displayLabel} ${item.number}`}
                   </h4>
                 </div>
               )}
@@ -141,7 +159,7 @@ export default function EpisodeList({
               {itemType === "chapter" && (
                 <div className="mt-auto pt-2">
                   <div className="w-full inline-flex items-center justify-center bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-zinc-800 dark:bg-blue-600 dark:hover:bg-blue-700 md:opacity-0 group-hover:opacity-100 transform md:translate-y-1 group-hover:translate-y-0">
-                    Ler Agora
+                    {t("readNow")}
                   </div>
                 </div>
               )}
@@ -156,15 +174,15 @@ export default function EpisodeList({
                       </span>
                     )}
                     <h4 className="line-clamp-2 text-base font-normal text-white">
-                      {item.title || `${label} ${item.number}`}
+                      {item.title || `${displayLabel} ${item.number}`}
                     </h4>
                   </div>
 
                   <div className="w-full inline-flex items-center justify-center bg-blue-600 gap-2 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 mt-auto uppercase">
                     <PlayIcon size={20} />
-                    {label === "Filme"
-                      ? "assistir filme"
-                      : `reproduzir ep ${item.number}`}
+                    {label === "Filme" || label.toLowerCase() === "movie"
+                      ? t("watchMovie")
+                      : t("playEpisode", { number: item.number })}
                   </div>
                 </div>
               )}
@@ -179,7 +197,7 @@ export default function EpisodeList({
             onClick={showMore}
             className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
           >
-            mostrar mais
+            {t("showMore")}
           </button>
         </div>
       )}

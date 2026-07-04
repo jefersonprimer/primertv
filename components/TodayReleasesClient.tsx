@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { Calendar, ChevronRight, Clock, Play } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
 
@@ -29,6 +30,8 @@ interface TodayReleasesClientProps {
 }
 
 export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
+  const t = useTranslations("TodayReleases");
+  const tWeekdays = useTranslations("Weekdays");
   const [showMore, setShowMore] = useState(false);
   const [currentDay] = useState(() => new Date().getDay());
 
@@ -56,16 +59,16 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
   );
 
   function getDayName(releaseDay: number) {
-    const dayNames = [
-      "Domingo",
-      "Segunda-feira",
-      "Terça-feira",
-      "Quarta-feira",
-      "Quinta-feira",
-      "Sexta-feira",
-      "Sábado",
+    const dayKeys = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
     ];
-    return dayNames[releaseDay];
+    return tWeekdays(dayKeys[releaseDay]);
   }
 
   const renderAnimeCard = (
@@ -87,8 +90,8 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
     const cardHref =
       singleEpisodeRelease && anime.latestEpisodeId
         ? anime.latestEpisodePublicId
-          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
+          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
         : `/animes/${anime.slug}`;
     const multipleEpisodeRelease = episodeNumbers.length > 1;
 
@@ -153,13 +156,16 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
-                Sem Imagem
+                {t("noImage")}
               </div>
             )}
             {showEpisodeHover && anime.episodeImageUrl && (
               <Image
                 src={anime.episodeImageUrl}
-                alt={`Episódio ${anime.lastEpisode} de ${anime.title}`}
+                alt={t("episodeHoverAlt", {
+                  episode: anime.lastEpisode,
+                  title: anime.title,
+                })}
                 fill
                 sizes="(max-width: 768px) 112px, 144px"
                 className="absolute inset-0 object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
@@ -194,9 +200,11 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                 <>
                   <span className="text-sm font-medium text-[#bbb]">
                     {" "}
-                    Episódio{" "}
+                    {t("episode")}{" "}
                   </span>
-                  <span className="text-sm text-zinc-500">Sem episódios</span>
+                  <span className="text-sm text-zinc-500">
+                    {t("noEpisodes")}
+                  </span>
                 </>
               ) : episodeNumbers.length > 1 ? (
                 <>
@@ -204,8 +212,8 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                     href={
                       anime.latestEpisodeId
                         ? anime.latestEpisodePublicId
-                          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
+                          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
                         : `/animes/${anime.slug}`
                     }
                     className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"
@@ -213,14 +221,14 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                     {anime.lastEpisode}
                   </Link>
                   <span className="text-sm font-medium text-[#bbb]">
-                    Episódios
+                    {t("episodes")}
                   </span>
                 </>
               ) : (
                 <>
                   <span className="text-sm font-medium text-[#bbb]">
                     {" "}
-                    Episódio{" "}
+                    {t("episode")}{" "}
                   </span>
                   {displayPills.map((num) => (
                     <span
@@ -239,8 +247,8 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                     href={
                       anime.latestEpisodeId
                         ? anime.latestEpisodePublicId
-                          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                          ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
+                          : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
                         : `/animes/${anime.slug}`
                     }
                     className="flex h-4 min-w-4 items-center justify-center text-xs font-medium text-[#bbb] transition-colors"
@@ -256,7 +264,10 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           <div className="flex items-center gap-1.5 text-xs font-semibold text-[#bbb]">
             <Clock className="h-3 w-3" />
             <span className={isToday ? "font-medium" : ""}>
-              {dayLabel} às {anime.releaseTime}
+              {t("releaseTimeFormat", {
+                day: dayLabel,
+                time: anime.releaseTime,
+              })}
             </span>
           </div>
         </div>
@@ -270,15 +281,15 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
       <div className="mb-4 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-white text-[22px] md:text-[28px] font-bold tracking-tight ">
           <Calendar size={24} />
-          Novos Lançamentos
+          {t("title")}
         </h2>
 
         <div className="flex items-center gap-2 text-[#bbb] hover:text-white hover:cursor-pointer">
           <Link
-            href="/calendario"
+            href="/calendar"
             className="text-sm font-bold uppercase hidden sm:flex"
           >
-            ver calendario de lancamentos
+            {t("viewCalendar")}
           </Link>
           <ChevronRight size="24" />
         </div>
@@ -289,10 +300,12 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {todayAnimes.length > 0 ? (
           <div className="space-y-2">
             <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
-              Hoje
+              {t("today")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-              {todayAnimes.map((anime) => renderAnimeCard(anime, true, "Hoje"))}
+              {todayAnimes.map((anime) =>
+                renderAnimeCard(anime, true, t("today")),
+              )}
             </div>
           </div>
         ) : (
@@ -300,7 +313,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             <div className="flex flex-col items-center justify-center border border-dashed border-zinc-200 py-12 text-center dark:border-zinc-800">
               <Clock className="h-10 w-10 text-zinc-400" />
               <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-                Nenhum lançamento registrado para hoje.
+                {t("noReleasesToday")}
               </p>
             </div>
           )
@@ -311,21 +324,21 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           (yesterdayAnimes.length > 0 ? (
             <div className="space-y-2">
               <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
-                Ontem
+                {t("yesterday")}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                 {yesterdayAnimes.map((anime) =>
-                  renderAnimeCard(anime, false, "Ontem"),
+                  renderAnimeCard(anime, false, t("yesterday")),
                 )}
               </div>
             </div>
           ) : (
             <div className="space-y-2">
               <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
-                Ontem
+                {t("yesterday")}
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
-                Nenhum lançamento registrado para ontem.
+                {t("noReleasesYesterday")}
               </p>
             </div>
           ))}
@@ -349,7 +362,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                 {getDayName(dayBeforeYesterday)}
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
-                Nenhum lançamento registrado para este dia.
+                {t("noReleasesDay")}
               </p>
             </div>
           ))}
@@ -362,14 +375,14 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
             onClick={() => setShowMore(true)}
             className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
           >
-            mostrar mais
+            {t("showMore")}
           </button>
         ) : (
           <Link
-            href="/calendario"
+            href="/calendar"
             className="flex items-center justify-center bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
           >
-            ver calendário de lançamentos
+            {t("viewCalendar")}
           </Link>
         )}
       </div>

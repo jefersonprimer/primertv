@@ -165,7 +165,7 @@ export function PopularAnimesList({
             </div>
 
             <div className="flex flex-col gap-1">
-              <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 transition-colors group-hover:text-blue-500">
+              <h3 className="line-clamp-2 text-sm font-semibold text-white">
                 {item.title}
               </h3>
 

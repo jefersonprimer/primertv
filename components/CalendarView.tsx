@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { Clock, Tv, Play, Loader2 } from "lucide-react";
 import { WatchlistButton } from "@/components/WatchlistButton";
 
@@ -29,19 +30,21 @@ interface CalendarViewProps {
   isLoggedIn: boolean;
 }
 
-const DAYS_OF_WEEK = [
-  { value: 0, label: "Domingo", shortLabel: "Dom" },
-  { value: 1, label: "Segunda-feira", shortLabel: "Seg" },
-  { value: 2, label: "Terça-feira", shortLabel: "Ter" },
-  { value: 3, label: "Quarta-feira", shortLabel: "Qua" },
-  { value: 4, label: "Quinta-feira", shortLabel: "Qui" },
-  { value: 5, label: "Sexta-feira", shortLabel: "Sex" },
-  { value: 6, label: "Sábado", shortLabel: "Sáb" },
-];
-
 export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
+  const t = useTranslations("CalendarPage");
+  const tWeekdays = useTranslations("Weekdays");
   const [currentDay] = useState(() => new Date().getDay());
   const [activeDay, setActiveDay] = useState<number>(() => new Date().getDay());
+
+  const DAYS_OF_WEEK = [
+    { value: 0, label: tWeekdays("sunday"), shortLabel: tWeekdays("sun") },
+    { value: 1, label: tWeekdays("monday"), shortLabel: tWeekdays("mon") },
+    { value: 2, label: tWeekdays("tuesday"), shortLabel: tWeekdays("tue") },
+    { value: 3, label: tWeekdays("wednesday"), shortLabel: tWeekdays("wed") },
+    { value: 4, label: tWeekdays("thursday"), shortLabel: tWeekdays("thu") },
+    { value: 5, label: tWeekdays("friday"), shortLabel: tWeekdays("fri") },
+    { value: 6, label: tWeekdays("saturday"), shortLabel: tWeekdays("sat") },
+  ];
 
   const groupedAnimes = animes.reduce(
     (acc, anime) => {
@@ -60,16 +63,15 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
       <div className="mb-8 flex flex-col items-center justify-between gap-4 md:flex-row md:items-start">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-3xl">
-            Calendário Semanal
+            {t("weeklyCalendar")}
           </h1>
           <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
-            Acompanhe o cronograma de lançamentos dos novos episódios dos seus
-            animes.
+            {t("scheduleDescription")}
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
           <Clock className="h-3.5 w-3.5" />
-          Fuso horário de Brasília (UTC-3)
+          {t("timezoneInfo")}
         </div>
       </div>
 
@@ -125,7 +127,9 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
               {DAYS_OF_WEEK.find((d) => d.value === activeDay)?.label}
             </h2>
             <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              {groupedAnimes[activeDay]?.length || 0} lançamentos
+              {t("releasesCount", {
+                count: groupedAnimes[activeDay]?.length || 0,
+              })}
             </span>
           </div>
 
@@ -133,7 +137,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Tv className="h-10 w-10 text-zinc-300 dark:text-zinc-700" />
               <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-                Nenhum lançamento agendado para hoje.
+                {t("noReleasesToday")}
               </p>
             </div>
           ) : (
@@ -178,7 +182,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                   {day.label.split("-")[0]}
                 </span>
                 <div className="flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500">
-                  <span>{isToday ? "Hoje" : "Lançamento"}</span>
+                  <span>{isToday ? t("todayLabel") : t("releaseLabel")}</span>
                   <span className="font-semibold">{dayList.length}</span>
                 </div>
               </div>
@@ -188,7 +192,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                 <div className="flex flex-col items-center justify-center py-8 text-center border border-dashed border-zinc-150 dark:border-zinc-800/80">
                   <Tv className="h-6 w-6 text-zinc-300 dark:text-zinc-800" />
                   <span className="mt-2 text-[10px] text-zinc-400 dark:text-zinc-500">
-                    Vazio
+                    {t("empty")}
                   </span>
                 </div>
               ) : (
@@ -220,6 +224,7 @@ function AnimeCalendarCard({
   isLoggedIn: boolean;
   isToday: boolean;
 }) {
+  const t = useTranslations("CalendarPage");
   const [isLoading, setIsLoading] = useState(true);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -287,14 +292,16 @@ function AnimeCalendarCard({
       {/* Status do Episódio */}
       <div className="mt-1 text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
         {anime.isComingSoon ? (
-          <span className="text-blue-500 font-semibold dark:text-blue-400">Estreia em breve (Coming Soon)</span>
+          <span className="text-blue-500 font-semibold dark:text-blue-400">
+            {t("comingSoon")}
+          </span>
         ) : isToday ? (
-          <span>Episódio {anime.lastEpisode} Disponível</span>
+          <span>{t("episodeAvailable", { number: anime.lastEpisode })}</span>
         ) : (
           <span>
             {anime.lastEpisode <= 1
-              ? `Episódio ${anime.lastEpisode} Disponível`
-              : `1-${anime.lastEpisode} Disponível`}
+              ? t("episodeAvailable", { number: anime.lastEpisode })
+              : t("episodesAvailable", { number: anime.lastEpisode })}
           </span>
         )}
       </div>
@@ -305,8 +312,8 @@ function AnimeCalendarCard({
           href={
             anime.latestEpisodeId
               ? anime.latestEpisodePublicId
-                ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
+                : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
               : `/animes/${anime.slug}`
           }
           className="relative mt-2 block aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-800/80 shadow-xs group/episode"
@@ -329,7 +336,7 @@ function AnimeCalendarCard({
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-[10px] text-zinc-400">
-              Sem Imagem
+              {t("noImage")}
             </div>
           )}
 
@@ -357,7 +364,7 @@ function AnimeCalendarCard({
           <div className="flex flex-col items-center justify-center min-h-[300px] w-full">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500" />
             <span className="mt-2.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-              Carregando dados...
+              {t("loadingData")}
             </span>
           </div>
         ) : (
@@ -375,7 +382,7 @@ function AnimeCalendarCard({
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-[10px] text-zinc-400">
-                    Sem Imagem
+                    {t("noImage")}
                   </div>
                 )}
               </div>
@@ -386,8 +393,7 @@ function AnimeCalendarCard({
                   {anime.title}
                 </h4>
                 <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-4 leading-relaxed">
-                  {anime.description ||
-                    "Sem descrição disponível para este anime no momento."}
+                  {anime.description || t("noDescription")}
                 </p>
 
                 {/* Buttons Row */}
@@ -398,21 +404,21 @@ function AnimeCalendarCard({
                       className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs transition-colors shadow-sm dark:bg-zinc-900 dark:hover:bg-zinc-850"
                     >
                       <Tv className="h-3.5 w-3.5" />
-                      Ver Detalhes
+                      {t("viewDetails")}
                     </Link>
                   ) : (
                     <Link
                       href={
                         anime.latestEpisodeId
                           ? anime.latestEpisodePublicId
-                            ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                            : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                            ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
+                            : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
                           : `/animes/${anime.slug}`
                       }
                       className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-sm"
                     >
                       <Play className="h-3 w-3 fill-current ml-0.5" />
-                      Assistir EP {anime.lastEpisode}
+                      {t("watchEpisode", { number: anime.lastEpisode })}
                     </Link>
                   )}
                   <WatchlistButton
@@ -431,14 +437,14 @@ function AnimeCalendarCard({
             {!anime.isComingSoon && (
               <div className="mt-4 border-t border-zinc-100 dark:border-zinc-900 pt-4 flex flex-col">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
-                  Último Episódio Lançado
+                  {t("latestReleasedEpisode")}
                 </span>
                 <Link
                   href={
                     anime.latestEpisodeId
                       ? anime.latestEpisodePublicId
-                        ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
-                        : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episodio-" + anime.lastEpisode}`
+                        ? `/watch/${anime.latestEpisodePublicId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
+                        : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
                       : `/animes/${anime.slug}`
                   }
                   className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"
@@ -461,7 +467,7 @@ function AnimeCalendarCard({
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
-                      Sem Imagem do Episódio
+                      {t("noEpisodeImage")}
                     </div>
                   )}
 

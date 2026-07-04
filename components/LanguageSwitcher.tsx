@@ -1,0 +1,80 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useRouter, usePathname } from "@/i18n/routing";
+import { useLocale } from "next-intl";
+import { Globe, ChevronDown } from "lucide-react";
+
+export function LanguageSwitcher() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const locales = [
+    { code: "pt-br", label: "Português (Brasil)" },
+    { code: "en", label: "English" },
+  ];
+
+  const currentLocale = locales.find((l) => l.code === locale) || locales[0];
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSelect = (code: string) => {
+    setIsOpen(false);
+    router.replace(pathname, { locale: code });
+  };
+
+  return (
+    <div className="relative inline-block text-left" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/50 px-3.5 py-2 text-sm font-medium text-zinc-300 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white focus:outline-none cursor-pointer"
+      >
+        <Globe size={18} className="text-zinc-500" />
+        <span>{currentLocale.label}</span>
+        <ChevronDown
+          size={16}
+          className={`text-zinc-500 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 bottom-full z-50 mb-2 w-48 border border-zinc-800 bg-[#151515] py-1 shadow-2xl backdrop-blur-md animate-[fadeIn_0.15s_ease-out]">
+          <div className="flex flex-col py-1">
+            {locales.map((loc) => (
+              <button
+                key={loc.code}
+                onClick={() => handleSelect(loc.code)}
+                className={`flex w-full items-center p-2 text-left text-sm transition-all duration-150 cursor-pointer ${
+                  loc.code === locale
+                    ? "bg-[#272727] text-white font-medium"
+                    : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+                }`}
+              >
+                {loc.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

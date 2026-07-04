@@ -30,9 +30,9 @@ export async function FavoritesCarousel() {
     },
   });
 
-  const animeIds = watchlistItems.map((item) => item.animeId).filter(
-    (animeId): animeId is string => Boolean(animeId),
-  );
+  const animeIds = watchlistItems
+    .map((item) => item.animeId)
+    .filter((animeId): animeId is string => Boolean(animeId));
 
   if (animeIds.length === 0) return null;
 
@@ -69,16 +69,15 @@ export async function FavoritesCarousel() {
     .map((row) => row.firstEpisodeId)
     .filter(Boolean) as string[];
 
-  const episodeDetails = firstEpisodeIds.length > 0
-    ? await prisma.episode.findMany({
-        where: { id: { in: firstEpisodeIds } },
-        select: { id: true, publicId: true, slug: true, number: true },
-      })
-    : [];
+  const episodeDetails =
+    firstEpisodeIds.length > 0
+      ? await prisma.episode.findMany({
+          where: { id: { in: firstEpisodeIds } },
+          select: { id: true, publicId: true, slug: true, number: true },
+        })
+      : [];
 
-  const episodeDetailsMap = new Map(
-    episodeDetails.map((ep) => [ep.id, ep])
-  );
+  const episodeDetailsMap = new Map(episodeDetails.map((ep) => [ep.id, ep]));
 
   const resolvedItems = await Promise.all(
     favorites.map(async (anime) => {
@@ -92,9 +91,13 @@ export async function FavoritesCarousel() {
       const firstEpisodeId = firstEpisode?.firstEpisodeId || null;
       const firstEpisodeImageUrl = firstEpisode?.firstEpisodeImageUrl || null;
 
-      const epDetails = firstEpisodeId ? episodeDetailsMap.get(firstEpisodeId) : null;
+      const epDetails = firstEpisodeId
+        ? episodeDetailsMap.get(firstEpisodeId)
+        : null;
       const firstEpisodePublicId = epDetails?.publicId ?? null;
-      const firstEpisodeSlug = epDetails ? (epDetails.slug || `episodio-${epDetails.number}`) : null;
+      const firstEpisodeSlug = epDetails
+        ? epDetails.slug || `episode-${epDetails.number}`
+        : null;
 
       return {
         id: anime.id,

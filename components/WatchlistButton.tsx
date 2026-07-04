@@ -3,8 +3,9 @@
 import { toggleWatchlist } from "@/app/actions/watchlist";
 import type { WatchlistMediaType } from "@prisma/client";
 import { Bookmark } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 
 type WatchlistButtonProps = {
   mediaType: WatchlistMediaType;
@@ -27,6 +28,7 @@ export function WatchlistButton({
   hasBorder = true,
   roundedFull = false,
 }: WatchlistButtonProps) {
+  const t = useTranslations("Watchlist");
   const [state, formAction, isPending] = useActionState(toggleWatchlist, {
     inWatchlist: initialInWatchlist,
   });
@@ -67,7 +69,7 @@ export function WatchlistButton({
 
   const tooltipElement = (
     <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[11px] font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
-      Minha Lista
+      {t("tooltip")}
     </span>
   );
 

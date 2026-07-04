@@ -1,6 +1,7 @@
 import { Play } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import RatingBadge from "@/components/RatingBadge";
 
 export interface FavoriteItem {
@@ -34,13 +35,14 @@ export default function FavoriteCard({
   item,
   className = "",
 }: FavoriteCardProps) {
+  const t = useTranslations("FavoriteCard");
   const cardHref = item.firstEpisodePublicId
-    ? `/watch/${item.firstEpisodePublicId}/${item.firstEpisodeSlug || "episodio-1"}`
+    ? `/watch/${item.firstEpisodePublicId}/${item.firstEpisodeSlug || "episode-1"}`
     : `/animes/${item.slug}`;
 
   return (
     <div
-      className={`group flex flex-col gap-2 hover:bg-zinc-800 p-2 transition-colors duration-200 ${className}`}
+      className={`group flex flex-col gap-2 hover:bg-zinc-800 md:p-2 transition-colors duration-200 ${className}`}
     >
       <Link
         href={cardHref}
@@ -78,7 +80,7 @@ export default function FavoriteCard({
         {item.firstEpisodeImageUrl && (
           <Image
             src={item.firstEpisodeImageUrl}
-            alt={`Primeiro episódio de ${item.title}`}
+            alt={t("firstEpisodeAlt", { title: item.title })}
             fill
             sizes="(max-width: 640px) 260px, (max-width: 1024px) 300px, 287.75px"
             className={`object-cover absolute inset-0 transition-opacity duration-500 ${
@@ -116,14 +118,14 @@ export default function FavoriteCard({
             href={cardHref}
             className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"
           >
-            Começar a assistir EP: 1
+            {t("startWatchingEp", { number: 1 })}
           </Link>
         ) : (
           <Link
             href={cardHref}
             className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"
           >
-            Ver detalhes
+            {t("viewDetails")}
           </Link>
         )}
       </div>
