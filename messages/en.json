@@ -198,7 +198,9 @@
     "movieLabel": "Movie",
     "noDescription": "No description available.",
     "recommended": "Recommended",
-    "megaPlayNoCatalog": "MegaPlay catalog did not return a list for this anime, but the player was opened by external id."
+    "megaPlayNoCatalog": "MegaPlay catalog did not return a list for this anime, but the player was opened by external id.",
+    "selectPlayer": "Select Player",
+    "playerLabel": "Player {number}"
   },
   "Weekdays": {
     "sunday": "Sunday",

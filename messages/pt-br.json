@@ -198,7 +198,9 @@
     "movieLabel": "Filme",
     "noDescription": "Sem descrição disponível.",
     "recommended": "Recomendados",
-    "megaPlayNoCatalog": "O catálogo do MegaPlay não retornou lista para este anime, mas o player foi aberto pelo id externo."
+    "megaPlayNoCatalog": "O catálogo do MegaPlay não retornou lista para este anime, mas o player foi aberto pelo id externo.",
+    "selectPlayer": "Selecionar Player",
+    "playerLabel": "Player {number}"
   },
   "Weekdays": {
     "sunday": "Domingo",

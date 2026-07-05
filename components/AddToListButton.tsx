@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { X, Plus, Check, Loader2, Info, Link } from "lucide-react";
+import { X, Plus, Check, Loader2, Info } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import {
   createList,
   toggleAnimeInList,
