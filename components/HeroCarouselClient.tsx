@@ -197,18 +197,21 @@ export function HeroCarouselClient({
               {current.rating && (
                 <RatingBadge rating={current.rating} size={20} />
               )}
-              <span
-                className="text-[#8c8c8c] flex items-center justify-center"
-                aria-hidden="true"
-              >
-                <svg className="h-2 w-2 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2L22 12L12 22L2 12Z" />
-                </svg>
-              </span>
+
               {current.genres.length > 0 && (
-                <span className="text-sm font-normal text-[#8c8c8c]">
-                  {current.genres.join(", ")}
-                </span>
+                <>
+                  <span
+                    className="text-[#8c8c8c] flex items-center justify-center"
+                    aria-hidden="true"
+                  >
+                    <svg className="h-2 w-2 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 2L22 12L12 22L2 12Z" />
+                    </svg>
+                  </span>
+                  <span className="text-sm font-normal text-[#8c8c8c]">
+                    {current.genres.join(", ")}
+                  </span>
+                </>
               )}
             </div>
 

@@ -327,17 +327,7 @@ export default async function WatchPage({
               <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
                 {/* Player Selector Tabs */}
                 {playersList.length > 1 && (
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-                        {t("selectPlayer")}
-                      </h3>
-                      <div className="mt-1 flex items-center gap-2 text-sm font-medium text-zinc-500">
-                        <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                        {activePlayerObj?.label || t("principalServer")}
-                      </div>
-                    </div>
-
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
                     <div className="flex flex-wrap gap-2">
                       {playersList.map((p) => (
                         <Link

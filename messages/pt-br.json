@@ -198,8 +198,6 @@
     "movieLabel": "Filme",
     "noDescription": "Sem descrição disponível.",
     "recommended": "Recomendados",
-    "selectPlayer": "Selecione o Player",
-    "playerLabel": "Player {number}",
     "megaPlayNoCatalog": "O catálogo do MegaPlay não retornou lista para este anime, mas o player foi aberto pelo id externo."
   },
   "Weekdays": {
@@ -297,8 +295,8 @@
     }
   },
   "Layout": {
-    "metaTitle": "Bem-vindo(a) à Primer Tv",
-    "metaDescription": "Seus animes e séries favoritos em um só lugar."
+    "metaTitle": "Primer TV: Assistir animes, séries e filmes online",
+    "metaDescription": "Assista aos melhores animes online, além de séries, filmes e muito mais. Descubra lançamentos, clássicos e streaming em alta qualidade."
   },
   "Auth": {
     "loginTitle": "Login",

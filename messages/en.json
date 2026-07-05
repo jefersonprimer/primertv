@@ -198,8 +198,6 @@
     "movieLabel": "Movie",
     "noDescription": "No description available.",
     "recommended": "Recommended",
-    "selectPlayer": "Select Player",
-    "playerLabel": "Player {number}",
     "megaPlayNoCatalog": "MegaPlay catalog did not return a list for this anime, but the player was opened by external id."
   },
   "Weekdays": {
@@ -297,8 +295,8 @@
     }
   },
   "Layout": {
-    "metaTitle": "Welcome to Primer Tv",
-    "metaDescription": "Your favorite anime and series in one place."
+    "metaTitle": "Primer TV: Watch Anime, Series & Movies Online",
+    "metaDescription": "Watch the best anime online, as well as series, films and much more. Discover new releases, classics and streaming in high quality"
   },
   "Auth": {
     "loginTitle": "Login",
