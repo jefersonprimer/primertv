@@ -44,7 +44,7 @@ export function LanguageSwitcher() {
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/50 px-3.5 py-2 text-sm font-medium text-zinc-300 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white focus:outline-none cursor-pointer"
+        className="flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/50 px-3.5 py-2 rounded text-sm font-medium text-zinc-300 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white focus:outline-none cursor-pointer"
       >
         <Globe size={18} className="text-zinc-500" />
         <span>{currentLocale.label}</span>

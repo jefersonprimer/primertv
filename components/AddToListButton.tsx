@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { X, Plus, Check, Loader2, Info } from "lucide-react";
+import { X, Plus, Check, Loader2, Info, Link } from "lucide-react";
 import {
   createList,
   toggleAnimeInList,
@@ -172,7 +172,7 @@ export default function AddToListButton({
 
   if (!isLoggedIn) {
     return (
-      <a
+      <Link
         href="/login"
         className={buttonClass}
         aria-label="Adicionar a uma lista personalizada"
@@ -182,7 +182,7 @@ export default function AddToListButton({
           <span className="text-xs md:hidden font-medium">{t("title")}</span>
         )}
         {tooltipElement}
-      </a>
+      </Link>
     );
   }
 
@@ -319,9 +319,7 @@ export default function AddToListButton({
               ) : (
                 <div className="flex items-start gap-2 rounded-xl bg-zinc-950/60 border border-zinc-855 p-3 text-xs text-zinc-400">
                   <Info className="h-4 w-4 text-zinc-500 flex-shrink-0 mt-0.5" />
-                  <p>
-                    {t("limitInfo")}
-                  </p>
+                  <p>{t("limitInfo")}</p>
                 </div>
               )}
 
