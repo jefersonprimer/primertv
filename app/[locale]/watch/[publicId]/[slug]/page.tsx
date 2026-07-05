@@ -286,45 +286,43 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
-          <div className="grid gap-8 lg:grid-cols-4">
-            {/* Main Content: Player and Info */}
-            <div className="lg:col-span-3">
-              {/* Player Container */}
-              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
-                {playableUrl ? (
-                  playableUrl.endsWith(".mp4") ||
-                  playableUrl.endsWith(".m3u8") ? (
-                    <video
-                      src={playableUrl}
-                      controls
-                      className="h-full w-full"
-                      poster={
-                        animeEpisode.imageUrl ||
-                        animeEpisode.season.anime.imageUrl ||
-                        undefined
-                      }
-                    />
-                  ) : (
-                    <iframe
-                      src={playableUrl}
-                      className="w-full aspect-video"
-                      allowFullScreen
-                      title={t("playerTitle", {
-                        title: animeEpisode.season.anime.title,
-                        number: animeEpisode.number,
-                      })}
-                    />
-                  )
-                ) : (
-                  <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
-                    <p>{t("videoNotAvailable")}</p>
-                  </div>
-                )}
+        <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
+          {/* Player Container */}
+          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
+            {playableUrl ? (
+              playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
+                <video
+                  src={playableUrl}
+                  controls
+                  className="h-full w-full"
+                  poster={
+                    animeEpisode.imageUrl ||
+                    animeEpisode.season.anime.imageUrl ||
+                    undefined
+                  }
+                />
+              ) : (
+                <iframe
+                  src={playableUrl}
+                  className="w-full aspect-video"
+                  allowFullScreen
+                  title={t("playerTitle", {
+                    title: animeEpisode.season.anime.title,
+                    number: animeEpisode.number,
+                  })}
+                />
+              )
+            ) : (
+              <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
+                <p>{t("videoNotAvailable")}</p>
               </div>
+            )}
+          </div>
 
-              {/* Controls & Title Below Player */}
-              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
+          <div className="grid gap-8 lg:grid-cols-4 mt-8">
+            {/* Main Content: Info / Description */}
+            <div className="lg:col-span-3 px-4 sm:px-0">
+              <div className="flex flex-col gap-6">
                 {/* Player Selector Tabs */}
                 {playersList.length > 1 && (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
@@ -392,7 +390,7 @@ export default async function WatchPage({
 
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8">
+              <div className="sticky overflow-hidden pt-8 lg:pt-0">
                 <AnimeEpisodeSidebar
                   seasons={animeEpisode.season.anime.seasons}
                   currentEpisodeId={animeEpisode.id}
@@ -464,28 +462,30 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
-          <div className="grid gap-8 lg:grid-cols-4">
-            <div className="lg:col-span-3">
-              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
-                {playableUrl ? (
-                  <iframe
-                    src={playableUrl}
-                    className="w-full aspect-video"
-                    allowFullScreen
-                    title={t("megaPlayPlayerTitle", {
-                      title: anime.title,
-                      number: episodeNumber,
-                    })}
-                  />
-                ) : (
-                  <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
-                    <p>{t("megaPlayNotAvailable")}</p>
-                  </div>
-                )}
+        <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
+          {/* Player Container */}
+          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
+            {playableUrl ? (
+              <iframe
+                src={playableUrl}
+                className="w-full aspect-video"
+                allowFullScreen
+                title={t("megaPlayPlayerTitle", {
+                  title: anime.title,
+                  number: episodeNumber,
+                })}
+              />
+            ) : (
+              <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
+                <p>{t("megaPlayNotAvailable")}</p>
               </div>
+            )}
+          </div>
 
-              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
+          <div className="grid gap-8 lg:grid-cols-4 mt-6">
+            {/* Main Content: Info / Description */}
+            <div className="lg:col-span-3 px-4 sm:px-0">
+              <div className="flex flex-col gap-6">
                 {playersList.length > 1 && (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
                     <div className="flex flex-wrap gap-2">
@@ -542,8 +542,9 @@ export default async function WatchPage({
               </div>
             </div>
 
+            {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8">
+              <div className="sticky overflow-hidden pt-8 lg:pt-0">
                 {episodeItems.length > 0 ? (
                   <AnimeEpisodeSidebar
                     seasons={[
@@ -705,41 +706,39 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
-          <div className="grid gap-8 lg:grid-cols-4">
-            {/* Main Content: Player and Info */}
-            <div className="lg:col-span-3">
-              {/* Player Container */}
-              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
-                {playableUrl ? (
-                  playableUrl.endsWith(".mp4") ||
-                  playableUrl.endsWith(".m3u8") ? (
-                    <video
-                      src={playableUrl}
-                      controls
-                      className="h-full w-full"
-                      poster={seriesEpisode.season.series.imageUrl || undefined}
-                    />
-                  ) : (
-                    <iframe
-                      src={playableUrl}
-                      className="w-full aspect-video"
-                      allowFullScreen
-                      title={t("playerTitle", {
-                        title: seriesEpisode.season.series.title,
-                        number: seriesEpisode.number,
-                      })}
-                    />
-                  )
-                ) : (
-                  <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
-                    <p>{t("videoNotAvailable")}</p>
-                  </div>
-                )}
+        <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10 lg:px-8">
+          {/* Player Container */}
+          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
+            {playableUrl ? (
+              playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
+                <video
+                  src={playableUrl}
+                  controls
+                  className="h-full w-full"
+                  poster={seriesEpisode.season.series.imageUrl || undefined}
+                />
+              ) : (
+                <iframe
+                  src={playableUrl}
+                  className="w-full aspect-video"
+                  allowFullScreen
+                  title={t("playerTitle", {
+                    title: seriesEpisode.season.series.title,
+                    number: seriesEpisode.number,
+                  })}
+                />
+              )
+            ) : (
+              <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
+                <p>{t("videoNotAvailable")}</p>
               </div>
+            )}
+          </div>
 
-              {/* Controls & Title Below Player */}
-              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
+          <div className="grid gap-8 lg:grid-cols-4 mt-6">
+            {/* Main Content: Info / Description */}
+            <div className="lg:col-span-3 px-4 sm:px-0">
+              <div className="flex flex-col gap-6">
                 {/* Player Selector Tabs */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
                   {(hasScrapedUrl || tmdbId) && (
@@ -859,7 +858,7 @@ export default async function WatchPage({
 
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8">
+              <div className="sticky overflow-hidden pt-8 lg:pt-0">
                 <SeriesEpisodeSidebar
                   seasons={seriesEpisode.season.series.seasons}
                   currentEpisodeId={seriesEpisode.id}
@@ -964,217 +963,150 @@ export default async function WatchPage({
     const userId = await getAuthenticatedUserId();
     const inWatchlist = await isInWatchlist("SERIES", movie.id);
 
-    const similarMovies =
-      movie.genres && movie.genres.length > 0
-        ? await prisma.movie.findMany({
-            where: {
-              genres: { hasSome: movie.genres },
-              id: { not: movie.id },
-            },
-            select: {
-              id: true,
-              slug: true,
-              title: true,
-              imageUrl: true,
-              publicId: true,
-            },
-            take: 6,
-          })
-        : [];
-
     return (
       <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10">
-          <div className="grid gap-8 lg:grid-cols-4">
-            {/* Main Content: Player and Info */}
-            <div className="lg:col-span-3">
-              {/* Player Container */}
-              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
-                {playableUrl ? (
-                  isDirectVideo ? (
-                    <video
-                      src={playableUrl}
-                      controls
-                      className="h-full w-full"
-                      poster={movie.imageUrl || undefined}
-                    />
-                  ) : (
-                    <iframe
-                      src={playableUrl}
-                      className="absolute inset-0 h-full w-full overflow-y-auto border-0"
-                      allowFullScreen
-                      scrolling="auto"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      title={t("playerTitle", {
-                        title: movie.title,
-                        number: activePlayer,
-                      })}
-                    />
-                  )
-                ) : (
-                  <div className="flex h-full flex-col items-center justify-center gap-4 text-zinc-500">
-                    <p>{t("processingMovie")}</p>
-                  </div>
-                )}
+        <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
+          {/* Player Container */}
+          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
+            {playableUrl ? (
+              isDirectVideo ? (
+                <video
+                  src={playableUrl}
+                  controls
+                  className="h-full w-full"
+                  poster={movie.imageUrl || undefined}
+                />
+              ) : (
+                <iframe
+                  src={playableUrl}
+                  className="absolute inset-0 h-full w-full overflow-y-auto border-0"
+                  allowFullScreen
+                  scrolling="auto"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  title={t("playerTitle", {
+                    title: movie.title,
+                    number: activePlayer,
+                  })}
+                />
+              )
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-4 text-zinc-500">
+                <p>{t("processingMovie")}</p>
               </div>
+            )}
+          </div>
 
-              {/* Controls & Title Below Player */}
-              <div className="mt-6 flex flex-col gap-6 px-4 sm:px-0">
-                {/* Player Selector Tabs */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
-                  <div className="flex flex-wrap gap-2">
-                    {hasScrapedUrl && (
-                      <Link
-                        key="player-1"
-                        href="?player=1"
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                          activePlayer === 1
-                            ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                            : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                        }`}
-                      >
-                        Player 1
-                      </Link>
-                    )}
-                    {movie.tmdbId && (
-                      <>
-                        <Link
-                          key="player-2"
-                          href="?player=2"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 2
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          Player 2
-                        </Link>
-                        <Link
-                          key="player-3"
-                          href="?player=3"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 3
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          Player 3
-                        </Link>
-                        <Link
-                          key="player-4"
-                          href="?player=4"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 4
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          Player 4
-                        </Link>
-                        <Link
-                          key="player-5"
-                          href="?player=5"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 5
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          Player 5
-                        </Link>
-                        <Link
-                          key="player-6"
-                          href="?player=6"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 6
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          Player 6
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex flex-col items-start gap-2">
-                    <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
-                      <Link
-                        href={`/movies/${movie.slug}`}
-                        className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
-                      >
-                        <h4 className="text-base font-bold">{movie.title}</h4>
-                      </Link>
-
-                      <WatchlistButton
-                        mediaType="SERIES"
-                        mediaId={movie.id}
-                        slug={movie.slug}
-                        initialInWatchlist={inWatchlist}
-                        isLoggedIn={Boolean(userId)}
-                        hasBorder={false}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between w-full">
-                      <h1 className="text-[22px] font-bold text-zinc-500">
-                        {t("movieLabel")}
-                      </h1>
-                      <ShareButton compact />
-                    </div>
-                  </div>
-                  <div className="mt-6">
-                    <ExpandableDescription
-                      description={movie.description || t("noDescription")}
-                    />
-                  </div>
-                </div>
+          {/* Controls & Title Below Player */}
+          <div className="mt-6 flex flex-col gap-6">
+            {/* Player Selector Tabs */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
+              <div className="flex flex-wrap gap-2">
+                {hasScrapedUrl && (
+                  <Link
+                    key="player-1"
+                    href="?player=1"
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      activePlayer === 1
+                        ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                        : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                    }`}
+                  >
+                    Player 1
+                  </Link>
+                )}
+                {movie.tmdbId && (
+                  <>
+                    <Link
+                      key="player-2"
+                      href="?player=2"
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        activePlayer === 2
+                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      Player 2
+                    </Link>
+                    <Link
+                      key="player-3"
+                      href="?player=3"
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        activePlayer === 3
+                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      Player 3
+                    </Link>
+                    <Link
+                      key="player-4"
+                      href="?player=4"
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        activePlayer === 4
+                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      Player 4
+                    </Link>
+                    <Link
+                      key="player-5"
+                      href="?player=5"
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        activePlayer === 5
+                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      Player 5
+                    </Link>
+                    <Link
+                      key="player-6"
+                      href="?player=6"
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        activePlayer === 6
+                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
+                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      Player 6
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Sidebar: similar movies */}
-            <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8">
-                {similarMovies.length > 0 && (
-                  <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4">
-                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4">
-                      {t("recommended")}
-                    </h3>
-                    <div className="flex flex-col gap-4">
-                      {similarMovies.map((sim) => (
-                        <Link
-                          key={sim.id}
-                          href={
-                            sim.publicId
-                              ? `/watch/${sim.publicId}/${sim.slug}`
-                              : `/movies/${sim.slug}`
-                          }
-                          className="flex gap-3 group animate-fade-in"
-                        >
-                          <div className="relative w-16 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0 bg-zinc-900">
-                            {sim.imageUrl && (
-                              <img
-                                src={sim.imageUrl}
-                                alt={sim.title}
-                                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-200"
-                              />
-                            )}
-                          </div>
-                          <div className="flex flex-col justify-center min-w-0">
-                            <h4 className="font-semibold text-sm line-clamp-2 text-zinc-900 dark:text-zinc-100 group-hover:text-blue-400 transition-colors">
-                              {sim.title}
-                            </h4>
-                            <span className="text-xs text-zinc-500 mt-1">
-                              {t("movieLabel")}
-                            </span>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            <div>
+              <div className="flex flex-col items-start gap-2">
+                <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
+                  <Link
+                    href={`/movies/${movie.slug}`}
+                    className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                  >
+                    <h4 className="text-base font-bold">{movie.title}</h4>
+                  </Link>
+
+                  <WatchlistButton
+                    mediaType="SERIES"
+                    mediaId={movie.id}
+                    slug={movie.slug}
+                    initialInWatchlist={inWatchlist}
+                    isLoggedIn={Boolean(userId)}
+                    hasBorder={false}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between w-full">
+                  <h1 className="text-[22px] font-bold text-zinc-500">
+                    {t("movieLabel")}
+                  </h1>
+                  <ShareButton compact />
+                </div>
+              </div>
+              <div className="mt-6">
+                <ExpandableDescription
+                  description={movie.description || t("noDescription")}
+                />
               </div>
             </div>
           </div>
