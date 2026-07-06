@@ -327,6 +327,11 @@
     "startWatchingEp": "Start watching EP: {number}",
     "viewDetails": "View details"
   },
+  "MediaCard": {
+    "subDub": "Sub | Dub",
+    "subtitled": "Subtitled",
+    "dubbed": "Dubbed"
+  },
   "ExpandableDescription": {
     "showMore": "Show More",
     "showLess": "Show Less"

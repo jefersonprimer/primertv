@@ -12,6 +12,8 @@ type FavoriteAnime = {
   bannerUrl: string | null;
   rating: string | null;
   duration: string | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 };
 
 export async function FavoritesCarousel() {
@@ -50,6 +52,8 @@ export async function FavoritesCarousel() {
           bannerUrl: true,
           rating: true,
           duration: true,
+          isDubbed: true,
+          isSubtitled: true,
         },
       })
     ).map((anime) => [anime.id, anime]),
@@ -57,7 +61,7 @@ export async function FavoritesCarousel() {
 
   const favorites: FavoriteAnime[] = animeIds
     .map((animeId) => favoritesById.get(animeId))
-    .filter((anime): anime is FavoriteAnime => Boolean(anime));
+    .filter((anime): anime is NonNullable<typeof anime> => Boolean(anime));
 
   if (favorites.length === 0) return null;
 
@@ -110,6 +114,8 @@ export async function FavoritesCarousel() {
         firstEpisodeSlug,
         rating: anime.rating,
         duration: anime.duration,
+        isDubbed: anime.isDubbed,
+        isSubtitled: anime.isSubtitled,
       };
     }),
   );

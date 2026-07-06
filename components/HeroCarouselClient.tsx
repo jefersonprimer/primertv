@@ -27,6 +27,8 @@ export interface HeroCarouselItem {
   videoUrl?: string | null;
   tmdbId?: string | null;
   publicId?: string | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 interface HeroCarouselClientProps {
@@ -39,6 +41,7 @@ export function HeroCarouselClient({
   isLoggedIn,
 }: HeroCarouselClientProps) {
   const t = useTranslations("Buttons");
+  const tMedia = useTranslations("MediaCard");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -196,6 +199,24 @@ export function HeroCarouselClient({
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
               {current.rating && (
                 <RatingBadge rating={current.rating} size={20} />
+              )}
+
+              {current?.type === "anime" && (current.isDubbed || current.isSubtitled) && (
+                <div className="flex gap-1.5 self-start">
+                  {current.isDubbed && current.isSubtitled ? (
+                    <span className="text-sm text-[#8c8c8c] font-normal">
+                      {tMedia("subDub")}
+                    </span>
+                  ) : current.isDubbed ? (
+                    <span className="text-sm text-[#8c8c8c] font-normal">
+                      {tMedia("dubbed")}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-[#8c8c8c] font-normal">
+                      {tMedia("subtitled")}
+                    </span>
+                  )}
+                </div>
               )}
 
               {current.genres.length > 0 && (

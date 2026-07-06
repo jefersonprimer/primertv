@@ -13,6 +13,7 @@ import { isAdminEmail } from "@/lib/auth";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getMediaFormat } from "@/lib/media-format";
 
 type FormState = {
   error?: string;
@@ -184,6 +185,12 @@ export async function saveMedia(
         break;
       }
       case "animes": {
+        const audio = splitGenres(formData.get("audio"));
+        const subtitles = splitGenres(formData.get("subtitles"));
+        const format = getMediaFormat(audio, subtitles);
+        const isDubbed = format === "DUB" || format === "SUB_DUB";
+        const isSubtitled = format === "SUB" || format === "SUB_DUB";
+
         const payload = {
           ...common,
           slug: finalSlug,
@@ -197,8 +204,10 @@ export async function saveMedia(
           rating: readString(formData, "rating") || null,
           status: readString(formData, "status") || null,
           awards: splitAwards(formData.get("awards")),
-          audio: splitGenres(formData.get("audio")),
-          subtitles: splitGenres(formData.get("subtitles")),
+          audio,
+          subtitles,
+          isDubbed,
+          isSubtitled,
         };
 
         if (existing) {

@@ -17,6 +17,8 @@ type AnimeWatchHistoryRow = {
   animeSlug: string;
   animeTitle: string;
   animeImageUrl: string | null;
+  animeIsDubbed: boolean;
+  animeIsSubtitled: boolean;
 };
 
 
@@ -63,7 +65,9 @@ export async function getAnimeWatchHistory(userId: string) {
       a.id AS "animeId",
       a.slug AS "animeSlug",
       a.title AS "animeTitle",
-      a."imageUrl" AS "animeImageUrl"
+      a."imageUrl" AS "animeImageUrl",
+      a."isDubbed" AS "animeIsDubbed",
+      a."isSubtitled" AS "animeIsSubtitled"
     FROM "WatchHistory" wh
     JOIN "Episode" e ON e.id = wh."episodeId"
     JOIN "Season" s ON s.id = e."seasonId"
@@ -90,6 +94,8 @@ export async function getAnimeWatchHistory(userId: string) {
           slug: row.animeSlug,
           title: row.animeTitle,
           imageUrl: row.animeImageUrl,
+          isDubbed: row.animeIsDubbed,
+          isSubtitled: row.animeIsSubtitled,
         },
       },
     },

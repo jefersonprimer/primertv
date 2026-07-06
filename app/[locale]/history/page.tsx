@@ -43,6 +43,8 @@ export default async function HistoricoPage({
       animeTitle: anime.title,
       animeImageUrl: anime.imageUrl,
       watchedAt: item.watchedAt,
+      isDubbed: anime.isDubbed,
+      isSubtitled: anime.isSubtitled,
     };
   });
 

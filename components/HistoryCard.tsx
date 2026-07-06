@@ -17,6 +17,8 @@ export interface HistoryItem {
   animeTitle: string;
   animeImageUrl: string | null;
   watchedAt: Date;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 interface HistoryCardProps {
@@ -29,6 +31,7 @@ export function HistoryCard({
   className = "w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]",
 }: HistoryCardProps) {
   const t = useTranslations("History");
+  const tMedia = useTranslations("MediaCard");
   const cardHref = item.episodePublicId
     ? `/watch/${item.episodePublicId}/${item.episodeSlug || "episode-" + item.episodeNumber}`
     : `/watch/${item.episodeId}/${item.episodeSlug || "episode-" + item.episodeNumber}`;
@@ -81,12 +84,31 @@ export function HistoryCard({
               {item.animeTitle}
             </h3>
           </Link>
+
           <Link
             href={cardHref}
             className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"
           >
             {t("continueWatchingEp", { number: item.episodeNumber })}
           </Link>
+
+          {(item.isDubbed || item.isSubtitled) && (
+            <div className="flex gap-1.5 self-start mt-2">
+              {item.isDubbed && item.isSubtitled ? (
+                <span className="text-sm text-[#8c8c8c] font-normal">
+                  {tMedia("subDub")}
+                </span>
+              ) : item.isDubbed ? (
+                <span className="text-sm text-[#8c8c8c] font-normal">
+                  {tMedia("dubbed")}
+                </span>
+              ) : (
+                <span className="text-sm text-[#8c8c8c] font-normal">
+                  {tMedia("subtitled")}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

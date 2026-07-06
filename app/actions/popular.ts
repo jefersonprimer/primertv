@@ -13,6 +13,8 @@ export interface PopularAnimeItem {
   rank: number;
   popularity: number | null;
   members: number | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 export async function getPopularAnimes({
@@ -45,6 +47,8 @@ export async function getPopularAnimes({
         rank: true,
         popularity: true,
         members: true,
+        isDubbed: true,
+        isSubtitled: true,
       },
       skip,
       take: limit + 1, // Fetch one extra to determine hasMore

@@ -60,6 +60,8 @@ model Anime {
   genres            String[]         @default([])
   audio             String[]         @default([])
   subtitles         String[]         @default([])
+  isDubbed          Boolean          @default(false)
+  isSubtitled       Boolean          @default(false)
   awards            String[]         @default([])
   aired             String?
   rating            String?
@@ -99,6 +101,8 @@ model Anime {
   @@index([members])
   @@index([latestEpisodeAt])
   @@index([updatedAt])
+  @@index([isDubbed])
+  @@index([isSubtitled])
 }
 
 model Season {

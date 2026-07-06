@@ -27,6 +27,8 @@ type WatchlistAnime = {
   bannerUrl: string | null;
   rating: string | null;
   duration: string | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 };
 
 type WatchlistSeries = {
@@ -107,6 +109,8 @@ export default async function WatchlistPage({
             bannerUrl: true,
             rating: true,
             duration: true,
+            isDubbed: true,
+            isSubtitled: true,
           },
         })
       : Promise.resolve([] as WatchlistAnime[]),
@@ -175,6 +179,8 @@ export default async function WatchlistPage({
         firstEpisodeImageUrl,
         rating: anime.rating,
         duration: anime.duration,
+        isDubbed: anime.isDubbed,
+        isSubtitled: anime.isSubtitled,
       };
     }),
   );

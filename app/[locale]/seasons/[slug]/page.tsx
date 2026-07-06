@@ -89,6 +89,8 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
       slug: true,
       title: true,
       imageUrl: true,
+      isDubbed: true,
+      isSubtitled: true,
     },
     orderBy: {
       title: "asc",

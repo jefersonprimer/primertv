@@ -168,6 +168,23 @@ export function PopularAnimesList({
               <h3 className="line-clamp-2 text-sm font-semibold text-white">
                 {item.title}
               </h3>
+              {(item.isDubbed || item.isSubtitled) && (
+                <div className="flex gap-1.5 self-start">
+                  {item.isDubbed && item.isSubtitled ? (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 uppercase tracking-wider">
+                      Sub | Dub
+                    </span>
+                  ) : item.isDubbed ? (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20 uppercase tracking-wider">
+                      Dub
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider">
+                      Leg
+                    </span>
+                  )}
+                </div>
+              )}
 
               {item.score && (
                 <span className="text-xs font-semibold text-amber-500 flex items-center gap-1">

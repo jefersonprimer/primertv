@@ -44,6 +44,8 @@ export default async function SearchPage({
         slug: true,
         title: true,
         imageUrl: true,
+        isDubbed: true,
+        isSubtitled: true,
       },
       take: 24,
     }),

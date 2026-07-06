@@ -15,6 +15,8 @@ export interface FavoriteItem {
   firstEpisodeSlug?: string | null;
   rating: string | null;
   duration: string | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 interface FavoriteCardProps {
@@ -36,6 +38,7 @@ export default function FavoriteCard({
   className = "",
 }: FavoriteCardProps) {
   const t = useTranslations("FavoriteCard");
+  const tMedia = useTranslations("MediaCard");
   const cardHref = item.firstEpisodePublicId
     ? `/watch/${item.firstEpisodePublicId}/${item.firstEpisodeSlug || "episode-1"}`
     : `/animes/${item.slug}`;
@@ -127,6 +130,24 @@ export default function FavoriteCard({
           >
             {t("viewDetails")}
           </Link>
+        )}
+
+        {(item.isDubbed || item.isSubtitled) && (
+          <div className="flex gap-1.5 self-start mt-2">
+            {item.isDubbed && item.isSubtitled ? (
+              <span className="text-sm text-[#8c8c8c] font-normal">
+                {tMedia("subDub")}
+              </span>
+            ) : item.isDubbed ? (
+              <span className="text-sm text-[#8c8c8c] font-normal">
+                {tMedia("dubbed")}
+              </span>
+            ) : (
+              <span className="text-sm text-[#8c8c8c] font-normal">
+                {tMedia("subtitled")}
+              </span>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -76,6 +76,7 @@ export default async function AnimeDetailsPage({
   params,
 }: AnimeDetailsPageProps) {
   const t = await getTranslations("AnimeDetails");
+  const tMedia = await getTranslations("MediaCard");
   const { slug } = await params;
   const anime = await getAnimeDetailsBySlug(slug);
 
@@ -132,6 +133,8 @@ export default async function AnimeDetailsPage({
             slug: true,
             title: true,
             imageUrl: true,
+            isDubbed: true,
+            isSubtitled: true,
           },
           take: 15,
         })
@@ -320,14 +323,48 @@ export default async function AnimeDetailsPage({
                 </div>
 
                 {(anime.rating ||
-                  (anime.genres && anime.genres.length > 0)) && (
+                  (anime.genres && anime.genres.length > 0) ||
+                  anime.isDubbed ||
+                  anime.isSubtitled) && (
                   <div className="mt-2 flex items-center justify-center md:justify-start flex-wrap gap-1.5">
                     {anime.rating && (
                       <RatingBadge rating={anime.rating} className="h-5 w-5" />
                     )}
-                    {anime.rating &&
+                    {(anime.isDubbed || anime.isSubtitled) && (
+                      <>
+                        {anime.rating && (
+                          <span
+                            className="text-[#bbb] flex items-center justify-center"
+                            aria-hidden="true"
+                          >
+                            <svg
+                              className="h-2 w-2 fill-current"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 2L22 12L12 22L2 12Z" />
+                            </svg>
+                          </span>
+                        )}
+                        <div className="flex gap-1.5 items-center">
+                          {anime.isDubbed && anime.isSubtitled ? (
+                            <span className="text-sm text-[#8c8c8c] font-normal">
+                              {tMedia("subDub")}
+                            </span>
+                          ) : anime.isDubbed ? (
+                            <span className="text-sm text-[#8c8c8c] font-normal">
+                              {tMedia("dubbed")}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-[#8c8c8c] font-normal">
+                              {tMedia("subtitled")}
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    )}
+                    {((anime.rating || anime.isDubbed || anime.isSubtitled) &&
                       anime.genres &&
-                      anime.genres.length > 0 && (
+                      anime.genres.length > 0) && (
                         <span
                           className="text-[#bbb] flex items-center justify-center"
                           aria-hidden="true"

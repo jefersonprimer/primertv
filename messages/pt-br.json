@@ -327,6 +327,11 @@
     "startWatchingEp": "Começar a assistir EP: {number}",
     "viewDetails": "Ver detalhes"
   },
+  "MediaCard": {
+    "subDub": "Leg | Dub",
+    "subtitled": "Legendado",
+    "dubbed": "Dublado"
+  },
   "ExpandableDescription": {
     "showMore": "Ver Mais",
     "showLess": "Ver Menos"

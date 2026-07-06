@@ -21,6 +21,8 @@ const animeDetailsSelect = {
   subtitles: true,
   aired: true,
   rating: true,
+  isDubbed: true,
+  isSubtitled: true,
   score: true,
   status: true,
   duration: true,

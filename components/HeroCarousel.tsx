@@ -22,6 +22,8 @@ type HeroCarouselMedia = {
   videoUrl?: string | null;
   tmdbId?: string | null;
   publicId?: string | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 };
 
 export async function HeroCarousel({
@@ -85,6 +87,8 @@ export async function HeroCarousel({
             logoUrl: true,
             genres: true,
             rating: true,
+            isDubbed: true,
+            isSubtitled: true,
           },
           orderBy: { createdAt: "desc" },
           take: 6,
@@ -184,6 +188,8 @@ export async function HeroCarousel({
         videoUrl: media.videoUrl ?? null,
         tmdbId: media.tmdbId ?? null,
         publicId: media.publicId ?? null,
+        isDubbed: media.isDubbed ?? false,
+        isSubtitled: media.isSubtitled ?? false,
       };
     }),
   );
