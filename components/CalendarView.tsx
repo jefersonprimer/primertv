@@ -60,15 +60,10 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
   return (
     <div className="w-full">
       {/* Header Info */}
-      <div className="mb-8 flex flex-col items-center justify-between gap-4 md:flex-row md:items-start">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-white md:text-3xl">
-            {t("weeklyCalendar")}
-          </h1>
-          <p className="mt-1.5 text-sm text-zinc-400">
-            {t("scheduleDescription")}
-          </p>
-        </div>
+      <div className="mb-8 flex items-center justify-between gap-4  md:items-start">
+        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-white md:text-3xl">
+          {t("weeklyCalendar")}
+        </h1>
         <div className="flex items-center gap-2 rounded-md p-2 text-xs font-medium bg-zinc-800 text-zinc-300">
           <Clock className="h-3.5 w-3.5" />
           {t("timezoneInfo")}
@@ -101,17 +96,6 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                     }`}
                   />
                 )}
-                {count > 0 && (
-                  <span
-                    className={`absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center px-1 text-[9px] font-bold ${
-                      isActive
-                        ? "bg-white text-blue-600"
-                        : "text-white bg-blue-500"
-                    }`}
-                  >
-                    {count}
-                  </span>
-                )}
               </button>
             );
           })}
@@ -126,11 +110,6 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
               <span className="h-2 w-2 bg-blue-600" />
               {DAYS_OF_WEEK.find((d) => d.value === activeDay)?.label}
             </h2>
-            <span className="text-xs font-medium text-zinc-400">
-              {t("releasesCount", {
-                count: groupedAnimes[activeDay]?.length || 0,
-              })}
-            </span>
           </div>
 
           {groupedAnimes[activeDay]?.length === 0 ? (
@@ -174,17 +153,11 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
               <div className="mb-4 flex flex-col gap-1 pb-2">
                 <span
                   className={`text-sm font-bold truncate ${
-                    isToday
-                      ? "text-blue-500"
-                      : "text-white"
+                    isToday ? "text-blue-500" : "text-white"
                   }`}
                 >
                   {day.label.split("-")[0]}
                 </span>
-                <div className="flex items-center justify-between text-[11px] text-zinc-500">
-                  <span>{isToday ? t("todayLabel") : t("releaseLabel")}</span>
-                  <span className="font-semibold">{dayList.length}</span>
-                </div>
               </div>
 
               {/* Anime Cards Stack */}
@@ -292,9 +265,7 @@ function AnimeCalendarCard({
       {/* Status do Episódio */}
       <div className="mt-1 text-[10px] font-medium text-zinc-400">
         {anime.isComingSoon ? (
-          <span className="text-blue-400 font-semibold">
-            {t("comingSoon")}
-          </span>
+          <span className="text-blue-400 font-semibold">{t("comingSoon")}</span>
         ) : isToday ? (
           <span>{t("episodeAvailable", { number: anime.lastEpisode })}</span>
         ) : (

@@ -14,30 +14,6 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; // revalida a cada hora
 
-async function TrendingSeriesCarousel() {
-  const items = await prisma.series.findMany({
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      imageUrl: true,
-    },
-    orderBy: [
-      { score: "desc" },
-      { createdAt: "desc" },
-    ],
-    take: 10,
-  });
-
-  return (
-    <TrendingNowCarousel
-      title="Top 10 Séries em Alta"
-      subtitle="As séries mais populares e comentadas do momento"
-      items={items}
-    />
-  );
-}
-
 async function RecentSeriesCarousel() {
   const items = await prisma.series.findMany({
     select: {
@@ -169,10 +145,6 @@ export default async function SeriesPage() {
       </Suspense>
       <div className="pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-18 sm:translate-y-0 md:-translate-y-18 lg:-translate-y-32 xl:-translate-y-40">
         <main className="space-y-8 lg:space-y-16">
-          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-            <TrendingSeriesCarousel />
-          </Suspense>
-
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <RecentSeriesCarousel />
           </Suspense>

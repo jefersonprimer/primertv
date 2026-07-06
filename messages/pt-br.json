@@ -261,7 +261,6 @@
     "metaTitle": "Calendário de Animes - PrimerTv",
     "metaDescription": "Acompanhe os dias de exibição e horários de lançamento dos novos episódios dos seus animes favoritos.",
     "weeklyCalendar": "Calendário Semanal",
-    "scheduleDescription": "Acompanhe o cronograma de lançamentos dos novos episódios dos seus animes.",
     "timezoneInfo": "Fuso horário de Brasília (UTC-3)",
     "releasesCount": "{count, plural, =1 {# lançamento} other {# lançamentos}}",
     "noReleasesToday": "Nenhum lançamento agendado para hoje.",

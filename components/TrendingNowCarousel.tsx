@@ -55,7 +55,7 @@ export function TrendingNowCarousel({
           }}
         >
           <div>
-            <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2]">
+            <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2] px-4">
               {title}
             </h2>
             {subtitle && (

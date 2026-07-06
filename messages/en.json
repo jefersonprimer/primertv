@@ -261,7 +261,6 @@
     "metaTitle": "Anime Calendar - PrimerTv",
     "metaDescription": "Track the airing days and release times of new episodes of your favorite anime.",
     "weeklyCalendar": "Weekly Schedule",
-    "scheduleDescription": "Track the release schedule of new episodes of your anime.",
     "timezoneInfo": "Brasilia timezone (UTC-3)",
     "releasesCount": "{count, plural, =1 {# release} other {# releases}}",
     "noReleasesToday": "No releases scheduled for today.",

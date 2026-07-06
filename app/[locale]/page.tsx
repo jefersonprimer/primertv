@@ -15,6 +15,7 @@ import { TodayReleasesSkeleton } from "@/components/TodayReleasesSkeleton";
 import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 import { getCurrentSeasonSlug } from "@/lib/seasons";
 import { connection } from "next/server";
+import { TrendingNowCarousel } from "@/components/TrendingNowCarousel";
 
 export const revalidate = 3600; // revalida a cada hora
 
@@ -119,6 +120,21 @@ async function NextSeasonCarousel() {
   );
 }
 
+async function TrendingSeriesCarousel() {
+  const items = await prisma.series.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+    },
+    orderBy: [{ score: "desc" }, { createdAt: "desc" }],
+    take: 10,
+  });
+
+  return <TrendingNowCarousel title="Top 10 Séries em Alta" items={items} />;
+}
+
 async function AnimeCarousel() {
   const items = await prisma.anime.findMany({
     select: {
@@ -217,6 +233,10 @@ export default async function Home() {
             <TopAnimesCarousel />
           </Suspense>
 
+          <Suspense fallback={<HistoryCarouselSkeleton />}>
+            <HistoryCarousel />
+          </Suspense>
+
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <NextSeasonCarousel />
           </Suspense>
@@ -225,20 +245,20 @@ export default async function Home() {
             <CurrentSeasonCarousel />
           </Suspense>
 
-          <Suspense fallback={<FavoritesCarouselSkeleton />}>
-            <FavoritesCarousel />
-          </Suspense>
-
-          <Suspense fallback={<HistoryCarouselSkeleton />}>
-            <HistoryCarousel />
-          </Suspense>
-
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-            <SeriesCarousel />
+            <TrendingSeriesCarousel />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <MovieCarousel />
+          </Suspense>
+
+          <Suspense fallback={<FavoritesCarouselSkeleton />}>
+            <FavoritesCarousel />
+          </Suspense>
+
+          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+            <SeriesCarousel />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
