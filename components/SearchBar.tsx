@@ -149,7 +149,7 @@ export function SearchBar({
                   {recentSearches.map((search) => (
                     <div
                       key={search}
-                      className="group flex sm:inline-flex justify-between sm:justify-start cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80 max-w-[300px] min-w-0"
+                      className="group flex sm:inline-flex justify-between sm:justify-start cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80 w-full md:w-fit lg:max-w-[300px] min-w-0"
                       onClick={() => handleRecentClick(search)}
                     >
                       <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2 py-0 truncate min-w-0">

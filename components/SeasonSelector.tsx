@@ -77,7 +77,7 @@ export default function SeasonSelector({
         <div className="relative inline-block">
           <button
             onClick={() => seasons.length > 1 && setIsOpen(!isOpen)}
-            className={`flex items-center gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-50 ${
+            className={`flex items-center gap-2 text-lg font-bold text-[#f2f2f2] ${
               seasons.length > 1
                 ? "cursor-pointer hover:text-blue-500 transition-colors"
                 : ""
@@ -97,7 +97,7 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsOpen(false)}
               />
-              <div className="absolute left-0 top-full z-50 mt-2 py-2 w-60 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="absolute left-0 top-full z-50 mt-2 py-2 w-60 overflow-hidden bg-[#272727] shadow-xl">
                 {seasons.map((season, index) => (
                   <button
                     key={season.id}
@@ -105,14 +105,14 @@ export default function SeasonSelector({
                       setCurrentIndex(index);
                       setIsOpen(false);
                     }}
-                    className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between ${
+                    className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-[#151515] flex items-center justify-between ${
                       index === currentIndex
-                        ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                        : "text-zinc-700 dark:text-zinc-300"
+                        ? "bg-[#151515] text-white"
+                        : "text-[#bbb]"
                     }`}
                   >
                     <span>{t("season", { number: season.number })}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400 font-normal">
+                    <span className="text-xs text-[#bbb] font-normal">
                       {t("episodesCount", { count: season.episodes.length })}
                     </span>
                   </button>

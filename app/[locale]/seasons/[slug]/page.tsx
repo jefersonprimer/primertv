@@ -105,7 +105,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
       {/* Header section with Title and Dropdown */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-[28px]">
+          <h1 className="text-xl font-bold tracking-tight text-zinc-50 sm:text-[28px]">
             {t("title")}
           </h1>
         </div>
@@ -116,9 +116,9 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
 
       {/* Animes List Grid */}
       {filteredAnimes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/10">
+        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-zinc-800 bg-zinc-900/10">
           <svg
-            className="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-650"
+            className="mx-auto h-12 w-12 text-zinc-650"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -131,10 +131,10 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
               d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
             />
           </svg>
-          <h3 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <h3 className="mt-4 text-lg font-semibold text-zinc-100">
             {t("noAnimesFound")}
           </h3>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-xs">
+          <p className="mt-2 text-sm text-zinc-400 max-w-xs">
             {t("noAnimesCorresponding", { season: seasonName, year: selectedYear })}
           </p>
         </div>
@@ -146,7 +146,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
               href={`/animes/${anime.slug}`}
               className="group flex flex-col gap-3"
             >
-              <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-100 shadow-md ring-1 ring-black/5 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15 dark:bg-zinc-900 dark:ring-white/10">
+              <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-900 shadow-md ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15">
                 {anime.imageUrl ? (
                   <Image
                     src={anime.imageUrl}
@@ -177,7 +177,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
                 </div>
               </div>
 
-              <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 transition-colors group-hover:text-blue-500 dark:text-zinc-100">
+              <h3 className="line-clamp-2 text-sm font-semibold text-zinc-100 transition-colors group-hover:text-blue-500">
                 {anime.title}
               </h3>
             </Link>
@@ -186,18 +186,18 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
       )}
 
       {/* Season Navigation */}
-      <div className="border-b border-zinc-200 dark:border-zinc-800 mt-12 mb-6" />
+      <div className="border-b border-zinc-800 mt-12 mb-6" />
       <div className="flex items-center justify-between pb-8">
         <Link
           href={`/seasons/${prevSlug}`}
-          className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+          className="flex items-center gap-2 text-sm font-semibold text-zinc-300 hover:text-blue-400 transition-colors cursor-pointer"
         >
           <ChevronLeft className="h-5 w-5" />
           <span>{t("prevSeason")}</span>
         </Link>
         <Link
           href={`/seasons/${nextSlug}`}
-          className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+          className="flex items-center gap-2 text-sm font-semibold text-zinc-300 hover:text-blue-400 transition-colors cursor-pointer"
         >
           <span>{t("nextSeason")}</span>
           <ChevronRight className="h-5 w-5" />

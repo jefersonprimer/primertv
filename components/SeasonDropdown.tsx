@@ -53,12 +53,12 @@ export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
   };
 
   return (
-    <div className="relative inline-block text-left" ref={containerRef}>
+    <div className="relative inline-block" ref={containerRef}>
       <div>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className={`inline-flex w-full items-center justify-between gap-x-2 px-4 py-2.5 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-50 focus:outline-none  dark:text-zinc-300 dark:hover:bg-zinc-800 uppercase ${isOpen ? "bg-white dark:bg-zinc-900" : ""}`}
+          className={`inline-flex w-full items-center justify-between gap-x-2 px-4 py-2 text-sm font-semibold text-[#bbb] transition-colors focus:outline-none hover:text-white hover:bg-[#272727] uppercase ${isOpen ? "text-white bg-[#272727]" : ""}`}
           id="menu-button"
           aria-expanded={isOpen}
           aria-haspopup="true"
@@ -72,23 +72,23 @@ export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
 
       {isOpen && (
         <div
-          className="absolute right-0 z-50 w-54 py-2 origin-top-right bg-white shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-zinc-900"
+          className="absolute right-0 z-50 w-54 py-2 origin-top-right bg-[#272727] shadow-lg ring-1 ring-black/5 focus:outline-none"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
         >
           <div
-            className="py-1 max-h-84 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800"
+            className="max-h-84 overflow-y-auto scrollbar-thin scrollbar-thumb-[#151515]"
             role="none"
           >
             {seasons.map((season) => (
               <button
                 key={season.slug}
                 onClick={() => handleSelect(season.slug)}
-                className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-colors ${
+                className={`flex w-full items-center px-4 py-2 text-sm transition-colors ${
                   season.slug === currentSlug
-                    ? "bg-blue-50 text-blue-600 font-semibold dark:bg-blue-950/30 dark:text-blue-400"
-                    : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+                    ? "text-white font-semibold bg-[#151515]"
+                    : "text-[#bbb] hover:bg-[#151515] hover:text-white"
                 }`}
                 role="menuitem"
               >
