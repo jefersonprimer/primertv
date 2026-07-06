@@ -52,9 +52,9 @@ export function UserMenu({ user }: UserMenuProps) {
               </div>
             </div>
 
-            <div className="space-y-0.5 border-t border-zinc-700/60">
+            <div className="border-t border-zinc-700/60">
               {user.role !== "admin" && (
-                <>
+                <div className="py-2">
                   <Link
                     href="/history"
                     onClick={() => setIsOpen(false)}
@@ -79,10 +79,10 @@ export function UserMenu({ user }: UserMenuProps) {
                     <List size={18} />
                     <span>{t("myLists")}</span>
                   </Link>
-                </>
+                </div>
               )}
 
-              <div className="my-1.5 border-t border-zinc-700/60" />
+              <div className="border-t border-zinc-700/60 mb-2" />
 
               <button
                 onClick={async () => {

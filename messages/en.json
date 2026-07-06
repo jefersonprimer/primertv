@@ -27,6 +27,8 @@
     "signup": "Create Account",
     "watchlist": "My Watchlist",
     "history": "History",
+    "myLists": "My Lists",
+    "logout": "Sign Out",
     "disclaimer": "This site does not host any videos on its server. All content is provided by non-affiliated third parties.",
     "allRightsReserved": "All rights reserved.",
     "developedBy": "Developed by PrimerLabs"

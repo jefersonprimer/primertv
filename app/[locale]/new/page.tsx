@@ -57,7 +57,7 @@ export default async function NewReleasesPage({
   ] as const;
 
   return (
-    <div className="mx-auto max-w-[1130px] px-4 md:px-0 py-6">
+    <div className="mx-auto max-w-[1130px] px-4 xl:px-0 py-6">
       {/* Navigation Tabs */}
       <div className="flex flex-wrap gap-2 border-b pb-2 sm:pb-4 border-zinc-800">
         {TABS.map((tab) => {

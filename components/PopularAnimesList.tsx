@@ -103,10 +103,10 @@ export function PopularAnimesList({
   if (items.length === 0 && !loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="rounded-full bg-zinc-100 p-4 dark:bg-zinc-900">
+        <div className="rounded-full p-4 bg-zinc-900">
           <Tv className="h-12 w-12 text-zinc-400" />
         </div>
-        <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-zinc-100">
+        <h3 className="mt-4 text-lg font-bold text-zinc-100">
           Nenhum anime encontrado
         </h3>
       </div>
@@ -122,7 +122,7 @@ export function PopularAnimesList({
             href={`/animes/${item.slug}`}
             className="group flex flex-col gap-3"
           >
-            <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/20">
+            <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-900 shadow-md ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/20">
               {item.imageUrl ? (
                 <Image
                   src={item.imageUrl}
@@ -194,9 +194,9 @@ export function PopularAnimesList({
             >
               <div className="relative aspect-[2/3] w-full bg-zinc-200 dark:bg-zinc-800 shadow-md ring-1 ring-black/5 dark:ring-white/10" />
               <div className="flex flex-col gap-2">
-                <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded" />
-                <div className="h-3.5 w-1/3 bg-zinc-200 dark:bg-zinc-800 rounded" />
-                <div className="h-3 w-1/2 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800" />
+                <div className="h-3.5 w-1/3 bg-zinc-200 dark:bg-zinc-800" />
+                <div className="h-3 w-1/2 bg-zinc-200 dark:bg-zinc-800" />
               </div>
             </div>
           ))}

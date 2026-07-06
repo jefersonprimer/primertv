@@ -2,8 +2,12 @@ import { Link } from "@/i18n/routing";
 import { NAV_LINKS } from "./nav-links";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { getTranslations } from "next-intl/server";
+import { getSession } from "@/lib/auth";
+import { logout } from "@/app/actions/auth";
 
 export async function Footer() {
+  const session = await getSession();
+  const user = session?.user;
   const t = await getTranslations("Footer");
   const tHeader = await getTranslations("Header");
 
@@ -235,50 +239,81 @@ export async function Footer() {
               {t("accountHeading")}
             </h3>
             <ul className="space-y-2.5">
-              <li>
-                <Link
-                  href="/login"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
-                    ›
-                  </span>
-                  {t("login")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/signup"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
-                    ›
-                  </span>
-                  {t("signup")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/watchlist"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
-                    ›
-                  </span>
-                  {t("watchlist")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/history"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
-                    ›
-                  </span>
-                  {t("history")}
-                </Link>
-              </li>
+              {user ? (
+                <>
+                  <li>
+                    <Link
+                      href="/history"
+                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                    >
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                        ›
+                      </span>
+                      {t("history")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/watchlist"
+                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                    >
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                        ›
+                      </span>
+                      {t("watchlist")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/lists"
+                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                    >
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                        ›
+                      </span>
+                      {t("myLists")}
+                    </Link>
+                  </li>
+                  <li>
+                    <form action={logout}>
+                      <button
+                        type="submit"
+                        className="group flex w-full items-center text-sm text-zinc-400 hover:text-red-500 transition-colors duration-150 text-left cursor-pointer"
+                      >
+                        <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-red-500">
+                          ›
+                        </span>
+                        {t("logout")}
+                      </button>
+                    </form>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link
+                      href="/login"
+                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                    >
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                        ›
+                      </span>
+                      {t("login")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/signup"
+                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                    >
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                        ›
+                      </span>
+                      {t("signup")}
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>
