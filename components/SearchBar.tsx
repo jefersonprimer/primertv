@@ -149,10 +149,10 @@ export function SearchBar({
                   {recentSearches.map((search) => (
                     <div
                       key={search}
-                      className="group flex sm:inline-flex justify-between sm:justify-start cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80"
+                      className="group flex sm:inline-flex justify-between sm:justify-start cursor-pointer items-center transition-colors bg-[#344A54] hover:bg-[#344A54]/80 max-w-[300px] min-w-0"
                       onClick={() => handleRecentClick(search)}
                     >
-                      <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2 py-0">
+                      <span className="text-xs font-medium uppercase text-[#bbb] hover:text-[#f2f2f2] px-2 py-0 truncate min-w-0">
                         {search}
                       </span>
                       <button
@@ -160,7 +160,7 @@ export function SearchBar({
                           e.stopPropagation();
                           handleRemoveSearch(search);
                         }}
-                        className="border-l border-[#272727] text-[#bbb] transition-all hover:text-[#f2f2f2] p-0"
+                        className="border-l border-[#272727] text-[#bbb] transition-all hover:text-[#f2f2f2] p-0 shrink-0"
                         aria-label={t("removeSearch", { query: search })}
                       >
                         <X size={24} />

@@ -133,9 +133,9 @@ export default async function SeriesDetailsPage({
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
-      <div className="relative md:min-h-[85vh] w-full md:flex md:flex-col md:justify-end">
+      <div className="relative md:min-h-[90vh] w-full md:flex md:flex-col md:justify-end">
         {/* Banner Section */}
-        <div className="absolute top-0 left-0 right-0 h-[85vh] hidden md:block bg-zinc-900 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[90vh] hidden md:block bg-zinc-900 overflow-hidden">
           {finalBannerUrl ? (
             <Image
               src={finalBannerUrl}
