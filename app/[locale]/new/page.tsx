@@ -59,17 +59,17 @@ export default async function NewReleasesPage({
   return (
     <div className="mx-auto max-w-[1130px] px-4 md:px-0 py-6">
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-zinc-200 pb-2 sm:pb-4 dark:border-zinc-800">
+      <div className="flex flex-wrap gap-2 border-b pb-2 sm:pb-4 border-zinc-800">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <Link
               key={tab.id}
               href={`/new?type=${tab.id}`}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-95 ${
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 active:scale-95 ${
                 isActive
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25"
-                  : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  : "bg-zinc-900 text-zinc-300 hover:bg-zinc-800"
               }`}
             >
               {tab.label}

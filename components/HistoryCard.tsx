@@ -45,7 +45,10 @@ export function HistoryCard({
           {displayImageUrl ? (
             <Image
               src={displayImageUrl}
-              alt={t("episodeAlt", { number: item.episodeNumber, title: item.animeTitle })}
+              alt={t("episodeAlt", {
+                number: item.episodeNumber,
+                title: item.animeTitle,
+              })}
               fill
               sizes="(max-width: 640px) 260px, (max-width: 1024px) 300px, 287.75px"
               className="object-cover transition-transform duration-500"
@@ -58,7 +61,10 @@ export function HistoryCard({
 
           {/* Season / Episode overlay badge */}
           <div className="absolute top-0 left-0 z-20 bg-black/75 backdrop-blur-xs text-[#f2f2f2] px-2 py-0.5 text-sm font-normal">
-            {t("seasonEpisodeBadge", { season: item.seasonNumber, episode: item.episodeNumber })}
+            {t("seasonEpisodeBadge", {
+              season: item.seasonNumber,
+              episode: item.episodeNumber,
+            })}
           </div>
 
           {/* Hover Play Overlay */}
@@ -69,9 +75,9 @@ export function HistoryCard({
           </div>
         </Link>
 
-        <div className="flex flex-col gap-0.5 px-1">
+        <div className="flex flex-col gap-1">
           <Link href={cardHref}>
-            <h3 className="flex h-full items-center text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-2">
+            <h3 className="text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-2 hover:underline">
               {item.animeTitle}
             </h3>
           </Link>

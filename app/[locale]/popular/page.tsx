@@ -32,7 +32,7 @@ export default async function PopularAnimesPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-[1130px] px-4 md:px-0 py-6">
       {/* Page Header */}
-      <div className=" flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-200 pb-2 sm:pb-4 dark:border-zinc-800">
+      <div className=" flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-2 sm:pb-4 border-zinc-800">
         <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px]">
           {t("title")}
         </h1>

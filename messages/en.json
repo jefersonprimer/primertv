@@ -1,6 +1,6 @@
 {
   "Header": {
-    "series": "Series",
+    "series": "TV shows",
     "movies": "Movies",
     "animes": "Anime",
     "mangas": "Manga",
@@ -79,7 +79,7 @@
     "emptyTitle": "Your watchlist is empty.",
     "emptySubtitle": "Explore <animesLink>anime</animesLink> or <seriesLink>series</seriesLink> or <mangasLink>manga</mangasLink> and add to your list.",
     "animes": "Anime",
-    "series": "Series",
+    "series": "TV Shows",
     "mangas": "Manga",
     "tooltip": "My Watchlist",
     "myList": "Your List",
@@ -142,6 +142,7 @@
   "Labels": {
     "episode": "Episode",
     "chapter": "Chapter",
+    "chapters": "Chapters",
     "movie": "Movie",
     "readNow": "Read Now",
     "showMore": "Show More",
@@ -250,7 +251,7 @@
     "metaDescription": "Check out the latest updates, episodes, and recently added releases on the platform.",
     "tabs": {
       "animes": "Anime",
-      "series": "Series",
+      "series": "TV Shows",
       "novelas": "Telenovelas",
       "filmes": "Movies",
       "mangas": "Manga"

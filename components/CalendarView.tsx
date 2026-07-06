@@ -62,14 +62,14 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
       {/* Header Info */}
       <div className="mb-8 flex flex-col items-center justify-between gap-4 md:flex-row md:items-start">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-white md:text-3xl">
+          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-white md:text-3xl">
             {t("weeklyCalendar")}
           </h1>
-          <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1.5 text-sm text-zinc-400">
             {t("scheduleDescription")}
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+        <div className="flex items-center gap-2 rounded-md p-2 text-xs font-medium bg-zinc-800 text-zinc-300">
           <Clock className="h-3.5 w-3.5" />
           {t("timezoneInfo")}
         </div>
@@ -90,14 +90,14 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                 className={`relative flex flex-col items-center min-w-[70px] px-3 py-2 text-xs font-medium transition-all ${
                   isActive
                     ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                    : "bg-zinc-100 hover:bg-zinc-200 text-zinc-600 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-400"
+                    : "bg-zinc-900 hover:bg-zinc-800 text-zinc-400"
                 }`}
               >
                 <span>{day.shortLabel}</span>
                 {isToday && (
                   <span
                     className={`mt-1 h-1.5 w-1.5 ${
-                      isActive ? "bg-white" : "bg-blue-600 dark:bg-blue-500"
+                      isActive ? "bg-white" : "bg-blue-500"
                     }`}
                   />
                 )}
@@ -106,7 +106,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                     className={`absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center px-1 text-[9px] font-bold ${
                       isActive
                         ? "bg-white text-blue-600"
-                        : "bg-blue-600 text-white dark:bg-blue-500"
+                        : "text-white bg-blue-500"
                     }`}
                   >
                     {count}
@@ -120,13 +120,13 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
 
       {/* Mobile Active Column View */}
       <div className="block md:hidden">
-        <div className="bg-white p-4 shadow-sm border border-zinc-100 dark:bg-zinc-950 dark:border-zinc-900">
-          <div className="mb-4 flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-900">
-            <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+        <div className="p-4 shadow-sm border bg-zinc-950 border-zinc-900">
+          <div className="mb-4 flex items-center justify-between border-b pb-3 border-zinc-900">
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
               <span className="h-2 w-2 bg-blue-600" />
               {DAYS_OF_WEEK.find((d) => d.value === activeDay)?.label}
             </h2>
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-medium text-zinc-400">
               {t("releasesCount", {
                 count: groupedAnimes[activeDay]?.length || 0,
               })}
@@ -135,13 +135,13 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
 
           {groupedAnimes[activeDay]?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Tv className="h-10 w-10 text-zinc-300 dark:text-zinc-700" />
-              <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+              <Tv className="h-10 w-10 text-zinc-700" />
+              <p className="mt-3 text-sm text-zinc-400">
                 {t("noReleasesToday")}
               </p>
             </div>
           ) : (
-            <div className="relative pl-4 border-l border-zinc-200 dark:border-zinc-800 flex flex-col gap-6 ml-2">
+            <div className="relative pl-4 border-l border-zinc-800 flex flex-col gap-6 ml-2">
               {groupedAnimes[activeDay]?.map((anime) => (
                 <AnimeCalendarCard
                   key={anime.id}
@@ -166,8 +166,8 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
               key={day.value}
               className={`flex flex-col pl-4 pr-2 pb-4 border-l transition-all duration-300 relative ${
                 isToday
-                  ? "border-blue-500 dark:border-blue-500/70 bg-blue-500/[0.02]"
-                  : "border-zinc-200 dark:border-zinc-850"
+                  ? "border-blue-500/70 bg-blue-500/[0.02]"
+                  : "border-zinc-800"
               }`}
             >
               {/* Day Header */}
@@ -175,13 +175,13 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                 <span
                   className={`text-sm font-bold truncate ${
                     isToday
-                      ? "text-blue-600 dark:text-blue-500"
-                      : "text-zinc-900 dark:text-white"
+                      ? "text-blue-500"
+                      : "text-white"
                   }`}
                 >
                   {day.label.split("-")[0]}
                 </span>
-                <div className="flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500">
+                <div className="flex items-center justify-between text-[11px] text-zinc-500">
                   <span>{isToday ? t("todayLabel") : t("releaseLabel")}</span>
                   <span className="font-semibold">{dayList.length}</span>
                 </div>
@@ -189,9 +189,9 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
 
               {/* Anime Cards Stack */}
               {dayList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center border border-dashed border-zinc-150 dark:border-zinc-800/80">
-                  <Tv className="h-6 w-6 text-zinc-300 dark:text-zinc-800" />
-                  <span className="mt-2 text-[10px] text-zinc-400 dark:text-zinc-500">
+                <div className="flex flex-col items-center justify-center py-8 text-center border border-dashed border-zinc-800/80">
+                  <Tv className="h-6 w-6 text-zinc-800" />
+                  <span className="mt-2 text-[10px] text-zinc-500">
                     {t("empty")}
                   </span>
                 </div>
@@ -269,13 +269,13 @@ function AnimeCalendarCard({
       <div
         className={`absolute left-[-16px] -translate-x-1/2 top-[2.5px] z-10 rounded-full border-2 transition-all duration-300 ${
           isToday
-            ? "w-3 h-3 bg-blue-600 border-white dark:bg-blue-500 dark:border-zinc-950 scale-110 shadow-sm shadow-blue-500/50"
-            : "w-2.5 h-2.5 bg-zinc-300 border-white dark:bg-zinc-600 dark:border-zinc-950"
+            ? "w-3 h-3 bg-blue-500 border-zinc-950 scale-110 shadow-sm shadow-blue-500/50"
+            : "w-2.5 h-2.5 bg-zinc-600 border-zinc-950"
         }`}
       />
 
       {/* Horário */}
-      <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+      <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-400">
         <Clock className="h-3 w-3 text-zinc-400" />
         <span>{anime.releaseTime}</span>
       </div>
@@ -283,16 +283,16 @@ function AnimeCalendarCard({
       {/* Nome do Anime */}
       <Link
         href={`/animes/${anime.slug}`}
-        className="mt-1 block text-xs font-bold text-zinc-900 hover:text-blue-600 dark:text-zinc-100 dark:hover:text-blue-500 transition-colors line-clamp-2 leading-snug"
+        className="mt-1 block text-xs font-bold text-zinc-100 hover:text-blue-500 transition-colors line-clamp-2 leading-snug"
         title={anime.title}
       >
         {anime.title}
       </Link>
 
       {/* Status do Episódio */}
-      <div className="mt-1 text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+      <div className="mt-1 text-[10px] font-medium text-zinc-400">
         {anime.isComingSoon ? (
-          <span className="text-blue-500 font-semibold dark:text-blue-400">
+          <span className="text-blue-400 font-semibold">
             {t("comingSoon")}
           </span>
         ) : isToday ? (
@@ -316,7 +316,7 @@ function AnimeCalendarCard({
                 : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
               : `/animes/${anime.slug}`
           }
-          className="relative mt-2 block aspect-[16/10] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200/50 dark:border-zinc-800/80 shadow-xs group/episode"
+          className="relative mt-2 block aspect-[16/10] w-full overflow-hidden bg-zinc-950 border border-zinc-800/80 shadow-xs group/episode"
         >
           {anime.episodeImageUrl ? (
             <Image
@@ -353,17 +353,17 @@ function AnimeCalendarCard({
 
       {/* Popover Hover Modal */}
       <div
-        className={`absolute top-0 z-[100] ${popoverPositionClass} pointer-events-none invisible opacity-0 scale-95 transition-all duration-250 ease-out group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100 group-hover:scale-100 hidden lg:flex flex-col w-[380px] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 shadow-2xl p-4 before:absolute before:top-0 before:bottom-0 before:w-4 before:content-['']`}
+        className={`absolute top-0 z-[100] ${popoverPositionClass} pointer-events-none invisible opacity-0 scale-95 transition-all duration-250 ease-out group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100 group-hover:scale-100 hidden lg:flex flex-col w-[380px] bg-zinc-950 border border-zinc-800 shadow-2xl p-4 before:absolute before:top-0 before:bottom-0 before:w-4 before:content-['']`}
       >
         {/* Arrow pointer pointing to the card */}
         <div
-          className={`absolute top-6 w-3 h-3 rotate-45 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-850 ${arrowPositionClass}`}
+          className={`absolute top-6 w-3 h-3 rotate-45 bg-zinc-950 border-zinc-800 ${arrowPositionClass}`}
         />
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center min-h-[300px] w-full">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500" />
-            <span className="mt-2.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <span className="mt-2.5 text-xs text-zinc-400 font-medium">
               {t("loadingData")}
             </span>
           </div>
@@ -371,7 +371,7 @@ function AnimeCalendarCard({
           <div className="transition-all duration-300 opacity-100 ease-out flex flex-col h-full">
             <div className="flex gap-4">
               {/* Left: Poster image */}
-              <div className="relative aspect-[2/3] w-28 flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md">
+              <div className="relative aspect-[2/3] w-28 flex-shrink-0 overflow-hidden bg-zinc-900 shadow-md">
                 {anime.imageUrl ? (
                   <Image
                     src={anime.imageUrl}
@@ -389,10 +389,10 @@ function AnimeCalendarCard({
 
               {/* Right: details */}
               <div className="flex flex-col flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-zinc-900 dark:text-white line-clamp-2 leading-tight">
+                <h4 className="text-sm font-bold text-white line-clamp-2 leading-tight">
                   {anime.title}
                 </h4>
-                <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-4 leading-relaxed">
+                <p className="mt-2 text-[11px] text-zinc-400 line-clamp-4 leading-relaxed">
                   {anime.description || t("noDescription")}
                 </p>
 
@@ -401,7 +401,7 @@ function AnimeCalendarCard({
                   {anime.isComingSoon ? (
                     <Link
                       href={`/animes/${anime.slug}`}
-                      className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs transition-colors shadow-sm dark:bg-zinc-900 dark:hover:bg-zinc-850"
+                      className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-zinc-900 hover:bg-zinc-850 text-white font-bold text-xs transition-colors shadow-sm"
                     >
                       <Tv className="h-3.5 w-3.5" />
                       {t("viewDetails")}
@@ -435,8 +435,8 @@ function AnimeCalendarCard({
 
             {/* Below all: Episode Image + Episode badge */}
             {!anime.isComingSoon && (
-              <div className="mt-4 border-t border-zinc-100 dark:border-zinc-900 pt-4 flex flex-col">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-2">
+              <div className="mt-4 border-t border-zinc-900 pt-4 flex flex-col">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-2">
                   {t("latestReleasedEpisode")}
                 </span>
                 <Link
@@ -447,7 +447,7 @@ function AnimeCalendarCard({
                         : `/watch/${anime.latestEpisodeId}/${anime.latestEpisodeSlug || "episode-" + anime.lastEpisode}`
                       : `/animes/${anime.slug}`
                   }
-                  className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80 shadow-inner"
+                  className="group/episode_popover relative block aspect-[16/9] w-full overflow-hidden bg-zinc-900 border border-zinc-800/80 shadow-inner"
                 >
                   {anime.episodeImageUrl ? (
                     <Image

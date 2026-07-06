@@ -319,9 +319,9 @@ export default async function WatchPage({
             )}
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-4 mt-8">
+          <div className="grid gap-8 lg:grid-cols-3 mt-8">
             {/* Main Content: Info / Description */}
-            <div className="lg:col-span-3 px-4 sm:px-0">
+            <div className="lg:col-span-2 px-4 sm:px-0">
               <div className="flex flex-col gap-6">
                 {/* Player Selector Tabs */}
                 {playersList.length > 1 && (
@@ -331,7 +331,7 @@ export default async function WatchPage({
                         <Link
                           key={p.id}
                           href={`?player=${p.id}`}
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                             activePlayerObj?.id === p.id
                               ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                               : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -482,9 +482,9 @@ export default async function WatchPage({
             )}
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-4 mt-6">
+          <div className="grid gap-8 lg:grid-cols-3 mt-6">
             {/* Main Content: Info / Description */}
-            <div className="lg:col-span-3 px-4 sm:px-0">
+            <div className="lg:col-span-2 px-4 sm:px-0">
               <div className="flex flex-col gap-6">
                 {playersList.length > 1 && (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
@@ -735,9 +735,9 @@ export default async function WatchPage({
             )}
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-4 mt-6">
+          <div className="grid gap-8 lg:grid-cols-3 mt-6">
             {/* Main Content: Info / Description */}
-            <div className="lg:col-span-3 px-4 sm:px-0">
+            <div className="lg:col-span-2 px-4 sm:px-0">
               <div className="flex flex-col gap-6">
                 {/* Player Selector Tabs */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
@@ -747,7 +747,7 @@ export default async function WatchPage({
                         <Link
                           key="player-1"
                           href="?player=1"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                             activePlayer === 1
                               ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                               : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -760,7 +760,7 @@ export default async function WatchPage({
                         <Link
                           key="player-2"
                           href="?player=2"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                             activePlayer === 2
                               ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                               : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -1005,7 +1005,7 @@ export default async function WatchPage({
                   <Link
                     key="player-1"
                     href="?player=1"
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                       activePlayer === 1
                         ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                         : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -1019,7 +1019,7 @@ export default async function WatchPage({
                     <Link
                       key="player-2"
                       href="?player=2"
-                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                         activePlayer === 2
                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                           : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -1030,7 +1030,7 @@ export default async function WatchPage({
                     <Link
                       key="player-3"
                       href="?player=3"
-                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                         activePlayer === 3
                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                           : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -1041,7 +1041,7 @@ export default async function WatchPage({
                     <Link
                       key="player-4"
                       href="?player=4"
-                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                         activePlayer === 4
                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                           : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -1052,7 +1052,7 @@ export default async function WatchPage({
                     <Link
                       key="player-5"
                       href="?player=5"
-                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                         activePlayer === 5
                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                           : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
@@ -1063,7 +1063,7 @@ export default async function WatchPage({
                     <Link
                       key="player-6"
                       href="?player=6"
-                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
                         activePlayer === 6
                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
                           : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"

@@ -250,9 +250,6 @@ export default async function MangaDetailsPage({
 
       {/* Chapters Section */}
       <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
-        <h2 className="mb-8 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-          Capítulos
-        </h2>
         {manga.chapters.length === 0 ? (
           <p className="text-zinc-500">Nenhum capítulo encontrado.</p>
         ) : (

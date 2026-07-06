@@ -127,13 +127,13 @@ export default function SeasonSelector({
             onClick={() => setIsSortOpen(!isSortOpen)}
             className={`flex items-center p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
               isSortOpen
-                ? "bg-zinc-100 text-blue-500 dark:bg-zinc-800 dark:text-blue-400"
-                : "text-zinc-700 dark:text-zinc-300 hover:text-blue-500 hover:bg-zinc-100 hover:dark:bg-zinc-900"
+                ? "bg-[#272727] text-[#f2f2f2]"
+                : "hover:bg-[#151515] text-[#bbb] hover:text-[#f2f2f2]"
             }`}
           >
             <span>{sortBy === "oldest" ? t("oldest") : t("newest")}</span>
             <ChevronDown
-              className={`h-5 w-5 transition-transform ${isSortOpen ? "rotate-180" : ""}`}
+              className={`h-5 w-5 transition-transform duration-200 ${isSortOpen ? "rotate-180 text-[#f2f2f2]" : "text-[#bbb]"}`}
             />
           </button>
 
@@ -143,16 +143,16 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsSortOpen(false)}
               />
-              <div className="absolute right-0 top-full z-50 py-2 w-40 overflow-hidden border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900 ">
+              <div className="absolute right-0 top-full z-50 w-40 overflow-hidden bg-[#272727] py-2 shadow-xl">
                 <button
                   onClick={() => {
                     setSortBy("oldest");
                     setIsSortOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-base font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between ${
+                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center justify-between uppercase cursor-pointer ${
                     sortBy === "oldest"
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                      : "text-zinc-700 dark:text-zinc-300"
+                      ? "bg-[#151515] text-[#f2f2f2]"
+                      : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                   }`}
                 >
                   <span>{t("sortByOldest")}</span>
@@ -162,10 +162,10 @@ export default function SeasonSelector({
                     setSortBy("newest");
                     setIsSortOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-base font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between ${
+                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center justify-between uppercase cursor-pointer ${
                     sortBy === "newest"
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                      : "text-zinc-700 dark:text-zinc-300"
+                      ? "bg-[#151515] text-[#f2f2f2]"
+                      : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                   }`}
                 >
                   <span>{t("sortByNewest")}</span>

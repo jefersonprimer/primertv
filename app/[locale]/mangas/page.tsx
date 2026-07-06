@@ -29,7 +29,7 @@ async function MangasGridContent({ locale }: { locale: string }) {
   if (items.length === 0) {
     return (
       <div
-        className="flex h-64 items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 mx-2"
+        className="flex h-64 items-center justify-center border-2 border-dashed border-zinc-800 mx-2"
         style={{
           marginLeft: "max(8px, (100vw - 1130px) / 2)",
           marginRight: "max(8px, (100vw - 1130px) / 2)",
@@ -56,7 +56,7 @@ export default async function MangasPage({ params }: Props) {
           paddingRight: "max(8px, (100vw - 1130px) / 2)",
         }}
       >
-        <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-[28px]">
+        <h1 className="text-xl font-bold tracking-tight text-zinc-50 sm:text-[28px]">
           {t("title")}
         </h1>
       </header>

@@ -108,7 +108,7 @@ export default function FavoriteCard({
 
       <div className="flex flex-col gap-1">
         <Link href={cardHref}>
-          <h3 className="flex h-full items-center text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-2">
+          <h3 className="text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-3 hover:underline">
             {item.title}
           </h3>
         </Link>
