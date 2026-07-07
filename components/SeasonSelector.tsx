@@ -30,6 +30,8 @@ interface SeasonSelectorProps {
   animeDuration?: string | null;
   baseUrl?: string;
   fallbackImageUrl?: string | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 export default function SeasonSelector({
@@ -40,6 +42,8 @@ export default function SeasonSelector({
   animeDuration,
   baseUrl,
   fallbackImageUrl,
+  isDubbed = false,
+  isSubtitled = false,
 }: SeasonSelectorProps) {
   const t = useTranslations("SeasonSelector");
   const locale = useLocale();
@@ -185,6 +189,8 @@ export default function SeasonSelector({
         animeRating={animeRating}
         animeDuration={animeDuration}
         fallbackImageUrl={fallbackImageUrl}
+        isDubbed={isDubbed}
+        isSubtitled={isSubtitled}
       />
 
       {seasons.length > 1 && (

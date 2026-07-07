@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ListVideo } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
 import { useTranslations } from "next-intl";
 
@@ -31,6 +31,8 @@ interface EpisodeSidebarProps {
   animeDuration: string | null;
   fallbackImageUrl?: string | null;
   isMegaplay?: boolean;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 function formatDuration(duration: string | null | undefined): string {
@@ -50,6 +52,8 @@ export default function EpisodeSidebar({
   animeDuration,
   fallbackImageUrl,
   isMegaplay = false,
+  isDubbed = false,
+  isSubtitled = false,
 }: EpisodeSidebarProps) {
   const t = useTranslations("EpisodeSidebar");
   const tLabels = useTranslations("Labels");
@@ -126,6 +130,8 @@ export default function EpisodeSidebar({
                     animeDuration={animeDuration}
                     fallbackImageUrl={fallbackImageUrl}
                     isMegaplay={isMegaplay}
+                    isDubbed={isDubbed}
+                    isSubtitled={isSubtitled}
                   />
                 </div>
               )}
@@ -145,6 +151,8 @@ export default function EpisodeSidebar({
                     animeDuration={animeDuration}
                     fallbackImageUrl={fallbackImageUrl}
                     isMegaplay={isMegaplay}
+                    isDubbed={isDubbed}
+                    isSubtitled={isSubtitled}
                   />
                 </div>
               )}
@@ -160,6 +168,8 @@ export default function EpisodeSidebar({
                     animeDuration={animeDuration}
                     fallbackImageUrl={fallbackImageUrl}
                     isMegaplay={isMegaplay}
+                    isDubbed={isDubbed}
+                    isSubtitled={isSubtitled}
                   />
                 </div>
               )}
@@ -171,8 +181,9 @@ export default function EpisodeSidebar({
       {/* 2. "Ver mais episódios" Button */}
       <button
         onClick={handleToggleShowAll}
-        className="w-full md:w-fit py-2.5 px-4 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 text-center uppercase tracking-wide border border-[#bbb] hover:border-white"
+        className="flex items-center gap-2 w-full md:w-fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
       >
+        <ListVideo size={24} />
         {showAllEpisodes ? t("backToSummary") : t("seeMoreEpisodes")}
       </button>
 
@@ -242,6 +253,8 @@ export default function EpisodeSidebar({
                     fallbackImageUrl={fallbackImageUrl}
                     isCurrent={isCurrent}
                     isMegaplay={isMegaplay}
+                    isDubbed={isDubbed}
+                    isSubtitled={isSubtitled}
                   />
                 );
               })}
@@ -270,6 +283,8 @@ interface EpisodeCardProps {
   fallbackImageUrl?: string | null;
   isCurrent?: boolean;
   isMegaplay?: boolean;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 function EpisodeCard({
@@ -280,8 +295,11 @@ function EpisodeCard({
   fallbackImageUrl,
   isCurrent = false,
   isMegaplay = false,
+  isDubbed = false,
+  isSubtitled = false,
 }: EpisodeCardProps) {
   const tLabels = useTranslations("Labels");
+  const tMedia = useTranslations("MediaCard");
   const watchHref = isMegaplay
     ? `/watch/${animeSlug}/episode-${ep.number}?source=megaplay&episode=${ep.number}`
     : ep.publicId
@@ -334,6 +352,23 @@ function EpisodeCard({
         <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 truncate leading-snug">
           {ep.title || `${tLabels("episode")} ${ep.number}`}
         </h4>
+        {(isDubbed || isSubtitled) && (
+          <div className="flex gap-1.5 items-center">
+            {isDubbed && isSubtitled ? (
+              <span className="text-sm text-[#8c8c8c] font-normal">
+                {tMedia("subDub")}
+              </span>
+            ) : isDubbed ? (
+              <span className="text-sm text-[#8c8c8c] font-normal">
+                {tMedia("dubbed")}
+              </span>
+            ) : (
+              <span className="text-sm text-[#8c8c8c] font-normal">
+                {tMedia("subtitled")}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );

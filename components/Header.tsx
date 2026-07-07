@@ -28,9 +28,14 @@ export async function Header() {
             <MobileSidebar />
             <Link
               href="/"
-              className="flex items-center lg:pl-4 text-lg font-semibold text-[#f2f2f2] hover:text-white"
+              className="flex items-center lg:pl-4 text-xl tracking-tight hover:scale-[1.03] transition-transform duration-300 group"
             >
-              primer tv
+              <span className="font-semibold text-zinc-100 group-hover:text-white transition-colors">
+                primer
+              </span>
+              <span className="font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent ml-1 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]">
+                tv
+              </span>
             </Link>
           </div>
           <nav className="hidden h-full items-center sm:flex">

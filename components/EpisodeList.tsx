@@ -29,6 +29,8 @@ interface EpisodeListProps {
   animeRating?: string | null;
   animeDuration?: string | null;
   fallbackImageUrl?: string | null;
+  isDubbed?: boolean;
+  isSubtitled?: boolean;
 }
 
 function formatDuration(duration: string | null | undefined): string {
@@ -130,9 +132,12 @@ export default function EpisodeList({
   animeRating,
   animeDuration,
   fallbackImageUrl,
+  isDubbed = false,
+  isSubtitled = false,
 }: EpisodeListProps) {
   const t = useTranslations("Labels");
   const tSort = useTranslations("SeasonSelector");
+  const tMedia = useTranslations("MediaCard");
   const [visibleCount, setVisibleCount] = useState(
     itemType === "chapter" ? 24 : 12,
   );
@@ -307,6 +312,23 @@ export default function EpisodeList({
                       ? item.title
                       : `${displayLabel} ${formattedNum}`}
                   </h3>
+                  {(isDubbed || isSubtitled) && (
+                    <div className="flex gap-1.5 items-center mt-0.5">
+                      {isDubbed && isSubtitled ? (
+                        <span className="text-xs text-[#8c8c8c] font-normal">
+                          {tMedia("subDub")}
+                        </span>
+                      ) : isDubbed ? (
+                        <span className="text-xs text-[#8c8c8c] font-normal">
+                          {tMedia("dubbed")}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[#8c8c8c] font-normal">
+                          {tMedia("subtitled")}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col gap-0.5 flex-1 min-w-0">

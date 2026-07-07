@@ -493,6 +493,8 @@ export default async function AnimeDetailsPage({
             animeRating={anime.rating}
             animeDuration={anime.duration}
             fallbackImageUrl={finalBannerUrl || anime.imageUrl}
+            isDubbed={anime.isDubbed}
+            isSubtitled={anime.isSubtitled}
           />
         ) : totalEpisodes === 0 ? (
           <div className="flex flex-col items-center justify-center gap-4 py-12 text-center border-t border-zinc-200 dark:border-zinc-800">
@@ -513,6 +515,8 @@ export default async function AnimeDetailsPage({
             animeTitle={anime.title}
             animeRating={anime.rating}
             animeDuration={anime.duration}
+            isDubbed={anime.isDubbed}
+            isSubtitled={anime.isSubtitled}
           />
         )}
       </main>

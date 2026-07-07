@@ -468,6 +468,8 @@ export default async function WatchPage({
                     animeEpisode.season.anime.bannerUrl ||
                     animeEpisode.season.anime.imageUrl
                   }
+                  isDubbed={animeEpisode.season.anime.isDubbed}
+                  isSubtitled={animeEpisode.season.anime.isSubtitled}
                 />
               </div>
             </div>
@@ -688,6 +690,8 @@ export default async function WatchPage({
                     animeDuration={anime.duration}
                     fallbackImageUrl={anime.imageUrl}
                     isMegaplay={true}
+                    isDubbed={anime.isDubbed}
+                    isSubtitled={anime.isSubtitled}
                   />
                 ) : (
                   <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400">

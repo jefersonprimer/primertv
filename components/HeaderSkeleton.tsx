@@ -2,35 +2,56 @@ import { Menu } from "lucide-react";
 
 export function HeaderSkeleton() {
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
-      <div className="mx-auto flex max-w-7xl items-center justify-between p-2">
-        <div className="flex items-center gap-1">
-          <div className="flex h-9 w-9 items-center justify-center text-zinc-400/60 dark:text-white/40 md:hidden">
-            <Menu size={22} />
+    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727]">
+      <div className="mx-auto flex h-16 max-w-full items-center justify-between">
+        <div className="flex h-full items-center gap-4">
+          <div className="flex h-full items-center gap-1">
+            <div className="flex h-9 w-9 items-center justify-center text-[#bbb] md:hidden">
+              <Menu size={22} />
+            </div>
+            <div className="flex items-center lg:pl-4 text-xl tracking-tight">
+              <span className="font-semibold text-zinc-100">
+                primer
+              </span>
+              <span className="font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent ml-1 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]">
+                tv
+              </span>
+            </div>
           </div>
-          <span className="text-xl font-bold tracking-tighter text-zinc-400/60 dark:text-white/40">
-            Primer
-            <span className="font-light">Tv</span>
-          </span>
 
           {/* Desktop Nav placeholders */}
-          <nav className="ml-8 hidden gap-6 md:flex">
-            <div className="h-4 w-20 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-4 w-16 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-4 w-20 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+          <nav className="hidden h-full items-center sm:flex">
+            <div className="flex h-full items-center px-4">
+              <div className="h-4 w-14 animate-pulse rounded bg-zinc-700" />
+            </div>
+            <div className="flex h-full items-center px-4">
+              <div className="h-4 w-12 animate-pulse rounded bg-zinc-700" />
+            </div>
+            <div className="flex h-full items-center px-4">
+              <div className="h-4 w-14 animate-pulse rounded bg-zinc-700" />
+            </div>
+            <div className="hidden md:flex h-full items-center">
+              <div className="flex h-full items-center px-4">
+                <div className="h-4 w-12 animate-pulse rounded bg-zinc-700" />
+              </div>
+              <div className="flex h-full items-center px-4">
+                <div className="h-4 w-12 animate-pulse rounded bg-zinc-700" />
+              </div>
+            </div>
           </nav>
         </div>
 
         {/* Right side icons placeholders */}
-        <div className="flex items-center gap-4">
-          {/* Search Icon */}
-          <div className="h-8 w-8 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800" />
-          {/* Bookmark Icon */}
-          <div className="h-8 w-8 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800" />
-          {/* User button placeholder */}
-          <div className="h-10 w-10 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+        <div className="flex h-full items-center">
+          <div className="flex h-full items-center px-4 text-[#bbb]">
+            <div className="h-5 w-5 animate-pulse rounded bg-zinc-700" />
+          </div>
+          <div className="flex h-full items-center px-4 text-[#bbb]">
+            <div className="h-5 w-5 animate-pulse rounded bg-zinc-700" />
+          </div>
+          <div className="flex h-full items-center px-4">
+            <div className="h-10 w-10 animate-pulse rounded-full bg-zinc-700" />
+          </div>
         </div>
       </div>
     </header>

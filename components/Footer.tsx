@@ -32,10 +32,13 @@ export async function Footer() {
           <div className="flex flex-col gap-4 sm:col-span-2">
             <Link
               href="/"
-              className="flex items-center transition-opacity hover:opacity-80"
+              className="flex items-center transition-transform duration-300 group"
             >
-              <span className="text-2xl font-bold tracking-tighter text-white">
-                Primer TV
+              <span className="text-2xl font-semibold text-zinc-100 group-hover:text-white transition-colors tracking-tight">
+                primer
+              </span>
+              <span className="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent ml-1 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)] tracking-tight">
+                tv
               </span>
             </Link>
             <p className="max-w-md text-sm text-[#bbb] leading-relaxed">
@@ -330,7 +333,7 @@ export async function Footer() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-[#bbb]">
           <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
             <span className="text-white">
-              © {new Date().getFullYear()} Primer TV.
+              © {new Date().getFullYear()} primer tv.
             </span>
             <span className="hidden sm:inline">•</span>
             <span>{t("allRightsReserved")}</span>
