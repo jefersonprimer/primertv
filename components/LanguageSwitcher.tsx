@@ -58,7 +58,7 @@ export function LanguageSwitcher() {
 
       {isOpen && (
         <div className="absolute left-0 bottom-full z-50 mb-2 w-48 bg-[#272727] py-2 shadow-2xl backdrop-blur-md animate-[fadeIn_0.15s_ease-out]">
-          <div className="flex flex-col py-1">
+          <div className="flex flex-col">
             {locales.map((loc) => (
               <button
                 key={loc.code}

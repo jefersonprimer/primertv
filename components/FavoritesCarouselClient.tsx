@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import FavoriteCard, { FavoriteItem } from "@/components/FavoriteCard";
+import { ChevronRight } from "lucide-react";
 
 interface FavoritesCarouselClientProps {
   items: FavoriteItem[];
@@ -14,50 +13,18 @@ export function FavoritesCarouselClient({
   items,
 }: FavoritesCarouselClientProps) {
   const t = useTranslations("Watchlist");
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
-
-  const checkScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setShowLeftArrow(scrollLeft > 10);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 40);
-    }
-  };
-
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener("resize", checkScroll);
-    return () => window.removeEventListener("resize", checkScroll);
-  }, [items]);
-
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const isLargeScreen = window.innerWidth >= 1024;
-      let scrollAmount;
-
-      if (isLargeScreen) {
-        // Scroll 4 cards on desktop: (287.75px width + 24px gap) * 4 = 1247px
-        scrollAmount = direction === "left" ? -1247 : 1247;
-      } else {
-        const { clientWidth } = scrollRef.current;
-        scrollAmount = direction === "left" ? -clientWidth : clientWidth;
-      }
-
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
 
   if (items.length === 0) return null;
 
+  const displayItems = items.slice(0, 4);
+
   return (
-    <section className="group/carousel relative">
+    <section className="relative">
       <div
         className="mb-3 sm:mb-4 flex items-center justify-between w-full"
         style={{
-          paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-          paddingRight: "max(8px, (100vw - 1223px) / 2)",
+          paddingLeft: "max(8px, (100vw - 1240px) / 2)",
+          paddingRight: "max(8px, (100vw - 1240px) / 2)",
         }}
       >
         <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2]">
@@ -72,63 +39,35 @@ export function FavoritesCarouselClient({
         </Link>
       </div>
 
-      <div className="relative">
-        {showLeftArrow && (
-          <button
-            onClick={() => scroll("left")}
-            className="absolute left-0 z-10 hidden sm:flex h-full w-12 items-center justify-center bg-gradient-to-r from-white via-white/80 to-transparent text-zinc-900 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100 dark:from-zinc-950 dark:via-zinc-950/80 dark:text-zinc-50"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft size={32} />
-          </button>
-        )}
+      {/* Desktop/Tablet Grid: 2 columns on sm, 3 on md, 4 on lg */}
+      <div
+        className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        style={{
+          paddingLeft: "max(8px, (100vw - 1252px) / 2)",
+          paddingRight: "max(8px, (100vw - 1252px) / 2)",
+        }}
+      >
+        {displayItems.map((item) => (
+          <FavoriteCard key={item.id} item={item} />
+        ))}
+      </div>
 
-        {/* Desktop/Tablet Horizontal Carousel */}
-        <div
-          ref={scrollRef}
-          onScroll={checkScroll}
-          className="hidden sm:flex gap-4 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
-          style={{
-            paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-            paddingRight: "max(8px, (100vw - 1223px) / 2)",
-          }}
-        >
-          {items.map((item) => (
-            <FavoriteCard
-              key={item.id}
-              item={item}
-              className="w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]"
-            />
-          ))}
-        </div>
-
-        {/* Mobile Vertical Column (max 4 items) */}
-        <div
-          className="flex sm:hidden flex-col gap-3"
-          style={{
-            paddingLeft: "max(8px, (100vw - 1223px) / 2)",
-            paddingRight: "max(8px, (100vw - 1223px) / 2)",
-          }}
-        >
-          {items.slice(0, 4).map((item) => (
-            <FavoriteCard
-              key={item.id}
-              item={item}
-              isMobileRow
-              className="w-full"
-            />
-          ))}
-        </div>
-
-        {showRightArrow && (
-          <button
-            onClick={() => scroll("right")}
-            className="absolute right-0 top-0 z-10 hidden sm:flex h-full w-12 items-center justify-center bg-gradient-to-l from-white via-white/80 to-transparent text-zinc-900 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100 dark:from-zinc-950 dark:via-zinc-950/80 dark:text-zinc-50"
-            aria-label="Scroll right"
-          >
-            <ChevronRight size={32} />
-          </button>
-        )}
+      {/* Mobile Vertical Column (max 4 items) - As it was originally */}
+      <div
+        className="flex sm:hidden flex-col"
+        style={{
+          paddingLeft: "max(0px, (100vw - 1240px) / 2)",
+          paddingRight: "max(10px, (100vw - 1240px) / 2)",
+        }}
+      >
+        {displayItems.map((item) => (
+          <FavoriteCard
+            key={item.id}
+            item={item}
+            isMobileRow
+            className="w-full"
+          />
+        ))}
       </div>
     </section>
   );

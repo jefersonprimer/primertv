@@ -27,6 +27,7 @@ export async function FavoritesCarousel() {
       animeId: { not: null },
     },
     orderBy: { createdAt: "desc" },
+    take: 4,
     select: {
       animeId: true,
     },
@@ -138,29 +139,24 @@ export function FavoritesCarouselSkeleton() {
         <div className="mt-2 h-4 w-64 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
       </div>
 
-      {/* Desktop/Tablet Skeleton */}
+      {/* Desktop/Tablet Skeleton Grid */}
       <div
-        className="hidden sm:flex gap-6 overflow-hidden pb-4"
+        className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
         style={{
           paddingLeft: "max(8px, (100vw - 1223px) / 2)",
           paddingRight: "max(8px, (100vw - 1223px) / 2)",
         }}
       >
         {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]"
-          >
-            <div className="flex flex-col gap-2">
-              <div className="relative aspect-video w-full animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-              <div className="h-4 w-3/4 animate-pulse bg-zinc-200 dark:bg-zinc-800 mt-1" />
-              <div className="h-3 w-1/2 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-            </div>
+          <div key={i} className="flex flex-col gap-2">
+            <div className="relative aspect-video w-full animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-4 w-3/4 animate-pulse bg-zinc-200 dark:bg-zinc-800 mt-1" />
+            <div className="h-3 w-1/2 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
           </div>
         ))}
       </div>
 
-      {/* Mobile Skeleton */}
+      {/* Mobile Skeleton List - as it was originally */}
       <div
         className="flex sm:hidden flex-col gap-4 px-2"
         style={{

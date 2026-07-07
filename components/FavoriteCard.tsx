@@ -51,9 +51,7 @@ export default function FavoriteCard({
       item.animeImageUrl || item.bannerUrl || item.firstEpisodeImageUrl;
 
     return (
-      <div
-        className={`hover:bg-zinc-800 p-2 rounded-lg transition-colors ${className}`}
-      >
+      <div className={`hover:bg-zinc-800 p-2 transition-colors ${className}`}>
         <div className="flex gap-4">
           <Link
             href={cardHref}
@@ -202,7 +200,7 @@ export default function FavoriteCard({
 
       <div className="flex flex-col gap-1">
         <Link href={cardHref}>
-          <h3 className="text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-3 hover:underline">
+          <h3 className="text-[#f2f2f2] hover:text-white text-base font-bold line-clamp-2 ahover:underline">
             {item.title}
           </h3>
         </Link>
