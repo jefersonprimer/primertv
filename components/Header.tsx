@@ -30,7 +30,7 @@ export async function Header() {
               href="/"
               className="flex items-center lg:pl-4 text-lg font-semibold text-[#f2f2f2] hover:text-white"
             >
-              Primer TV
+              primer tv
             </Link>
           </div>
           <nav className="hidden h-full items-center sm:flex">

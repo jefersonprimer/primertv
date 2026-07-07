@@ -17,7 +17,7 @@ import SeriesEpisodeSidebar from "./SeriesEpisodeSidebar";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ShareButton from "@/components/ShareButton";
 import { getAnimeDetailsBySlug } from "@/lib/media-details";
-import { LucideKey, ThumbsDown, ThumbsUp } from "lucide-react";
+import { ThumbsDown, ThumbsUp } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
 
 interface WatchPageProps {
