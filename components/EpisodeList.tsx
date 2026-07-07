@@ -305,7 +305,7 @@ export default function EpisodeList({
                       {displayAnimeTitle}
                     </span>
                   )}
-                  <h3 className="line-clamp-2 sm:line-clamp-1 text-sm sm:text-base font-bold text-white">
+                  <h3 className="line-clamp-2 text-base font-bold text-white">
                     {item.title &&
                     item.title.trim() &&
                     !isGenericTitle(item.title, item.number)
@@ -313,17 +313,17 @@ export default function EpisodeList({
                       : `${displayLabel} ${formattedNum}`}
                   </h3>
                   {(isDubbed || isSubtitled) && (
-                    <div className="flex gap-1.5 items-center mt-0.5">
+                    <div className="flex gap-1.5 items-center mt-2">
                       {isDubbed && isSubtitled ? (
-                        <span className="text-xs text-[#8c8c8c] font-normal">
+                        <span className="text-sm text-[#8c8c8c]">
                           {tMedia("subDub")}
                         </span>
                       ) : isDubbed ? (
-                        <span className="text-xs text-[#8c8c8c] font-normal">
+                        <span className="text-sm text-[#8c8c8c]">
                           {tMedia("dubbed")}
                         </span>
                       ) : (
-                        <span className="text-xs text-[#8c8c8c] font-normal">
+                        <span className="text-sm text-[#8c8c8c]">
                           {tMedia("subtitled")}
                         </span>
                       )}

@@ -346,14 +346,11 @@ function EpisodeCard({
 
       {/* Right: Info */}
       <div className="flex flex-col min-w-0">
-        <span className="text-xs text-zinc-500 font-semibold mb-0.5">
-          {tLabels("episode")} {ep.number}
-        </span>
-        <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 truncate leading-snug">
-          {ep.title || `${tLabels("episode")} ${ep.number}`}
-        </h4>
+        <h3 className="text-sm font-bold text-white truncate leading-snug">
+          EP {ep.number} - {ep.title || `${tLabels("episode")} ${ep.number}`}
+        </h3>
         {(isDubbed || isSubtitled) && (
-          <div className="flex gap-1.5 items-center">
+          <div className="flex gap-1.5 items-center mt-1">
             {isDubbed && isSubtitled ? (
               <span className="text-sm text-[#8c8c8c] font-normal">
                 {tMedia("subDub")}
