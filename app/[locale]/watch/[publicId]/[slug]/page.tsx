@@ -353,7 +353,7 @@ export default async function WatchPage({
                 )}
 
                 <div>
-                  <div className="flex flex-col items-start gap-3">
+                  <div className="flex flex-col items-start">
                     <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
                       <Link
                         href={`/animes/${anime.slug}`}
@@ -374,7 +374,7 @@ export default async function WatchPage({
 
                     {/* Season/Episode label and Metadata (rating, sub/dub) */}
                     <div className="flex flex-col flex-wrap gap-2 tracking-wider">
-                      <h1 className="text-white text-[22px] font-semibold line-clamp-2">
+                      <h1 className="text-white text-[22px] font-bold line-clamp-2">
                         {animeEpisode.title
                           ? `EP${animeEpisode.number} - ${animeEpisode.title}`
                           : t("seasonEpisodeLabel", {
@@ -383,9 +383,28 @@ export default async function WatchPage({
                             })}
                       </h1>
 
-                      {rating && (
-                        <RatingBadge rating={rating} className="h-4 w-4" />
-                      )}
+                      <div className="flex items-center gap-1">
+                        {rating && (
+                          <RatingBadge rating={rating} className="h-4 w-4" />
+                        )}
+                        {(isDubbed || isSubtitled) && (
+                          <>
+                            <span
+                              className="text-[#555] select-none"
+                              aria-hidden="true"
+                            >
+                              •
+                            </span>
+                            <span className="normal-case text-sm text-[#8c8c8c] font-normal">
+                              {isDubbed && isSubtitled
+                                ? tMedia("subDub")
+                                : isDubbed
+                                  ? tMedia("dubbed")
+                                  : tMedia("subtitled")}
+                            </span>
+                          </>
+                        )}
+                      </div>
 
                       {animeEpisode.createdAt && (
                         <span className="text-sm text-white font-normal">
@@ -402,28 +421,10 @@ export default async function WatchPage({
                           })}
                         </span>
                       )}
-
-                      {(isDubbed || isSubtitled) && (
-                        <>
-                          <span
-                            className="text-[#555] select-none"
-                            aria-hidden="true"
-                          >
-                            •
-                          </span>
-                          <span className="normal-case text-sm text-[#8c8c8c] font-normal">
-                            {isDubbed && isSubtitled
-                              ? tMedia("subDub")
-                              : isDubbed
-                                ? tMedia("dubbed")
-                                : tMedia("subtitled")}
-                          </span>
-                        </>
-                      )}
                     </div>
 
                     {/* Likes & Share Actions */}
-                    <div className="flex items-center justify-between w-full text-white">
+                    <div className="flex items-center justify-between w-full text-white mt-2">
                       <div className="flex items-center gap-4">
                         <button
                           className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
@@ -456,7 +457,7 @@ export default async function WatchPage({
 
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8 lg:pt-0">
+              <div className="sticky overflow-hidden pt-8 md:pt-2 py-4">
                 <AnimeEpisodeSidebar
                   seasons={animeEpisode.season.anime.seasons}
                   currentEpisodeId={animeEpisode.id}

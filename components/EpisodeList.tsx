@@ -243,7 +243,7 @@ export default function EpisodeList({
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid md:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {visibleItems.map((item) => {
           const displayAnimeTitle = item.animeTitle || animeTitle;
           const displayAnimeRating = item.animeRating || animeRating;
@@ -256,7 +256,7 @@ export default function EpisodeList({
               href={item.href || (baseUrl ? `${baseUrl}/${item.id}` : "#")}
               className={
                 itemType === "episode"
-                  ? "group relative flex gap-3 hover:bg-zinc-900/50 transition-all duration-300 overflow-hidden flex-row sm:flex-col"
+                  ? "group relative flex gap-3 p-2 md:p-0 hover:bg-[#151515] transition-all duration-300 overflow-hidden flex-row sm:flex-col"
                   : "group relative flex items-center justify-between p-4 bg-zinc-900/10 hover:bg-zinc-900/40 border border-zinc-800/80 hover:border-blue-500/50 transition-all duration-300 rounded-md"
               }
             >

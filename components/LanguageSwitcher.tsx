@@ -44,7 +44,9 @@ export function LanguageSwitcher() {
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 border border-zinc-800 bg-zinc-900/50 px-3.5 py-2 rounded text-sm font-medium text-zinc-300 transition-all duration-200 hover:border-zinc-700 hover:bg-[#272727] hover:text-white focus:outline-none cursor-pointer"
+        className={`flex items-center gap-1.5 border border-zinc-800 px-3.5 py-2 rounded text-sm font-medium text-[#bbb] transition-all duration-200 hover:border-zinc-700 hover:bg-[#272727] hover:text-white focus:outline-none cursor-pointer
+          ${isOpen ? "text-white bg-[#272727]" : ""}
+            `}
       >
         <Globe size={18} />
         <span>{currentLocale.label}</span>
@@ -63,7 +65,7 @@ export function LanguageSwitcher() {
               <button
                 key={loc.code}
                 onClick={() => handleSelect(loc.code)}
-                className={`flex w-full items-center p-2 text-left text-sm transition-all duration-150 cursor-pointer ${
+                className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-all duration-150 cursor-pointer ${
                   loc.code === locale
                     ? "bg-[#151515] text-[#f2f2f2] font-medium"
                     : "text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"

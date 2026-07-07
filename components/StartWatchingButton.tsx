@@ -29,7 +29,7 @@ export function StartWatchingButton({
   return (
     <Link
       href={href}
-      className={`flex h-10 items-center justify-center gap-2 bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 ${
+      className={`flex h-10 items-center justify-center gap-2 bg-blue-700 hover:bg-blue-600 font-bold text-white transition-colors ${
         uppercase ? "uppercase" : ""
       } ${className}`}
     >

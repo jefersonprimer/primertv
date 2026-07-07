@@ -1,11 +1,10 @@
+import { getSession } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { User, Bookmark, Search } from "lucide-react";
-import { getSession } from "@/lib/auth";
 import { MobileSidebar } from "./MobileSidebar";
-import { UserMenu } from "./UserMenu";
 import { ExploreDropdown } from "./ExploreDropdown";
-import { getTranslations } from "next-intl/server";
-
+import { UserMenu } from "./UserMenu";
 import { AddMediaButton } from "./admin/AddMediaButton";
 
 export async function Header() {
@@ -29,10 +28,9 @@ export async function Header() {
             <MobileSidebar />
             <Link
               href="/"
-              className="flex items-center lg:pl-4 text-xl font-semibold text-[#f2f2f2] hover:text-white"
+              className="flex items-center lg:pl-4 text-lg font-semibold text-[#f2f2f2] hover:text-white"
             >
-              Primer
-              <span className="font-medium text-[#3b82f6]">Tv</span>
+              Primer TV
             </Link>
           </div>
           <nav className="hidden h-full items-center sm:flex">
@@ -40,7 +38,7 @@ export async function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex h-full items-center px-4 text-sm font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
+                className="flex h-full items-center px-4 text-sm text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
               >
                 {link.label}
               </Link>
@@ -50,7 +48,7 @@ export async function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex h-full items-center px-4 text-sm font-normal text-[#bbb] hover:text-[#f2f2f2] hover:bg-[#151515] transition-colors"
+                  className="flex h-full items-center px-4 text-sm text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
                 >
                   {link.label}
                 </Link>

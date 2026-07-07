@@ -201,23 +201,24 @@ export function HeroCarouselClient({
                 <RatingBadge rating={current.rating} size={20} />
               )}
 
-              {current?.type === "anime" && (current.isDubbed || current.isSubtitled) && (
-                <div className="flex gap-1.5 self-start">
-                  {current.isDubbed && current.isSubtitled ? (
-                    <span className="text-sm text-[#8c8c8c] font-normal">
-                      {tMedia("subDub")}
-                    </span>
-                  ) : current.isDubbed ? (
-                    <span className="text-sm text-[#8c8c8c] font-normal">
-                      {tMedia("dubbed")}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-[#8c8c8c] font-normal">
-                      {tMedia("subtitled")}
-                    </span>
-                  )}
-                </div>
-              )}
+              {current?.type === "anime" &&
+                (current.isDubbed || current.isSubtitled) && (
+                  <div className="flex gap-1.5 self-start">
+                    {current.isDubbed && current.isSubtitled ? (
+                      <span className="text-sm text-[#8c8c8c]">
+                        {tMedia("subDub")}
+                      </span>
+                    ) : current.isDubbed ? (
+                      <span className="text-sm text-[#8c8c8c]">
+                        {tMedia("dubbed")}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-[#8c8c8c]">
+                        {tMedia("subtitled")}
+                      </span>
+                    )}
+                  </div>
+                )}
 
               {current.genres.length > 0 && (
                 <>
@@ -229,7 +230,7 @@ export function HeroCarouselClient({
                       <path d="M12 2L22 12L12 22L2 12Z" />
                     </svg>
                   </span>
-                  <span className="text-sm font-normal text-[#8c8c8c]">
+                  <span className="text-sm text-[#8c8c8c]">
                     {current.genres.join(", ")}
                   </span>
                 </>
@@ -237,7 +238,7 @@ export function HeroCarouselClient({
             </div>
 
             {current.description && (
-              <p className="hidden lg:line-clamp-4 text-base font-normal leading-relaxed text-[#bbb] max-w-[380px]">
+              <p className="hidden lg:line-clamp-4 leading-relaxed text-[#bbb] max-w-[380px]">
                 {current.description}
               </p>
             )}

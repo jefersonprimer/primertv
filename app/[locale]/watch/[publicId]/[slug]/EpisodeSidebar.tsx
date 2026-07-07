@@ -116,7 +116,7 @@ export default function EpisodeSidebar({
             <>
               {nextEpisode && (
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-bold text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <h3 className="font-bold text-sm text-white uppercase tracking-wider md:px-2">
                     {t("next")}
                   </h3>
                   <EpisodeCard
@@ -135,7 +135,7 @@ export default function EpisodeSidebar({
             <>
               {nextEpisode && (
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-bold text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <h3 className="font-bold text-sm text-white uppercase tracking-wider md:px-2">
                     {t("nextEp")}
                   </h3>
                   <EpisodeCard
@@ -150,7 +150,7 @@ export default function EpisodeSidebar({
               )}
               {prevEpisode && (
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-bold text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <h3 className="font-bold text-sm text-white uppercase tracking-wider md:px-2">
                     {t("prevEp")}
                   </h3>
                   <EpisodeCard
@@ -171,19 +171,19 @@ export default function EpisodeSidebar({
       {/* 2. "Ver mais episódios" Button */}
       <button
         onClick={handleToggleShowAll}
-        className="w-full md:w-fit py-2.5 px-4 bg-zinc-200 dark:bg-zinc-800 text-sm font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-300 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-300 dark:border-zinc-700"
+        className="w-full md:w-fit py-2.5 px-4 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 text-center uppercase tracking-wide border border-[#bbb] hover:border-white"
       >
         {showAllEpisodes ? t("backToSummary") : t("seeMoreEpisodes")}
       </button>
 
       {/* 3. Season Selector & Episode List (shown if showAllEpisodes is true) */}
       {showAllEpisodes && (
-        <div className="flex flex-col gap-4 bg-zinc-900 shadow-sm">
+        <div className="flex flex-col gap-4 shadow-sm">
           {/* Season Dropdown */}
-          <div className="relative w-full" ref={seasonRef}>
+          <div className="relative w-full max-w-[378px]" ref={seasonRef}>
             <button
               onClick={() => setSeasonDropdownOpen(!seasonDropdownOpen)}
-              className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-semibold border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-50 transition-colors"
+              className="flex w-full items-center gap-2 px-2 text-lg font-bold text-white hover:text-blue-500 transition-colors"
             >
               <span>
                 {tSelector("season", {
@@ -198,7 +198,7 @@ export default function EpisodeSidebar({
             </button>
 
             {seasonDropdownOpen && (
-              <div className="absolute left-0 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="absolute left-2 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto bg-[#272727]">
                 {seasons.map((season) => (
                   <button
                     key={season.id}
@@ -207,13 +207,20 @@ export default function EpisodeSidebar({
                       setSeasonDropdownOpen(false);
                       setVisibleCount(12);
                     }}
-                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#151515] flex items-center justify-between ${
                       season.id === selectedSeasonId
-                        ? "bg-blue-50 text-blue-600 font-bold dark:bg-blue-900/20 dark:text-blue-400"
-                        : "text-zinc-700 dark:text-zinc-300"
+                        ? "text-white bg-[#151515]"
+                        : "text-[#bbb] hover:text-white"
                     }`}
                   >
-                    {tSelector("season", { number: season.number })}
+                    <span>
+                      {tSelector("season", { number: season.number })}
+                    </span>
+                    <span className="text-xs text-[#bbb] font-normal">
+                      {tSelector("episodesCount", {
+                        count: season.episodes.length,
+                      })}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -221,7 +228,7 @@ export default function EpisodeSidebar({
           </div>
 
           {/* Episode List */}
-          <div className="flex flex-col gap-2 max-h-[600px] overflow-y-auto pr-1">
+          <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto pr-1 py-2">
             <div className="flex flex-col">
               {episodesOfSelectedSeason.slice(0, visibleCount).map((ep) => {
                 const isCurrent = ep.id === currentEpisodeId;
@@ -243,7 +250,7 @@ export default function EpisodeSidebar({
             {episodesOfSelectedSeason.length > visibleCount && (
               <button
                 onClick={() => setVisibleCount((prev) => prev + 12)}
-                className="w-full mt-2 py-2 px-4 bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-200 dark:border-zinc-700"
+                className="w-full mt-2 py-2 px-4  bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-200 dark:border-zinc-700"
               >
                 {tLabels("showMore")}
               </button>
@@ -286,8 +293,8 @@ function EpisodeCard({
       href={watchHref}
       className={`flex items-center gap-3 sm:p-2 transition-colors ${
         isCurrent
-          ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-500"
-          : "border-zinc-200 dark:border-zinc-800 hover:bg-zinc-800"
+          ? "border-blue-500 bg-[#151515] dark:border-blue-500"
+          : "border-zinc-200 dark:border-zinc-800 hover:bg-[#151515]"
       }`}
     >
       {/* Left: Image Container */}

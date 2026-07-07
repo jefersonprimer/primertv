@@ -56,7 +56,7 @@ export function ExploreDropdown() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center px-4 py-2 text-sm font-medium text-[#bbb]  hover:text-white hover:bg-[#272727] transition-all duration-150"
+                className="flex items-center px-4 py-2.5 text-sm font-medium text-[#bbb]  hover:text-white hover:bg-[#272727] transition-all duration-150"
               >
                 {link.label}
               </Link>

@@ -35,10 +35,10 @@ export async function Footer() {
               className="flex items-center transition-opacity hover:opacity-80"
             >
               <span className="text-2xl font-bold tracking-tighter text-white">
-                PrimerTv
+                Primer TV
               </span>
             </Link>
-            <p className="max-w-md text-sm text-zinc-400 leading-relaxed">
+            <p className="max-w-md text-sm text-[#bbb] leading-relaxed">
               {t("description")}
             </p>
             {/* Social Icons */}
@@ -138,7 +138,7 @@ export async function Footer() {
 
           {/* Navigation Links */}
           <div className="hidden md:block">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#f2f2f2] mb-4">
               {t("navHeading")}
             </h3>
             <ul className="space-y-2.5">
@@ -146,9 +146,9 @@ export async function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                    className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                   >
-                    <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                    <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                       ›
                     </span>
                     {tHeader(linkKeyMap[link.href] || link.label)}
@@ -160,16 +160,16 @@ export async function Footer() {
 
           {/* Support Links */}
           <div className="hidden md:block">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#f2f2f2] mb-4">
               {t("supportHeading")}
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2.5 text-sm text-[#bbb] hover:text-white">
               <li>
                 <Link
                   href="/faq"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-[#bbb] hover:text-white transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                     ›
                   </span>
                   {t("helpCenter")}
@@ -178,9 +178,9 @@ export async function Footer() {
               <li>
                 <Link
                   href="/contato"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-white">
                     ›
                   </span>
                   {t("contact")}
@@ -189,9 +189,9 @@ export async function Footer() {
               <li>
                 <Link
                   href="/status"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                     ›
                   </span>
                   {t("serverStatus")}
@@ -200,9 +200,9 @@ export async function Footer() {
               <li>
                 <Link
                   href="/termos"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                     ›
                   </span>
                   {t("terms")}
@@ -211,9 +211,9 @@ export async function Footer() {
               <li>
                 <Link
                   href="/privacidade"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                     ›
                   </span>
                   {t("privacy")}
@@ -222,9 +222,9 @@ export async function Footer() {
               <li>
                 <Link
                   href="/dmca"
-                  className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                     ›
                   </span>
                   {t("dmca")}
@@ -235,7 +235,7 @@ export async function Footer() {
 
           {/* User Account / Membership */}
           <div className="hidden md:block">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-100 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#f2f2f2] mb-4">
               {t("accountHeading")}
             </h3>
             <ul className="space-y-2.5">
@@ -244,9 +244,9 @@ export async function Footer() {
                   <li>
                     <Link
                       href="/history"
-                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                      className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                     >
-                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                         ›
                       </span>
                       {t("history")}
@@ -255,9 +255,9 @@ export async function Footer() {
                   <li>
                     <Link
                       href="/watchlist"
-                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                      className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                     >
-                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                         ›
                       </span>
                       {t("watchlist")}
@@ -266,9 +266,9 @@ export async function Footer() {
                   <li>
                     <Link
                       href="/lists"
-                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                      className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                     >
-                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                         ›
                       </span>
                       {t("myLists")}
@@ -278,9 +278,9 @@ export async function Footer() {
                     <form action={logout}>
                       <button
                         type="submit"
-                        className="group flex w-full items-center text-sm text-zinc-400 hover:text-red-500 transition-colors duration-150 text-left cursor-pointer"
+                        className="group flex w-full items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150 text-left cursor-pointer"
                       >
-                        <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-red-500">
+                        <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                           ›
                         </span>
                         {t("logout")}
@@ -293,9 +293,9 @@ export async function Footer() {
                   <li>
                     <Link
                       href="/login"
-                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                      className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                     >
-                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                         ›
                       </span>
                       {t("login")}
@@ -304,9 +304,9 @@ export async function Footer() {
                   <li>
                     <Link
                       href="/signup"
-                      className="group flex items-center text-sm text-zinc-400 hover:text-blue-500 transition-colors duration-150"
+                      className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                     >
-                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-500">
+                      <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                         ›
                       </span>
                       {t("signup")}
@@ -322,14 +322,16 @@ export async function Footer() {
         <hr className="my-8 border-zinc-800/80" />
 
         {/* Disclaimer */}
-        <p className="text-xs text-zinc-500/80 leading-relaxed mb-4">
+        <p className="text-xs text-[#bbb] leading-relaxed mb-4">
           {t("disclaimer")}
         </p>
 
         {/* Footer Bottom */}
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-500">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between text-xs text-[#bbb]">
           <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-            <span>© {new Date().getFullYear()} PrimerTv.</span>
+            <span className="text-white">
+              © {new Date().getFullYear()} Primer TV.
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>{t("allRightsReserved")}</span>
             <Link
