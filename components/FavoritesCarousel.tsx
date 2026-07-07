@@ -166,11 +166,11 @@ export function FavoritesCarouselSkeleton() {
       >
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex gap-4 p-2 w-full">
-            <div className="relative aspect-[2/3] w-[84px] flex-shrink-0 animate-pulse bg-zinc-200 dark:bg-zinc-800 rounded" />
+            <div className="relative aspect-[2/3] w-[84px] flex-shrink-0 animate-pulse bg-zinc-800" />
             <div className="flex flex-col justify-center gap-2 flex-grow">
-              <div className="h-4 w-3/4 animate-pulse bg-zinc-200 dark:bg-zinc-800 rounded" />
-              <div className="h-3 w-1/3 animate-pulse bg-zinc-200 dark:bg-zinc-800 rounded" />
-              <div className="h-3 w-1/2 animate-pulse bg-zinc-200 dark:bg-zinc-800 rounded" />
+              <div className="h-4 w-3/4 animate-pulse bg-zinc-800" />
+              <div className="h-3 w-1/3 animate-pulse bg-zinc-800" />
+              <div className="h-3 w-1/2 animate-pulse bg-zinc-800" />
             </div>
           </div>
         ))}
