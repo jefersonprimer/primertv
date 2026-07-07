@@ -181,7 +181,7 @@ export default function EpisodeSidebar({
       {/* 2. "Ver mais episódios" Button */}
       <button
         onClick={handleToggleShowAll}
-        className="flex items-center gap-2 w-full md:fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 justify-center text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
+        className="flex items-center gap-2 w-full md:w-fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 justify-center text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
       >
         <ListVideo size={24} />
         {showAllEpisodes ? t("backToSummary") : t("seeMoreEpisodes")}
