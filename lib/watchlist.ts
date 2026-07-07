@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import type { WatchlistMediaType } from "@prisma/client";
+import { cache } from "react";
 
-export async function getAuthenticatedUserId() {
+export const getAuthenticatedUserId = cache(async () => {
   const session = await getSession();
   const userId = session?.user?.id;
 
@@ -10,8 +11,25 @@ export async function getAuthenticatedUserId() {
     return null;
   }
 
+  // Verify the user actually exists in the database to prevent foreign key errors (e.g. if db was reset or user deleted)
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!userExists) {
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      cookieStore.delete("session");
+    } catch {
+      // Ignore if cookies cannot be deleted (e.g. in render context)
+    }
+    return null;
+  }
+
   return userId;
-}
+});
 
 export async function isInWatchlist(
   mediaType: WatchlistMediaType,

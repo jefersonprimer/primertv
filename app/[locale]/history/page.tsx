@@ -82,10 +82,20 @@ export default async function HistoricoPage({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {resolvedItems.map((item) => (
-                <HistoryCard key={item.id} item={item} className="w-full" />
-              ))}
+            <div>
+              {/* Desktop/Tablet History Grid */}
+              <div className="hidden sm:grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                {resolvedItems.map((item) => (
+                  <HistoryCard key={item.id} item={item} className="w-full" />
+                ))}
+              </div>
+
+              {/* Mobile History List */}
+              <div className="flex sm:hidden flex-col gap-3 px-2">
+                {resolvedItems.map((item) => (
+                  <HistoryCard key={item.id} item={item} isMobileRow className="w-full" />
+                ))}
+              </div>
             </div>
           )}
         </main>

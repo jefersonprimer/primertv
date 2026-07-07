@@ -54,13 +54,13 @@ export function FavoritesCarouselClient({
   return (
     <section className="group/carousel relative">
       <div
-        className="mb-3 sm:mb-4 flex items-end justify-between w-full"
+        className="mb-3 sm:mb-4 flex items-center justify-between w-full"
         style={{
           paddingLeft: "max(8px, (100vw - 1223px) / 2)",
           paddingRight: "max(8px, (100vw - 1223px) / 2)",
         }}
       >
-        <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2] flex items-center gap-2">
+        <h2 className="text-[22px] md:text-[28px] font-bold text-[#f2f2f2]">
           {t("myList")}
         </h2>
         <Link
@@ -76,17 +76,18 @@ export function FavoritesCarouselClient({
         {showLeftArrow && (
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 z-10 flex h-full w-12 items-center justify-center bg-gradient-to-r from-white via-white/80 to-transparent text-zinc-900 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100 dark:from-zinc-950 dark:via-zinc-950/80 dark:text-zinc-50"
+            className="absolute left-0 z-10 hidden sm:flex h-full w-12 items-center justify-center bg-gradient-to-r from-white via-white/80 to-transparent text-zinc-900 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100 dark:from-zinc-950 dark:via-zinc-950/80 dark:text-zinc-50"
             aria-label="Scroll left"
           >
             <ChevronLeft size={32} />
           </button>
         )}
 
+        {/* Desktop/Tablet Horizontal Carousel */}
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-4 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
+          className="hidden sm:flex gap-4 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
           style={{
             paddingLeft: "max(8px, (100vw - 1223px) / 2)",
             paddingRight: "max(8px, (100vw - 1223px) / 2)",
@@ -101,10 +102,28 @@ export function FavoritesCarouselClient({
           ))}
         </div>
 
+        {/* Mobile Vertical Column (max 4 items) */}
+        <div
+          className="flex sm:hidden flex-col gap-3"
+          style={{
+            paddingLeft: "max(8px, (100vw - 1223px) / 2)",
+            paddingRight: "max(8px, (100vw - 1223px) / 2)",
+          }}
+        >
+          {items.slice(0, 4).map((item) => (
+            <FavoriteCard
+              key={item.id}
+              item={item}
+              isMobileRow
+              className="w-full"
+            />
+          ))}
+        </div>
+
         {showRightArrow && (
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-0 z-10 flex h-full w-12 items-center justify-center bg-gradient-to-l from-white via-white/80 to-transparent text-zinc-900 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100 dark:from-zinc-950 dark:via-zinc-950/80 dark:text-zinc-50"
+            className="absolute right-0 top-0 z-10 hidden sm:flex h-full w-12 items-center justify-center bg-gradient-to-l from-white via-white/80 to-transparent text-zinc-900 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100 dark:from-zinc-950 dark:via-zinc-950/80 dark:text-zinc-50"
             aria-label="Scroll right"
           >
             <ChevronRight size={32} />

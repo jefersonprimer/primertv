@@ -175,6 +175,7 @@ export default async function WatchlistPage({
         slug: anime.slug,
         title: anime.title,
         bannerUrl: finalBannerUrl || anime.imageUrl,
+        animeImageUrl: anime.imageUrl,
         firstEpisodeId,
         firstEpisodeImageUrl,
         rating: anime.rating,
@@ -241,9 +242,16 @@ export default async function WatchlistPage({
                   <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
                     {t("animes")}
                   </h2>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {/* Desktop/Tablet Grid */}
+                  <div className="hidden sm:grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                     {animes.map((item) => (
                       <FavoriteCard key={item.id} item={item} />
+                    ))}
+                  </div>
+                  {/* Mobile List */}
+                  <div className="flex sm:hidden flex-col gap-3 px-2">
+                    {animes.map((item) => (
+                      <FavoriteCard key={item.id} item={item} isMobileRow className="w-full" />
                     ))}
                   </div>
                 </section>

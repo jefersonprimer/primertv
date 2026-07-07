@@ -171,7 +171,7 @@ export default function EpisodeSidebar({
       {/* 2. "Ver mais episódios" Button */}
       <button
         onClick={handleToggleShowAll}
-        className="w-fit py-2.5 px-4 bg-zinc-200 dark:bg-zinc-800 text-sm font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-300 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-300 dark:border-zinc-700"
+        className="w-full md:w-fit py-2.5 px-4 bg-zinc-200 dark:bg-zinc-800 text-sm font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-300 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-300 dark:border-zinc-700"
       >
         {showAllEpisodes ? t("backToSummary") : t("seeMoreEpisodes")}
       </button>

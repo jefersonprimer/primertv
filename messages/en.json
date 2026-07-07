@@ -203,7 +203,8 @@
     "recommended": "Recommended",
     "megaPlayNoCatalog": "MegaPlay catalog did not return a list for this anime, but the player was opened by external id.",
     "selectPlayer": "Select Player",
-    "playerLabel": "Player {number}"
+    "playerLabel": "Player {number}",
+    "releasedOn": "Released on {date}"
   },
   "Weekdays": {
     "sunday": "Sunday",

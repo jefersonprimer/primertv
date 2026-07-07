@@ -24,11 +24,13 @@ export interface HistoryItem {
 interface HistoryCardProps {
   item: HistoryItem;
   className?: string;
+  isMobileRow?: boolean;
 }
 
 export function HistoryCard({
   item,
   className = "w-[260px] flex-shrink-0 sm:w-[300px] lg:w-[287.75px]",
+  isMobileRow = false,
 }: HistoryCardProps) {
   const t = useTranslations("History");
   const tMedia = useTranslations("MediaCard");
@@ -36,6 +38,87 @@ export function HistoryCard({
     ? `/watch/${item.episodePublicId}/${item.episodeSlug || "episode-" + item.episodeNumber}`
     : `/watch/${item.episodeId}/${item.episodeSlug || "episode-" + item.episodeNumber}`;
   const displayImageUrl = item.episodeImageUrl || item.animeImageUrl;
+
+  if (isMobileRow) {
+    const posterImageUrl = item.animeImageUrl || item.episodeImageUrl;
+
+    return (
+      <div
+        className={`hover:bg-zinc-800 p-2 rounded-lg transition-colors ${className}`}
+      >
+        <div className="flex gap-4">
+          <Link
+            href={cardHref}
+            className="relative aspect-[2/3] w-[84px] flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-all duration-300"
+          >
+            {posterImageUrl ? (
+              <Image
+                src={posterImageUrl}
+                alt={t("episodeAlt", {
+                  number: item.episodeNumber,
+                  title: item.animeTitle,
+                })}
+                fill
+                sizes="84px"
+                className="object-cover transition-transform duration-500"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-[#f2f2f2] hover:text-white text-xs font-bold text-center p-1">
+                {item.animeTitle}
+              </div>
+            )}
+
+            {/* Hover Play Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 hover:opacity-100 z-10">
+              <Play className="h-5 w-5 fill-current text-white" />
+            </div>
+          </Link>
+
+          <div className="flex flex-col justify-between py-1 min-w-0">
+            <div>
+              <Link href={cardHref}>
+                <h3 className="text-[#f2f2f2] hover:text-white text-sm font-bold line-clamp-2 hover:underline leading-tight">
+                  {item.animeTitle}
+                </h3>
+              </Link>
+
+              <div className="text-sm text-zinc-400 font-semibold mt-0.5">
+                {t("seasonEpisodeBadge", {
+                  season: item.seasonNumber,
+                  episode: item.episodeNumber,
+                })}
+              </div>
+
+              <Link
+                href={cardHref}
+                className="text-xs text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors line-clamp-1"
+              >
+                {t("continueWatchingEp", { number: item.episodeNumber })}
+              </Link>
+            </div>
+
+            {(item.isDubbed || item.isSubtitled) && (
+              <div className="flex gap-1.5 self-start mt-1">
+                {item.isDubbed && item.isSubtitled ? (
+                  <span className="text-sm text-[#8c8c8c] font-normal">
+                    {tMedia("subDub")}
+                  </span>
+                ) : item.isDubbed ? (
+                  <span className="text-sm text-[#8c8c8c] font-normal">
+                    {tMedia("dubbed")}
+                  </span>
+                ) : (
+                  <span className="text-sm text-[#8c8c8c] font-normal">
+                    {tMedia("subtitled")}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`hover:bg-zinc-800 md:p-2 ${className}`}>

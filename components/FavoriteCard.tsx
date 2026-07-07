@@ -9,6 +9,7 @@ export interface FavoriteItem {
   slug: string;
   title: string;
   bannerUrl: string | null;
+  animeImageUrl?: string | null;
   firstEpisodeId: string | null;
   firstEpisodeImageUrl: string | null;
   firstEpisodePublicId?: string | null;
@@ -22,6 +23,7 @@ export interface FavoriteItem {
 interface FavoriteCardProps {
   item: FavoriteItem;
   className?: string;
+  isMobileRow?: boolean;
 }
 
 function formatDuration(duration: string | null | undefined): string {
@@ -36,12 +38,101 @@ function formatDuration(duration: string | null | undefined): string {
 export default function FavoriteCard({
   item,
   className = "",
+  isMobileRow = false,
 }: FavoriteCardProps) {
   const t = useTranslations("FavoriteCard");
   const tMedia = useTranslations("MediaCard");
   const cardHref = item.firstEpisodePublicId
     ? `/watch/${item.firstEpisodePublicId}/${item.firstEpisodeSlug || "episode-1"}`
     : `/animes/${item.slug}`;
+
+  if (isMobileRow) {
+    const posterImageUrl =
+      item.animeImageUrl || item.bannerUrl || item.firstEpisodeImageUrl;
+
+    return (
+      <div
+        className={`hover:bg-zinc-800 p-2 rounded-lg transition-colors ${className}`}
+      >
+        <div className="flex gap-4">
+          <Link
+            href={cardHref}
+            className="relative aspect-[2/3] w-[84px] flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-all duration-300"
+          >
+            {posterImageUrl ? (
+              <Image
+                src={posterImageUrl}
+                alt={item.title}
+                fill
+                sizes="84px"
+                className="object-cover transition-transform duration-500"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-[#f2f2f2] hover:text-white text-xs font-bold text-center p-1">
+                {item.title}
+              </div>
+            )}
+
+            {/* Rating Badge inside image */}
+            {item.rating && (
+              <div className="absolute top-1 left-1 z-20 shadow-md">
+                <RatingBadge rating={item.rating} size={16} />
+              </div>
+            )}
+
+            {/* Hover Play Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 hover:opacity-100 z-10">
+              <Play className="h-5 w-5 fill-current text-white" />
+            </div>
+          </Link>
+
+          <div className="flex flex-col justify-between py-1 min-w-0">
+            <div>
+              <Link href={cardHref}>
+                <h3 className="text-[#f2f2f2] hover:text-white text-sm font-bold line-clamp-2 hover:underline leading-tight">
+                  {item.title}
+                </h3>
+              </Link>
+
+              {item.firstEpisodeId ? (
+                <Link
+                  href={cardHref}
+                  className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors line-clamp-1 mt-2"
+                >
+                  {t("startWatchingEp", { number: 1 })}
+                </Link>
+              ) : (
+                <Link
+                  href={cardHref}
+                  className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors line-clamp-1"
+                >
+                  {t("viewDetails")}
+                </Link>
+              )}
+            </div>
+
+            {(item.isDubbed || item.isSubtitled) && (
+              <div className="flex gap-1.5 self-start mt-1">
+                {item.isDubbed && item.isSubtitled ? (
+                  <span className="text-sm text-[#8c8c8c] font-normal">
+                    {tMedia("subDub")}
+                  </span>
+                ) : item.isDubbed ? (
+                  <span className="text-sm text-[#8c8c8c] font-normal">
+                    {tMedia("dubbed")}
+                  </span>
+                ) : (
+                  <span className="text-sm text-[#8c8c8c] font-normal">
+                    {tMedia("subtitled")}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

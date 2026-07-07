@@ -17,6 +17,8 @@ import SeriesEpisodeSidebar from "./SeriesEpisodeSidebar";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ShareButton from "@/components/ShareButton";
 import { getAnimeDetailsBySlug } from "@/lib/media-details";
+import { LucideKey, ThumbsDown, ThumbsUp } from "lucide-react";
+import RatingBadge from "@/components/RatingBadge";
 
 interface WatchPageProps {
   params: Promise<{ locale: string; publicId: string; slug: string }>;
@@ -169,6 +171,7 @@ export default async function WatchPage({
   await connection();
 
   const t = await getTranslations("Watch");
+  const tMedia = await getTranslations("MediaCard");
   const { locale, publicId, slug } = await params;
   const { player, source, episode } = (await searchParams) || {};
 
@@ -284,6 +287,11 @@ export default async function WatchPage({
       animeEpisode.season.anime.id,
     );
 
+    const anime = animeEpisode.season.anime;
+    const rating = anime.rating;
+    const isDubbed = anime.isDubbed;
+    const isSubtitled = anime.isSubtitled;
+
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
@@ -345,34 +353,92 @@ export default async function WatchPage({
                 )}
 
                 <div>
-                  <div className="flex flex-col items-start gap-2">
+                  <div className="flex flex-col items-start gap-3">
                     <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
                       <Link
-                        href={`/animes/${animeEpisode.season.anime.slug}`}
+                        href={`/animes/${anime.slug}`}
                         className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
                       >
-                        <h4 className="text-base font-bold">
-                          {animeEpisode.season.anime.title}
-                        </h4>
+                        <h4 className="text-base font-bold">{anime.title}</h4>
                       </Link>
 
                       <WatchlistButton
                         mediaType="ANIME"
-                        mediaId={animeEpisode.season.anime.id}
-                        slug={animeEpisode.season.anime.slug}
+                        mediaId={anime.id}
+                        slug={anime.slug}
                         initialInWatchlist={inWatchlist}
                         isLoggedIn={Boolean(userId)}
                         hasBorder={false}
                       />
                     </div>
 
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
-                        {t("seasonEpisodeLabel", {
-                          season: animeEpisode.season.number,
-                          episode: animeEpisode.number,
-                        })}
-                      </span>
+                    {/* Season/Episode label and Metadata (rating, sub/dub) */}
+                    <div className="flex flex-col flex-wrap gap-2 tracking-wider">
+                      <h1 className="text-white text-[22px] font-semibold line-clamp-2">
+                        {animeEpisode.title
+                          ? `EP${animeEpisode.number} - ${animeEpisode.title}`
+                          : t("seasonEpisodeLabel", {
+                              season: animeEpisode.season.number,
+                              episode: animeEpisode.number,
+                            })}
+                      </h1>
+
+                      {rating && (
+                        <RatingBadge rating={rating} className="h-4 w-4" />
+                      )}
+
+                      {animeEpisode.createdAt && (
+                        <span className="text-sm text-white font-normal">
+                          {t("releasedOn", {
+                            date: new Intl.DateTimeFormat(
+                              locale === "pt-br" ? "pt-BR" : "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                timeZone: "America/Sao_Paulo",
+                              },
+                            ).format(new Date(animeEpisode.createdAt)),
+                          })}
+                        </span>
+                      )}
+
+                      {(isDubbed || isSubtitled) && (
+                        <>
+                          <span
+                            className="text-[#555] select-none"
+                            aria-hidden="true"
+                          >
+                            •
+                          </span>
+                          <span className="normal-case text-sm text-[#8c8c8c] font-normal">
+                            {isDubbed && isSubtitled
+                              ? tMedia("subDub")
+                              : isDubbed
+                                ? tMedia("dubbed")
+                                : tMedia("subtitled")}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Likes & Share Actions */}
+                    <div className="flex items-center justify-between w-full text-white">
+                      <div className="flex items-center gap-4">
+                        <button
+                          className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
+                          title="Like"
+                        >
+                          <ThumbsUp size={20} />
+                        </button>
+                        <button
+                          className="hover:text-red-400 transition-colors flex items-center gap-1.5"
+                          title="Dislike"
+                        >
+                          <ThumbsDown size={20} />
+                        </button>
+                      </div>
+
                       <ShareButton compact />
                     </div>
                   </div>
@@ -507,7 +573,7 @@ export default async function WatchPage({
                 )}
 
                 <div>
-                  <div className="flex flex-col items-start gap-2">
+                  <div className="flex flex-col items-start gap-3">
                     <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
                       <Link
                         href={`/animes/${anime.slug}`}
@@ -526,10 +592,63 @@ export default async function WatchPage({
                       />
                     </div>
 
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+                    {/* Episode label and Metadata (rating, sub/dub) */}
+                    <div className="flex items-center flex-wrap gap-2 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+                      <span>
                         {t("megaPlayEpisodeLabel", { episode: episodeNumber })}
                       </span>
+
+                      {anime.rating && (
+                        <>
+                          <span
+                            className="text-[#555] select-none"
+                            aria-hidden="true"
+                          >
+                            •
+                          </span>
+                          <RatingBadge
+                            rating={anime.rating}
+                            className="h-4 w-4"
+                          />
+                        </>
+                      )}
+
+                      {(anime.isDubbed || anime.isSubtitled) && (
+                        <>
+                          <span
+                            className="text-[#555] select-none"
+                            aria-hidden="true"
+                          >
+                            •
+                          </span>
+                          <span className="normal-case text-sm text-[#8c8c8c] font-normal">
+                            {anime.isDubbed && anime.isSubtitled
+                              ? tMedia("subDub")
+                              : anime.isDubbed
+                                ? tMedia("dubbed")
+                                : tMedia("subtitled")}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Likes & Share Actions */}
+                    <div className="flex items-center justify-between w-full text-white mt-1">
+                      <div className="flex items-center gap-4">
+                        <button
+                          className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
+                          title="Like"
+                        >
+                          <ThumbsUp size={20} />
+                        </button>
+                        <button
+                          className="hover:text-red-400 transition-colors flex items-center gap-1.5"
+                          title="Dislike"
+                        >
+                          <ThumbsDown size={20} />
+                        </button>
+                      </div>
+
                       <ShareButton compact />
                     </div>
                   </div>
@@ -813,7 +932,7 @@ export default async function WatchPage({
                 </div>
 
                 <div>
-                  <div className="flex flex-col items-start gap-2">
+                  <div className="flex flex-col items-start gap-3">
                     <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
                       <Link
                         href={`/series/${seriesEpisode.season.series.slug}`}
@@ -834,13 +953,66 @@ export default async function WatchPage({
                       />
                     </div>
 
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
-                        {t("seasonEpisodeLabel", {
-                          season: seriesEpisode.season.number,
-                          episode: seriesEpisode.number,
+                    {/* Season/Episode label and Metadata (rating) */}
+                    <div className="flex items-center flex-wrap gap-2 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+                      <span>
+                        {seriesEpisode.title
+                          ? `EP${seriesEpisode.number} - ${seriesEpisode.title}`
+                          : t("seasonEpisodeLabel", {
+                              season: seriesEpisode.season.number,
+                              episode: seriesEpisode.number,
+                            })}
+                      </span>
+
+                      {seriesEpisode.season.series.rating && (
+                        <>
+                          <span
+                            className="text-[#555] select-none"
+                            aria-hidden="true"
+                          >
+                            •
+                          </span>
+                          <RatingBadge
+                            rating={seriesEpisode.season.series.rating}
+                            className="h-4 w-4"
+                          />
+                        </>
+                      )}
+                    </div>
+
+                    {seriesEpisode.createdAt && (
+                      <span className="text-xs text-zinc-400 font-normal">
+                        {t("releasedOn", {
+                          date: new Intl.DateTimeFormat(
+                            locale === "pt-br" ? "pt-BR" : "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              timeZone: "America/Sao_Paulo",
+                            },
+                          ).format(new Date(seriesEpisode.createdAt)),
                         })}
                       </span>
+                    )}
+
+                    {/* Likes & Share Actions */}
+                    <div className="flex items-center justify-between w-full text-white mt-1">
+                      <div className="flex items-center gap-4">
+                        <button
+                          className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
+                          title="Like"
+                        >
+                          <ThumbsUp size={20} />
+                        </button>
+                        <button
+                          className="hover:text-red-400 transition-colors flex items-center gap-1.5"
+                          title="Dislike"
+                        >
+                          <ThumbsDown size={20} />
+                        </button>
+                      </div>
+
                       <ShareButton compact />
                     </div>
                   </div>
@@ -1077,7 +1249,7 @@ export default async function WatchPage({
             </div>
 
             <div>
-              <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-col items-start gap-3">
                 <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
                   <Link
                     href={`/movies/${movie.slug}`}
@@ -1096,10 +1268,58 @@ export default async function WatchPage({
                   />
                 </div>
 
-                <div className="flex items-center justify-between w-full">
-                  <h1 className="text-[22px] font-bold text-zinc-500">
+                {/* Movie label and Metadata (rating) */}
+                <div className="flex items-center flex-wrap gap-2 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+                  <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
                     {t("movieLabel")}
-                  </h1>
+                  </span>
+
+                  {movie.rating && (
+                    <>
+                      <span
+                        className="text-[#555] select-none"
+                        aria-hidden="true"
+                      >
+                        •
+                      </span>
+                      <RatingBadge rating={movie.rating} className="h-4 w-4" />
+                    </>
+                  )}
+                </div>
+
+                {(movie.releaseDate || movie.createdAt) && (
+                  <span className="text-xs text-zinc-400 font-normal">
+                    {t("releasedOn", {
+                      date: new Intl.DateTimeFormat(
+                        locale === "pt-br" ? "pt-BR" : "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          timeZone: "America/Sao_Paulo",
+                        },
+                      ).format(new Date(movie.releaseDate || movie.createdAt)),
+                    })}
+                  </span>
+                )}
+
+                {/* Likes & Share Actions */}
+                <div className="flex items-center justify-between w-full text-white mt-1">
+                  <div className="flex items-center gap-4">
+                    <button
+                      className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
+                      title="Like"
+                    >
+                      <ThumbsUp size={20} />
+                    </button>
+                    <button
+                      className="hover:text-red-400 transition-colors flex items-center gap-1.5"
+                      title="Dislike"
+                    >
+                      <ThumbsDown size={20} />
+                    </button>
+                  </div>
+
                   <ShareButton compact />
                 </div>
               </div>
