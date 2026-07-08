@@ -7,6 +7,7 @@ import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { Clock } from "lucide-react";
 import { HistoryCard } from "@/components/HistoryCard";
+import { ProfileTabs } from "@/components/ProfileTabs";
 
 export default async function HistoricoPage({
   params,
@@ -49,7 +50,8 @@ export default async function HistoricoPage({
   });
 
   return (
-    <div className="mx-auto max-w-[1130px] py-6">
+    <div className="mx-auto max-w-[1130px] py-6 px-4 md:px-0">
+      <ProfileTabs />
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 sm:pb-4 mx-2">
         <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px] mx-2 md:mx-0">
           {t("title")}

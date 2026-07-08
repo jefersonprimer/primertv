@@ -9,6 +9,7 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import CreateListModal from "@/components/CreateListModal";
 import EditListModal from "@/components/EditListModal";
 import DeleteListButton from "@/components/DeleteListButton";
+import { ProfileTabs } from "@/components/ProfileTabs";
 
 export default async function ListasPage({
   params,
@@ -39,6 +40,7 @@ export default async function ListasPage({
 
   return (
     <div className="mx-auto max-w-[1130px] py-6 px-4 md:px-0">
+      <ProfileTabs />
       <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px]">
         {t("title")}
       </h1>

@@ -9,6 +9,7 @@ import { Link, redirect } from "@/i18n/routing";
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { getFirstAnimeEpisodes } from "@/lib/media-performance";
+import { ProfileTabs } from "@/components/ProfileTabs";
 
 type WatchlistRow = {
   id: string;
@@ -193,7 +194,8 @@ export default async function WatchlistPage({
     animes.length === 0 && mangas.length === 0 && seriesList.length === 0;
 
   return (
-    <div className="mx-auto max-w-[1130px] py-6">
+    <div className="mx-auto max-w-[1130px] py-6 px-4 md:px-0">
+      <ProfileTabs />
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 sm:pb-4 mx-2">
         <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px] mx-2 md:mx-0">
           {t("title")}
