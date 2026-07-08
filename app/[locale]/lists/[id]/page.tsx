@@ -9,6 +9,7 @@ import { getTranslations } from "next-intl/server";
 import { ChevronLeft, FolderOpen } from "lucide-react";
 import { MediaCard } from "@/components/MediaCard";
 import RemoveFromListButton from "@/components/RemoveFromListButton";
+import EditListModal from "@/components/EditListModal";
 
 interface ListDetailsPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -67,29 +68,39 @@ export default async function ListDetailsPage({
         {/* Back navigation */}
         <Link
           href="/lists"
-          className="inline-flex items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-855 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-sm font-bold text-[#bbb] hover:text-white transition-colors mb-6 uppercase"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-5 w-5" />
           {t("backToLists")}
         </Link>
 
-        <header className="mb-12">
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-            {list.name}
-          </h1>
-          {list.description && (
-            <p className="text-zinc-600 dark:text-zinc-400 mt-2">
-              {list.description}
-            </p>
-          )}
-          <div className="text-xs font-medium text-zinc-400 dark:text-zinc-500 mt-2">
-            {t("itemsAdded", { count: items.length })}
+        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-zinc-800 pb-6">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px]">
+              {list.name}
+            </h1>
+            {list.description && (
+              <p className="text-sm text-[#f2f2f2] mt-2 max-w-2xl">
+                {list.description}
+              </p>
+            )}
+            <div className="text-xs font-medium text-[#bbb] mt-2">
+              {t("itemsAdded", { count: items.length })}
+            </div>
+          </div>
+          <div className="flex shrink-0">
+            <EditListModal
+              listId={list.id}
+              initialName={list.name}
+              initialDescription={list.description}
+              triggerType="button"
+            />
           </div>
         </header>
 
         <main>
           {isEmpty ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40">
+            <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-[#bbb]">
               <FolderOpen className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
               <p className="text-xl text-zinc-500">{t("emptyListTitle")}</p>
               <p className="mt-2 text-zinc-400">

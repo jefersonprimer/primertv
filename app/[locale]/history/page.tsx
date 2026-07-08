@@ -50,56 +50,56 @@ export default async function HistoricoPage({
 
   return (
     <div className="mx-auto max-w-[1130px] py-6">
-      <div className="mx-auto max-w-[1050px]">
-        <header className="mb-6">
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
-            {t("title")}
-          </h1>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            {t("description", { count: items.length > 0 ? items.length : 24 })}
-          </p>
-        </header>
-
-        <main>
-          {resolvedItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <Clock
-                className="mb-4 text-zinc-300 dark:text-zinc-700"
-                size={48}
-              />
-              <p className="text-xl text-zinc-500">{t("emptyTitle")}</p>
-              <p className="mt-2 text-zinc-400">
-                {t.rich("emptySubtitle", {
-                  animesLink: (chunks) => (
-                    <Link
-                      href="/animes"
-                      className="text-blue-500 hover:underline"
-                    >
-                      {chunks}
-                    </Link>
-                  ),
-                })}
-              </p>
-            </div>
-          ) : (
-            <div>
-              {/* Desktop/Tablet History Grid */}
-              <div className="hidden sm:grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {resolvedItems.map((item) => (
-                  <HistoryCard key={item.id} item={item} className="w-full" />
-                ))}
-              </div>
-
-              {/* Mobile History List */}
-              <div className="flex sm:hidden flex-col gap-3 px-2">
-                {resolvedItems.map((item) => (
-                  <HistoryCard key={item.id} item={item} isMobileRow className="w-full" />
-                ))}
-              </div>
-            </div>
-          )}
-        </main>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 sm:pb-4 mx-2">
+        <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px] mx-2 md:mx-0">
+          {t("title")}
+        </h1>
       </div>
+
+      <main>
+        {resolvedItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Clock
+              className="mb-4 text-zinc-300 dark:text-zinc-700"
+              size={48}
+            />
+            <p className="text-xl text-zinc-500">{t("emptyTitle")}</p>
+            <p className="mt-2 text-zinc-400">
+              {t.rich("emptySubtitle", {
+                animesLink: (chunks) => (
+                  <Link
+                    href="/animes"
+                    className="text-blue-500 hover:underline"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </p>
+          </div>
+        ) : (
+          <div>
+            {/* Desktop/Tablet History Grid */}
+            <div className="hidden sm:grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+              {resolvedItems.map((item) => (
+                <HistoryCard key={item.id} item={item} className="w-full" />
+              ))}
+            </div>
+
+            {/* Mobile History List */}
+            <div className="flex sm:hidden flex-col gap-3 px-2">
+              {resolvedItems.map((item) => (
+                <HistoryCard
+                  key={item.id}
+                  item={item}
+                  isMobileRow
+                  className="w-full"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

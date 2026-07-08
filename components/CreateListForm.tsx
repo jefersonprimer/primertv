@@ -47,15 +47,15 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
       className={`flex flex-col h-full justify-between p-6 ${
         isModal
           ? "bg-transparent"
-          : "border-2 border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/20"
+          : "border border-dashed border-zinc-800 bg-zinc-900"
       }`}
     >
       <div className="space-y-4 w-full">
-        <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200">
+        <h3 className="text-lg font-bold text-white">
           {t("createList")}
         </h3>
         {error && (
-          <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">
+          <p className="text-xs text-red-400 bg-red-950/30 border border-red-900/50 p-2 rounded-sm">
             {error}
           </p>
         )}
@@ -65,24 +65,24 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
             placeholder={t("listNamePlaceholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full text-sm px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-zinc-400 dark:placeholder-zinc-600 text-zinc-800 dark:text-zinc-100"
+            className="w-full text-sm px-3 py-2.5 rounded-sm border border-zinc-800 bg-zinc-950 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-zinc-500 text-white transition-colors"
             maxLength={50}
             required
           />
-          <input
-            type="text"
+          <textarea
             placeholder={t("descriptionPlaceholder")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full text-sm px-3 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-zinc-400 dark:placeholder-zinc-600 text-zinc-800 dark:text-zinc-100"
+            className="w-full text-sm px-3 py-2.5 rounded-sm border border-zinc-800 bg-zinc-950 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-zinc-500 text-white resize-none transition-colors"
             maxLength={150}
+            rows={3}
           />
         </div>
       </div>
       <button
         type="submit"
         disabled={loading || !name.trim()}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-sm bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />

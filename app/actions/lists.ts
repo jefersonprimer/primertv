@@ -157,3 +157,39 @@ export async function deleteList(listId: string) {
     return { success: false, error: "Erro ao deletar a lista." };
   }
 }
+
+export async function updateList(listId: string, name: string, description?: string) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return { success: false, error: "Você precisa estar logado." };
+  }
+
+  if (!name || name.trim() === "") {
+    return { success: false, error: "O nome da lista não pode estar vazio." };
+  }
+
+  try {
+    const list = await prisma.customList.findUnique({
+      where: { id: listId },
+    });
+
+    if (!list || list.userId !== userId) {
+      return { success: false, error: "Lista não encontrada ou sem permissão." };
+    }
+
+    const updatedList = await prisma.customList.update({
+      where: { id: listId },
+      data: {
+        name: name.trim(),
+        description: description?.trim() || null,
+      },
+    });
+
+    revalidatePath("/lists");
+    revalidatePath(`/lists/${listId}`);
+    return { success: true, list: updatedList };
+  } catch (err) {
+    console.error("Erro ao atualizar lista: ", err);
+    return { success: false, error: "Erro ao atualizar a lista." };
+  }
+}
