@@ -1,11 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { toggleWatchlist } from "@/app/actions/watchlist";
 import type { WatchlistMediaType } from "@prisma/client";
 import { Bookmark } from "lucide-react";
-import { Link } from "@/i18n/routing";
 import { useActionState } from "react";
-import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 
 type WatchlistButtonProps = {
   mediaType: WatchlistMediaType;
@@ -40,7 +40,7 @@ export function WatchlistButton({
       ? "flex h-8 w-8 items-center justify-center border-2 border-blue-700 hover:border-blue-600 text-blue-700 hover:text-blue-600 flex-shrink-0 transition-colors"
       : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 border-blue-700 hover:border-blue-600 font-semibold text-blue-700 hover:text-blue-600 transition-colors md:px-2 md:py-1.5 flex-shrink-0"
     : compact
-      ? "flex h-8 w-8 items-center justify-center text-zinc-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-500 flex-shrink-0 transition-colors"
+      ? "flex h-8 w-8 items-center justify-center text-zinc-500 hover:text-blue-500 flex-shrink-0 transition-colors"
       : "flex h-10 w-10 items-center justify-center text-white hover:text-blue-600 flex-shrink-0 transition-colors";
 
   let buttonClass = hasBorder
@@ -49,14 +49,10 @@ export function WatchlistButton({
       : "flex h-10 w-10 md:h-auto md:w-fit items-center justify-center md:gap-2 border-2 font-semibold transition-colors md:px-2 md:py-1.5 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700"
     : compact
       ? `flex h-8 w-8 items-center justify-center transition-colors ${
-          inWatchlist
-            ? "text-blue-600 dark:text-blue-500"
-            : "text-zinc-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-500"
+          inWatchlist ? "text-blue-500" : "text-zinc-500 hover:text-blue-500"
         }`
       : `flex h-10 w-10 items-center justify-center transition-colors ${
-          inWatchlist
-            ? "text-blue-600 dark:text-blue-500"
-            : "text-zinc-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-500"
+          inWatchlist ? "text-blue-500" : "text-zinc-500 hover:text-blue-500"
         }`;
 
   if (roundedFull) {

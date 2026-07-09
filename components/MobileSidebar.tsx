@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { Menu } from "lucide-react";
 import { NAV_LINKS } from "./nav-links";
+import Link from "next/link";
 
 export function MobileSidebar() {
   const [isOpen, setIsOpen] = useState(false);

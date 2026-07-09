@@ -1,9 +1,9 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import FavoriteCard, { FavoriteItem } from "@/components/FavoriteCard";
 import { ChevronRight } from "lucide-react";
+import { Link } from "@/i18n/routing";
 
 interface FavoritesCarouselClientProps {
   items: FavoriteItem[];

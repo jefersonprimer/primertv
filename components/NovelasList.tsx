@@ -95,8 +95,8 @@ export function NovelasList({
               key={`skeleton-${idx}`}
               className="flex flex-col gap-3 animate-pulse"
             >
-              <div className="relative aspect-[2/3] w-full bg-zinc-200 dark:bg-zinc-800 shadow-md" />
-              <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800" />
+              <div className="relative aspect-[2/3] w-full bg-zinc-800 shadow-md" />
+              <div className="h-4 w-3/4 bg-zinc-800" />
             </div>
           ))}
       </div>

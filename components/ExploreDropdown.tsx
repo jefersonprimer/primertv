@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Link } from "@/i18n/routing";
-import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
+import { Link } from "@/i18n/routing";
 
 export function ExploreDropdown() {
   const [isOpen, setIsOpen] = useState(false);

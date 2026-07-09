@@ -1,13 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { StartWatchingButton } from "@/components/StartWatchingButton";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export interface HeroCarouselItem {
   id: string;

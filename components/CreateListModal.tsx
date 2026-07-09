@@ -1,9 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { X } from "lucide-react";
 import CreateListForm from "./CreateListForm";
-import { useTranslations } from "next-intl";
 
 export default function CreateListModal() {
   const t = useTranslations("Lists");

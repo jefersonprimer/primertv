@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { HistoryCard, type HistoryItem } from "./HistoryCard";
 import { ChevronRight } from "lucide-react";
 

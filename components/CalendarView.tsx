@@ -1,11 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
 import { Clock, Tv, Play, Loader2 } from "lucide-react";
+
 import { WatchlistButton } from "@/components/WatchlistButton";
+import { Link } from "@/i18n/routing";
 
 interface AnimeItem {
   id: string;

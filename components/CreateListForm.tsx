@@ -1,16 +1,19 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { createList } from "@/app/actions/lists";
-import { useTranslations } from "next-intl";
 
 interface CreateListFormProps {
   onSuccess?: () => void;
   isModal?: boolean;
 }
 
-export default function CreateListForm({ onSuccess, isModal = false }: CreateListFormProps) {
+export default function CreateListForm({
+  onSuccess,
+  isModal = false,
+}: CreateListFormProps) {
   const t = useTranslations("Lists");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -51,9 +54,7 @@ export default function CreateListForm({ onSuccess, isModal = false }: CreateLis
       }`}
     >
       <div className="space-y-4 w-full">
-        <h3 className="text-lg font-bold text-white">
-          {t("createList")}
-        </h3>
+        <h3 className="text-lg font-bold text-white">{t("createList")}</h3>
         {error && (
           <p className="text-xs text-red-400 bg-red-950/30 border border-red-900/50 p-2 rounded-sm">
             {error}

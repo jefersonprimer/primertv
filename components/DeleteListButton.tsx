@@ -1,16 +1,19 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Trash2, Loader2 } from "lucide-react";
 import { deleteList } from "@/app/actions/lists";
-import { useTranslations } from "next-intl";
 
 interface DeleteListButtonProps {
   listId: string;
   listName: string;
 }
 
-export default function DeleteListButton({ listId, listName }: DeleteListButtonProps) {
+export default function DeleteListButton({
+  listId,
+  listName,
+}: DeleteListButtonProps) {
   const t = useTranslations("Lists");
   const [isDeleting, setIsDeleting] = useState(false);
 

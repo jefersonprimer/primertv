@@ -1,9 +1,9 @@
 "use client";
 
+import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import EpisodeList from "./EpisodeList";
-import { useTranslations, useLocale } from "next-intl";
 
 interface Episode {
   id: string;
@@ -194,13 +194,13 @@ export default function SeasonSelector({
       />
 
       {seasons.length > 1 && (
-        <div className="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 pt-6 mt-2">
+        <div className="flex items-center justify-between border-t border-zinc-800 pt-6 mt-2">
           <button
             onClick={() =>
               currentIndex > 0 && setCurrentIndex(currentIndex - 1)
             }
             disabled={currentIndex === 0}
-            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-300 hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
           >
             <ChevronLeft className="h-5 w-5" />
             <span className="flex items-center gap-1">
@@ -224,7 +224,7 @@ export default function SeasonSelector({
               setCurrentIndex(currentIndex + 1)
             }
             disabled={currentIndex === seasons.length - 1}
-            className="flex items-center gap-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-300 hover:text-blue-400 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer uppercase"
           >
             <span className="flex items-center gap-1">
               {t("next")}

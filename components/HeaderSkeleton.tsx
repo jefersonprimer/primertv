@@ -10,9 +10,7 @@ export function HeaderSkeleton() {
               <Menu size={22} />
             </div>
             <div className="flex items-center lg:pl-4 text-xl tracking-tight">
-              <span className="font-semibold text-zinc-100">
-                primer
-              </span>
+              <span className="font-semibold text-zinc-100">primer</span>
               <span className="font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent ml-1 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]">
                 tv
               </span>
@@ -22,20 +20,23 @@ export function HeaderSkeleton() {
           {/* Desktop Nav placeholders */}
           <nav className="hidden h-full items-center sm:flex">
             <div className="flex h-full items-center px-4">
-              <div className="h-4 w-14 animate-pulse rounded bg-zinc-700" />
+              <div className="h-4 w-20 animate-pulse bg-zinc-700" />
             </div>
             <div className="flex h-full items-center px-4">
-              <div className="h-4 w-12 animate-pulse rounded bg-zinc-700" />
+              <div className="h-4 w-14 animate-pulse bg-zinc-700" />
             </div>
             <div className="flex h-full items-center px-4">
-              <div className="h-4 w-14 animate-pulse rounded bg-zinc-700" />
+              <div className="h-4 w-14 animate-pulse bg-zinc-700" />
             </div>
             <div className="hidden md:flex h-full items-center">
               <div className="flex h-full items-center px-4">
-                <div className="h-4 w-12 animate-pulse rounded bg-zinc-700" />
+                <div className="h-4 w-14 animate-pulse bg-zinc-700" />
               </div>
               <div className="flex h-full items-center px-4">
-                <div className="h-4 w-12 animate-pulse rounded bg-zinc-700" />
+                <div className="h-4 w-14 animate-pulse bg-zinc-700" />
+              </div>
+              <div className="flex h-full items-center px-4">
+                <div className="h-4 w-20 animate-pulse bg-zinc-700" />
               </div>
             </div>
           </nav>
@@ -44,10 +45,10 @@ export function HeaderSkeleton() {
         {/* Right side icons placeholders */}
         <div className="flex h-full items-center">
           <div className="flex h-full items-center px-4 text-[#bbb]">
-            <div className="h-5 w-5 animate-pulse rounded bg-zinc-700" />
+            <div className="h-5 w-5 animate-pulse rounded-full bg-zinc-700" />
           </div>
           <div className="flex h-full items-center px-4 text-[#bbb]">
-            <div className="h-5 w-5 animate-pulse rounded bg-zinc-700" />
+            <div className="h-5 w-5 animate-pulse rounded-full bg-zinc-700" />
           </div>
           <div className="flex h-full items-center px-4">
             <div className="h-10 w-10 animate-pulse rounded-full bg-zinc-700" />

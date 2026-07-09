@@ -1,8 +1,8 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "@/i18n/routing";
-import { useLocale } from "next-intl";
 import { Globe, ChevronDown } from "lucide-react";
 
 export function LanguageSwitcher() {

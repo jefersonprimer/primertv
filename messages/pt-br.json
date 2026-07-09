@@ -334,5 +334,20 @@
   "ExpandableDescription": {
     "showMore": "Ver Mais",
     "showLess": "Ver Menos"
+  },
+  "MangaReader": {
+    "back": "Voltar",
+    "chapter": "Capítulo {number}",
+    "toggleWidth": "Alternar Largura (W)",
+    "fullscreen": "Fullscreen (F)",
+    "hideMenu": "Esconder Menu (M)",
+    "noPages": "Este capítulo ainda não tem páginas processadas.",
+    "backToWork": "Voltar para a obra",
+    "page": "Página {number}",
+    "endOfChapter": "Fim do Capítulo {number}",
+    "whatToReadNext": "O que você quer ler agora?",
+    "prevChapter": "Capítulo Anterior",
+    "nextChapter": "Próximo Capítulo",
+    "backToChapters": "Voltar para a lista de capítulos"
   }
 }

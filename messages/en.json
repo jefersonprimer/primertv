@@ -334,5 +334,20 @@
   "ExpandableDescription": {
     "showMore": "Show More",
     "showLess": "Show Less"
+  },
+  "MangaReader": {
+    "back": "Back",
+    "chapter": "Chapter {number}",
+    "toggleWidth": "Toggle Width (W)",
+    "fullscreen": "Fullscreen (F)",
+    "hideMenu": "Hide Menu (M)",
+    "noPages": "This chapter has no processed pages yet.",
+    "backToWork": "Back to manga page",
+    "page": "Page {number}",
+    "endOfChapter": "End of Chapter {number}",
+    "whatToReadNext": "What do you want to read now?",
+    "prevChapter": "Previous Chapter",
+    "nextChapter": "Next Chapter",
+    "backToChapters": "Back to chapter list"
   }
 }

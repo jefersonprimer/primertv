@@ -1,5 +1,3 @@
-import React from "react";
-
 interface RatingBadgeProps {
   rating: string | null | undefined;
   size?: number | string;

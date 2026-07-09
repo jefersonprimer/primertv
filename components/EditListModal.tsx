@@ -1,9 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { X, Pencil, Loader2 } from "lucide-react";
 import { updateList } from "@/app/actions/lists";
-import { useTranslations } from "next-intl";
 
 interface EditListModalProps {
   listId: string;

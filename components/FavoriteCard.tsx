@@ -1,8 +1,8 @@
+import { useTranslations } from "next-intl";
 import { Play } from "lucide-react";
 import Image from "next/image";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
 import RatingBadge from "@/components/RatingBadge";
+import { Link } from "@/i18n/routing";
 
 export interface FavoriteItem {
   id: string;
@@ -55,7 +55,7 @@ export default function FavoriteCard({
         <div className="flex gap-4">
           <Link
             href={cardHref}
-            className="relative aspect-[2/3] w-[84px] flex-shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-all duration-300"
+            className="relative aspect-[2/3] w-[84px] flex-shrink-0 overflow-hidden bg-zinc-900 shadow-md transition-all duration-300"
           >
             {posterImageUrl ? (
               <Image
@@ -138,7 +138,7 @@ export default function FavoriteCard({
     >
       <Link
         href={cardHref}
-        className="relative aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10"
+        className="relative aspect-video w-full overflow-hidden bg-zinc-900 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10"
       >
         {/* Rating Badge in upper left */}
         {item.rating && (

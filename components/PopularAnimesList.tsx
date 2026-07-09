@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { Award, Tv, Star, Trophy } from "lucide-react";
 import { getPopularAnimes, PopularAnimeItem } from "@/app/actions/popular";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface PopularAnimesListProps {
   initialItems: PopularAnimeItem[];
@@ -15,6 +16,7 @@ export function PopularAnimesList({
   initialItems,
   initialHasMore,
 }: PopularAnimesListProps) {
+  const t = useTranslations("MediaCard");
   const [items, setItems] = useState<PopularAnimeItem[]>(initialItems);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -171,16 +173,16 @@ export function PopularAnimesList({
               {(item.isDubbed || item.isSubtitled) && (
                 <div className="flex gap-1.5 self-start">
                   {item.isDubbed && item.isSubtitled ? (
-                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 uppercase tracking-wider">
-                      Sub | Dub
+                    <span className="text-sm text-[#8c8c8c] font-normal">
+                      {t("subDub")}
                     </span>
                   ) : item.isDubbed ? (
-                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20 uppercase tracking-wider">
-                      Dub
+                    <span className="text-sm text-[#8c8c8c] font-normal">
+                      {t("dubbed")}
                     </span>
                   ) : (
-                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider">
-                      Leg
+                    <span className="text-sm text-[#8c8c8c] font-normal">
+                      {t("subtitled")}
                     </span>
                   )}
                 </div>
@@ -209,11 +211,11 @@ export function PopularAnimesList({
               key={`skeleton-${idx}`}
               className="flex flex-col gap-3 animate-pulse"
             >
-              <div className="relative aspect-[2/3] w-full bg-zinc-200 dark:bg-zinc-800 shadow-md ring-1 ring-black/5 dark:ring-white/10" />
+              <div className="relative aspect-[2/3] w-full bg-zinc-800 shadow-md ring-1 ring-white/10" />
               <div className="flex flex-col gap-2">
-                <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800" />
-                <div className="h-3.5 w-1/3 bg-zinc-200 dark:bg-zinc-800" />
-                <div className="h-3 w-1/2 bg-zinc-200 dark:bg-zinc-800" />
+                <div className="h-4 w-3/4 bg-zinc-800" />
+                <div className="h-3.5 w-1/3 bg-zinc-800" />
+                <div className="h-3 w-1/2 bg-zinc-800" />
               </div>
             </div>
           ))}
@@ -225,7 +227,7 @@ export function PopularAnimesList({
           ref={observerRef}
           className="h-10 w-full flex justify-center items-center"
         >
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600 dark:border-zinc-700 dark:border-t-blue-500" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-t-blue-600 border-t-blue-500" />
         </div>
       )}
     </div>

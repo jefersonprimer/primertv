@@ -1,10 +1,11 @@
 "use client";
+
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { LogOut, History, Bookmark, List } from "lucide-react";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
 import { logout } from "@/app/actions/auth";
 import { SessionUser } from "@/lib/auth";
+import { Link } from "@/i18n/routing";
 
 interface UserMenuProps {
   user: SessionUser;
@@ -22,7 +23,7 @@ export function UserMenu({ user }: UserMenuProps) {
           isOpen ? "bg-[#151515]" : ""
         }`}
       >
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-semibold text-white shadow-sm ring-2 ring-zinc-200/50 transition-all hover:scale-105 active:scale-95 dark:ring-zinc-800/50">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-semibold text-white shadow-sm ring-2 transition-all hover:scale-105 active:scale-95 ring-zinc-800/50">
           {user.name.charAt(0).toUpperCase()}
         </div>
       </button>
@@ -41,13 +42,11 @@ export function UserMenu({ user }: UserMenuProps) {
                 </div>
                 <div className="overflow-hidden">
                   <div className="flex items-center gap-1.5">
-                    <p className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
+                    <p className="truncate text-sm font-semibold text-white">
                       {user.name}
                     </p>
                   </div>
-                  <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-                    {user.email}
-                  </p>
+                  <p className="truncate text-xs text-[#bbb]">{user.email}</p>
                 </div>
               </div>
             </div>
@@ -58,7 +57,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   <Link
                     href="/history"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                   >
                     <History size={18} />
                     <span>{t("history")}</span>
@@ -66,7 +65,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   <Link
                     href="/watchlist"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                   >
                     <Bookmark size={18} />
                     <span>{t("watchlist")}</span>
@@ -74,7 +73,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   <Link
                     href="/lists"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-50 transition-all duration-200"
+                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                   >
                     <List size={18} />
                     <span>{t("myLists")}</span>
@@ -89,7 +88,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   await logout();
                   setIsOpen(false);
                 }}
-                className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300 transition-all duration-200"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-red-500 transition-all duration-200"
               >
                 <LogOut size={18} />
                 <span>{t("logout")}</span>

@@ -1,8 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 
 interface SeasonOption {
@@ -65,7 +65,7 @@ export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
         >
           <span>{selectedSeasonLabel}</span>
           <ChevronDown
-            className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+            className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           />
         </button>
       </div>

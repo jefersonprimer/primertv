@@ -1,11 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { PlayIcon, BookOpen, ChevronDown } from "lucide-react";
 import RatingBadge from "./RatingBadge";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 interface Item {
   id: string;

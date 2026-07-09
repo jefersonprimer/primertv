@@ -1,11 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
 import { Calendar, ChevronRight, Clock, Play } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
+import { Link } from "@/i18n/routing";
 
 interface AnimeItem {
   id: string;
@@ -107,7 +107,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
               <div
                 key={depth}
                 aria-hidden
-                className="pointer-events-none absolute bottom-0 left-0 overflow-hidden border border-zinc-200/70 shadow-sm dark:border-zinc-700/60 bg-zinc-200 dark:bg-zinc-950"
+                className="pointer-events-none absolute bottom-0 left-0 overflow-hidden border  shadow-sm border-zinc-700/60 bg-zinc-950"
                 style={{
                   width: "calc(100% - 9px)",
                   height: "calc(100% - 7.5px)",
@@ -121,15 +121,15 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                     style={{ backgroundImage: `url(${bannerImageUrl})` }}
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-br from-zinc-200/95 via-zinc-100/90 to-zinc-300/85 dark:from-zinc-800/95 dark:via-zinc-850/90 dark:to-zinc-700/85" />
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/95 via-zinc-850/90 to-zinc-700/85" />
               </div>
             ))}
 
           <Link
             href={cardHref}
-            className={`absolute bottom-0 left-0 block overflow-hidden bg-zinc-200 shadow-sm dark:bg-zinc-950 ${
+            className={`absolute bottom-0 left-0 block overflow-hidden shadow-sm bg-zinc-950 ${
               multipleEpisodeRelease
-                ? "z-10 ring-1 ring-black/5 shadow-md dark:ring-white/10"
+                ? "z-10 ring-1 shadow-md ring-white/10"
                 : ""
             }`}
             style={{
@@ -239,7 +239,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
                     </span>
                   ))}
                   {showEllipsis && (
-                    <span className="text-[9px] font-bold text-zinc-450 dark:text-zinc-650 mx-0.5">
+                    <span className="text-[9px] font-bold text-zinc-650 mx-0.5">
                       ...
                     </span>
                   )}
@@ -310,9 +310,9 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
           </div>
         ) : (
           !showMore && (
-            <div className="flex flex-col items-center justify-center border border-dashed border-zinc-200 py-12 text-center dark:border-zinc-800">
+            <div className="flex flex-col items-center justify-center border border-dashed py-12 text-center border-zinc-800">
               <Clock className="h-10 w-10 text-zinc-400" />
-              <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="mt-3 text-sm text-zinc-400">
                 {t("noReleasesToday")}
               </p>
             </div>
@@ -337,7 +337,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
               <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
                 {t("yesterday")}
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
+              <p className="text-xs text-zinc-400 italic">
                 {t("noReleasesYesterday")}
               </p>
             </div>
@@ -361,7 +361,7 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
               <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
                 {getDayName(dayBeforeYesterday)}
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
+              <p className="text-xs text-zinc-400 italic">
                 {t("noReleasesDay")}
               </p>
             </div>
@@ -373,14 +373,14 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
         {!showMore ? (
           <button
             onClick={() => setShowMore(true)}
-            className="bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
+            className="w-full py-3 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 bg-blue-600 hover:bg-blue-700 uppercase"
           >
             {t("showMore")}
           </button>
         ) : (
           <Link
             href="/calendar"
-            className="flex items-center justify-center bg-zinc-900 w-full py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-700 uppercase"
+            className="flex items-center justify-center w-full py-3 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 bg-blue-600 hover:bg-blue-700 uppercase"
           >
             {t("viewCalendar")}
           </Link>

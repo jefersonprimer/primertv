@@ -12,12 +12,14 @@ export default function SignupPage() {
   const [state, action, isPending] = useActionState(signup, undefined);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-black text-white">
-      <div className="w-full max-w-md p-8 space-y-8 bg-zinc-900 rounded-lg shadow-xl">
+    <div className="flex flex-col items-center justify-center h-[80vh] md:h-auto md:min-h-[calc(100vh-4rem)] bg-zinc-900 md:bg-black text-white">
+      <div className="w-full h-full md:h-auto md:max-w-md p-6 sm:p-8 space-y-8 bg-black md:bg-zinc-900 md:rounded-lg md:shadow-xl flex flex-col justify-center">
         <h2 className="text-3xl font-bold text-center">{t("signupTitle")}</h2>
         <form action={action} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium">{t("nameLabel")}</label>
+            <label className="block text-sm font-medium">
+              {t("nameLabel")}
+            </label>
             <input
               name="name"
               type="text"
@@ -26,7 +28,9 @@ export default function SignupPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">{t("emailLabel")}</label>
+            <label className="block text-sm font-medium">
+              {t("emailLabel")}
+            </label>
             <input
               name="email"
               type="email"
@@ -35,7 +39,9 @@ export default function SignupPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">{t("passwordLabel")}</label>
+            <label className="block text-sm font-medium">
+              {t("passwordLabel")}
+            </label>
             <div className="relative mt-1">
               <input
                 name="password"
@@ -49,7 +55,11 @@ export default function SignupPage() {
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-white"
                 tabIndex={-1}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>

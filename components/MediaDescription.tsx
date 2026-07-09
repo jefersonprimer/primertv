@@ -1,9 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import RatingBadge from "./RatingBadge";
 import { Trophy } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 interface MediaDescriptionProps {
   description: string;
@@ -18,7 +18,7 @@ interface MediaDescriptionProps {
 
 export default function MediaDescription({
   description,
-  className = "text-zinc-600 dark:text-white",
+  className = "text-white",
   rating,
   genres,
   year,
@@ -70,8 +70,7 @@ export default function MediaDescription({
         <div className="flex flex-col gap-4 flex-1 md:w-1/3 text-sm font-normal">
           {year && (
             <div>
-              {t("year")}:{" "}
-              <span className="text-zinc-700 dark:text-zinc-300">{year}</span>
+              {t("year")}: <span className="text-[#f2f2f2]">{year}</span>
             </div>
           )}
           {rating && (
@@ -80,14 +79,14 @@ export default function MediaDescription({
               <span>
                 {rating && <RatingBadge rating={rating} className="h-4 w-4" />}
               </span>
-              <span className="text-zinc-700 dark:text-zinc-300">{rating}</span>
+              <span className="text-[#f2f2f2]">{rating}</span>
             </div>
           )}
           {genres && genres.length > 0 && (
             <div>
               {t("genres")}:{" "}
               {genres.map((genre, index) => (
-                <span key={genre} className="text-zinc-700 dark:text-zinc-300">
+                <span key={genre} className="text-[#f2f2f2]">
                   <span className="underline">{genre}</span>
                   {index < genres.length - 1 && ", "}
                 </span>
@@ -97,22 +96,18 @@ export default function MediaDescription({
           {audio && audio.length > 0 && (
             <div>
               {t("audio")}:{" "}
-              <span className="text-zinc-700 dark:text-zinc-300">
-                {audio.join(", ")}
-              </span>
+              <span className="text-[#f2f2f2]">{audio.join(", ")}</span>
             </div>
           )}
           {subtitles && subtitles.length > 0 && (
             <div>
               {t("subtitles")}:{" "}
-              <span className="text-zinc-700 dark:text-zinc-300">
-                {subtitles.join(", ")}
-              </span>
+              <span className="text-[#f2f2f2]">{subtitles.join(", ")}</span>
             </div>
           )}
           {awards && awards.length > 0 && (
             <div className="flex flex-col gap-1.5">
-              <span className="text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs flex items-center gap-1.5">
+              <span className="text-[#bbb] font-semibold uppercase tracking-wider text-xs flex items-center gap-1.5">
                 <Trophy className="h-4 w-4 text-amber-500 animate-pulse" />
                 {t("awards")}
               </span>

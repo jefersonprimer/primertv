@@ -1,9 +1,9 @@
-import { getSession } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/routing";
+import { getSession } from "@/lib/auth";
 import { User, Bookmark, Search } from "lucide-react";
 import { MobileSidebar } from "./MobileSidebar";
 import { ExploreDropdown } from "./ExploreDropdown";
+import { Link } from "@/i18n/routing";
 import { UserMenu } from "./UserMenu";
 import { AddMediaButton } from "./admin/AddMediaButton";
 

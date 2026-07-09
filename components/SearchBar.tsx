@@ -1,9 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 const MAX_RECENT = 12;
 const STORAGE_KEY = "recent-searches";
@@ -111,7 +111,7 @@ export function SearchBar({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={placeholder || t("placeholder")}
-              className="w-full border-b-2 border-zinc-200 bg-transparent py-2 pl-1 text-xl lg:text-3xl text-white outline-none transition-all focus:border-blue-500 dark:border-zinc-800 dark:focus:border-blue-500"
+              className="w-full border-b-2 bg-transparent py-2 pl-1 text-xl lg:text-3xl text-white outline-none transition-all border-zinc-800 focus:border-blue-500"
             />
 
             {query && (

@@ -1,8 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Share2, Check } from "lucide-react";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 
 interface ShareButtonProps {
   url?: string;

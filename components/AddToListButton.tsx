@@ -1,14 +1,14 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
 import { X, Plus, Check, Loader2, Info } from "lucide-react";
-import { Link } from "@/i18n/routing";
 import {
   createList,
   toggleAnimeInList,
   getUserListsWithAnimeState,
 } from "@/app/actions/lists";
-import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 
 interface ListSelectorProps {
   animeId?: string;

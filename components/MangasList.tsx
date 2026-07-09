@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MediaCard } from "./MediaCard";
 import { getMangas, MangaItem } from "@/app/actions/mangas";
+import { MediaCard } from "./MediaCard";
 
 interface MangasListProps {
   initialItems: MangaItem[];

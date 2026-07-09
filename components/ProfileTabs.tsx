@@ -1,7 +1,7 @@
 "use client";
 
-import { Link, usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/routing";
 import { Bookmark, List, History } from "lucide-react";
 
 export function ProfileTabs() {

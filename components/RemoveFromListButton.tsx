@@ -1,9 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { toggleAnimeInList } from "@/app/actions/lists";
-import { useTranslations } from "next-intl";
 
 interface RemoveFromListButtonProps {
   listId: string;
@@ -11,7 +11,11 @@ interface RemoveFromListButtonProps {
   seriesId?: string;
 }
 
-export default function RemoveFromListButton({ listId, animeId, seriesId }: RemoveFromListButtonProps) {
+export default function RemoveFromListButton({
+  listId,
+  animeId,
+  seriesId,
+}: RemoveFromListButtonProps) {
   const t = useTranslations("Lists");
   const [isPending, setIsPending] = useState(false);
 

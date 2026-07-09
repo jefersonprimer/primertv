@@ -19,11 +19,9 @@ export function MediaCarouselSkeleton({
             paddingRight: "max(8px, (100vw - 1240px) / 2)",
           }}
         >
-          {hasTitle && (
-            <div className="h-8 w-48 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-          )}
+          {hasTitle && <div className="h-8 w-48 animate-pulse bg-zinc-800" />}
           {hasSubtitle && (
-            <div className="mt-2 h-4 w-64 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="mt-2 h-4 w-64 animate-pulse bg-zinc-800" />
           )}
         </div>
       )}

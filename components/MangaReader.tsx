@@ -1,10 +1,18 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Maximize, Minimize, Layout, Menu } from "lucide-react";
+import Image from "next/image";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Maximize,
+  Minimize,
+  Layout,
+  Menu,
+} from "lucide-react";
+import Link from "next/link";
 
 interface MangaReaderProps {
   pages: string[];
@@ -26,6 +34,7 @@ export default function MangaReader({
   nextChapterUrl,
 }: MangaReaderProps) {
   const router = useRouter();
+  const t = useTranslations("MangaReader");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isWide, setIsWide] = useState(false);
@@ -51,7 +60,11 @@ export default function MangaReader({
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
 
       switch (e.key.toLowerCase()) {
         case "f":
@@ -95,7 +108,7 @@ export default function MangaReader({
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 2;
-      
+
       let current = 1;
       for (let i = 0; i < pageRefs.current.length; i++) {
         const el = pageRefs.current[i];
@@ -125,7 +138,7 @@ export default function MangaReader({
             <Link
               href={`/mangas/${mangaId}`}
               className="rounded-full p-2 hover:bg-zinc-800 transition-colors"
-              title="Voltar"
+              title={t("back")}
             >
               <ChevronLeft className="h-6 w-6" />
             </Link>
@@ -134,7 +147,8 @@ export default function MangaReader({
                 {mangaTitle}
               </span>
               <h1 className="text-sm md:text-lg font-bold line-clamp-1">
-                Capítulo {chapterNumber} {chapterTitle && `- ${chapterTitle}`}
+                {t("chapter", { number: chapterNumber })}{" "}
+                {chapterTitle && `- ${chapterTitle}`}
               </h1>
             </div>
           </div>
@@ -149,7 +163,7 @@ export default function MangaReader({
             <button
               onClick={() => setIsWide(!isWide)}
               className={`p-2 rounded-lg hover:bg-zinc-800 transition-colors ${isWide ? "text-blue-500" : ""}`}
-              title="Alternar Largura (W)"
+              title={t("toggleWidth")}
             >
               <Layout className="h-5 w-5" />
             </button>
@@ -157,15 +171,19 @@ export default function MangaReader({
             <button
               onClick={toggleFullscreen}
               className="p-2 rounded-lg hover:bg-zinc-800 transition-colors"
-              title="Fullscreen (F)"
+              title={t("fullscreen")}
             >
-              {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+              {isFullscreen ? (
+                <Minimize className="h-5 w-5" />
+              ) : (
+                <Maximize className="h-5 w-5" />
+              )}
             </button>
 
             <button
               onClick={() => setShowControls(!showControls)}
               className="p-2 rounded-lg hover:bg-zinc-800 transition-colors"
-              title="Esconder Menu (M)"
+              title={t("hideMenu")}
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -174,13 +192,13 @@ export default function MangaReader({
       </header>
 
       {/* Progress Bar */}
-      <div 
+      <div
         className="fixed top-0 left-0 h-1 bg-blue-600 z-[60] transition-all duration-200"
         style={{ width: `${(currentPage / pages.length) * 100}%` }}
       />
 
       {/* Main Content */}
-      <main 
+      <main
         className={`mx-auto transition-all duration-300 ${
           isWide ? "max-w-none" : "max-w-4xl"
         } ${showControls ? "pt-24" : "pt-0"}`}
@@ -188,12 +206,12 @@ export default function MangaReader({
       >
         {pages.length === 0 ? (
           <div className="flex h-[60vh] flex-col items-center justify-center gap-4 text-center p-4">
-            <p className="text-zinc-400">Este capítulo ainda não tem páginas processadas.</p>
+            <p className="text-zinc-400">{t("noPages")}</p>
             <Link
               href={`/mangas/${mangaId}`}
               className="rounded-lg bg-blue-600 px-6 py-2 font-medium hover:bg-blue-700 text-white transition-colors"
             >
-              Voltar para a obra
+              {t("backToWork")}
             </Link>
           </div>
         ) : (
@@ -201,12 +219,14 @@ export default function MangaReader({
             {pages.map((url, index) => (
               <div
                 key={index}
-                ref={(el) => { pageRefs.current[index] = el; }}
+                ref={(el) => {
+                  pageRefs.current[index] = el;
+                }}
                 className="relative w-full flex justify-center bg-black min-h-[50vh]"
               >
                 <Image
                   src={url}
-                  alt={`Página ${index + 1}`}
+                  alt={t("page", { number: index + 1 })}
                   width={1600}
                   height={2400}
                   sizes="100vw"
@@ -215,19 +235,25 @@ export default function MangaReader({
                 />
                 {/* Click detection overlay */}
                 <div className="absolute inset-0 flex">
-                  <div 
-                    className="w-1/3 h-full cursor-pointer" 
+                  <div
+                    className="w-1/3 h-full cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.scrollBy({ top: -window.innerHeight * 0.8, behavior: "smooth" });
+                      window.scrollBy({
+                        top: -window.innerHeight * 0.8,
+                        behavior: "smooth",
+                      });
                     }}
                   />
                   <div className="w-1/3 h-full cursor-pointer" />
-                  <div 
-                    className="w-1/3 h-full cursor-pointer" 
+                  <div
+                    className="w-1/3 h-full cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.scrollBy({ top: window.innerHeight * 0.8, behavior: "smooth" });
+                      window.scrollBy({
+                        top: window.innerHeight * 0.8,
+                        behavior: "smooth",
+                      });
                     }}
                   />
                 </div>
@@ -241,17 +267,19 @@ export default function MangaReader({
       <footer className="mt-8 border-t border-zinc-800 bg-zinc-900 p-12 text-center text-zinc-500">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-6">
           <div className="flex flex-col gap-2">
-            <h3 className="text-xl font-bold text-zinc-100">Fim do Capítulo {chapterNumber}</h3>
-            <p>O que você quer ler agora?</p>
+            <h3 className="text-xl font-bold text-zinc-100">
+              {t("endOfChapter", { number: chapterNumber })}
+            </h3>
+            <p>{t("whatToReadNext")}</p>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-4">
             {prevChapterUrl && (
               <Link
                 href={prevChapterUrl}
                 className="flex items-center gap-2 rounded-xl bg-zinc-800 px-8 py-3 font-bold text-zinc-100 hover:bg-zinc-700 transition-all hover:scale-105"
               >
-                <ChevronLeft className="h-5 w-5" /> Capítulo Anterior
+                <ChevronLeft className="h-5 w-5" /> {t("prevChapter")}
               </Link>
             )}
             {nextChapterUrl && (
@@ -259,7 +287,7 @@ export default function MangaReader({
                 href={nextChapterUrl}
                 className="flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3 font-bold text-white hover:bg-blue-700 transition-all hover:scale-105 shadow-lg shadow-blue-900/20"
               >
-                Próximo Capítulo <ChevronRight className="h-5 w-5" />
+                {t("nextChapter")} <ChevronRight className="h-5 w-5" />
               </Link>
             )}
           </div>
@@ -268,7 +296,7 @@ export default function MangaReader({
             href={`/mangas/${mangaId}`}
             className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors"
           >
-            Voltar para a lista de capítulos
+            {t("backToChapters")}
           </Link>
         </div>
       </footer>
@@ -276,12 +304,15 @@ export default function MangaReader({
       {/* Floating Action Buttons (Mobile) */}
       {!showControls && (
         <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3 md:hidden">
-           <button
-              onClick={(e) => { e.stopPropagation(); setShowControls(true); }}
-              className="p-4 rounded-full bg-blue-600 text-white shadow-xl"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowControls(true);
+            }}
+            className="p-4 rounded-full bg-blue-600 text-white shadow-xl"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
         </div>
       )}
     </div>

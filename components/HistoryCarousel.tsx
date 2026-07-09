@@ -47,8 +47,8 @@ export function HistoryCarouselSkeleton() {
           paddingRight: "max(8px, (100vw - 1223px) / 2)",
         }}
       >
-        <div className="h-8 w-48 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-        <div className="mt-2 h-4 w-64 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+        <div className="h-8 w-48 animate-pulse bg-zinc-800" />
+        <div className="mt-2 h-4 w-64 animate-pulse bg-zinc-800" />
       </div>
 
       {/* Desktop/Tablet Skeleton Grid */}
@@ -61,9 +61,9 @@ export function HistoryCarouselSkeleton() {
       >
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex flex-col gap-2">
-            <div className="relative aspect-video w-full animate-pulse bg-zinc-200 dark:bg-zinc-800" />
-            <div className="h-4 w-3/4 animate-pulse bg-zinc-200 dark:bg-zinc-800 mt-1" />
-            <div className="h-3 w-1/2 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="relative aspect-video w-full animate-pulse bg-zinc-800" />
+            <div className="h-4 w-3/4 animate-pulse bg-zinc-800 mt-1" />
+            <div className="h-3 w-1/2 animate-pulse bg-zinc-800" />
           </div>
         ))}
       </div>
