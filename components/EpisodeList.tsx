@@ -396,7 +396,7 @@ export default function EpisodeList({
         <div className="w-full max-w-[1018px] mx-auto">
           <button
             onClick={showMore}
-            className="bg-blue-600 w-full py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 uppercase"
+            className="bg-blue-600 w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all hover:bg-blue-700 uppercase"
           >
             {t("showMore")}
           </button>

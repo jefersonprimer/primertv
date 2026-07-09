@@ -34,7 +34,7 @@ export function UserMenu({ user }: UserMenuProps) {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-full z-50 w-64 bg-[#151515] p-1.5 shadow-2xl">
+          <div className="absolute right-0 top-full z-50 w-64 bg-[#151515] py-2 shadow-2xl">
             <div className="px-3 py-2.5 pb-2">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/10">
@@ -88,7 +88,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   await logout();
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-red-500 transition-all duration-200"
+                className="flex items-center gap-3 px-3 py-2.5 w-full text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-red-500 transition-all duration-200"
               >
                 <LogOut size={18} />
                 <span>{t("logout")}</span>

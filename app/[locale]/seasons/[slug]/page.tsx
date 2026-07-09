@@ -105,7 +105,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
   return (
     <div className="mx-auto max-w-[1130px] px-4 py-8 sm:px-6 lg:px-8">
       {/* Header section with Title and Dropdown */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="flex gap-4 items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-zinc-50 sm:text-[28px]">
             {t("title")}
@@ -137,7 +137,10 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
             {t("noAnimesFound")}
           </h3>
           <p className="mt-2 text-sm text-zinc-400 max-w-xs">
-            {t("noAnimesCorresponding", { season: seasonName, year: selectedYear })}
+            {t("noAnimesCorresponding", {
+              season: seasonName,
+              year: selectedYear,
+            })}
           </p>
         </div>
       ) : (

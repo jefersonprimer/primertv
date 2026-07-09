@@ -369,18 +369,18 @@ export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
       </div>
 
       {/* Button Row */}
-      <div className="w-full max-w-[1018px] mx-auto mt-8">
+      <div className="w-full mx-auto mt-8">
         {!showMore ? (
           <button
             onClick={() => setShowMore(true)}
-            className="w-full py-3 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 bg-blue-600 hover:bg-blue-700 uppercase"
+            className="w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-blue-600 hover:bg-blue-700 uppercase"
           >
             {t("showMore")}
           </button>
         ) : (
           <Link
             href="/calendar"
-            className="flex items-center justify-center w-full py-3 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 bg-blue-600 hover:bg-blue-700 uppercase"
+            className="flex items-center justify-center w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-blue-600 hover:bg-blue-700 uppercase"
           >
             {t("viewCalendar")}
           </Link>
