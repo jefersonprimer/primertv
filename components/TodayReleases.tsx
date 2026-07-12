@@ -68,6 +68,7 @@ export async function TodayReleases() {
       a."status" = 'Currently Airing'
       OR a."status" = 'Not yet aired'
       OR a."status" IS NULL
+      OR (a."status" = 'Finished Airing' AND a."latestEpisodeAt" >= NOW() - INTERVAL '7 days')
     `,
   });
 

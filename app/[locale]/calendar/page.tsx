@@ -5,6 +5,7 @@ import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { prisma } from "@/lib/prisma";
 import { getAnimeScheduleRows } from "@/lib/anime-schedule";
 import { getTranslations } from "next-intl/server";
+import { getCurrentSeasonSlug } from "@/lib/seasons";
 
 export const revalidate = 3600;
 
@@ -129,6 +130,7 @@ export default async function CalendarioPage({ params }: Props) {
         a."status" = 'Currently Airing'
         OR a."status" = 'Not yet aired'
         OR a."status" IS NULL
+        OR (a."status" = 'Finished Airing' AND a."latestEpisodeAt" >= NOW() - INTERVAL '7 days')
       `,
     }),
   ]);
@@ -137,7 +139,78 @@ export default async function CalendarioPage({ params }: Props) {
     watchlistItems.map((item) => item.animeId).filter(Boolean),
   );
 
-  const animeMap = new Map<string, CalendarAnimeItem>();
+  const animeMap = new Map<
+    string,
+    CalendarAnimeItem & {
+      status: string | null;
+      season: string | null;
+      year: number | null;
+      latestEpisodeAt: Date | null;
+      officialScheduleReleaseDay?: number;
+    }
+  >();
+
+  const now = new Date();
+  let currentDay = now.getDay();
+  try {
+    const spDateStr = now.toLocaleString("en-US", {
+      timeZone: "America/Sao_Paulo",
+    });
+    currentDay = new Date(spDateStr).getDay();
+  } catch {
+    currentDay = now.getDay();
+  }
+
+  const getSaoPauloDateKey = (date: Date): string => {
+    try {
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(date);
+    } catch {
+      return date.toISOString().slice(0, 10);
+    }
+  };
+
+  const getScheduledDateOfCurrentWeek = (
+    baseNow: Date,
+    baseCurrentDay: number,
+    scheduledDay: number,
+  ): Date => {
+    try {
+      const spDateStr = baseNow.toLocaleString("en-US", {
+        timeZone: "America/Sao_Paulo",
+      });
+      const spToday = new Date(spDateStr);
+      spToday.setDate(spToday.getDate() - (baseCurrentDay - scheduledDay));
+      return spToday;
+    } catch {
+      const result = new Date(baseNow);
+      result.setDate(baseNow.getDate() - (baseCurrentDay - scheduledDay));
+      return result;
+    }
+  };
+
+  // Get current week's Sunday in America/Sao_Paulo timezone
+  let currentWeekSunday = new Date(now);
+  try {
+    const spDateStr = now.toLocaleString("en-US", {
+      timeZone: "America/Sao_Paulo",
+    });
+    const spToday = new Date(spDateStr);
+    spToday.setDate(spToday.getDate() - currentDay);
+    spToday.setHours(0, 0, 0, 0);
+    currentWeekSunday = spToday;
+  } catch {
+    currentWeekSunday.setDate(now.getDate() - currentDay);
+    currentWeekSunday.setHours(0, 0, 0, 0);
+  }
+
+  const currentSlug = getCurrentSeasonSlug();
+  const [currentSeason, currentYearStr] = currentSlug.split("-");
+  const currentYear = parseInt(currentYearStr, 10);
 
   for (const row of rows) {
     const latestEpisodeAt = row.latestEpisodeAt ?? row.episodeCreatedAt ?? null;
@@ -171,6 +244,11 @@ export default async function CalendarioPage({ params }: Props) {
         inWatchlist: watchlistIds.has(row.id),
         episodeNumbers: row.episodeNumber !== null ? [row.episodeNumber] : [],
         isComingSoon: row.latestEpisodeNumber == null && row.episodeNumber == null,
+        status: row.status,
+        season: row.season,
+        year: row.year,
+        latestEpisodeAt,
+        officialScheduleReleaseDay: officialSchedule?.releaseDay,
       });
       continue;
     }
@@ -190,7 +268,75 @@ export default async function CalendarioPage({ params }: Props) {
     }
   }
 
-  const processedDbAnimes = Array.from(animeMap.values());
+  const processedDbAnimes = Array.from(animeMap.values())
+    .map((anime) => {
+      const isCurrentSeasonAnime =
+        anime.status === "Currently Airing" ||
+        anime.status === "Not yet aired" ||
+        (anime.status !== "Finished Airing" &&
+          anime.season === currentSeason &&
+          anime.year === currentYear);
+
+      let isComingSoon = anime.isComingSoon;
+      let lastEpisode = anime.lastEpisode;
+
+      if (isCurrentSeasonAnime) {
+        if (!anime.latestEpisodeAt) {
+          isComingSoon = true;
+          lastEpisode = 1;
+        } else {
+          const latestEpDateKey = getSaoPauloDateKey(anime.latestEpisodeAt);
+          const scheduledDay = anime.officialScheduleReleaseDay ?? anime.releaseDay;
+          const currentWeekScheduledDate = getScheduledDateOfCurrentWeek(
+            now,
+            currentDay,
+            scheduledDay,
+          );
+          const currentWeekScheduledDateKey = getSaoPauloDateKey(
+            currentWeekScheduledDate,
+          );
+
+          if (latestEpDateKey >= currentWeekScheduledDateKey) {
+            isComingSoon = false;
+          } else {
+            isComingSoon = true;
+            lastEpisode = anime.lastEpisode + 1;
+          }
+        }
+      } else {
+        isComingSoon = false;
+      }
+
+      return {
+        id: anime.id,
+        slug: anime.slug,
+        title: anime.title,
+        imageUrl: anime.imageUrl,
+        description: anime.description,
+        releaseDay: anime.releaseDay,
+        releaseTime: anime.releaseTime,
+        lastEpisode,
+        latestEpisodeId: anime.latestEpisodeId,
+        latestEpisodePublicId: anime.latestEpisodePublicId,
+        latestEpisodeSlug: anime.latestEpisodeSlug,
+        episodeImageUrl: anime.episodeImageUrl,
+        inWatchlist: anime.inWatchlist,
+        episodeNumbers: anime.episodeNumbers,
+        isComingSoon,
+        latestEpisodeAt: anime.latestEpisodeAt,
+        isCurrentSeasonAnime,
+      };
+    })
+    .filter((anime) => {
+      if (anime.isCurrentSeasonAnime) {
+        return true;
+      }
+      if (!anime.latestEpisodeAt) {
+        return false;
+      }
+      const latestEpDate = new Date(anime.latestEpisodeAt);
+      return latestEpDate >= currentWeekSunday;
+    });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

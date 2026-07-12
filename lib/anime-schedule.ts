@@ -24,6 +24,8 @@ export type AnimeScheduleRow = {
   episodePublicId: string | null;
   episodeSlug: string | null;
   seasonNumber: number | null;
+  season: string | null;
+  year: number | null;
 };
 
 type AnimeScheduleOptions = {
@@ -54,7 +56,9 @@ export async function getAnimeScheduleRows({
         a."latestSeasonId",
         a."latestEpisodeId",
         a."latestEpisodeNumber",
-        a."latestEpisodeAt"
+        a."latestEpisodeAt",
+        a.season,
+        a.year
       FROM "Anime" a
       WHERE ${filter}
       ORDER BY a."createdAt" DESC
@@ -76,6 +80,8 @@ export async function getAnimeScheduleRows({
       b."latestEpisodeId",
       b."latestEpisodeNumber",
       b."latestEpisodeAt",
+      b.season,
+      b.year,
       s.number AS "seasonNumber",
       e.id AS "episodeId",
       e.number AS "episodeNumber",
