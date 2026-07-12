@@ -4,10 +4,25 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Menu } from "lucide-react";
 import { NAV_LINKS } from "./nav-links";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
+
+const linkKeyMap: Record<string, string> = {
+  "/series": "series",
+  "/movies": "movies",
+  "/animes": "animes",
+  "/mangas": "mangas",
+  "/livetv": "livetv",
+  "/seasons": "seasons",
+  "/calendar": "calendar",
+  "/novelas": "novelas",
+  "/popular": "popular",
+  "/new": "new",
+};
 
 export function MobileSidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("Header");
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -33,7 +48,7 @@ export function MobileSidebar() {
               onClick={() => setIsOpen(false)}
               className="px-4 py-3 text-base font-medium text-[#bbb] transition-colors hover:bg-[#272727] hover:text-[#f2f2f2]"
             >
-              {link.label}
+              {t(linkKeyMap[link.href] || link.label)}
             </Link>
           ))}
         </nav>
@@ -49,7 +64,7 @@ export function MobileSidebar() {
         className={`flex h-full items-center px-4 text-[#bbb] hover:text-[#f2f2f2] transition-colors hover:bg-[#151515] md:hidden ${
           isOpen ? "text-[#f2f2f2] bg-[#151515]" : ""
         }`}
-        aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+        aria-label={isOpen ? t("closeMenu") : t("openMenu")}
         aria-expanded={isOpen}
       >
         <Menu size={22} />
