@@ -27,13 +27,17 @@ interface AnimeItem {
 
 interface TodayReleasesClientProps {
   animes: AnimeItem[];
+  serverCurrentDay: number;
 }
 
-export function TodayReleasesClient({ animes }: TodayReleasesClientProps) {
+export function TodayReleasesClient({
+  animes,
+  serverCurrentDay,
+}: TodayReleasesClientProps) {
   const t = useTranslations("TodayReleases");
   const tWeekdays = useTranslations("Weekdays");
   const [showMore, setShowMore] = useState(false);
-  const [currentDay] = useState(() => new Date().getDay());
+  const [currentDay] = useState(serverCurrentDay);
 
   const yesterday = (currentDay - 1 + 7) % 7;
   const dayBeforeYesterday = (currentDay - 2 + 7) % 7;

@@ -154,7 +154,25 @@ export async function TodayReleases() {
       latestEpisodeSlug: anime.latestEpisodeSlug,
       episodeImageUrl: anime.episodeImageUrl,
       episodeNumbers: sameDayEpisodes.map((ep) => ep.number),
+      latestEpisodeAt: anime.latestEpisodeAt,
     };
+  });
+
+  const now = new Date();
+  const todayKey = getSaoPauloDateKey(now);
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const yesterdayKey = getSaoPauloDateKey(yesterday);
+  const dayBeforeYesterday = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+  const dayBeforeYesterdayKey = getSaoPauloDateKey(dayBeforeYesterday);
+
+  const filteredDbAnimes = processedDbAnimes.filter((anime) => {
+    if (!anime.latestEpisodeAt) return false;
+    const dateKey = getSaoPauloDateKey(anime.latestEpisodeAt);
+    return (
+      dateKey === todayKey ||
+      dateKey === yesterdayKey ||
+      dateKey === dayBeforeYesterdayKey
+    );
   });
 
   let currentDay = new Date().getDay();
@@ -167,9 +185,5 @@ export async function TodayReleases() {
     currentDay = new Date().getDay();
   }
 
-  const filteredDbAnimes = processedDbAnimes.filter(
-    (anime) => anime.releaseDay <= currentDay,
-  );
-
-  return <TodayReleasesClient animes={filteredDbAnimes} />;
+  return <TodayReleasesClient animes={filteredDbAnimes} serverCurrentDay={currentDay} />;
 }
