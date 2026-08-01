@@ -31,6 +31,7 @@ type AnimeSource = {
   title?: string | null;
   titleEnglish?: string | null;
   slug?: string | null;
+  seasonNumber?: number | null;
 };
 
 type RecentAnimeEntry = {
@@ -114,6 +115,7 @@ export const getMegaPlayAnimeCatalog = unstable_cache(
     if (!seriesId) return null;
 
     const series = await fetchSeries(seriesId);
+    const seasonNumber = source.seasonNumber || 1;
     const episodes = extractEpisodes(series)
       .map((episode) => {
         const number = parseEpisodeNumber(
@@ -121,7 +123,7 @@ export const getMegaPlayAnimeCatalog = unstable_cache(
         );
         if (number === null) return null;
 
-        const embedUrl = extractEmbedUrls(episode);
+        const embedUrl = extractEmbedUrls(episode, seasonNumber);
         return {
           number,
           title: getEpisodeTitle(episode),
@@ -151,13 +153,16 @@ function parseAnimeSource(titleKey: string): AnimeSource | null {
 }
 
 async function resolveCatalogSeriesId(source: AnimeSource): Promise<string | null> {
-  const directCandidates = [source.anilistId, source.malId]
-    .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  const isSeasonOne = !source.seasonNumber || source.seasonNumber === 1;
+  if (isSeasonOne) {
+    const directCandidates = [source.anilistId, source.malId]
+      .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
 
-  for (const candidate of directCandidates) {
-    const series = await fetchSeries(String(candidate));
-    if (extractEpisodes(series).length > 0) {
-      return String(candidate);
+    for (const candidate of directCandidates) {
+      const series = await fetchSeries(String(candidate));
+      if (extractEpisodes(series).length > 0) {
+        return String(candidate);
+      }
     }
   }
 
@@ -263,11 +268,23 @@ function extractEpisodes(payload: SeriesPayload | null): SeriesEpisode[] {
 }
 
 function buildTitleCandidates(source: AnimeSource): string[] {
-  const rawCandidates = [
+  const rawCandidates: string[] = [];
+  const baseTitles = [
     source.title,
     source.titleEnglish,
     source.slug?.replace(/-/g, " "),
   ].filter((value): value is string => Boolean(value && value.trim()));
+
+  if (source.seasonNumber && source.seasonNumber > 1) {
+    for (const base of baseTitles) {
+      rawCandidates.push(`${base} season ${source.seasonNumber}`);
+      rawCandidates.push(`${base} temporada ${source.seasonNumber}`);
+      rawCandidates.push(`${base} ${source.seasonNumber}`);
+      rawCandidates.push(`${base} st ${source.seasonNumber}`);
+    }
+  } else {
+    rawCandidates.push(...baseTitles);
+  }
 
   return Array.from(new Set(rawCandidates.map((value) => normalizeText(value)))).filter(Boolean);
 }
@@ -277,6 +294,11 @@ function buildDirectPlayers(
   episodeNumber: number,
 ): MegaPlayAnimePlayer[] {
   const players: MegaPlayAnimePlayer[] = [];
+
+  // Skip direct season-1 anilistId/malId paths for higher seasons
+  if (source.seasonNumber && source.seasonNumber > 1) {
+    return players;
+  }
 
   if (source.anilistId) {
     const basePath = `/stream/ani/${encodeURIComponent(String(source.anilistId))}/${episodeNumber}`;
@@ -360,7 +382,7 @@ function matchesAnyCandidate(entry: RecentAnimeEntry, candidates: string[]): boo
   return entryTexts.some((text) => candidates.includes(text));
 }
 
-function extractEmbedUrls(episode: SeriesEpisode): {
+function extractEmbedUrls(episode: SeriesEpisode, seasonNumber: number): {
   single: string | null;
   sub: string | null;
   dub: string | null;
@@ -387,8 +409,8 @@ function extractEmbedUrls(episode: SeriesEpisode): {
 
   return {
     single: null,
-    sub: `${MEGAPLAY_BASE_URL}/stream/s-2/${encodeURIComponent(String(episodeEmbedId))}/sub`,
-    dub: `${MEGAPLAY_BASE_URL}/stream/s-2/${encodeURIComponent(String(episodeEmbedId))}/dub`,
+    sub: `${MEGAPLAY_BASE_URL}/stream/s-${seasonNumber}/${encodeURIComponent(String(episodeEmbedId))}/sub`,
+    dub: `${MEGAPLAY_BASE_URL}/stream/s-${seasonNumber}/${encodeURIComponent(String(episodeEmbedId))}/dub`,
   };
 }
 

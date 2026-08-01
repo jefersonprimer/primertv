@@ -26,6 +26,7 @@ interface WatchPageProps {
     player?: string;
     source?: string;
     episode?: string;
+    season?: string;
   }>;
 }
 
@@ -173,7 +174,7 @@ export default async function WatchPage({
   const t = await getTranslations("Watch");
   const tMedia = await getTranslations("MediaCard");
   const { locale, publicId, slug } = await params;
-  const { player, source, episode } = (await searchParams) || {};
+  const { player, source, episode, season } = (await searchParams) || {};
 
   // 1. Try fetching Anime Episode
   let animeEpisode = await prisma.episode.findUnique({
@@ -261,6 +262,7 @@ export default async function WatchPage({
         title: animeEpisode.season.anime.title,
         titleEnglish: animeEpisode.season.anime.titleEnglish,
         slug: animeEpisode.season.anime.slug,
+        seasonNumber: animeEpisode.season.number,
       }),
       animeEpisode.number,
     );
@@ -490,12 +492,14 @@ export default async function WatchPage({
       notFound();
     }
 
+    const parsedSeason = season ? Number(season) : 1;
     const sourceKey = JSON.stringify({
       anilistId: anime.anilistId,
       malId: anime.malId,
       title: anime.title,
       titleEnglish: anime.titleEnglish,
       slug: anime.slug,
+      seasonNumber: parsedSeason,
     });
 
     const catalog = await getMegaPlayAnimeCatalog(sourceKey);
@@ -504,8 +508,8 @@ export default async function WatchPage({
         id: `megaplay-${catalogEpisode.number}`,
         number: catalogEpisode.number,
         title: catalogEpisode.title,
-        href: `/watch/${anime.slug}/episode-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}`,
-        videoUrl: `/watch/${anime.slug}/episode-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}`,
+        href: `/watch/${anime.slug}/episode-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}&season=${parsedSeason}`,
+        videoUrl: `/watch/${anime.slug}/episode-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}&season=${parsedSeason}`,
       })) || [];
 
     const playersList = await getMegaPlayAnimePlayers(sourceKey, episodeNumber);
@@ -671,8 +675,8 @@ export default async function WatchPage({
                   <AnimeEpisodeSidebar
                     seasons={[
                       {
-                        id: "megaplay-season-1",
-                        number: 1,
+                        id: `megaplay-season-${parsedSeason}`,
+                        number: parsedSeason,
                         episodes: episodeItems.map((item) => ({
                           id: item.id,
                           number: item.number,

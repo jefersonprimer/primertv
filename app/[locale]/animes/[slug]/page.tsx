@@ -169,7 +169,7 @@ export default async function AnimeDetailsPage({
   const externalFirstEpisodeLink =
     mergedSeasons[0]?.episodes[0]?.href ||
     (anime.anilistId || anime.malId
-      ? `/watch/${anime.slug}/episode-1?source=megaplay&episode=1`
+      ? `/watch/${anime.slug}/episode-1?source=megaplay&episode=1&season=1`
       : null);
 
   if (!firstEpisodeLink && externalFirstEpisodeLink) {
@@ -636,8 +636,8 @@ function buildMergedSeasons({
       number: episode.number,
       title:
         episode.title || `${animeTitle} - ${translateEpisode(episode.number)}`,
-      href: `/watch/${animeSlug}/episode-${episode.number}?source=megaplay&episode=${episode.number}`,
-      videoUrl: `/watch/${animeSlug}/episode-${episode.number}?source=megaplay&episode=${episode.number}`,
+      href: `/watch/${animeSlug}/episode-${episode.number}?source=megaplay&episode=${episode.number}&season=${targetSeasonNumber}`,
+      videoUrl: `/watch/${animeSlug}/episode-${episode.number}?source=megaplay&episode=${episode.number}&season=${targetSeasonNumber}`,
       imageUrl: null,
       publicId: null,
       slug: `episode-${episode.number}`,

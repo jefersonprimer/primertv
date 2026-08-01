@@ -153,6 +153,7 @@ export default function EpisodeSidebar({
                     isMegaplay={isMegaplay}
                     isDubbed={isDubbed}
                     isSubtitled={isSubtitled}
+                    seasonNumber={nextEpisode.seasonNumber}
                   />
                 </div>
               )}
@@ -170,6 +171,7 @@ export default function EpisodeSidebar({
                     isMegaplay={isMegaplay}
                     isDubbed={isDubbed}
                     isSubtitled={isSubtitled}
+                    seasonNumber={prevEpisode.seasonNumber}
                   />
                 </div>
               )}
@@ -255,6 +257,7 @@ export default function EpisodeSidebar({
                     isMegaplay={isMegaplay}
                     isDubbed={isDubbed}
                     isSubtitled={isSubtitled}
+                    seasonNumber={selectedSeason?.number}
                   />
                 );
               })}
@@ -285,6 +288,7 @@ interface EpisodeCardProps {
   isMegaplay?: boolean;
   isDubbed?: boolean;
   isSubtitled?: boolean;
+  seasonNumber?: number;
 }
 
 function EpisodeCard({
@@ -297,11 +301,12 @@ function EpisodeCard({
   isMegaplay = false,
   isDubbed = false,
   isSubtitled = false,
+  seasonNumber,
 }: EpisodeCardProps) {
   const tLabels = useTranslations("Labels");
   const tMedia = useTranslations("MediaCard");
   const watchHref = isMegaplay
-    ? `/watch/${animeSlug}/episode-${ep.number}?source=megaplay&episode=${ep.number}`
+    ? `/watch/${animeSlug}/episode-${ep.number}?source=megaplay&episode=${ep.number}${seasonNumber ? `&season=${seasonNumber}` : ""}`
     : ep.publicId
       ? `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`
       : `/watch/${ep.id}/${ep.slug || "episode-" + ep.number}`;
