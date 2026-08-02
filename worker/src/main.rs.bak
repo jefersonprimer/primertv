@@ -1,0 +1,913 @@
+mod imdb;
+mod jikan;
+mod scraper;
+
+use anyhow::{Context, Result};
+use clap::Parser;
+use dotenvy::dotenv;
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
+use std::env;
+use std::str::FromStr;
+use std::time::Duration;
+use tokio::time::sleep;
+
+use imdb::ImdbService;
+use jikan::JikanService;
+use scraper::{
+    AnimeScraper, ChannelScraper, MangaScraper, MovieScraper, NovelaScraper, SeriesScraper,
+};
+
+fn slugify(text: &str) -> String {
+    text.to_lowercase()
+        .chars()
+        .map(|c| if c.is_alphanumeric() { c } else { '-' })
+        .collect::<String>()
+        .split('-')
+        .filter(|s| !s.is_empty())
+        .collect::<Vec<_>>()
+        .join("-")
+}
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Run anime scraping
+    #[arg(long)]
+    anime: bool,
+
+    /// Run series scraping
+    #[arg(long, alias = "serie")]
+    series: bool,
+
+    /// Run movie scraping
+    #[arg(long, alias = "filme")]
+    movies: bool,
+
+    /// Run manga scraping
+    #[arg(long)]
+    manga: bool,
+
+    /// Run novela scraping
+    #[arg(long)]
+    novela: bool,
+
+    /// Run channel scraping
+    #[arg(long, alias = "canal")]
+    channels: bool,
+}
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    dotenv().ok();
+    let args = Args::parse();
+
+    // If no flags are provided, run all by default
+    let run_all = !args.anime
+        && !args.series
+        && !args.movies
+        && !args.manga
+        && !args.novela
+        && !args.channels;
+    let do_anime = args.anime || run_all;
+    let do_series = args.series || run_all;
+    let do_movies = args.movies || run_all;
+    let do_manga = args.manga || run_all;
+    let do_novela = args.novela || run_all;
+    let do_channels = args.channels || run_all;
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+    // For Supabase/PgBouncer compatibility, we must disable the statement cache.
+    // While ?pgbouncer=true in the URL should handle this, we set it explicitly here as well.
+    let connect_options = PgConnectOptions::from_str(&database_url)?.statement_cache_capacity(0);
+
+    let pool = PgPoolOptions::new()
+        .max_connections(2)
+        .acquire_timeout(Duration::from_secs(30))
+        .connect_with(connect_options)
+        .await?;
+
+    // Debug: reset some manga to force scrape
+    if do_manga {
+        let _ = sqlx::query_unchecked!(r#"UPDATE "Manga" SET "lastScrapedAt" = NULL"#)
+            .execute(&pool)
+            .await;
+    }
+
+    let anime_scraper = AnimeScraper::new();
+    let series_scraper = SeriesScraper::new();
+    let movie_scraper = MovieScraper::new();
+    let manga_scraper = MangaScraper::new();
+    let novela_scraper = NovelaScraper::new();
+    let channel_scraper = ChannelScraper::new();
+    let jikan = JikanService::new();
+    let imdb = ImdbService::new();
+
+    println!("Worker started (Anime: {}, Series: {}, Movies: {}, Manga: {}, Novelas: {}, Channels: {}), polling...", 
+        do_anime, do_series, do_movies, do_manga, do_novela, do_channels);
+
+    let mut discovery_counter = 0;
+
+    loop {
+        // 1. Periodically discover new content
+        if discovery_counter % 10 == 0 {
+            if do_anime {
+                println!("Discovering new popular animes from Jikan...");
+                let page = (discovery_counter / 10) + 1;
+                match jikan.get_top_anime(page).await {
+                    Ok(top_animes) => {
+                        for anime in top_animes {
+                            let description = anime.synopsis.clone();
+                            let image_url = anime.get_image_url();
+                            let genres: Vec<String> = anime
+                                .genres
+                                .unwrap_or_default()
+                                .into_iter()
+                                .map(|g| g.name)
+                                .collect();
+                            let slug = slugify(&anime.title);
+                            let aired = anime.aired.as_ref().and_then(|a| a.string.clone());
+                            let rating = anime.rating.clone();
+                            if let Err(e) = sqlx::query_unchecked!(
+                                r#"
+                                INSERT INTO "Anime" (id, slug, title, description, "imageUrl", genres, aired, rating, "createdAt", "updatedAt")
+                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+                                ON CONFLICT (slug) DO UPDATE 
+                                SET description = COALESCE("Anime".description, EXCLUDED.description),
+                                    "imageUrl" = COALESCE("Anime"."imageUrl", EXCLUDED."imageUrl"),
+                                    genres = EXCLUDED.genres,
+                                    aired = COALESCE("Anime".aired, EXCLUDED.aired),
+                                    rating = COALESCE("Anime".rating, EXCLUDED.rating),
+                                    "updatedAt" = NOW()
+                                "#,
+                                uuid::Uuid::new_v4().to_string(),
+                                slug,
+                                anime.title,
+                                description,
+                                image_url,
+                                &genres,
+                                aired,
+                                rating
+                            )
+                            .execute(&pool)
+                            .await {
+                                eprintln!("Error inserting anime {}: {}", anime.title, e);
+                            }
+                        }
+                    }
+                    Err(e) => eprintln!("Error discovering animes: {}", e),
+                }
+            }
+
+            if do_series {
+                println!("Discovering new popular series from TVMaze...");
+                match imdb.get_popular_series().await {
+                    Ok(top_series) => {
+                        for show in top_series {
+                            let description = show.get_description();
+                            let image_url = show.get_image_url();
+                            let genres = show.genres.unwrap_or_default();
+                            let slug = slugify(&show.name);
+                            if let Err(e) = sqlx::query_unchecked!(
+                                r#"
+                                INSERT INTO "Series" (id, slug, title, description, "imageUrl", genres, "createdAt", "updatedAt")
+                                VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+                                ON CONFLICT (slug) DO UPDATE 
+                                SET description = COALESCE("Series".description, EXCLUDED.description),
+                                    "imageUrl" = COALESCE("Series"."imageUrl", EXCLUDED."imageUrl"),
+                                    genres = EXCLUDED.genres,
+                                    "updatedAt" = NOW()
+                                "#,
+                                uuid::Uuid::new_v4().to_string(),
+                                slug,
+                                show.name,
+                                description,
+                                image_url,
+                                &genres
+                            )
+                            .execute(&pool)
+                            .await {
+                                eprintln!("Error inserting series {}: {}", show.name, e);
+                            }
+                        }
+                    }
+                    Err(e) => eprintln!("Error discovering series: {}", e),
+                }
+            }
+
+            if do_movies {
+                println!("Discovering new movies from StartFlix...");
+                match movie_scraper.get_latest_movies().await {
+                    Ok(latest_movies) => {
+                        for item in latest_movies {
+                            let slug = slugify(&item.title);
+                            if let Err(e) = sqlx::query_unchecked!(
+                                r#"
+                                INSERT INTO "Movie" (id, slug, title, "imageUrl", "createdAt", "updatedAt")
+                                VALUES ($1, $2, $3, $4, NOW(), NOW())
+                                ON CONFLICT (slug) DO UPDATE 
+                                SET "imageUrl" = COALESCE("Movie"."imageUrl", EXCLUDED."imageUrl"),
+                                    "updatedAt" = NOW()
+                                "#,
+                                uuid::Uuid::new_v4().to_string(),
+                                slug,
+                                item.title,
+                                item.image_url
+                            )
+                            .execute(&pool)
+                            .await {
+                                eprintln!("Error inserting movie {}: {}", item.title, e);
+                            }
+                        }
+                    }
+                    Err(e) => eprintln!("Error discovering movies: {}", e),
+                }
+            }
+
+            if do_manga {
+                println!("Discovering new popular manga from Jikan...");
+                let page = (discovery_counter / 10) + 1;
+                match jikan.get_top_manga(page).await {
+                    Ok(top_manga) => {
+                        for manga in top_manga {
+                            let description = manga.synopsis.clone();
+                            let image_url = manga.get_image_url();
+                            let genres: Vec<String> = manga
+                                .genres
+                                .unwrap_or_default()
+                                .into_iter()
+                                .map(|g| g.name)
+                                .collect();
+                            let slug = slugify(&manga.title);
+                            if let Err(e) = sqlx::query_unchecked!(
+                                r#"
+                                INSERT INTO "Manga" (id, slug, title, description, "imageUrl", genres, "createdAt", "updatedAt")
+                                VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+                                ON CONFLICT (slug) DO UPDATE 
+                                SET description = COALESCE("Manga".description, EXCLUDED.description),
+                                    "imageUrl" = COALESCE("Manga"."imageUrl", EXCLUDED."imageUrl"),
+                                    genres = EXCLUDED.genres,
+                                    "updatedAt" = NOW()
+                                "#,
+                                uuid::Uuid::new_v4().to_string(),
+                                slug,
+                                manga.title,
+                                description,
+                                image_url,
+                                &genres
+                            )
+                            .execute(&pool)
+                            .await {
+                                eprintln!("Error inserting manga {}: {}", manga.title, e);
+                            }
+                        }
+                    }
+                    Err(e) => eprintln!("Error discovering manga: {}", e),
+                }
+            }
+
+            if do_novela {
+                println!("Discovering new novelas from novela sites...");
+                match novela_scraper.get_latest_novelas().await {
+                    Ok(latest_novelas) => {
+                        for item in latest_novelas {
+                            let slug = slugify(&item.title);
+                            if let Err(e) = sqlx::query_unchecked!(
+                                r#"
+                                INSERT INTO "Novela" (id, slug, title, "imageUrl", "createdAt", "updatedAt")
+                                VALUES ($1, $2, $3, $4, NOW(), NOW())
+                                ON CONFLICT (slug) DO UPDATE 
+                                SET "imageUrl" = COALESCE("Novela"."imageUrl", EXCLUDED."imageUrl"),
+                                    "updatedAt" = NOW()
+                                "#,
+                                uuid::Uuid::new_v4().to_string(),
+                                slug,
+                                item.title,
+                                item.image_url
+                            )
+                            .execute(&pool)
+                            .await {
+                                eprintln!("Error inserting novela {}: {}", item.title, e);
+                            }
+                        }
+                    }
+                    Err(e) => eprintln!("Error discovering novelas: {}", e),
+                }
+            }
+
+            if do_channels {
+                println!("Discovering famous channels...");
+                let famous_channels = vec!["Globo", "SBT", "Record"];
+                for title in famous_channels {
+                    let slug = slugify(title);
+                    if let Err(e) = sqlx::query_unchecked!(
+                        r#"
+                        INSERT INTO "Channel" (id, slug, title, "createdAt", "updatedAt")
+                        VALUES ($1, $2, $3, NOW(), NOW())
+                        ON CONFLICT (title) DO NOTHING
+                        "#,
+                        uuid::Uuid::new_v4().to_string(),
+                        slug,
+                        title
+                    )
+                    .execute(&pool)
+                    .await {
+                        eprintln!("Error inserting channel {}: {}", title, e);
+                    }
+                }
+            }
+        }
+        discovery_counter += 1;
+
+        // 2. Fetch animes that need scraping
+        if do_anime {
+            let animes = sqlx::query_unchecked!(
+                r#"
+                SELECT id, title 
+                FROM "Anime" 
+                WHERE "lastScrapedAt" IS NULL 
+                   OR "lastScrapedAt" < NOW() - INTERVAL '24 hours'
+                ORDER BY "lastScrapedAt" ASC NULLS FIRST
+                LIMIT 3
+                "#
+            )
+            .fetch_all(&pool)
+            .await?;
+
+            for anime in animes {
+                println!("Scraping anime: {}", anime.title);
+
+                // Fetch cover and description from Jikan API
+                let mut jikan_image_url = None;
+                let mut jikan_description = None;
+                let mut jikan_genres = None;
+                let mut jikan_aired = None;
+                let mut jikan_rating = None;
+                match jikan.search_anime(&anime.title).await {
+                    Ok(Some(j_anime)) => {
+                        jikan_image_url = j_anime.get_image_url();
+                        jikan_description = j_anime.synopsis;
+                        jikan_genres = Some(
+                            j_anime
+                                .genres
+                                .unwrap_or_default()
+                                .into_iter()
+                                .map(|g| g.name)
+                                .collect::<Vec<_>>(),
+                        );
+                        jikan_aired = j_anime.aired.and_then(|a| a.string);
+                        jikan_rating = j_anime.rating;
+                        println!("Found details on Jikan for anime: {}", anime.title);
+                    }
+                    Ok(None) => println!("No details found on Jikan for anime: {}", anime.title),
+                    Err(e) => eprintln!("Error searching Jikan for anime {}: {}", anime.title, e),
+                }
+                // Sleep to avoid rate limiting
+                tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+
+                if let Ok(Some(scraped_data)) = anime_scraper.scrape(&anime.title).await {
+                    println!(
+                        "Found {} episodes for {}",
+                        scraped_data.episodes.len(),
+                        anime.title
+                    );
+                    for ep in scraped_data.episodes {
+                        let season_id: String = match sqlx::query_unchecked!(
+                            r#"
+                            INSERT INTO "Season" (id, number, "animeId", "createdAt", "updatedAt")
+                            VALUES ($1, $2, $3, NOW(), NOW())
+                            ON CONFLICT ("animeId", number) DO UPDATE SET "updatedAt" = NOW()
+                            RETURNING id
+                            "#,
+                            uuid::Uuid::new_v4().to_string(),
+                            ep.season_number,
+                            anime.id
+                        )
+                        .fetch_optional(&pool)
+                        .await?
+                        {
+                            Some(row) => row.id,
+                            None => sqlx::query_unchecked!(
+                                r#"SELECT id FROM "Season" WHERE "animeId" = $1 AND number = $2"#,
+                                anime.id,
+                                ep.season_number
+                            )
+                            .fetch_optional(&pool)
+                            .await?
+                            .map(|row| row.id)
+                            .context(format!(
+                                "season row missing after insert for anime '{}' season {}",
+                                anime.title, ep.season_number
+                            ))?,
+                        };
+
+                        let _ = sqlx::query_unchecked!(
+                            r#"
+                            INSERT INTO "Episode" (id, number, title, "videoUrl", "seasonId", "createdAt", "updatedAt")
+                            VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+                            ON CONFLICT ("seasonId", number) DO UPDATE 
+                            SET "videoUrl" = EXCLUDED."videoUrl", title = EXCLUDED.title, "updatedAt" = NOW()
+                            "#,
+                            uuid::Uuid::new_v4().to_string(),
+                            ep.number,
+                            ep.title,
+                            ep.url,
+                            season_id
+                        ).execute(&pool).await;
+                    }
+
+                    let final_image_url = jikan_image_url.or(scraped_data.image_url);
+                    let _ = sqlx::query_unchecked!(
+                        r#"
+                        UPDATE "Anime" 
+                        SET "lastScrapedAt" = NOW(), 
+                            "imageUrl" = COALESCE($1, "imageUrl"), 
+                            description = COALESCE($2, description),
+                            genres = COALESCE($3, genres),
+                            aired = COALESCE($4, aired),
+                            rating = COALESCE($5, rating),
+                            "updatedAt" = NOW()
+                        WHERE id = $6
+                        "#,
+                        final_image_url,
+                        jikan_description,
+                        jikan_genres,
+                        jikan_aired,
+                        jikan_rating,
+                        anime.id
+                    )
+                    .execute(&pool)
+                    .await;
+                } else {
+                    // Update metadata even if video/episode scraping failed
+                    let _ = sqlx::query_unchecked!(
+                        r#"
+                        UPDATE "Anime" 
+                        SET "lastScrapedAt" = NOW(), 
+                            "imageUrl" = COALESCE($1, "imageUrl"), 
+                            description = COALESCE($2, description),
+                            genres = COALESCE($3, genres),
+                            aired = COALESCE($4, aired),
+                            rating = COALESCE($5, rating),
+                            "updatedAt" = NOW()
+                        WHERE id = $6
+                        "#,
+                        jikan_image_url,
+                        jikan_description,
+                        jikan_genres,
+                        jikan_aired,
+                        jikan_rating,
+                        anime.id
+                    )
+                    .execute(&pool)
+                    .await;
+                }
+            }
+        }
+
+        // 3. Fetch series that need scraping
+        if do_series {
+            let series_list = sqlx::query_unchecked!(
+                r#"
+                SELECT id, title 
+                FROM "Series" 
+                WHERE "lastScrapedAt" IS NULL 
+                   OR "lastScrapedAt" < NOW() - INTERVAL '24 hours'
+                ORDER BY "lastScrapedAt" ASC NULLS FIRST
+                LIMIT 3
+                "#
+            )
+            .fetch_all(&pool)
+            .await?;
+
+            for series in series_list {
+                println!("Scraping series: {}", series.title);
+
+                // Fetch cover and description from TVMaze API
+                let mut tvmaze_image_url = None;
+                let mut tvmaze_description = None;
+                let mut tvmaze_genres = None;
+                match imdb.search_series(&series.title).await {
+                    Ok(Some(show)) => {
+                        tvmaze_image_url = show.get_image_url();
+                        tvmaze_description = show.get_description();
+                        tvmaze_genres = show.genres;
+                        println!("Found details on TVMaze for series: {}", series.title);
+                    }
+                    Ok(None) => println!("No details found on TVMaze for series: {}", series.title),
+                    Err(e) => {
+                        eprintln!("Error searching TVMaze for series {}: {}", series.title, e)
+                    }
+                }
+                // Sleep to avoid rate limiting
+                tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+
+                if let Ok(Some(scraped_data)) = series_scraper.scrape(&series.title).await {
+                    println!(
+                        "Found {} episodes for {}",
+                        scraped_data.episodes.len(),
+                        series.title
+                    );
+                    for ep in scraped_data.episodes {
+                        let season_id: String = match sqlx::query_unchecked!(
+                            r#"
+                            INSERT INTO "SeriesSeason" (id, number, "seriesId", "createdAt", "updatedAt")
+                            VALUES ($1, $2, $3, NOW(), NOW())
+                            ON CONFLICT ("seriesId", number) DO UPDATE SET "updatedAt" = NOW()
+                            RETURNING id
+                            "#,
+                            uuid::Uuid::new_v4().to_string(),
+                            ep.season_number,
+                            series.id
+                        ).fetch_optional(&pool).await? {
+                            Some(row) => row.id,
+                            None => sqlx::query_unchecked!(
+                                r#"SELECT id FROM "SeriesSeason" WHERE "seriesId" = $1 AND number = $2"#,
+                                series.id,
+                                ep.season_number
+                            )
+                            .fetch_optional(&pool)
+                            .await?
+                            .map(|row| row.id)
+                            .context(format!(
+                                "season row missing after insert for series '{}' season {}",
+                                series.title, ep.season_number
+                            ))?,
+                        };
+
+                        let _ = sqlx::query_unchecked!(
+                            r#"
+                            INSERT INTO "SeriesEpisode" (id, number, title, "videoUrl", "seasonId", "createdAt", "updatedAt")
+                            VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+                            ON CONFLICT ("seasonId", number) DO UPDATE 
+                            SET "videoUrl" = EXCLUDED."videoUrl", title = EXCLUDED.title, "updatedAt" = NOW()
+                            "#,
+                            uuid::Uuid::new_v4().to_string(),
+                            ep.number,
+                            ep.title,
+                            ep.url,
+                            season_id
+                        ).execute(&pool).await;
+                    }
+
+                    let final_image_url = tvmaze_image_url.or(scraped_data.image_url);
+                    let _ = sqlx::query_unchecked!(
+                        r#"
+                        UPDATE "Series" 
+                        SET "lastScrapedAt" = NOW(), 
+                            "imageUrl" = COALESCE($1, "imageUrl"), 
+                            description = COALESCE($2, description),
+                            genres = COALESCE($3, genres),
+                            "updatedAt" = NOW()
+                        WHERE id = $4
+                        "#,
+                        final_image_url,
+                        tvmaze_description,
+                        tvmaze_genres,
+                        series.id
+                    )
+                    .execute(&pool)
+                    .await;
+                } else {
+                    // Update metadata even if video/episode scraping failed
+                    let _ = sqlx::query_unchecked!(
+                        r#"
+                        UPDATE "Series" 
+                        SET "lastScrapedAt" = NOW(), 
+                            "imageUrl" = COALESCE($1, "imageUrl"), 
+                            description = COALESCE($2, description),
+                            genres = COALESCE($3, genres),
+                            "updatedAt" = NOW()
+                        WHERE id = $4
+                        "#,
+                        tvmaze_image_url,
+                        tvmaze_description,
+                        tvmaze_genres,
+                        series.id
+                    )
+                    .execute(&pool)
+                    .await;
+                }
+            }
+        }
+
+        // 4. Fetch movies that need scraping
+        if do_movies {
+            let movies = sqlx::query_unchecked!(
+                r#"
+                SELECT id, title 
+                FROM "Movie" 
+                WHERE "lastScrapedAt" IS NULL 
+                   OR "lastScrapedAt" < NOW() - INTERVAL '24 hours'
+                ORDER BY "lastScrapedAt" ASC NULLS FIRST
+                LIMIT 3
+                "#
+            )
+            .fetch_all(&pool)
+            .await?;
+
+            for movie in movies {
+                println!("Scraping movie: {}", movie.title);
+                if let Ok(Some(scraped_data)) = movie_scraper.scrape(&movie.title).await {
+                    if let Some(ep) = scraped_data.episodes.first() {
+                        let _ = sqlx::query_unchecked!(
+                            r#"
+                            UPDATE "Movie" 
+                            SET "videoUrl" = $1, "imageUrl" = $2, "lastScrapedAt" = NOW(), "updatedAt" = NOW()
+                            WHERE id = $3
+                            "#,
+                            ep.url,
+                            scraped_data.image_url,
+                            movie.id
+                        ).execute(&pool).await;
+                        println!("Successfully scraped movie: {}", movie.title);
+                    }
+                } else {
+                    let _ = sqlx::query_unchecked!(
+                        r#"UPDATE "Movie" SET "lastScrapedAt" = NOW() WHERE id = $1"#,
+                        movie.id
+                    )
+                    .execute(&pool)
+                    .await;
+                }
+            }
+        }
+
+        // 5. Fetch manga that need scraping
+        if do_manga {
+            println!("Checking for manga to scrape...");
+            let manga_list = sqlx::query_unchecked!(
+                r#"
+                SELECT id, title, "lastScrapedAt"
+                FROM "Manga" 
+                WHERE "lastScrapedAt" IS NULL 
+                   OR "lastScrapedAt" < NOW() - INTERVAL '24 hours'
+                ORDER BY "lastScrapedAt" ASC NULLS FIRST
+                LIMIT 10
+                "#
+            )
+            .fetch_all(&pool)
+            .await?;
+
+            println!(
+                "Found {} manga pending scraping in database.",
+                manga_list.len()
+            );
+
+            for manga in manga_list {
+                println!(
+                    "Scraping manga: {} (ID: {}, Last Scraped: {:?})",
+                    manga.title, manga.id, manga.lastScrapedAt
+                );
+
+                // Fetch cover and description from Jikan API
+                let mut jikan_image_url = None;
+                let mut jikan_description = None;
+                let mut jikan_genres = None;
+                match jikan.search_manga(&manga.title).await {
+                    Ok(Some(j_manga)) => {
+                        jikan_image_url = j_manga.get_image_url();
+                        jikan_description = j_manga.synopsis;
+                        jikan_genres = Some(
+                            j_manga
+                                .genres
+                                .unwrap_or_default()
+                                .into_iter()
+                                .map(|g| g.name)
+                                .collect::<Vec<_>>(),
+                        );
+                        println!("Found details on Jikan for manga: {}", manga.title);
+                    }
+                    Ok(None) => println!("No details found on Jikan for manga: {}", manga.title),
+                    Err(e) => eprintln!("Error searching Jikan for manga {}: {}", manga.title, e),
+                }
+                // Sleep to avoid rate limiting
+                tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+
+                match manga_scraper.scrape(&manga.title).await {
+                    Ok(Some(scraped_data)) => {
+                        println!(
+                            "Found {} chapters for {}",
+                            scraped_data.chapters.len(),
+                            manga.title
+                        );
+                        for chap in scraped_data.chapters {
+                            let _ = sqlx::query_unchecked!(
+                                r#"
+                                INSERT INTO "Chapter" (id, number, title, pages, "mangaId", "createdAt", "updatedAt")
+                                VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+                                ON CONFLICT ("mangaId", number) DO UPDATE 
+                                SET pages = EXCLUDED.pages, title = EXCLUDED.title, "updatedAt" = NOW()
+                                "#,
+                                uuid::Uuid::new_v4().to_string(),
+                                chap.number as f64,
+                                chap.title,
+                                &chap.pages,
+                                manga.id
+                            ).execute(&pool)
+                            .await;
+                        }
+
+                        let final_image_url = jikan_image_url.or(scraped_data.image_url);
+                        let _ = sqlx::query_unchecked!(
+                            r#"
+                            UPDATE "Manga" 
+                            SET "lastScrapedAt" = NOW(), 
+                                "imageUrl" = COALESCE($1, "imageUrl"), 
+                                description = COALESCE($2, description),
+                                genres = COALESCE($3, genres),
+                                "updatedAt" = NOW()
+                            WHERE id = $4
+                            "#,
+                            final_image_url,
+                            jikan_description,
+                            jikan_genres,
+                            manga.id
+                        )
+                        .execute(&pool)
+                        .await;
+                    }
+                    Ok(None) => {
+                        println!("No chapters found for manga: {}", manga.title);
+                        let _ = sqlx::query_unchecked!(
+                            r#"
+                            UPDATE "Manga" 
+                            SET "lastScrapedAt" = NOW(), 
+                                "imageUrl" = COALESCE($1, "imageUrl"), 
+                                description = COALESCE($2, description),
+                                genres = COALESCE($3, genres),
+                                "updatedAt" = NOW()
+                            WHERE id = $4
+                            "#,
+                            jikan_image_url,
+                            jikan_description,
+                            jikan_genres,
+                            manga.id
+                        )
+                        .execute(&pool)
+                        .await;
+                    }
+                    Err(e) => {
+                        eprintln!("Error scraping manga {}: {}", manga.title, e);
+                        // Still update timestamp to avoid immediate retry
+                        let _ = sqlx::query_unchecked!(
+                            r#"
+                            UPDATE "Manga" 
+                            SET "lastScrapedAt" = NOW(), 
+                                "imageUrl" = COALESCE($1, "imageUrl"), 
+                                description = COALESCE($2, description),
+                                genres = COALESCE($3, genres),
+                                "updatedAt" = NOW()
+                            WHERE id = $4
+                            "#,
+                            jikan_image_url,
+                            jikan_description,
+                            jikan_genres,
+                            manga.id
+                        )
+                        .execute(&pool)
+                        .await;
+                    }
+                }
+            }
+        }
+
+        // 6. Fetch novelas that need scraping
+        if do_novela {
+            let novelas = sqlx::query_unchecked!(
+                r#"
+                SELECT id, title 
+                FROM "Novela" 
+                WHERE "lastScrapedAt" IS NULL 
+                   OR "lastScrapedAt" < NOW() - INTERVAL '24 hours'
+                ORDER BY "lastScrapedAt" ASC NULLS FIRST
+                LIMIT 3
+                "#
+            )
+            .fetch_all(&pool)
+            .await?;
+
+            for novela in novelas {
+                println!("Scraping novela: {}", novela.title);
+
+                if let Ok(Some(scraped_data)) = novela_scraper.scrape(&novela.title).await {
+                    println!(
+                        "Found {} episodes for {}",
+                        scraped_data.episodes.len(),
+                        novela.title
+                    );
+                    for ep in scraped_data.episodes {
+                        let season_id: String = match sqlx::query_unchecked!(
+                            r#"
+                            INSERT INTO "NovelaSeason" (id, number, "novelaId", "createdAt", "updatedAt")
+                            VALUES ($1, $2, $3, NOW(), NOW())
+                            ON CONFLICT ("novelaId", number) DO UPDATE SET "updatedAt" = NOW()
+                            RETURNING id
+                            "#,
+                            uuid::Uuid::new_v4().to_string(),
+                            ep.season_number,
+                            novela.id
+                        ).fetch_optional(&pool).await? {
+                            Some(row) => row.id,
+                            None => sqlx::query_unchecked!(
+                                r#"SELECT id FROM "NovelaSeason" WHERE "novelaId" = $1 AND number = $2"#,
+                                novela.id,
+                                ep.season_number
+                            )
+                            .fetch_optional(&pool)
+                            .await?
+                            .map(|row| row.id)
+                            .context(format!(
+                                "season row missing after insert for novela '{}' season {}",
+                                novela.title, ep.season_number
+                            ))?,
+                        };
+
+                        let _ = sqlx::query_unchecked!(
+                            r#"
+                            INSERT INTO "NovelaEpisode" (id, number, title, "videoUrl", "seasonId", "createdAt", "updatedAt")
+                            VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+                            ON CONFLICT ("seasonId", number) DO UPDATE 
+                            SET "videoUrl" = EXCLUDED."videoUrl", title = EXCLUDED.title, "updatedAt" = NOW()
+                            "#,
+                            uuid::Uuid::new_v4().to_string(),
+                            ep.number,
+                            ep.title,
+                            ep.url,
+                            season_id
+                        ).execute(&pool).await;
+                    }
+
+                    let _ = sqlx::query_unchecked!(
+                        r#"
+                        UPDATE "Novela" 
+                        SET "lastScrapedAt" = NOW(), 
+                            "imageUrl" = COALESCE($1, "imageUrl"), 
+                            "updatedAt" = NOW()
+                        WHERE id = $2
+                        "#,
+                        scraped_data.image_url,
+                        novela.id
+                    )
+                    .execute(&pool)
+                    .await;
+                } else {
+                    let _ = sqlx::query_unchecked!(
+                        r#"
+                        UPDATE "Novela" 
+                        SET "lastScrapedAt" = NOW(), 
+                            "updatedAt" = NOW()
+                        WHERE id = $1
+                        "#,
+                        novela.id
+                    )
+                    .execute(&pool)
+                    .await;
+                }
+            }
+        }
+
+        // 7. Fetch channels that need scraping
+        if do_channels {
+            let channels = sqlx::query_unchecked!(
+                r#"
+                SELECT id, title 
+                FROM "Channel" 
+                WHERE "lastScrapedAt" IS NULL 
+                   OR "lastScrapedAt" < NOW() - INTERVAL '12 hours'
+                ORDER BY "lastScrapedAt" ASC NULLS FIRST
+                LIMIT 5
+                "#
+            )
+            .fetch_all(&pool)
+            .await?;
+
+            for channel in channels {
+                println!("Scraping channel: {}", channel.title);
+                if let Ok(Some(scraped_data)) = channel_scraper.scrape(&channel.title).await {
+                    let _ = sqlx::query_unchecked!(
+                        r#"
+                        UPDATE "Channel" 
+                        SET "videoUrl" = $1, "imageUrl" = $2, "lastScrapedAt" = NOW(), "updatedAt" = NOW()
+                        WHERE id = $3
+                        "#,
+                        scraped_data.video_url,
+                        scraped_data.image_url,
+                        channel.id
+                    ).execute(&pool).await;
+                    println!("Successfully scraped channel: {}", channel.title);
+                } else {
+                    let _ = sqlx::query_unchecked!(
+                        r#"UPDATE "Channel" SET "lastScrapedAt" = NOW() WHERE id = $1"#,
+                        channel.id
+                    )
+                    .execute(&pool)
+                    .await;
+                }
+            }
+        }
+
+        println!("Sleeping for 10 seconds...");
+        sleep(Duration::from_secs(10)).await;
+    }
+}
