@@ -11,6 +11,7 @@ interface ShareButtonProps {
   hasBorder?: boolean;
   roundedFull?: boolean;
   mobileVertical?: boolean;
+  desktopText?: boolean;
 }
 
 export default function ShareButton({
@@ -37,7 +38,7 @@ export default function ShareButton({
 
   const getButtonClass = () => {
     if (compact) {
-      return `flex items-center justify-center font-semibold transition-colors duration-300 flex-shrink-0 cursor-pointer h-8 w-8 relative group ${
+      return `flex items-center justify-center font-semibold transition-colors duration-300 flex-shrink-0 cursor-pointer h-8 w-8 md:w-auto md:px-3 relative group ${
         copied
           ? "text-emerald-600 hover:text-emerald-700"
           : "text-[#f2f2f2] hover:text-white"
@@ -105,7 +106,7 @@ export default function ShareButton({
   };
 
   const tooltipElement = (
-    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-2 text-xs font-semibold text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
+    <span className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-2 text-xs font-semibold text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50 ${compact ? "md:hidden" : ""}`}>
       {copied ? t("linkCopied") : t("share")}
     </span>
   );
@@ -121,15 +122,9 @@ export default function ShareButton({
       ) : (
         <Share2 className={compact ? "h-6 w-6" : "h-6 w-6"} />
       )}
-      {!compact && (
-        <span
-          className={
-            mobileVertical ? "text-xs md:hidden font-medium" : "md:hidden"
-          }
-        >
-          {copied ? t("copied") : t("share")}
-        </span>
-      )}
+      <span className={compact ? "hidden md:inline font-medium ml-1.5 text-sm" : mobileVertical ? "text-xs md:hidden font-medium" : "md:hidden"}>
+        {copied ? t("copied") : t("share")}
+      </span>
       {tooltipElement}
     </button>
   );
