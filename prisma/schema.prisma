@@ -23,6 +23,7 @@ model User {
   watchlistItems WatchlistItem[]
   watchHistory   WatchHistory[]
   customLists    CustomList[]
+  episodeVotes   EpisodeVote[]
 }
 
 model WatchlistItem {
@@ -128,14 +129,32 @@ model Episode {
   imageUrl      String?
   customPlayers String[]       @default([])
   seasonId      String
+  upvotes       Int            @default(0)
+  downvotes     Int            @default(0)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   season        Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   watchHistory  WatchHistory[]
+  votes         EpisodeVote[]
 
   @@unique([seasonId, number])
   @@index([seasonId])
   @@index([createdAt])
+}
+
+model EpisodeVote {
+  id        String   @id @default(cuid())
+  userId    String
+  episodeId String
+  type      String   // "UP" or "DOWN"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episode Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([episodeId])
 }
 
 model WatchHistory {

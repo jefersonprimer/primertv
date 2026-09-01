@@ -19,6 +19,7 @@ import ShareButton from "@/components/ShareButton";
 import { getAnimeDetailsBySlug } from "@/lib/media-details";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
+import { VoteButtons } from "@/components/VoteButtons";
 
 interface WatchPageProps {
   params: Promise<{ locale: string; publicId: string; slug: string }>;
@@ -294,6 +295,18 @@ export default async function WatchPage({
     const isDubbed = anime.isDubbed;
     const isSubtitled = anime.isSubtitled;
 
+    let initialUserVote = null;
+    if (userId) {
+      const vote = await prisma.episodeVote.findUnique({
+        where: {
+          userId_episodeId: { userId, episodeId: animeEpisode.id }
+        }
+      });
+      if (vote) {
+        initialUserVote = vote.type;
+      }
+    }
+
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
@@ -427,20 +440,13 @@ export default async function WatchPage({
 
                     {/* Likes & Share Actions */}
                     <div className="flex items-center justify-between w-full text-white mt-2">
-                      <div className="flex items-center gap-4">
-                        <button
-                          className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
-                          title="Like"
-                        >
-                          <ThumbsUp size={20} />
-                        </button>
-                        <button
-                          className="hover:text-red-400 transition-colors flex items-center gap-1.5"
-                          title="Dislike"
-                        >
-                          <ThumbsDown size={20} />
-                        </button>
-                      </div>
+                      <VoteButtons
+                        episodeId={animeEpisode.id}
+                        userId={userId}
+                        initialUpvotes={animeEpisode.upvotes}
+                        initialDownvotes={animeEpisode.downvotes}
+                        initialUserVote={initialUserVote as "UP" | "DOWN" | null}
+                      />
 
                       <ShareButton compact />
                     </div>
