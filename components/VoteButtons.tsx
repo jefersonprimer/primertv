@@ -79,24 +79,30 @@ export function VoteButtons({
       <button
         onClick={() => handleVote("UP")}
         disabled={isPending}
-        className={`transition-colors flex items-center gap-1.5 ${
-          userVote === "UP" ? "text-blue-500" : "hover:text-blue-400"
-        }`}
+        className="group transition-all duration-200 flex items-center gap-1.5 hover:text-zinc-300 active:scale-90"
         title="Like"
       >
-        <ThumbsUp size={20} className={userVote === "UP" ? "fill-current" : ""} />
+        <ThumbsUp 
+          size={20} 
+          className={`transition-all duration-300 ease-out ${
+            userVote === "UP" ? "fill-current scale-110" : "scale-100 group-hover:-translate-y-0.5"
+          }`} 
+        />
         <span className="text-sm font-medium">{upvotes}</span>
       </button>
       
       <button
         onClick={() => handleVote("DOWN")}
         disabled={isPending}
-        className={`transition-colors flex items-center gap-1.5 ${
-          userVote === "DOWN" ? "text-red-500" : "hover:text-red-400"
-        }`}
+        className="group transition-all duration-200 flex items-center gap-1.5 hover:text-zinc-300 active:scale-90"
         title="Dislike"
       >
-        <ThumbsDown size={20} className={userVote === "DOWN" ? "fill-current" : ""} />
+        <ThumbsDown 
+          size={20} 
+          className={`transition-all duration-300 ease-out ${
+            userVote === "DOWN" ? "fill-current scale-110" : "scale-100 group-hover:translate-y-0.5"
+          }`} 
+        />
         <span className="text-sm font-medium">{downvotes}</span>
       </button>
     </div>
