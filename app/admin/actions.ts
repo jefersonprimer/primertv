@@ -778,6 +778,8 @@ export async function saveEpisode(
     return { error: "Não foi possível salvar o episódio." };
   }
 
+  revalidatePath("/");
+  revalidatePath("/calendar");
   revalidatePath(seasonParentPath(collection, parentSlug));
   if (collection === "animes") {
     const ep = await prisma.episode.findUnique({
@@ -837,6 +839,8 @@ export async function deleteEpisode(formData: FormData): Promise<void> {
     return;
   }
 
+  revalidatePath("/");
+  revalidatePath("/calendar");
   revalidatePath(seasonParentPath(collection, parentSlug));
   const redirectTo = readString(formData, "redirectTo");
   if (redirectTo === "public") {
