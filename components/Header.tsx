@@ -72,11 +72,9 @@ export async function Header() {
           ) : (
             <Link
               href="/login"
-              className="flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
+              className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800">
-                <User size={20} />
-              </div>
+              <User className="w-5 h-5 2xl:w-6 2xl:h-6" />
             </Link>
           )}
         </div>

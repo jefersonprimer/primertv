@@ -16,14 +16,13 @@ export function UserMenu({ user }: UserMenuProps) {
   const t = useTranslations("UserMenu");
 
   return (
-    <div className="relative flex h-full items-center">
+    <div className="relative flex items-center">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-full items-center px-4 text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors ${
-          isOpen ? "bg-[#151515]" : ""
-        }`}
+        className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full transition-transform active:scale-95 cursor-pointer"
+        title={user.name}
       >
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-semibold text-white shadow-sm ring-2 transition-all hover:scale-105 active:scale-95 ring-zinc-800/50">
+        <div className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-xs 2xl:text-sm font-semibold text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all">
           {user.name.charAt(0).toUpperCase()}
         </div>
       </button>
