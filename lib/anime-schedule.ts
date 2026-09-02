@@ -61,7 +61,7 @@ export async function getAnimeScheduleRows({
         a.year
       FROM "Anime" a
       WHERE ${filter}
-      ORDER BY a."createdAt" DESC
+      ORDER BY a."latestEpisodeAt" DESC NULLS LAST
       LIMIT ${limit}
     )
     SELECT
