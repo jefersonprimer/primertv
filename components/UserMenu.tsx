@@ -22,7 +22,7 @@ export function UserMenu({ user }: UserMenuProps) {
         className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full transition-transform active:scale-95 cursor-pointer"
         title={user.name}
       >
-        <div className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-xs 2xl:text-sm font-semibold text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all">
+        <div className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base 2xl:text-lg font-normal text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all">
           {user.name.charAt(0).toUpperCase()}
         </div>
       </button>
