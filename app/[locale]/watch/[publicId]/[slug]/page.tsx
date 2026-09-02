@@ -310,42 +310,42 @@ export default async function WatchPage({
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
-          {/* Player Container */}
-          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
-            {playableUrl ? (
-              playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
-                <video
-                  src={playableUrl}
-                  controls
-                  className="h-full w-full"
-                  poster={
-                    animeEpisode.imageUrl ||
-                    animeEpisode.season.anime.imageUrl ||
-                    undefined
-                  }
-                />
-              ) : (
-                <iframe
-                  src={playableUrl}
-                  className="w-full aspect-video"
-                  allowFullScreen
-                  title={t("playerTitle", {
-                    title: animeEpisode.season.anime.title,
-                    number: animeEpisode.number,
-                  })}
-                />
-              )
-            ) : (
-              <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
-                <p>{t("videoNotAvailable")}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-3 mt-8">
-            {/* Main Content: Info / Description */}
+          <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+            {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 px-4 sm:px-0">
-              <div className="flex flex-col gap-6">
+              {/* Player Container */}
+              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+                {playableUrl ? (
+                  playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
+                    <video
+                      src={playableUrl}
+                      controls
+                      className="h-full w-full"
+                      poster={
+                        animeEpisode.imageUrl ||
+                        animeEpisode.season.anime.imageUrl ||
+                        undefined
+                      }
+                    />
+                  ) : (
+                    <iframe
+                      src={playableUrl}
+                      className="w-full aspect-video"
+                      allowFullScreen
+                      title={t("playerTitle", {
+                        title: animeEpisode.season.anime.title,
+                        number: animeEpisode.number,
+                      })}
+                    />
+                  )
+                ) : (
+                  <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
+                    <p>{t("videoNotAvailable")}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-6 mt-6">
                 {/* Player Selector Tabs */}
                 {playersList.length > 1 && (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
@@ -465,7 +465,7 @@ export default async function WatchPage({
 
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8 md:pt-2 py-4">
+              <div className="sticky top-4 overflow-hidden">
                 <AnimeEpisodeSidebar
                   seasons={animeEpisode.season.anime.seasons}
                   currentEpisodeId={animeEpisode.id}
@@ -542,29 +542,29 @@ export default async function WatchPage({
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
-          {/* Player Container */}
-          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
-            {playableUrl ? (
-              <iframe
-                src={playableUrl}
-                className="w-full aspect-video"
-                allowFullScreen
-                title={t("megaPlayPlayerTitle", {
-                  title: anime.title,
-                  number: episodeNumber,
-                })}
-              />
-            ) : (
-              <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
-                <p>{t("megaPlayNotAvailable")}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-3 mt-6">
-            {/* Main Content: Info / Description */}
+          <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+            {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 px-4 sm:px-0">
-              <div className="flex flex-col gap-6">
+              {/* Player Container */}
+              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+                {playableUrl ? (
+                  <iframe
+                    src={playableUrl}
+                    className="w-full aspect-video"
+                    allowFullScreen
+                    title={t("megaPlayPlayerTitle", {
+                      title: anime.title,
+                      number: episodeNumber,
+                    })}
+                  />
+                ) : (
+                  <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
+                    <p>{t("megaPlayNotAvailable")}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-6 mt-6">
                 {playersList.length > 1 && (
                   <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
                     <div className="flex flex-wrap gap-2">
@@ -676,7 +676,7 @@ export default async function WatchPage({
 
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8 lg:pt-0">
+              <div className="sticky top-4 overflow-hidden">
                 {episodeItems.length > 0 ? (
                   <AnimeEpisodeSidebar
                     seasons={[
@@ -841,38 +841,38 @@ export default async function WatchPage({
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10 lg:px-8">
-          {/* Player Container */}
-          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
-            {playableUrl ? (
-              playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
-                <video
-                  src={playableUrl}
-                  controls
-                  className="h-full w-full"
-                  poster={seriesEpisode.season.series.imageUrl || undefined}
-                />
-              ) : (
-                <iframe
-                  src={playableUrl}
-                  className="w-full aspect-video"
-                  allowFullScreen
-                  title={t("playerTitle", {
-                    title: seriesEpisode.season.series.title,
-                    number: seriesEpisode.number,
-                  })}
-                />
-              )
-            ) : (
-              <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
-                <p>{t("videoNotAvailable")}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-3 mt-6">
-            {/* Main Content: Info / Description */}
+          <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+            {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 px-4 sm:px-0">
-              <div className="flex flex-col gap-6">
+              {/* Player Container */}
+              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+                {playableUrl ? (
+                  playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
+                    <video
+                      src={playableUrl}
+                      controls
+                      className="h-full w-full"
+                      poster={seriesEpisode.season.series.imageUrl || undefined}
+                    />
+                  ) : (
+                    <iframe
+                      src={playableUrl}
+                      className="w-full aspect-video"
+                      allowFullScreen
+                      title={t("playerTitle", {
+                        title: seriesEpisode.season.series.title,
+                        number: seriesEpisode.number,
+                      })}
+                    />
+                  )
+                ) : (
+                  <div className="w-full aspect-video flex items-center justify-center bg-zinc-950 text-zinc-400">
+                    <p>{t("videoNotAvailable")}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-6 mt-6">
                 {/* Player Selector Tabs */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
                   {(hasScrapedUrl || tmdbId) && (
@@ -1045,7 +1045,7 @@ export default async function WatchPage({
 
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 px-4 sm:px-0">
-              <div className="sticky overflow-hidden pt-8 lg:pt-0">
+              <div className="sticky top-4 overflow-hidden">
                 <SeriesEpisodeSidebar
                   seasons={seriesEpisode.season.series.seasons}
                   currentEpisodeId={seriesEpisode.id}

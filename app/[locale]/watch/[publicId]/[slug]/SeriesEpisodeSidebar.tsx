@@ -178,7 +178,7 @@ export default function SeriesEpisodeSidebar({
             </button>
 
             {seasonDropdownOpen && (
-              <div className="absolute left-0 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="absolute left-0 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto custom-scrollbar border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
                 {seasons.map((season) => (
                   <button
                     key={season.id}
@@ -201,7 +201,7 @@ export default function SeriesEpisodeSidebar({
           </div>
 
           {/* Episode List */}
-          <div className="flex flex-col gap-2 max-h-[600px] overflow-y-auto pr-1">
+          <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
             <div className="flex flex-col">
               {episodesOfSelectedSeason.slice(0, visibleCount).map((ep) => {
                 const isCurrent = ep.id === currentEpisodeId;

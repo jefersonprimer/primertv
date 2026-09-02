@@ -211,7 +211,7 @@ export default function EpisodeSidebar({
             </button>
 
             {seasonDropdownOpen && (
-              <div className="absolute left-2 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto bg-[#272727]">
+              <div className="absolute left-2 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto custom-scrollbar bg-[#272727]">
                 {seasons.map((season) => (
                   <button
                     key={season.id}
@@ -241,7 +241,7 @@ export default function EpisodeSidebar({
           </div>
 
           {/* Episode List */}
-          <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto pr-1 py-2">
+          <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-1 py-2">
             <div className="flex flex-col">
               {episodesOfSelectedSeason.slice(0, visibleCount).map((ep) => {
                 const isCurrent = ep.id === currentEpisodeId;
