@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { Header } from "@/components/Header";
 import { HeaderSkeleton } from "@/components/HeaderSkeleton";
-import { Footer } from "@/components/Footer";
 import { Suspense } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -46,7 +45,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <Header />
           </Suspense>
           <main className="flex-1">{children}</main>
-          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>
