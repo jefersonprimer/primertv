@@ -58,17 +58,15 @@ export async function Header() {
           </Link>
 
           {user ? (
-            <div className="flex h-full items-center gap-1.5">
-              {user.role === "admin" ? (
-                <AddMediaButton />
-              ) : (
-                <Link
-                  href="/watchlist"
-                  className="hidden md:flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
-                >
-                  <Bookmark className="w-5 h-5 2xl:w-6 2xl:h-6" />
-                </Link>
-              )}
+            <div className="flex h-full items-center gap-2">
+              <Link
+                href="/watchlist"
+                className="hidden md:flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
+                title="Sua Lista"
+              >
+                <Bookmark className="w-5 h-5 2xl:w-6 2xl:h-6" />
+              </Link>
+              {user.role === "admin" && <AddMediaButton />}
               <UserMenu user={user} />
             </div>
           ) : (

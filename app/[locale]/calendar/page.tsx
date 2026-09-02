@@ -114,6 +114,17 @@ function formatReleaseTime(date: Date): string {
   }
 }
 
+function getSaoPauloDayOfWeek(date: Date): number {
+  try {
+    const spDateStr = date.toLocaleString("en-US", {
+      timeZone: "America/Sao_Paulo",
+    });
+    return new Date(spDateStr).getDay();
+  } catch {
+    return date.getDay();
+  }
+}
+
 export default async function CalendarioPage({ params }: Props) {
   const userId = await getAuthenticatedUserId();
 
@@ -214,9 +225,9 @@ export default async function CalendarioPage({ params }: Props) {
 
   for (const row of rows) {
     const latestEpisodeAt = row.latestEpisodeAt ?? row.episodeCreatedAt ?? null;
-    const releaseDay = latestEpisodeAt
-      ? latestEpisodeAt.getDay()
-      : getDeterministicDay(row.id);
+    const actualReleaseDay = latestEpisodeAt
+      ? getSaoPauloDayOfWeek(latestEpisodeAt)
+      : null;
     const releaseTime = latestEpisodeAt
       ? formatReleaseTime(latestEpisodeAt)
       : "6:00 am";
@@ -226,6 +237,9 @@ export default async function CalendarioPage({ params }: Props) {
       row.broadcastTime,
     );
 
+    const releaseDay =
+      actualReleaseDay ?? officialSchedule?.releaseDay ?? getDeterministicDay(row.id);
+
     const existing = animeMap.get(row.id);
     if (!existing) {
       animeMap.set(row.id, {
@@ -234,7 +248,7 @@ export default async function CalendarioPage({ params }: Props) {
         title: row.title,
         imageUrl: row.imageUrl,
         description: row.description,
-        releaseDay: officialSchedule?.releaseDay ?? releaseDay,
+        releaseDay,
         releaseTime: officialSchedule?.releaseTime ?? releaseTime,
         lastEpisode: row.latestEpisodeNumber ?? row.episodeNumber ?? 20,
         latestEpisodeId: row.latestEpisodeId ?? row.episodeId,
@@ -263,7 +277,7 @@ export default async function CalendarioPage({ params }: Props) {
         existing.latestEpisodeSlug = row.episodeSlug;
         existing.episodeImageUrl = row.episodeImageUrl;
       }
-      existing.releaseDay = officialSchedule?.releaseDay ?? releaseDay;
+      existing.releaseDay = releaseDay;
       existing.releaseTime = officialSchedule?.releaseTime ?? releaseTime;
     }
   }
@@ -286,7 +300,7 @@ export default async function CalendarioPage({ params }: Props) {
           lastEpisode = 1;
         } else {
           const latestEpDateKey = getSaoPauloDateKey(anime.latestEpisodeAt);
-          const scheduledDay = anime.officialScheduleReleaseDay ?? anime.releaseDay;
+          const scheduledDay = anime.releaseDay;
           const currentWeekScheduledDate = getScheduledDateOfCurrentWeek(
             now,
             currentDay,

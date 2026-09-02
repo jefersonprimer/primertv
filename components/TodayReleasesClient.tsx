@@ -30,6 +30,20 @@ interface TodayReleasesClientProps {
   serverCurrentDay: number;
 }
 
+function parseTimeToMinutes(timeStr: string): number {
+  if (!timeStr) return 0;
+  const match = timeStr.trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/);
+  if (!match) return 0;
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const ampm = match[3];
+
+  if (ampm === "pm" && hours < 12) hours += 12;
+  if (ampm === "am" && hours === 12) hours = 0;
+
+  return hours * 60 + minutes;
+}
+
 export function TodayReleasesClient({
   animes,
   serverCurrentDay,
@@ -42,25 +56,37 @@ export function TodayReleasesClient({
   const yesterday = (currentDay - 1 + 7) % 7;
   const dayBeforeYesterday = (currentDay - 2 + 7) % 7;
 
-  // Filter animes
-  const todayAnimes = animes.filter(
-    (anime) =>
-      anime.releaseDay === currentDay &&
-      anime.episodeNumbers &&
-      anime.episodeNumbers.length > 0,
-  );
-  const yesterdayAnimes = animes.filter(
-    (anime) =>
-      anime.releaseDay === yesterday &&
-      anime.episodeNumbers &&
-      anime.episodeNumbers.length > 0,
-  );
-  const dayBeforeAnimes = animes.filter(
-    (anime) =>
-      anime.releaseDay === dayBeforeYesterday &&
-      anime.episodeNumbers &&
-      anime.episodeNumbers.length > 0,
-  );
+  // Filter animes and sort by release time
+  const todayAnimes = animes
+    .filter(
+      (anime) =>
+        anime.releaseDay === currentDay &&
+        anime.episodeNumbers &&
+        anime.episodeNumbers.length > 0,
+    )
+    .sort(
+      (a, b) => parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
+    );
+  const yesterdayAnimes = animes
+    .filter(
+      (anime) =>
+        anime.releaseDay === yesterday &&
+        anime.episodeNumbers &&
+        anime.episodeNumbers.length > 0,
+    )
+    .sort(
+      (a, b) => parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
+    );
+  const dayBeforeAnimes = animes
+    .filter(
+      (anime) =>
+        anime.releaseDay === dayBeforeYesterday &&
+        anime.episodeNumbers &&
+        anime.episodeNumbers.length > 0,
+    )
+    .sort(
+      (a, b) => parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
+    );
 
   function getDayName(releaseDay: number) {
     const dayKeys = [

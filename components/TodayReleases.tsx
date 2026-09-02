@@ -41,6 +41,17 @@ function getDeterministicDay(id: string): number {
   return Math.abs(hash) % 7;
 }
 
+function getSaoPauloDayOfWeek(date: Date): number {
+  try {
+    const spDateStr = date.toLocaleString("en-US", {
+      timeZone: "America/Sao_Paulo",
+    });
+    return new Date(spDateStr).getDay();
+  } catch {
+    return date.getDay();
+  }
+}
+
 function formatReleaseTime(date: Date): string {
   try {
     const formatter = new Intl.DateTimeFormat("en-US", {
@@ -93,7 +104,7 @@ export async function TodayReleases() {
         bannerUrl: row.bannerUrl === "none" ? null : row.bannerUrl,
         description: row.description,
         rating: row.rating,
-        releaseDay: latestEpisodeAt ? latestEpisodeAt.getDay() : getDeterministicDay(row.id),
+        releaseDay: latestEpisodeAt ? getSaoPauloDayOfWeek(latestEpisodeAt) : getDeterministicDay(row.id),
         releaseTime: latestEpisodeAt ? formatReleaseTime(latestEpisodeAt) : "6:00am",
         lastEpisode: row.latestEpisodeNumber ?? row.episodeNumber ?? 20,
         latestEpisodeId: row.latestEpisodeId ?? row.episodeId,
