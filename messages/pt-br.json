@@ -351,5 +351,26 @@
     "prevChapter": "Capítulo Anterior",
     "nextChapter": "Próximo Capítulo",
     "backToChapters": "Voltar para a lista de capítulos"
+  },
+  "StarRating": {
+    "evaluationStats": "Estatísticas de Avaliações",
+    "votes": "votos",
+    "communityAverage": "Média da comunidade",
+    "distribution": "Distribuição das notas",
+    "yourVote": "Sua avaliação",
+    "rateThisAnime": "Avalie este anime",
+    "masterpiece": "Obra-prima",
+    "excellent": "Excelente",
+    "veryGood": "Muito Bom",
+    "good": "Bom",
+    "fine": "Legal",
+    "average": "Mediano",
+    "bad": "Ruim",
+    "veryBad": "Muito Ruim",
+    "horrible": "Péssimo",
+    "appalling": "Insuportável",
+    "saved": "Votado",
+    "clickToRate": "Clique em uma estrela para votar",
+    "loginRequired": "Faça login para registrar sua nota e contribuir para a média."
   }
 }

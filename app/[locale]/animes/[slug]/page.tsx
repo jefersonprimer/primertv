@@ -24,6 +24,9 @@ import {
   getMegaPlayAnimeCatalog,
   type MegaPlayCatalogEpisode,
 } from "@/lib/anikoto";
+import { AnimeStarRating } from "@/components/AnimeStarRating";
+import { getAnimeRatingStats } from "@/app/actions/animeRating";
+
 
 export const revalidate = 3600;
 
@@ -116,6 +119,8 @@ export default async function AnimeDetailsPage({
   const inWatchlist = await isInWatchlist("ANIME", anime.id);
   const session = await getSession();
   const isAdmin = session?.user?.role === "admin";
+  const initialRatingStats = await getAnimeRatingStats(anime.id);
+
 
   const similarAnimes =
     anime.genres && anime.genres.length > 0
@@ -388,41 +393,13 @@ export default async function AnimeDetailsPage({
                   </div>
                 )}
 
-                {anime.score !== null && anime.score !== undefined && (
-                  <div className="mt-2 flex items-center justify-center md:justify-start gap-2">
-                    <div className="flex items-center gap-0.5">
-                      <svg aria-hidden="true" className="absolute w-0 h-0">
-                        <defs>
-                          <linearGradient
-                            id="star-gradient"
-                            x1="0"
-                            y1="0"
-                            x2="1"
-                            y2="1"
-                          >
-                            <stop offset="0%" stopColor="#ACD4FE" />
-                            <stop offset="50%" stopColor="#8DB4F5" />
-                            <stop offset="100%" stopColor="#85AEF3" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                      {Array.from({ length: 10 }).map((_, i) => {
-                        const isFilled = i < Math.round(anime.score || 0);
-                        return (
-                          <Star
-                            key={i}
-                            className={`h-7 w-7 ${
-                              isFilled
-                                ? "text-[#8DB4F5]"
-                                : "text-zinc-300 dark:text-zinc-400"
-                            }`}
-                            fill={isFilled ? "url(#star-gradient)" : "none"}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                <AnimeStarRating
+                  animeId={anime.id}
+                  animeTitle={anime.title}
+                  initialStats={initialRatingStats}
+                  isLoggedIn={Boolean(userId)}
+                />
+
               </div>
 
               <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
