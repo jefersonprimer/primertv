@@ -146,6 +146,7 @@ export function HeroCarouselClient({
               sizes="100vw"
               className="object-cover md:hidden"
               priority={index === 0}
+              loading={index === 0 ? undefined : "lazy"}
             />
           )}
           {item.bannerUrl && (
@@ -156,6 +157,7 @@ export function HeroCarouselClient({
               sizes="100vw"
               className="hidden object-cover md:block"
               priority={index === 0}
+              loading={index === 0 ? undefined : "lazy"}
             />
           )}
         </div>
@@ -174,12 +176,12 @@ export function HeroCarouselClient({
       <div className="mobile-bottom-blur sm:hidden" />
 
       <div className="absolute inset-0 flex items-end pb-30 sm:pb-14 md:pb-[24px] md:items-center">
-        <div className="mx-auto w-full max-w-[1223px] md:px-10 lg:px-16 xl:px-0 lg:-translate-y-20">
-          <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl">
+        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-20 2xl:-translate-y-16">
+          <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl 2xl:max-w-2xl 2xl:space-y-6">
             {current.logoUrl ? (
               <Link
                 href={detailUrl}
-                className="relative block aspect-[3/1] w-full max-w-[200px] mx-auto md:mx-0 md:max-w-[400px] hover:opacity-90 transition-opacity"
+                className="relative block aspect-[3/1] w-full max-w-[200px] mx-auto md:mx-0 md:max-w-[400px] 2xl:max-w-[480px] hover:opacity-90 transition-opacity"
               >
                 <Image
                   src={current.logoUrl}
@@ -191,12 +193,12 @@ export function HeroCarouselClient({
                 <h1 className="sr-only">{current.title}</h1>
               </Link>
             ) : (
-              <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] line-clamp-2 md:max-w-[380px] hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+              <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] 2xl:text-[44px] line-clamp-2 md:max-w-[380px] 2xl:max-w-[540px] hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
                 <Link href={detailUrl}>{current.title}</Link>
               </h1>
             )}
 
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 2xl:gap-2">
               {current.rating && (
                 <RatingBadge rating={current.rating} size={20} />
               )}
@@ -205,15 +207,15 @@ export function HeroCarouselClient({
                 (current.isDubbed || current.isSubtitled) && (
                   <div className="flex gap-1.5 self-start">
                     {current.isDubbed && current.isSubtitled ? (
-                      <span className="text-sm text-[#8c8c8c]">
+                      <span className="text-sm 2xl:text-base text-[#8c8c8c]">
                         {tMedia("subDub")}
                       </span>
                     ) : current.isDubbed ? (
-                      <span className="text-sm text-[#8c8c8c]">
+                      <span className="text-sm 2xl:text-base text-[#8c8c8c]">
                         {tMedia("dubbed")}
                       </span>
                     ) : (
-                      <span className="text-sm text-[#8c8c8c]">
+                      <span className="text-sm 2xl:text-base text-[#8c8c8c]">
                         {tMedia("subtitled")}
                       </span>
                     )}
@@ -230,7 +232,7 @@ export function HeroCarouselClient({
                       <path d="M12 2L22 12L12 22L2 12Z" />
                     </svg>
                   </span>
-                  <span className="text-sm text-[#8c8c8c]">
+                  <span className="text-sm 2xl:text-base text-[#8c8c8c]">
                     {current.genres.join(", ")}
                   </span>
                 </>
@@ -238,12 +240,12 @@ export function HeroCarouselClient({
             </div>
 
             {current.description && (
-              <p className="hidden lg:line-clamp-4 leading-relaxed text-[#bbb] max-w-[380px]">
+              <p className="hidden lg:line-clamp-4 2xl:line-clamp-5 leading-relaxed text-[#bbb] max-w-[380px] 2xl:max-w-[540px] 2xl:text-base">
                 {current.description}
               </p>
             )}
 
-            <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
+            <div className="flex items-center justify-center md:justify-start gap-3 2xl:gap-4 pt-1 2xl:pt-2">
               {current.type === "movie" &&
               (current.videoUrl || current.tmdbId) ? (
                 <StartWatchingButton
@@ -252,7 +254,7 @@ export function HeroCarouselClient({
                       ? `/watch/${current.publicId}/${current.slug}`
                       : `/filmes/${current.slug}/watch`
                   }
-                  className="w-full max-w-[340px] md:max-w-[410px] px-4 text-sm md:w-auto sm:max-w-none md:px-6"
+                  className="w-full max-w-[340px] md:max-w-[410px] 2xl:max-w-[460px] px-4 text-sm 2xl:text-base md:w-auto sm:max-w-none md:px-6 2xl:px-8 2xl:py-3"
                   text="Assistir"
                 />
               ) : current.firstEpisodeId ? (
@@ -262,14 +264,14 @@ export function HeroCarouselClient({
                       ? `/watch/${current.firstEpisodePublicId}/${current.firstEpisodeSlug || "episode-1"}`
                       : `/watch/${current.firstEpisodeId}/${current.firstEpisodeSlug || "episode-1"}`
                   }
-                  className="w-full max-w-[340px] md:max-w-[410px] px-4 text-sm md:w-auto sm:max-w-none md:px-6"
+                  className="w-full max-w-[340px] md:max-w-[410px] 2xl:max-w-[460px] px-4 text-sm 2xl:text-base md:w-auto sm:max-w-none md:px-6 2xl:px-8 2xl:py-3"
                 />
               ) : (
                 <Link
                   href={detailUrl}
-                  className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 p-2.5 px-4 shadow-lg backdrop-blur-md transition-all duration-200 focus:outline-none text-white text-sm font-medium uppercase w-full max-w-[340px] md:max-w-[410px] px-4 md:w-auto sm:max-w-none md:px-6"
+                  className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 p-2.5 px-4 shadow-lg backdrop-blur-md transition-all duration-200 focus:outline-none text-white text-sm 2xl:text-base font-medium uppercase w-full max-w-[340px] md:max-w-[410px] 2xl:max-w-[460px] px-4 md:w-auto sm:max-w-none md:px-6 2xl:px-8 2xl:py-3"
                 >
-                  <Info className="h-4 w-4 text-white group-hover:text-white transition-transform duration-200 group-hover:scale-110" />
+                  <Info className="h-4 w-4 2xl:h-5 2xl:w-5 text-white group-hover:text-white transition-transform duration-200 group-hover:scale-110" />
                   <span>{t("viewDetails")}</span>
                 </Link>
               )}
@@ -294,12 +296,12 @@ export function HeroCarouselClient({
               )}
             </div>
 
-            <div className="flex items-center justify-center md:justify-start gap-2 pt-4 md:pt-6 lg:pt-8">
+            <div className="flex items-center justify-center md:justify-start gap-2 pt-4 md:pt-6 lg:pt-8 2xl:pt-10">
               {items.map((item, index) => (
                 <button
                   key={item.id}
                   onClick={() => goTo(index)}
-                  className="h-2 overflow-hidden rounded-full bg-white/40 transition-all duration-500"
+                  className="h-2 2xl:h-2.5 overflow-hidden rounded-full bg-white/40 transition-all duration-500"
                   style={{ width: index === currentIndex ? 48 : 24 }}
                   aria-label={`Ir para ${item.title}`}
                 >
@@ -319,21 +321,21 @@ export function HeroCarouselClient({
 
       <button
         onClick={goPrev}
-        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:left-2 md:h-12 md:w-12"
+        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:left-2 2xl:left-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
         aria-label={
           current.type === "series" ? "Série anterior" : "Anime anterior"
         }
       >
-        <ChevronLeft size={40} />
+        <ChevronLeft className="w-10 h-10 2xl:w-14 2xl:h-14" />
       </button>
       <button
         onClick={goNext}
-        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:right-2 md:h-12 md:w-12"
+        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:right-2 2xl:right-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
         aria-label={
           current.type === "series" ? "Próxima série" : "Próximo anime"
         }
       >
-        <ChevronRight size={40} />
+        <ChevronRight className="w-10 h-10 2xl:w-14 2xl:h-14" />
       </button>
     </section>
   );

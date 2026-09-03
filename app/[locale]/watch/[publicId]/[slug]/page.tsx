@@ -308,13 +308,13 @@ export default async function WatchPage({
     }
 
     return (
-      <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3 pt-4">
+      <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
+        <main className="w-full lg:px-4 pb-6 md:pb-10">
+          <div className="grid gap-4 lg:grid-cols-3 pt-1 lg:pt-4">
             {/* Main Content: Player & Info / Description */}
-            <div className="lg:col-span-2 px-4 sm:px-0">
+            <div className="lg:col-span-2 sm:px-0">
               {/* Player Container */}
-              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+              <div className="group relative aspect-video lg:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
                   playableUrl.endsWith(".mp4") ||
                   playableUrl.endsWith(".m3u8") ? (
@@ -346,7 +346,7 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-6 mt-4">
+              <div className="flex flex-col gap-6 mt-4 px-4 lg:px-0">
                 {/* Unified Action Controls Row */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
                   {playersList.length > 0 ? (
@@ -376,8 +376,9 @@ export default async function WatchPage({
                       slug={anime.slug}
                       initialInWatchlist={inWatchlist}
                       isLoggedIn={Boolean(userId)}
+                      size={24}
                     />
-                    <ShareButton />
+                    <ShareButton size={24} />
                   </div>
                 </div>
 
@@ -441,7 +442,7 @@ export default async function WatchPage({
                       )}
                     </div>
                   </div>
-                  <div className="mt-6">
+                  <div className="mt-4 p-2 bg-[#2B2B2B] rounded-xl">
                     <ExpandableDescription
                       description={
                         animeEpisode.season.anime.description ||
@@ -530,8 +531,8 @@ export default async function WatchPage({
     const inWatchlist = await isInWatchlist("ANIME", anime.id);
 
     return (
-      <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
+      <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
+        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
             {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 px-4 sm:px-0">
@@ -824,8 +825,8 @@ export default async function WatchPage({
     }
 
     return (
-      <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10 lg:px-8">
+      <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
+        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
             {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 px-4 sm:px-0">
@@ -1075,10 +1076,10 @@ export default async function WatchPage({
     }
 
     return (
-      <div className="min-h-screen bg-black text-zinc-50">
-        <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
+      <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
+        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
           {/* Player Container */}
-          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl mx-auto max-w-4xl">
+          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
             {playableUrl ? (
               isDirectVideo ? (
                 <video

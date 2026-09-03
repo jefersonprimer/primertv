@@ -183,7 +183,7 @@ export default function EpisodeSidebar({
       {/* 2. "Ver mais episódios" Button */}
       <button
         onClick={handleToggleShowAll}
-        className="flex items-center gap-2 w-full md:w-fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 justify-center text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
+        className="flex items-center rounded-md gap-2 w-full md:w-fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 justify-center text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
       >
         <ListVideo size={24} />
         {showAllEpisodes ? t("backToSummary") : t("seeMoreEpisodes")}
@@ -266,7 +266,7 @@ export default function EpisodeSidebar({
             {episodesOfSelectedSeason.length > visibleCount && (
               <button
                 onClick={() => setVisibleCount((prev) => prev + 12)}
-                className="w-full mt-2 py-2 px-4  bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-200 dark:border-zinc-700"
+                className="w-full rounded-md mt-2 py-3 px-4  bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-200 dark:border-zinc-700"
               >
                 {tLabels("showMore")}
               </button>
@@ -314,7 +314,7 @@ function EpisodeCard({
   return (
     <Link
       href={watchHref}
-      className={`flex items-center gap-3 sm:p-2 transition-colors ${
+      className={`flex items-center gap-3 sm:p-2 transition-colors rounded-md ${
         isCurrent
           ? "border-blue-500 bg-[#151515] dark:border-blue-500"
           : "border-zinc-200 dark:border-zinc-800 hover:bg-[#151515]"
@@ -328,7 +328,7 @@ function EpisodeCard({
             alt={ep.title || `${tLabels("episode")} ${ep.number}`}
             fill
             sizes="128px"
-            className="object-cover"
+            className="object-cover rounded-md"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-xs text-zinc-500">
@@ -343,7 +343,7 @@ function EpisodeCard({
         )}
         {/* Duration bottom-right */}
         {animeDuration && (
-          <div className="absolute bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
+          <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
             {formatDuration(animeDuration)}
           </div>
         )}
@@ -351,7 +351,7 @@ function EpisodeCard({
 
       {/* Right: Info */}
       <div className="flex flex-col min-w-0">
-        <h3 className="text-sm font-bold text-white truncate leading-snug">
+        <h3 className="text-sm font-bold text-white line-clamp-2">
           EP {ep.number} - {ep.title || `${tLabels("episode")} ${ep.number}`}
         </h3>
         {(isDubbed || isSubtitled) && (

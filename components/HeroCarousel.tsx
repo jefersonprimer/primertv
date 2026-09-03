@@ -233,10 +233,10 @@ export function HeroCarouselSkeleton() {
       <div className="mobile-bottom-blur sm:hidden" />
 
       <div className="absolute inset-0 flex items-end pb-40 sm:pb-0 md:pb-[24px] md:items-center md:pb-0">
-        <div className="mx-auto w-full max-w-[1223px] md:px-10 lg:px-16 xl:px-0 lg:-translate-y-20">
-          <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl">
+        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-20 2xl:-translate-y-16">
+          <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl 2xl:max-w-2xl 2xl:space-y-6">
             <div className="flex justify-center md:justify-start">
-              <div className="aspect-[3/1] w-full max-w-[200px] animate-pulse bg-zinc-700 md:max-w-[400px]" />
+              <div className="aspect-[3/1] w-full max-w-[200px] animate-pulse bg-zinc-700 md:max-w-[400px] 2xl:max-w-[480px]" />
             </div>
 
             <div className="flex items-center justify-center md:justify-start gap-2">

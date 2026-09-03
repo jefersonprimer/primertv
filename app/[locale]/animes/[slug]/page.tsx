@@ -404,12 +404,14 @@ export default async function AnimeDetailsPage({
                   slug={anime.slug}
                   initialInWatchlist={inWatchlist}
                   isLoggedIn={Boolean(userId)}
+                  size={24}
                 />
                 <AddToListButton
                   animeId={anime.id}
                   isLoggedIn={Boolean(userId)}
+                  size={24}
                 />
-                <ShareButton />
+                <ShareButton size={24} />
                 {isAdmin && (
                   <div className="flex items-center gap-3">
                     <EditMediaButton
