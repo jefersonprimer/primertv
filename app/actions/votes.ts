@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { calculateUserVoteWeight } from '@/lib/rating/trust'
 
 export async function voteEpisode(
   episodeId: string,
@@ -9,6 +10,9 @@ export async function voteEpisode(
   type: 'UP' | 'DOWN'
 ) {
   try {
+    const trustDetails = await calculateUserVoteWeight(userId)
+    const weight = trustDetails.weight
+
     const existingVote = await prisma.episodeVote.findUnique({
       where: {
         userId_episodeId: {
@@ -37,7 +41,7 @@ export async function voteEpisode(
         await prisma.$transaction([
           prisma.episodeVote.update({
             where: { id: existingVote.id },
-            data: { type },
+            data: { type, weight },
           }),
           prisma.episode.update({
             where: { id: episodeId },
@@ -57,6 +61,7 @@ export async function voteEpisode(
             userId,
             episodeId,
             type,
+            weight,
           },
         }),
         prisma.episode.update({
@@ -69,9 +74,10 @@ export async function voteEpisode(
     }
 
     revalidatePath('/[locale]/(home)/anime/[slug]', 'layout')
-    return { success: true }
+    return { success: true, weight }
   } catch (error) {
     console.error('Failed to vote on episode:', error)
     return { error: 'Failed to record vote' }
   }
 }
+

@@ -267,9 +267,9 @@ export function HeroCarouselClient({
               ) : (
                 <Link
                   href={detailUrl}
-                  className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 p-2.5 px-4 shadow-lg backdrop-blur-md transition-all duration-200 focus:outline-none text-zinc-400 hover:text-white text-sm font-medium uppercase w-full max-w-[340px] md:max-w-[410px] px-4 md:w-auto sm:max-w-none md:px-6"
+                  className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 p-2.5 px-4 shadow-lg backdrop-blur-md transition-all duration-200 focus:outline-none text-white text-sm font-medium uppercase w-full max-w-[340px] md:max-w-[410px] px-4 md:w-auto sm:max-w-none md:px-6"
                 >
-                  <Info className="h-4 w-4 text-zinc-400 group-hover:text-white transition-transform duration-200 group-hover:scale-110" />
+                  <Info className="h-4 w-4 text-white group-hover:text-white transition-transform duration-200 group-hover:scale-110" />
                   <span>{t("viewDetails")}</span>
                 </Link>
               )}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Star, X, Check, Award, Users } from "lucide-react";
+import { Star, X, Check, Award, Users, ShieldCheck, ChevronDown, ChevronUp, Calculator, Info } from "lucide-react";
 import { RatingBreakdown } from "@/app/actions/animeRating";
 import { useTranslations } from "next-intl";
 
@@ -33,6 +33,8 @@ export function StarRatingModal({
   const [hoverScore, setHoverScore] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const [showTrustDetails, setShowTrustDetails] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -269,6 +271,85 @@ export function StarRatingModal({
                     defaultValue:
                       "Faça login para registrar sua nota e contribuir para a média da comunidade.",
                   })}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Voting Trust & Reputation System Explanation */}
+          <div className="rounded-2xl bg-zinc-950/60 border border-zinc-800/80 overflow-hidden transition-all duration-200">
+            <button
+              type="button"
+              onClick={() => setShowTrustDetails(!showTrustDetails)}
+              className="w-full p-4 flex items-center justify-between text-left hover:bg-zinc-800/30 transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                  <ShieldCheck size={16} />
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold text-zinc-200">
+                    {t("trustSystemTitle", { defaultValue: "Sistema de Votação Justo & Anti-Review Bomb" })}
+                  </h5>
+                  <p className="text-[11px] text-zinc-400">
+                    Entenda como seu voto é computado e como calculamos a nota final.
+                  </p>
+                </div>
+              </div>
+              <div className="text-zinc-400 p-1">
+                {showTrustDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </div>
+            </button>
+
+            {showTrustDetails && (
+              <div className="px-4 pb-4 pt-1 border-t border-zinc-800/60 space-y-3 animate-in fade-in duration-150 text-[11px] text-zinc-300">
+                {/* Rule 1: Account Trust Weights */}
+                <div className="space-y-1.5 bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/50">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                    <Info size={13} />
+                    <span>1. Peso do Voto por Maturidade da Conta</span>
+                  </div>
+                  <p className="text-zinc-400 leading-relaxed">
+                    Você pode votar e editar sua nota a qualquer momento. Para impedir bots e ataques em massa sem bloquear novos usuários:
+                  </p>
+                  <ul className="grid grid-cols-2 gap-1.5 pt-1 text-[10px]">
+                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
+                      <span className="font-semibold text-zinc-300">Criada &lt; 24h:</span> Peso 0.0 (Salvo no perfil)
+                    </li>
+                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
+                      <span className="font-semibold text-zinc-300">1 a 7 dias:</span> Peso 0.25 na média
+                    </li>
+                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
+                      <span className="font-semibold text-zinc-300">7 a 30 dias:</span> Peso 0.50 na média
+                    </li>
+                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
+                      <span className="font-semibold text-zinc-300">30+ dias:</span> Peso 1.0 (Com bônus por atividade)
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Rule 2: Bayesian Formula */}
+                <div className="space-y-1.5 bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/50">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                    <Calculator size={13} />
+                    <span>2. Fórmula da Média Bayesiana Ponderada</span>
+                  </div>
+                  <p className="text-zinc-400 leading-relaxed">
+                    Evitamos notas distorcidas em obras com poucas avaliações usando a fórmula:
+                  </p>
+                  <div className="my-2 p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-center font-mono text-[11px] text-amber-200">
+                    Score = (V · R + M · C) / (V + M)
+                  </div>
+                  <div className="space-y-1 text-[10px] text-zinc-400">
+                    <p><strong className="text-zinc-200">R:</strong> Média ponderada real dos votos dos usuários.</p>
+                    <p><strong className="text-zinc-200">V:</strong> Soma dos pesos de confiança acumulados.</p>
+                    <p><strong className="text-zinc-200">C:</strong> Média global de referência do site (~7.0).</p>
+                    <p><strong className="text-zinc-200">M:</strong> Mínimo de 10 votos ponderados de confiança para estabilizar a nota.</p>
+                  </div>
+                </div>
+
+                <p className="text-[10px] text-zinc-400 italic text-center pt-1">
+                  💡 Conforme sua conta ganha idade, o peso do seu voto é recalculado automaticamente!
                 </p>
               </div>
             )}

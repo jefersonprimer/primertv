@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { revalidatePath } from "next/cache";
+import { calculateUserVoteWeight } from "@/lib/rating/trust";
+import { calculateAnimeBayesianScore } from "@/lib/rating/bayesian";
 
 export interface RatingBreakdown {
   score: number;
@@ -14,6 +16,7 @@ export interface AnimeRatingStats {
   averageScore: number;
   totalVotes: number;
   userScore: number | null;
+  userWeight?: number;
   breakdown: RatingBreakdown[];
 }
 
@@ -26,14 +29,14 @@ export async function getAnimeRatingStats(
     const [ratings, userRating, anime] = await Promise.all([
       prisma.animeRating.findMany({
         where: { animeId },
-        select: { score: true },
+        select: { score: true, weight: true },
       }),
       userId
         ? prisma.animeRating.findUnique({
             where: {
               userId_animeId: { userId, animeId },
             },
-            select: { score: true },
+            select: { score: true, weight: true },
           })
         : null,
       prisma.anime.findUnique({
@@ -56,18 +59,14 @@ export async function getAnimeRatingStats(
       1: 0,
     };
 
-    let sum = 0;
     ratings.forEach((r) => {
       if (counts[r.score] !== undefined) {
         counts[r.score] += 1;
       }
-      sum += r.score;
     });
 
-    // If there are user ratings, use their calculated average;
-    // fallback to anime.score if no user ratings yet
-    let averageScore = totalVotes > 0 ? sum / totalVotes : anime?.score ?? 0;
-    averageScore = Math.round(averageScore * 10) / 10;
+    const bayesianResult = await calculateAnimeBayesianScore(animeId);
+    const averageScore = totalVotes > 0 ? bayesianResult.bayesianScore : anime?.score ?? 0;
 
     const breakdown: RatingBreakdown[] = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map(
       (s) => {
@@ -86,6 +85,7 @@ export async function getAnimeRatingStats(
       averageScore,
       totalVotes,
       userScore: userRating?.score ?? null,
+      userWeight: userRating?.weight ?? undefined,
       breakdown,
     };
   } catch (error) {
@@ -110,6 +110,7 @@ export async function rateAnime(
   success?: boolean;
   error?: string;
   stats?: AnimeRatingStats;
+  message?: string;
 }> {
   try {
     const userId = await getAuthenticatedUserId();
@@ -130,6 +131,9 @@ export async function rateAnime(
       return { error: "anime_not_found" };
     }
 
+    // Compute account trust weight for this user
+    const trustDetails = await calculateUserVoteWeight(userId);
+
     await prisma.animeRating.upsert({
       where: {
         userId_animeId: {
@@ -139,28 +143,23 @@ export async function rateAnime(
       },
       update: {
         score,
+        weight: trustDetails.weight,
       },
       create: {
         userId,
         animeId,
         score,
+        weight: trustDetails.weight,
       },
     });
 
-    // Recalculate average score for this anime
-    const ratings = await prisma.animeRating.findMany({
-      where: { animeId },
-      select: { score: true },
-    });
+    // Recalculate Bayesian score for this anime
+    const bayesianResult = await calculateAnimeBayesianScore(animeId);
 
-    const totalVotes = ratings.length;
-    const sum = ratings.reduce((acc, r) => acc + r.score, 0);
-    const avgScore = totalVotes > 0 ? Math.round((sum / totalVotes) * 10) / 10 : 0;
-
-    // Update anime score column in database
+    // Update anime score column in database with Bayesian rating
     await prisma.anime.update({
       where: { id: animeId },
-      data: { score: avgScore },
+      data: { score: bayesianResult.bayesianScore },
     });
 
     if (anime.slug) {
@@ -174,3 +173,4 @@ export async function rateAnime(
     return { error: "Failed to submit rating" };
   }
 }
+

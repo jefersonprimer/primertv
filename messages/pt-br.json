@@ -372,6 +372,8 @@
     "appalling": "Insuportável",
     "saved": "Votado",
     "clickToRate": "Clique em uma estrela para votar",
-    "loginRequired": "Faça login para registrar sua nota e contribuir para a média."
+    "loginRequired": "Faça login para registrar sua nota e contribuir para a média.",
+    "trustSystemTitle": "Sistema de Votação Justo & Anti-Review Bomb",
+    "trustSystemDescription": "Sua avaliação é registrada imediatamente no seu perfil e pode ser alterada a qualquer momento. Para proteger as notas públicas contra manipulação e spam, a relevância do seu voto na média da comunidade cresce progressivamente com a maturidade e atividade da sua conta."
   }
 }

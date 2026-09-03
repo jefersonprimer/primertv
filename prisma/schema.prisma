@@ -150,6 +150,7 @@ model EpisodeVote {
   userId    String
   episodeId String
   type      String   // "UP" or "DOWN"
+  weight    Float    @default(1.0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -422,6 +423,7 @@ model AnimeRating {
   userId    String
   animeId   String
   score     Int
+  weight    Float    @default(1.0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
