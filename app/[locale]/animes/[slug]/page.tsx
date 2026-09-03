@@ -282,7 +282,7 @@ export default async function AnimeDetailsPage({
                           score: anime.score ?? 0,
                           members: formatMembers(anime.members),
                         })}
-                        className="inline-flex items-center overflow-hidden text-xs font-bold shadow-sm cursor-help"
+                        className="inline-flex items-center rounded-md overflow-hidden text-xs font-bold shadow-sm cursor-help"
                       >
                         <span className="bg-[#2E51A2] px-2 py-1.5 text-white uppercase tracking-wider text-[10px] leading-none">
                           MAL
@@ -290,14 +290,6 @@ export default async function AnimeDetailsPage({
                         <span className="bg-zinc-900 md:bg-zinc-100 md:dark:bg-zinc-900 text-zinc-200 md:text-zinc-800 md:dark:text-zinc-200 px-2 py-1.5 flex items-center gap-1 leading-none">
                           #{anime.rank}
                         </span>
-                        {anime.score !== null && anime.score !== undefined && (
-                          <div className="px-2 hidden sm:flex">
-                            <span className="text-sm font-semibold text-white gap-2">
-                              {anime.score.toFixed(1)} (
-                              {formatMembers(anime.members)})
-                            </span>
-                          </div>
-                        )}
                       </div>
                     )}
 

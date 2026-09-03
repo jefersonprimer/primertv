@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, BarChart2 } from "lucide-react";
+import { Star, BarChart2, ChevronDown } from "lucide-react";
 import {
   rateAnime,
   AnimeRatingStats,
@@ -46,7 +46,8 @@ export function AnimeStarRating({
     }
   };
 
-  const activeDisplayScore = hoverScore ?? stats.userScore ?? Math.round(stats.averageScore);
+  const activeDisplayScore =
+    hoverScore ?? stats.userScore ?? Math.round(stats.averageScore);
 
   return (
     <>
@@ -92,19 +93,18 @@ export function AnimeStarRating({
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 transition-all hover:scale-105 active:scale-95 shadow-sm text-xs font-semibold"
+          className="flex items-center gap-1.5 text-zinc-200 transition-all hover:scale-105 active:scale-95 shadow-sm text-xs font-semibold"
           title="Ver gráfico de avaliações"
         >
-          <span className="text-amber-400 font-bold text-sm">
+          <span className="text-white font-medium text-sm">
             {stats.averageScore > 0 ? stats.averageScore.toFixed(1) : "N/A"}
           </span>
-          <span className="text-zinc-500">/ 10</span>
           {stats.totalVotes > 0 && (
-            <span className="text-zinc-400 font-normal">
-              ({stats.totalVotes.toLocaleString()} {stats.totalVotes === 1 ? "voto" : "votos"})
+            <span className="text-white font-normal">
+              ({stats.totalVotes.toLocaleString()} )
             </span>
           )}
-          <BarChart2 size={14} className="text-blue-400 ml-0.5" />
+          <ChevronDown size={16} />
         </button>
       </div>
 
