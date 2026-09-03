@@ -18,6 +18,8 @@ interface ListSelectorProps {
   hasBorder?: boolean;
   roundedFull?: boolean;
   mobileVertical?: boolean;
+  size?: number;
+  className?: string;
 }
 
 interface UserList {
@@ -32,9 +34,11 @@ export default function AddToListButton({
   seriesId,
   isLoggedIn,
   compact = false,
-  hasBorder,
-  roundedFull = false,
+  hasBorder = true,
+  roundedFull = true,
   mobileVertical = false,
+  size,
+  className = "",
 }: ListSelectorProps) {
   const t = useTranslations("Lists");
   const [isOpen, setIsOpen] = useState(false);
@@ -45,53 +49,19 @@ export default function AddToListButton({
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Determine button styles dynamically
-  const buttonClass = (() => {
-    if (compact) {
-      return `flex h-8 w-8 items-center justify-center text-blue-600 hover:text-blue-700 flex-shrink-0 cursor-pointer transition-colors relative group${
-        roundedFull ? " rounded-full" : ""
-      }`;
-    }
+  const iconSize = size ?? (compact ? 14 : 16);
+  const sizeClass = compact ? "p-1.5" : "h-[42px] w-[42px]";
+  const borderClass = hasBorder ? "border border-zinc-800" : "";
+  const roundedClass = roundedFull ? "rounded-full" : "rounded-md";
 
-    if (mobileVertical) {
-      let base =
-        "flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-semibold text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0 cursor-pointer relative group text-xs md:text-sm h-auto py-1 md:h-10 md:w-fit md:px-2 md:py-1.5";
-
-      if (roundedFull) {
-        base += " rounded-full";
-      }
-
-      if (hasBorder === true) {
-        base += " border-2 border-blue-600 hover:border-blue-700";
-      } else if (hasBorder === false) {
-        base += " border-0";
-      } else {
-        base += " border-0 md:border-0";
-      }
-
-      return base;
-    }
-
-    let base =
-      "flex h-10 flex-1 md:flex-initial md:w-fit items-center justify-center gap-2 font-semibold text-blue-600 hover:text-blue-700 transition-colors px-4 py-1.5 md:px-2 md:py-1.5 flex-shrink-0 cursor-pointer relative group";
-
-    if (roundedFull) {
-      base += " rounded-full";
-    }
-
-    if (hasBorder === undefined) {
-      base += " border-2 border-blue-600 hover:border-blue-700 md:border-0";
-    } else if (hasBorder === true) {
-      base += " border-2 border-blue-600 hover:border-blue-700";
-    } else {
-      base += " border-0";
-    }
-
-    return base;
-  })();
+  const buttonClass = `group relative inline-flex items-center justify-center ${
+    mobileVertical
+      ? "flex-col md:flex-row gap-1 md:gap-2 text-xs md:text-sm p-2"
+      : sizeClass
+  } ${roundedClass} bg-zinc-900/90 ${borderClass} shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none text-white cursor-pointer ${className}`;
 
   const tooltipElement = (
-    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-2 text-xs font-semibold text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
+    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
       {t("tooltip")}
     </span>
   );
@@ -177,8 +147,12 @@ export default function AddToListButton({
         href="/login"
         className={buttonClass}
         aria-label="Adicionar a uma lista personalizada"
+        title={t("tooltip")}
       >
-        <Plus className="h-6 w-6" />
+        <Plus
+          size={iconSize}
+          className="text-white transition-transform duration-200 group-hover:scale-110"
+        />
         {mobileVertical && (
           <span className="text-xs md:hidden font-medium">{t("title")}</span>
         )}
@@ -194,7 +168,10 @@ export default function AddToListButton({
         className={buttonClass}
         aria-label="Adicionar a uma lista personalizada"
       >
-        <Plus className="h-6 w-6" />
+        <Plus
+          size={iconSize}
+          className="text-white transition-transform duration-200 group-hover:scale-110"
+        />
         {mobileVertical && (
           <span className="text-xs md:hidden font-medium">{t("title")}</span>
         )}

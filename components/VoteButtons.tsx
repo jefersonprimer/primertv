@@ -6,19 +6,19 @@ import { voteEpisode } from "@/app/actions/votes"
 import { useRouter } from "next/navigation"
 
 interface VoteButtonsProps {
-  episodeId: string
-  userId: string | null
-  initialUpvotes: number
-  initialDownvotes: number
+  episodeId?: string
+  userId?: string | null
+  initialUpvotes?: number
+  initialDownvotes?: number
   initialUserVote?: "UP" | "DOWN" | null
 }
 
 export function VoteButtons({
   episodeId,
   userId,
-  initialUpvotes,
-  initialDownvotes,
-  initialUserVote,
+  initialUpvotes = 0,
+  initialDownvotes = 0,
+  initialUserVote = null,
 }: VoteButtonsProps) {
   const router = useRouter()
   const [upvotes, setUpvotes] = useState(initialUpvotes)
@@ -27,8 +27,19 @@ export function VoteButtons({
   const [isPending, setIsPending] = useState(false)
 
   const handleVote = async (type: "UP" | "DOWN") => {
+    if (!episodeId) {
+      setUserVote((prev) => (prev === type ? null : type))
+      if (type === "UP") {
+        setUpvotes((prev) => (userVote === "UP" ? prev - 1 : prev + 1))
+        if (userVote === "DOWN") setDownvotes((prev) => prev - 1)
+      } else {
+        setDownvotes((prev) => (userVote === "DOWN" ? prev - 1 : prev + 1))
+        if (userVote === "UP") setUpvotes((prev) => prev - 1)
+      }
+      return
+    }
+
     if (!userId) {
-      // Could trigger login modal or redirect to login here
       router.push("/login")
       return
     }
@@ -36,18 +47,15 @@ export function VoteButtons({
     if (isPending) return
     setIsPending(true)
 
-    // Optimistic UI update
     const previousVote = userVote
     const previousUpvotes = upvotes
     const previousDownvotes = downvotes
 
     if (userVote === type) {
-      // Toggle off
       setUserVote(null)
       if (type === "UP") setUpvotes((prev) => prev - 1)
       else setDownvotes((prev) => prev - 1)
     } else {
-      // Toggle on / change
       setUserVote(type)
       if (type === "UP") {
         setUpvotes((prev) => prev + 1)
@@ -60,12 +68,11 @@ export function VoteButtons({
 
     try {
       const result = await voteEpisode(episodeId, userId, type)
-      if (result.error) {
+      if (result?.error) {
         throw new Error(result.error)
       }
     } catch (error) {
       console.error("Failed to vote:", error)
-      // Revert optimistic update
       setUserVote(previousVote)
       setUpvotes(previousUpvotes)
       setDownvotes(previousDownvotes)
@@ -75,35 +82,52 @@ export function VoteButtons({
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="inline-flex h-[42px] items-center gap-3 rounded-full bg-zinc-900 border border-zinc-800 px-4 shadow-lg backdrop-blur-md">
+      {/* Upvote Button */}
       <button
         onClick={() => handleVote("UP")}
         disabled={isPending}
-        className="group transition-all duration-200 flex items-center gap-1.5 hover:text-zinc-300 active:scale-90"
-        title="Like"
+        className={`group relative flex items-center gap-1.5 text-sm font-semibold transition-all duration-200 focus:outline-none ${
+          userVote === "UP"
+            ? "text-white"
+            : "text-zinc-400 hover:text-white"
+        }`}
+        title="Gostei"
       >
-        <ThumbsUp 
-          size={20} 
-          className={`transition-all duration-300 ease-out ${
-            userVote === "UP" ? "fill-current scale-110" : "scale-100 group-hover:-translate-y-0.5"
-          }`} 
+        <ThumbsUp
+          size={16}
+          className={`transition-all duration-300 ${
+            userVote === "UP"
+              ? "fill-white text-white scale-110"
+              : "group-hover:scale-110 group-hover:-translate-y-0.5"
+          }`}
         />
-        <span className="text-sm font-medium">{upvotes}</span>
+        <span>{upvotes}</span>
       </button>
-      
+
+      {/* Divider Bar */}
+      <div className="h-4 w-[1px] bg-zinc-800" />
+
+      {/* Downvote Button */}
       <button
         onClick={() => handleVote("DOWN")}
         disabled={isPending}
-        className="group transition-all duration-200 flex items-center gap-1.5 hover:text-zinc-300 active:scale-90"
-        title="Dislike"
+        className={`group relative flex items-center gap-1.5 text-sm font-semibold transition-all duration-200 focus:outline-none ${
+          userVote === "DOWN"
+            ? "text-white"
+            : "text-zinc-400 hover:text-white"
+        }`}
+        title="Não gostei"
       >
-        <ThumbsDown 
-          size={20} 
-          className={`transition-all duration-300 ease-out ${
-            userVote === "DOWN" ? "fill-current scale-110" : "scale-100 group-hover:translate-y-0.5"
-          }`} 
+        <ThumbsDown
+          size={16}
+          className={`transition-all duration-300 ${
+            userVote === "DOWN"
+              ? "fill-white text-white scale-110"
+              : "group-hover:scale-110 group-hover:translate-y-0.5"
+          }`}
         />
-        <span className="text-sm font-medium">{downvotes}</span>
+        {downvotes > 0 && <span>{downvotes}</span>}
       </button>
     </div>
   )

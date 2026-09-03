@@ -40,7 +40,8 @@
     "history": "History",
     "watchlist": "Watchlist",
     "myLists": "My Lists",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "displayLanguage": "Display language"
   },
   "Search": {
     "placeholder": "Search...",

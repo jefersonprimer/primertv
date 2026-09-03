@@ -305,37 +305,32 @@ export default async function SeriesDetailsPage({
                 )}
               </div>
 
-              <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                <div className="flex flex-row items-center gap-3 w-full md:w-auto">
-                  {firstEpisodeLink && (
-                    <StartWatchingButton
-                      href={firstEpisodeLink}
-                      className="flex-1 md:h-auto md:flex-initial md:px-4 md:py-2 md:w-fit"
-                      uppercase={false}
-                    />
-                  )}
-                  <WatchlistButton
-                    mediaType="SERIES"
-                    mediaId={series.id}
-                    slug={series.slug}
-                    initialInWatchlist={inWatchlist}
-                    isLoggedIn={Boolean(userId)}
+              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                {firstEpisodeLink && (
+                  <StartWatchingButton
+                    href={firstEpisodeLink}
+                    className="flex-1 md:flex-initial"
                   />
-                </div>
-                <div className="flex flex-row items-center gap-3 w-full md:w-auto justify-center md:justify-start">
-                  <AddToListButton
-                    seriesId={series.id}
-                    isLoggedIn={Boolean(userId)}
+                )}
+                <WatchlistButton
+                  mediaType="SERIES"
+                  mediaId={series.id}
+                  slug={series.slug}
+                  initialInWatchlist={inWatchlist}
+                  isLoggedIn={Boolean(userId)}
+                />
+                <AddToListButton
+                  seriesId={series.id}
+                  isLoggedIn={Boolean(userId)}
+                />
+                <ShareButton />
+                {isAdmin && (
+                  <EditMediaButton
+                    collection="series"
+                    item={series}
+                    className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
                   />
-                  <ShareButton />
-                  {isAdmin && (
-                    <EditMediaButton
-                      collection="series"
-                      item={series}
-                      className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
-                    />
-                  )}
-                </div>
+                )}
               </div>
 
               {series.description && (

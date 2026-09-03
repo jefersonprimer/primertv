@@ -17,9 +17,9 @@ import SeriesEpisodeSidebar from "./SeriesEpisodeSidebar";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ShareButton from "@/components/ShareButton";
 import { getAnimeDetailsBySlug } from "@/lib/media-details";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
 import { VoteButtons } from "@/components/VoteButtons";
+import { PlayerDropdown } from "@/components/PlayerDropdown";
 
 interface WatchPageProps {
   params: Promise<{ locale: string; publicId: string; slug: string }>;
@@ -299,8 +299,8 @@ export default async function WatchPage({
     if (userId) {
       const vote = await prisma.episodeVote.findUnique({
         where: {
-          userId_episodeId: { userId, episodeId: animeEpisode.id }
-        }
+          userId_episodeId: { userId, episodeId: animeEpisode.id },
+        },
       });
       if (vote) {
         initialUserVote = vote.type;
@@ -310,13 +310,14 @@ export default async function WatchPage({
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+          <div className="grid gap-8 lg:grid-cols-3 pt-4">
             {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 px-4 sm:px-0">
               {/* Player Container */}
               <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
-                  playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
+                  playableUrl.endsWith(".mp4") ||
+                  playableUrl.endsWith(".m3u8") ? (
                     <video
                       src={playableUrl}
                       controls
@@ -345,50 +346,52 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-6 mt-6">
-                {/* Player Selector Tabs */}
-                {playersList.length > 1 && (
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
-                    <div className="flex flex-wrap gap-2">
-                      {playersList.map((p) => (
-                        <Link
-                          key={p.id}
-                          href={`?player=${p.id}`}
-                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                            activePlayerObj?.id === p.id
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          {p.label}
-                        </Link>
-                      ))}
-                    </div>
+              <div className="flex flex-col gap-6 mt-4">
+                {/* Unified Action Controls Row */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+                  {playersList.length > 0 ? (
+                    <PlayerDropdown
+                      players={playersList.map((p) => ({
+                        id: p.id,
+                        label: p.label,
+                        href: `?player=${p.id}`,
+                      }))}
+                      activePlayerId={activePlayerObj?.id || ""}
+                    />
+                  ) : (
+                    <div />
+                  )}
+
+                  <div className="flex items-center gap-2.5">
+                    <VoteButtons
+                      episodeId={animeEpisode.id}
+                      userId={userId}
+                      initialUpvotes={animeEpisode.upvotes}
+                      initialDownvotes={animeEpisode.downvotes}
+                      initialUserVote={initialUserVote as "UP" | "DOWN" | null}
+                    />
+                    <WatchlistButton
+                      mediaType="ANIME"
+                      mediaId={anime.id}
+                      slug={anime.slug}
+                      initialInWatchlist={inWatchlist}
+                      isLoggedIn={Boolean(userId)}
+                    />
+                    <ShareButton />
                   </div>
-                )}
+                </div>
 
                 <div>
                   <div className="flex flex-col items-start">
-                    <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
-                      <Link
-                        href={`/animes/${anime.slug}`}
-                        className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
-                      >
-                        <h4 className="text-base font-bold">{anime.title}</h4>
-                      </Link>
-
-                      <WatchlistButton
-                        mediaType="ANIME"
-                        mediaId={anime.id}
-                        slug={anime.slug}
-                        initialInWatchlist={inWatchlist}
-                        isLoggedIn={Boolean(userId)}
-                        hasBorder={false}
-                      />
-                    </div>
+                    <Link
+                      href={`/animes/${anime.slug}`}
+                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                    >
+                      <h4 className="text-base font-bold">{anime.title}</h4>
+                    </Link>
 
                     {/* Season/Episode label and Metadata (rating, sub/dub) */}
-                    <div className="flex flex-col flex-wrap gap-2 tracking-wider">
+                    <div className="flex flex-col flex-wrap gap-2 tracking-wider mt-1">
                       <h1 className="text-white text-[22px] font-bold line-clamp-2">
                         {animeEpisode.title
                           ? `EP${animeEpisode.number} - ${animeEpisode.title}`
@@ -436,19 +439,6 @@ export default async function WatchPage({
                           })}
                         </span>
                       )}
-                    </div>
-
-                    {/* Likes & Share Actions */}
-                    <div className="flex items-center justify-between w-full text-white mt-2">
-                      <VoteButtons
-                        episodeId={animeEpisode.id}
-                        userId={userId}
-                        initialUpvotes={animeEpisode.upvotes}
-                        initialDownvotes={animeEpisode.downvotes}
-                        initialUserVote={initialUserVote as "UP" | "DOWN" | null}
-                      />
-
-                      <ShareButton compact />
                     </div>
                   </div>
                   <div className="mt-6">
@@ -564,46 +554,43 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-6 mt-6">
-                {playersList.length > 1 && (
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
-                    <div className="flex flex-wrap gap-2">
-                      {playersList.map((candidate) => (
-                        <Link
-                          key={candidate.id}
-                          href={`?source=megaplay&episode=${episodeNumber}&player=${candidate.id}`}
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayerObj?.id === candidate.id
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          {candidate.label}
-                        </Link>
-                      ))}
-                    </div>
+              <div className="flex flex-col gap-6 mt-4">
+                {/* Unified Action Controls Row */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+                  {playersList.length > 0 ? (
+                    <PlayerDropdown
+                      players={playersList.map((candidate) => ({
+                        id: candidate.id,
+                        label: candidate.label,
+                        href: `?source=megaplay&episode=${episodeNumber}&player=${candidate.id}`,
+                      }))}
+                      activePlayerId={activePlayerObj?.id || ""}
+                    />
+                  ) : (
+                    <div />
+                  )}
+
+                  <div className="flex items-center gap-2.5">
+                    <VoteButtons />
+                    <WatchlistButton
+                      mediaType="ANIME"
+                      mediaId={anime.id}
+                      slug={anime.slug}
+                      initialInWatchlist={inWatchlist}
+                      isLoggedIn={Boolean(userId)}
+                    />
+                    <ShareButton />
                   </div>
-                )}
+                </div>
 
                 <div>
-                  <div className="flex flex-col items-start gap-3">
-                    <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
-                      <Link
-                        href={`/animes/${anime.slug}`}
-                        className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
-                      >
-                        <h4 className="text-base font-bold">{anime.title}</h4>
-                      </Link>
-
-                      <WatchlistButton
-                        mediaType="ANIME"
-                        mediaId={anime.id}
-                        slug={anime.slug}
-                        initialInWatchlist={inWatchlist}
-                        isLoggedIn={Boolean(userId)}
-                        hasBorder={false}
-                      />
-                    </div>
+                  <div className="flex flex-col items-start gap-2">
+                    <Link
+                      href={`/animes/${anime.slug}`}
+                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                    >
+                      <h4 className="text-base font-bold">{anime.title}</h4>
+                    </Link>
 
                     {/* Episode label and Metadata (rating, sub/dub) */}
                     <div className="flex items-center flex-wrap gap-2 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
@@ -643,26 +630,6 @@ export default async function WatchPage({
                           </span>
                         </>
                       )}
-                    </div>
-
-                    {/* Likes & Share Actions */}
-                    <div className="flex items-center justify-between w-full text-white mt-1">
-                      <div className="flex items-center gap-4">
-                        <button
-                          className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
-                          title="Like"
-                        >
-                          <ThumbsUp size={20} />
-                        </button>
-                        <button
-                          className="hover:text-red-400 transition-colors flex items-center gap-1.5"
-                          title="Dislike"
-                        >
-                          <ThumbsDown size={20} />
-                        </button>
-                      </div>
-
-                      <ShareButton compact />
                     </div>
                   </div>
                   <div className="mt-6">
@@ -838,6 +805,24 @@ export default async function WatchPage({
       seriesEpisode.season.series.id,
     );
 
+    const seriesPlayerOptions = [];
+    if (hasScrapedUrl) {
+      seriesPlayerOptions.push({
+        id: "1",
+        label: t("playerLabel", { number: 1 }),
+        href: "?player=1",
+      });
+    }
+    if (tmdbId) {
+      [2, 3, 4, 5].forEach((num) => {
+        seriesPlayerOptions.push({
+          id: String(num),
+          label: t("playerLabel", { number: num }),
+          href: `?player=${num}`,
+        });
+      });
+    }
+
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl sm:px-4 pb-6 md:pb-10 lg:px-8">
@@ -847,7 +832,8 @@ export default async function WatchPage({
               {/* Player Container */}
               <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
-                  playableUrl.endsWith(".mp4") || playableUrl.endsWith(".m3u8") ? (
+                  playableUrl.endsWith(".mp4") ||
+                  playableUrl.endsWith(".m3u8") ? (
                     <video
                       src={playableUrl}
                       controls
@@ -872,101 +858,41 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-6 mt-6">
-                {/* Player Selector Tabs */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
-                  {(hasScrapedUrl || tmdbId) && (
-                    <div className="flex flex-wrap gap-2">
-                      {hasScrapedUrl && (
-                        <Link
-                          key="player-1"
-                          href="?player=1"
-                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 1
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          {t("playerLabel", { number: 1 })}
-                        </Link>
-                      )}
-                      {tmdbId && (
-                        <Link
-                          key="player-2"
-                          href="?player=2"
-                          className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 2
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          {t("playerLabel", { number: 2 })}
-                        </Link>
-                      )}
-                      {tmdbId && (
-                        <Link
-                          key="player-3"
-                          href="?player=3"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 3
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          {t("playerLabel", { number: 3 })}
-                        </Link>
-                      )}
-                      {tmdbId && (
-                        <Link
-                          key="player-4"
-                          href="?player=4"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 4
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          {t("playerLabel", { number: 4 })}
-                        </Link>
-                      )}
-                      {tmdbId && (
-                        <Link
-                          key="player-5"
-                          href="?player=5"
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                            activePlayer === 5
-                              ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                          }`}
-                        >
-                          {t("playerLabel", { number: 5 })}
-                        </Link>
-                      )}
-                    </div>
+              <div className="flex flex-col gap-6 mt-4">
+                {/* Unified Action Controls Row */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+                  {seriesPlayerOptions.length > 0 ? (
+                    <PlayerDropdown
+                      players={seriesPlayerOptions}
+                      activePlayerId={String(activePlayer)}
+                    />
+                  ) : (
+                    <div />
                   )}
+
+                  <div className="flex items-center gap-2.5">
+                    <VoteButtons episodeId={seriesEpisode.id} userId={userId} />
+                    <WatchlistButton
+                      mediaType="SERIES"
+                      mediaId={seriesEpisode.season.series.id}
+                      slug={seriesEpisode.season.series.slug}
+                      initialInWatchlist={inWatchlist}
+                      isLoggedIn={Boolean(userId)}
+                    />
+                    <ShareButton />
+                  </div>
                 </div>
 
                 <div>
-                  <div className="flex flex-col items-start gap-3">
-                    <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
-                      <Link
-                        href={`/series/${seriesEpisode.season.series.slug}`}
-                        className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
-                      >
-                        <h4 className="text-base font-bold">
-                          {seriesEpisode.season.series.title}
-                        </h4>
-                      </Link>
-
-                      <WatchlistButton
-                        mediaType="SERIES"
-                        mediaId={seriesEpisode.season.series.id}
-                        slug={seriesEpisode.season.series.slug}
-                        initialInWatchlist={inWatchlist}
-                        isLoggedIn={Boolean(userId)}
-                        hasBorder={false}
-                      />
-                    </div>
+                  <div className="flex flex-col items-start gap-2">
+                    <Link
+                      href={`/series/${seriesEpisode.season.series.slug}`}
+                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                    >
+                      <h4 className="text-base font-bold">
+                        {seriesEpisode.season.series.title}
+                      </h4>
+                    </Link>
 
                     {/* Season/Episode label and Metadata (rating) */}
                     <div className="flex items-center flex-wrap gap-2 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
@@ -1010,26 +936,6 @@ export default async function WatchPage({
                         })}
                       </span>
                     )}
-
-                    {/* Likes & Share Actions */}
-                    <div className="flex items-center justify-between w-full text-white mt-1">
-                      <div className="flex items-center gap-4">
-                        <button
-                          className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
-                          title="Like"
-                        >
-                          <ThumbsUp size={20} />
-                        </button>
-                        <button
-                          className="hover:text-red-400 transition-colors flex items-center gap-1.5"
-                          title="Dislike"
-                        >
-                          <ThumbsDown size={20} />
-                        </button>
-                      </div>
-
-                      <ShareButton compact />
-                    </div>
                   </div>
                   <div className="mt-6">
                     <ExpandableDescription
@@ -1150,6 +1056,24 @@ export default async function WatchPage({
     const userId = await getAuthenticatedUserId();
     const inWatchlist = await isInWatchlist("SERIES", movie.id);
 
+    const moviePlayerOptions = [];
+    if (hasScrapedUrl) {
+      moviePlayerOptions.push({
+        id: "1",
+        label: "Player 1",
+        href: "?player=1",
+      });
+    }
+    if (movie.tmdbId) {
+      [2, 3, 4, 5, 6].forEach((num) => {
+        moviePlayerOptions.push({
+          id: String(num),
+          label: `Player ${num}`,
+          href: `?player=${num}`,
+        });
+      });
+    }
+
     return (
       <div className="min-h-screen bg-black text-zinc-50">
         <main className="mx-auto max-w-7xl pb-6 md:pb-10 lg:px-8">
@@ -1184,104 +1108,39 @@ export default async function WatchPage({
           </div>
 
           {/* Controls & Title Below Player */}
-          <div className="mt-6 flex flex-col gap-6">
-            {/* Player Selector Tabs */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
-              <div className="flex flex-wrap gap-2">
-                {hasScrapedUrl && (
-                  <Link
-                    key="player-1"
-                    href="?player=1"
-                    className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                      activePlayer === 1
-                        ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                        : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                    }`}
-                  >
-                    Player 1
-                  </Link>
-                )}
-                {movie.tmdbId && (
-                  <>
-                    <Link
-                      key="player-2"
-                      href="?player=2"
-                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                        activePlayer === 2
-                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                      }`}
-                    >
-                      Player 2
-                    </Link>
-                    <Link
-                      key="player-3"
-                      href="?player=3"
-                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                        activePlayer === 3
-                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                      }`}
-                    >
-                      Player 3
-                    </Link>
-                    <Link
-                      key="player-4"
-                      href="?player=4"
-                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                        activePlayer === 4
-                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                      }`}
-                    >
-                      Player 4
-                    </Link>
-                    <Link
-                      key="player-5"
-                      href="?player=5"
-                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                        activePlayer === 5
-                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                      }`}
-                    >
-                      Player 5
-                    </Link>
-                    <Link
-                      key="player-6"
-                      href="?player=6"
-                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                        activePlayer === 6
-                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black shadow-lg"
-                          : "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300"
-                      }`}
-                    >
-                      Player 6
-                    </Link>
-                  </>
-                )}
+          <div className="mt-4 flex flex-col gap-6">
+            {/* Unified Action Controls Row */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+              {moviePlayerOptions.length > 0 ? (
+                <PlayerDropdown
+                  players={moviePlayerOptions}
+                  activePlayerId={String(activePlayer)}
+                />
+              ) : (
+                <div />
+              )}
+
+              <div className="flex items-center gap-2.5">
+                <VoteButtons />
+                <WatchlistButton
+                  mediaType="SERIES"
+                  mediaId={movie.id}
+                  slug={movie.slug}
+                  initialInWatchlist={inWatchlist}
+                  isLoggedIn={Boolean(userId)}
+                />
+                <ShareButton />
               </div>
             </div>
 
             <div>
-              <div className="flex flex-col items-start gap-3">
-                <div className="flex items-center justify-between w-full border-b border-[#bbb] sm:border-0 pb-2 sm:p-0">
-                  <Link
-                    href={`/movies/${movie.slug}`}
-                    className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
-                  >
-                    <h4 className="text-base font-bold">{movie.title}</h4>
-                  </Link>
-
-                  <WatchlistButton
-                    mediaType="SERIES"
-                    mediaId={movie.id}
-                    slug={movie.slug}
-                    initialInWatchlist={inWatchlist}
-                    isLoggedIn={Boolean(userId)}
-                    hasBorder={false}
-                  />
-                </div>
+              <div className="flex flex-col items-start gap-2">
+                <Link
+                  href={`/movies/${movie.slug}`}
+                  className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                >
+                  <h4 className="text-base font-bold">{movie.title}</h4>
+                </Link>
 
                 {/* Movie label and Metadata (rating) */}
                 <div className="flex items-center flex-wrap gap-2 text-xs text-zinc-500 font-semibold uppercase tracking-wider">
@@ -1317,26 +1176,6 @@ export default async function WatchPage({
                     })}
                   </span>
                 )}
-
-                {/* Likes & Share Actions */}
-                <div className="flex items-center justify-between w-full text-white mt-1">
-                  <div className="flex items-center gap-4">
-                    <button
-                      className="hover:text-blue-400 transition-colors flex items-center gap-1.5"
-                      title="Like"
-                    >
-                      <ThumbsUp size={20} />
-                    </button>
-                    <button
-                      className="hover:text-red-400 transition-colors flex items-center gap-1.5"
-                      title="Dislike"
-                    >
-                      <ThumbsDown size={20} />
-                    </button>
-                  </div>
-
-                  <ShareButton compact />
-                </div>
               </div>
               <div className="mt-6">
                 <ExpandableDescription

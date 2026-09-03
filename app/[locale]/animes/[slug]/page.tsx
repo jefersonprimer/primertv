@@ -27,7 +27,6 @@ import {
 import { AnimeStarRating } from "@/components/AnimeStarRating";
 import { getAnimeRatingStats } from "@/app/actions/animeRating";
 
-
 export const revalidate = 3600;
 
 function formatMembers(num: number | null | undefined): string {
@@ -120,7 +119,6 @@ export default async function AnimeDetailsPage({
   const session = await getSession();
   const isAdmin = session?.user?.role === "admin";
   const initialRatingStats = await getAnimeRatingStats(anime.id);
-
 
   const similarAnimes =
     anime.genres && anime.genres.length > 0
@@ -367,9 +365,9 @@ export default async function AnimeDetailsPage({
                         </div>
                       </>
                     )}
-                    {((anime.rating || anime.isDubbed || anime.isSubtitled) &&
+                    {(anime.rating || anime.isDubbed || anime.isSubtitled) &&
                       anime.genres &&
-                      anime.genres.length > 0) && (
+                      anime.genres.length > 0 && (
                         <span
                           className="text-[#bbb] flex items-center justify-center"
                           aria-hidden="true"
@@ -399,48 +397,42 @@ export default async function AnimeDetailsPage({
                   initialStats={initialRatingStats}
                   isLoggedIn={Boolean(userId)}
                 />
-
               </div>
 
-              <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                <div className="flex flex-row items-center gap-3 w-full md:w-auto">
-                  {firstEpisodeLink && (
-                    <StartWatchingButton
-                      href={firstEpisodeLink}
-                      className="flex-1 md:h-auto md:flex-initial md:px-4 md:py-2.5 md:w-fit text-sm"
+              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                {firstEpisodeLink && (
+                  <StartWatchingButton
+                    href={firstEpisodeLink}
+                    className="flex-1 md:flex-initial"
+                  />
+                )}
+                <WatchlistButton
+                  mediaType="ANIME"
+                  mediaId={anime.id}
+                  slug={anime.slug}
+                  initialInWatchlist={inWatchlist}
+                  isLoggedIn={Boolean(userId)}
+                />
+                <AddToListButton
+                  animeId={anime.id}
+                  isLoggedIn={Boolean(userId)}
+                />
+                <ShareButton />
+                {isAdmin && (
+                  <div className="flex items-center gap-3">
+                    <EditMediaButton
+                      collection="animes"
+                      item={anime}
+                      className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
                     />
-                  )}
-                  <WatchlistButton
-                    mediaType="ANIME"
-                    mediaId={anime.id}
-                    slug={anime.slug}
-                    initialInWatchlist={inWatchlist}
-                    isLoggedIn={Boolean(userId)}
-                  />
-                </div>
-                <div className="flex flex-row items-center gap-6 md:gap-3 w-full md:w-auto justify-center md:justify-start">
-                  <AddToListButton
-                    animeId={anime.id}
-                    isLoggedIn={Boolean(userId)}
-                    mobileVertical={true}
-                  />
-                  <ShareButton mobileVertical={true} />
-                  {isAdmin && (
-                    <div className="flex items-center gap-3">
-                      <EditMediaButton
-                        collection="animes"
-                        item={anime}
-                        className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
-                      />
-                      <DeleteAnimeButton
-                        animeId={anime.id}
-                        animeSlug={anime.slug}
-                        className="flex h-10 items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-950 dark:bg-zinc-950 dark:text-red-300 dark:hover:bg-red-950/30 md:h-auto md:py-2.5 uppercase"
-                        redirectTo="/animes"
-                      />
-                    </div>
-                  )}
-                </div>
+                    <DeleteAnimeButton
+                      animeId={anime.id}
+                      animeSlug={anime.slug}
+                      className="flex h-10 items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-950 dark:bg-zinc-950 dark:text-red-300 dark:hover:bg-red-950/30 md:h-auto md:py-2.5 uppercase"
+                      redirectTo="/animes"
+                    />
+                  </div>
+                )}
               </div>
 
               {anime.description && (

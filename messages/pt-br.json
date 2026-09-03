@@ -40,7 +40,8 @@
     "history": "Histórico",
     "watchlist": "Watchlist",
     "myLists": "Minhas Listas",
-    "logout": "Sair da conta"
+    "logout": "Sair da conta",
+    "displayLanguage": "Idioma de exibição"
   },
   "Search": {
     "placeholder": "Buscar...",

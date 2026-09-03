@@ -257,7 +257,7 @@ export default async function MovieDetailsPage({
                       ? `/watch/${movie.publicId}/${movie.slug}`
                       : `/movies/${movie.slug}/watch`
                   }
-                  className="h-10 md:h-12 px-6 md:px-8 py-2 md:py-2.5 rounded-full shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 active:scale-95 flex-shrink-0"
+                  className="flex-shrink-0"
                   uppercase={false}
                   text="Assistir"
                 />

@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import Image from "next/image";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
@@ -267,9 +267,10 @@ export function HeroCarouselClient({
               ) : (
                 <Link
                   href={detailUrl}
-                  className="flex h-10 items-center gap-2 bg-blue-600 px-4 font-semibold text-white transition-colors hover:bg-blue-700 md:px-6"
+                  className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 p-2.5 px-4 shadow-lg backdrop-blur-md transition-all duration-200 focus:outline-none text-zinc-400 hover:text-white text-sm font-medium uppercase w-full max-w-[340px] md:max-w-[410px] px-4 md:w-auto sm:max-w-none md:px-6"
                 >
-                  {t("viewDetails")}
+                  <Info className="h-4 w-4 text-zinc-400 group-hover:text-white transition-transform duration-200 group-hover:scale-110" />
+                  <span>{t("viewDetails")}</span>
                 </Link>
               )}
               {current.type !== "movie" ? (
@@ -279,6 +280,7 @@ export function HeroCarouselClient({
                   slug={current.slug}
                   initialInWatchlist={current.inWatchlist}
                   isLoggedIn={isLoggedIn}
+                  size={24}
                 />
               ) : (
                 <WatchlistButton
@@ -287,6 +289,7 @@ export function HeroCarouselClient({
                   slug={current.slug}
                   initialInWatchlist={false}
                   isLoggedIn={false}
+                  size={24}
                 />
               )}
             </div>
