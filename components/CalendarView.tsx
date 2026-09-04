@@ -33,7 +33,10 @@ interface CalendarViewProps {
 
 function parseTimeToMinutes(timeStr: string): number {
   if (!timeStr) return 0;
-  const match = timeStr.trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/);
+  const match = timeStr
+    .trim()
+    .toLowerCase()
+    .match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/);
   if (!match) return 0;
   let hours = parseInt(match[1], 10);
   const minutes = parseInt(match[2], 10);
@@ -75,7 +78,8 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
   Object.keys(groupedAnimes).forEach((dayKey) => {
     const day = Number(dayKey);
     groupedAnimes[day].sort(
-      (a, b) => parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
+      (a, b) =>
+        parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
     );
   });
 
@@ -110,7 +114,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                     : "bg-zinc-900 hover:bg-zinc-800 text-zinc-400"
                 }`}
               >
-                <span>{day.shortLabel}</span>
+                <span>{isToday ? t("todayLabel") : day.shortLabel}</span>
                 {isToday && (
                   <span
                     className={`mt-1 h-1.5 w-1.5 ${
@@ -130,7 +134,9 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
           <div className="mb-4 flex items-center justify-between border-b pb-3 border-zinc-900">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               <span className="h-2 w-2 bg-blue-600" />
-              {DAYS_OF_WEEK.find((d) => d.value === activeDay)?.label}
+              {activeDay === currentDay
+                ? t("todayLabel")
+                : DAYS_OF_WEEK.find((d) => d.value === activeDay)?.label}
             </h2>
           </div>
 
@@ -178,7 +184,7 @@ export function CalendarView({ animes, isLoggedIn }: CalendarViewProps) {
                     isToday ? "text-blue-500" : "text-white"
                   }`}
                 >
-                  {day.label.split("-")[0]}
+                  {isToday ? t("todayLabel") : day.label.split("-")[0]}
                 </span>
               </div>
 
@@ -287,7 +293,9 @@ function AnimeCalendarCard({
       {/* Status do Episódio */}
       <div className="mt-1 text-[10px] font-medium text-zinc-400">
         {anime.isComingSoon ? (
-          <span className="text-blue-400 font-semibold">{t("comingSoon")}</span>
+          <span className="text-[#0078FD] font-semibold">
+            {t("comingSoon")}
+          </span>
         ) : isToday ? (
           <span>{t("episodeAvailable", { number: anime.lastEpisode })}</span>
         ) : (

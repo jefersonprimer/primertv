@@ -120,11 +120,11 @@ export function HistoryCard({
 
   return (
     <div
-      className={`group flex flex-col gap-2 hover:bg-zinc-800 md:p-2 transition-colors duration-200 ${className}`}
+      className={`group flex flex-col gap-2 rounded-md hover:bg-zinc-800 md:p-2 transition-colors duration-200 ${className}`}
     >
       <Link
         href={cardHref}
-        className="relative aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:shadow-blue-500/10"
+        className="relative aspect-video rounded-md w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:shadow-blue-500/10"
       >
         {/* Main Image */}
         {displayImageUrl ? (
@@ -145,7 +145,7 @@ export function HistoryCard({
         )}
 
         {/* Season / Episode overlay badge */}
-        <div className="absolute top-0 left-0 z-20 bg-black/75 backdrop-blur-xs text-[#f2f2f2] px-2 py-0.5 text-sm font-normal">
+        <div className="absolute top-0 left-0 rounded-br-md z-20 bg-black/75 backdrop-blur-xs text-[#f2f2f2] px-2 py-0.5 text-sm font-normal">
           {t("seasonEpisodeBadge", {
             season: item.seasonNumber,
             episode: item.episodeNumber,

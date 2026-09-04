@@ -134,11 +134,11 @@ export default function FavoriteCard({
 
   return (
     <div
-      className={`group flex flex-col gap-2 hover:bg-zinc-800 md:p-2 transition-colors duration-200 ${className}`}
+      className={`group flex flex-col rounded-md gap-2 hover:bg-zinc-800 md:p-2 transition-colors duration-200 ${className}`}
     >
       <Link
         href={cardHref}
-        className="relative aspect-video w-full overflow-hidden bg-zinc-900 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10"
+        className="relative aspect-video rounded-md w-full overflow-hidden bg-zinc-900 shadow-md transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10"
       >
         {/* Rating Badge in upper left */}
         {item.rating && (
@@ -185,7 +185,7 @@ export default function FavoriteCard({
 
         {/* Duration Badge in bottom right on hover */}
         {item.duration && (
-          <div className="absolute bottom-1 right-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/80 backdrop-blur-xs text-white px-2 py-0.5 text-sm font-semibold shadow-sm">
+          <div className="absolute rounded bottom-1 right-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/80 backdrop-blur-xs text-white px-2 py-0.5 text-sm font-semibold shadow-sm">
             {formatDuration(item.duration)}
           </div>
         )}

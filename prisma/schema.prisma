@@ -437,3 +437,14 @@ model AnimeRating {
   @@index([animeId])
 }
 
+model PasswordResetCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+

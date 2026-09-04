@@ -51,6 +51,11 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            <div className="flex justify-end mt-1">
+              <Link href="/forgot-password" className="text-xs text-blue-400 hover:underline">
+                {t("forgotPasswordLink")}
+              </Link>
+            </div>
           </div>
           {state?.error && (
             <p className="text-sm text-red-500">{t(state.error)}</p>

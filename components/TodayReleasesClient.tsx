@@ -32,7 +32,10 @@ interface TodayReleasesClientProps {
 
 function parseTimeToMinutes(timeStr: string): number {
   if (!timeStr) return 0;
-  const match = timeStr.trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/);
+  const match = timeStr
+    .trim()
+    .toLowerCase()
+    .match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/);
   if (!match) return 0;
   let hours = parseInt(match[1], 10);
   const minutes = parseInt(match[2], 10);
@@ -65,7 +68,8 @@ export function TodayReleasesClient({
         anime.episodeNumbers.length > 0,
     )
     .sort(
-      (a, b) => parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
+      (a, b) =>
+        parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
     );
   const yesterdayAnimes = animes
     .filter(
@@ -75,7 +79,8 @@ export function TodayReleasesClient({
         anime.episodeNumbers.length > 0,
     )
     .sort(
-      (a, b) => parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
+      (a, b) =>
+        parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
     );
   const dayBeforeAnimes = animes
     .filter(
@@ -85,7 +90,8 @@ export function TodayReleasesClient({
         anime.episodeNumbers.length > 0,
     )
     .sort(
-      (a, b) => parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
+      (a, b) =>
+        parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
     );
 
   function getDayName(releaseDay: number) {
@@ -403,14 +409,14 @@ export function TodayReleasesClient({
         {!showMore ? (
           <button
             onClick={() => setShowMore(true)}
-            className="w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-blue-600 hover:bg-blue-700 uppercase"
+            className="w-full rounded-md py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-[#0078FD] hover:bg-blue-700 uppercase"
           >
             {t("showMore")}
           </button>
         ) : (
           <Link
             href="/calendar"
-            className="flex items-center justify-center w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-blue-600 hover:bg-blue-700 uppercase"
+            className="flex  rounded-md items-center justify-center w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-[#0078FD] hover:bg-blue-700 uppercase"
           >
             {t("viewCalendar")}
           </Link>
