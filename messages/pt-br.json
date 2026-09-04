@@ -37,11 +37,27 @@
   },
   "UserMenu": {
     "admin": "Admin",
+    "profile": "Meu Perfil",
     "history": "Histórico",
     "watchlist": "Watchlist",
     "myLists": "Minhas Listas",
     "logout": "Sair da conta",
     "displayLanguage": "Idioma de exibição"
+  },
+  "Profile": {
+    "title": "Perfil do Usuário",
+    "subtitle": "Atualize suas informações pessoais e personalize a foto do seu perfil.",
+    "nameLabel": "Seu Nome",
+    "namePlaceholder": "Digite seu nome",
+    "avatarLabel": "Foto de Perfil (URL ou Presets)",
+    "urlPlaceholder": "Cole a URL da sua imagem (http://... ou https://...)",
+    "presetTitle": "Escolha um dos avatares prontos",
+    "saveButton": "Salvar Alterações",
+    "saving": "Salvando...",
+    "successMessage": "Perfil atualizado com sucesso!",
+    "nameRequired": "O nome é obrigatório.",
+    "invalidUrl": "Informe uma URL de imagem válida (começando com http:// ou https://).",
+    "updateFailed": "Erro ao atualizar o perfil. Tente novamente."
   },
   "Search": {
     "placeholder": "Buscar...",

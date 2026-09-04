@@ -45,6 +45,7 @@ export async function signup(_prevState: AuthState | undefined, formData: FormDa
     id: user.id,
     name: user.name,
     email: user.email,
+    image: user.image,
     role: "user",
   });
 
@@ -97,6 +98,7 @@ export async function login(_prevState: AuthState | undefined, formData: FormDat
     id: user.id,
     name: user.name,
     email: user.email,
+    image: user.image,
     role: "user",
   });
 

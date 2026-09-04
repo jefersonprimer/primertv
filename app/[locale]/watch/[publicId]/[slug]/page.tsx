@@ -20,6 +20,9 @@ import { getAnimeDetailsBySlug } from "@/lib/media-details";
 import RatingBadge from "@/components/RatingBadge";
 import { VoteButtons } from "@/components/VoteButtons";
 import { PlayerDropdown } from "@/components/PlayerDropdown";
+import { CommentsSection } from "@/components/CommentsSection";
+import { getSession } from "@/lib/auth";
+
 
 interface WatchPageProps {
   params: Promise<{ locale: string; publicId: string; slug: string }>;
@@ -176,6 +179,15 @@ export default async function WatchPage({
   const tMedia = await getTranslations("MediaCard");
   const { locale, publicId, slug } = await params;
   const { player, source, episode, season } = (await searchParams) || {};
+  const session = await getSession();
+  const currentUser = session?.user
+    ? {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      }
+    : null;
 
   // 1. Try fetching Anime Episode
   let animeEpisode = await prisma.episode.findUnique({
@@ -312,7 +324,7 @@ export default async function WatchPage({
         <main className="w-full lg:px-4 pb-6 md:pb-10">
           <div className="grid gap-4 lg:grid-cols-3 pt-1 lg:pt-4">
             {/* Main Content: Player & Info / Description */}
-            <div className="lg:col-span-2 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 sm:px-0">
               {/* Player Container */}
               <div className="group relative aspect-video lg:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
@@ -454,8 +466,9 @@ export default async function WatchPage({
               </div>
             </div>
 
+
             {/* Sidebar: Episode List */}
-            <div className="lg:col-span-1 px-4 sm:px-0">
+            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
               <div className="sticky top-4 overflow-hidden">
                 <AnimeEpisodeSidebar
                   seasons={animeEpisode.season.anime.seasons}
@@ -471,6 +484,14 @@ export default async function WatchPage({
                   isSubtitled={animeEpisode.season.anime.isSubtitled}
                 />
               </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 lg:px-0">
+              <CommentsSection
+                targetId={animeEpisode.id}
+                currentUser={currentUser}
+              />
             </div>
           </div>
         </main>
@@ -535,7 +556,7 @@ export default async function WatchPage({
         <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
             {/* Main Content: Player & Info / Description */}
-            <div className="lg:col-span-2 px-4 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
               {/* Player Container */}
               <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
@@ -642,8 +663,9 @@ export default async function WatchPage({
               </div>
             </div>
 
+
             {/* Sidebar: Episode List */}
-            <div className="lg:col-span-1 px-4 sm:px-0">
+            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
               <div className="sticky top-4 overflow-hidden">
                 {episodeItems.length > 0 ? (
                   <AnimeEpisodeSidebar
@@ -677,6 +699,14 @@ export default async function WatchPage({
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 sm:px-0">
+              <CommentsSection
+                targetId={`megaplay-${anime.slug}-${episodeNumber}`}
+                currentUser={currentUser}
+              />
             </div>
           </div>
         </main>
@@ -829,7 +859,7 @@ export default async function WatchPage({
         <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
             {/* Main Content: Player & Info / Description */}
-            <div className="lg:col-span-2 px-4 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
               {/* Player Container */}
               <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
@@ -950,8 +980,9 @@ export default async function WatchPage({
               </div>
             </div>
 
+
             {/* Sidebar: Episode List */}
-            <div className="lg:col-span-1 px-4 sm:px-0">
+            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
               <div className="sticky top-4 overflow-hidden">
                 <SeriesEpisodeSidebar
                   seasons={seriesEpisode.season.series.seasons}
@@ -961,6 +992,14 @@ export default async function WatchPage({
                   seriesImageUrl={seriesEpisode.season.series.imageUrl}
                 />
               </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 sm:px-0">
+              <CommentsSection
+                targetId={seriesEpisode.id}
+                currentUser={currentUser}
+              />
             </div>
           </div>
         </main>
@@ -1183,10 +1222,15 @@ export default async function WatchPage({
                   description={movie.description || t("noDescription")}
                 />
               </div>
+              <CommentsSection
+                targetId={movie.id}
+                currentUser={currentUser}
+              />
             </div>
           </div>
         </main>
       </div>
+
     );
   }
 

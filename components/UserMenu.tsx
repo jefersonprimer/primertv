@@ -11,6 +11,7 @@ import {
   ChevronRight,
   ChevronLeft,
   Check,
+  User as UserIcon,
 } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { SessionUser } from "@/lib/auth";
@@ -60,8 +61,12 @@ export function UserMenu({ user }: UserMenuProps) {
         className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full transition-transform active:scale-95 cursor-pointer"
         title={user.name}
       >
-        <div className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base 2xl:text-lg font-normal text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all">
-          {user.name.charAt(0).toUpperCase()}
+        <div className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base 2xl:text-lg font-normal text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all overflow-hidden">
+          {user.image ? (
+            <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+          ) : (
+            user.name.charAt(0).toUpperCase()
+          )}
         </div>
       </button>
 
@@ -73,8 +78,12 @@ export function UserMenu({ user }: UserMenuProps) {
               <>
                 <div className="px-3 py-2.5 pb-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/10">
-                      {user.name.charAt(0).toUpperCase()}
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/10 overflow-hidden">
+                      {user.image ? (
+                        <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        user.name.charAt(0).toUpperCase()
+                      )}
                     </div>
                     <div className="overflow-hidden">
                       <div className="flex items-center gap-1.5">
@@ -90,34 +99,45 @@ export function UserMenu({ user }: UserMenuProps) {
                 </div>
 
                 <div className="border-t border-zinc-700/60">
-                  {user.role !== "admin" && (
-                    <div className="py-2">
-                      <Link
-                        href="/history"
-                        onClick={handleClose}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
-                      >
-                        <History size={20} />
-                        <span>{t("history")}</span>
-                      </Link>
-                      <Link
-                        href="/watchlist"
-                        onClick={handleClose}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
-                      >
-                        <Bookmark size={20} />
-                        <span>{t("watchlist")}</span>
-                      </Link>
-                      <Link
-                        href="/lists"
-                        onClick={handleClose}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
-                      >
-                        <List size={20} />
-                        <span>{t("myLists")}</span>
-                      </Link>
-                    </div>
-                  )}
+                  <div className="py-2">
+                    <Link
+                      href="/profile"
+                      onClick={handleClose}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                    >
+                      <UserIcon size={20} />
+                      <span>{t("profile")}</span>
+                    </Link>
+
+                    {user.role !== "admin" && (
+                      <>
+                        <Link
+                          href="/history"
+                          onClick={handleClose}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                        >
+                          <History size={20} />
+                          <span>{t("history")}</span>
+                        </Link>
+                        <Link
+                          href="/watchlist"
+                          onClick={handleClose}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                        >
+                          <Bookmark size={20} />
+                          <span>{t("watchlist")}</span>
+                        </Link>
+                        <Link
+                          href="/lists"
+                          onClick={handleClose}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                        >
+                          <List size={20} />
+                          <span>{t("myLists")}</span>
+                        </Link>
+                      </>
+                    )}
+                  </div>
 
                   {/* Idioma de exibição */}
                   <div className="py-1 border-t border-zinc-700/60">

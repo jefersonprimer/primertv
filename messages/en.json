@@ -37,11 +37,27 @@
   },
   "UserMenu": {
     "admin": "Admin",
+    "profile": "My Profile",
     "history": "History",
     "watchlist": "Watchlist",
     "myLists": "My Lists",
     "logout": "Sign out",
     "displayLanguage": "Display language"
+  },
+  "Profile": {
+    "title": "User Profile",
+    "subtitle": "Update your personal details and customize your profile avatar.",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "Enter your name",
+    "avatarLabel": "Profile Picture (URL or Presets)",
+    "urlPlaceholder": "Paste image URL (http://... or https://...)",
+    "presetTitle": "Choose from ready-made avatars",
+    "saveButton": "Save Changes",
+    "saving": "Saving...",
+    "successMessage": "Profile updated successfully!",
+    "nameRequired": "Name is required.",
+    "invalidUrl": "Please enter a valid image URL (starting with http:// or https://).",
+    "updateFailed": "Error updating profile. Please try again."
   },
   "Search": {
     "placeholder": "Search...",
