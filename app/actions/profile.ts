@@ -15,6 +15,7 @@ export async function updateProfile(formData: FormData) {
 
   const name = formData.get("name") as string;
   const image = (formData.get("image") as string)?.trim();
+  const imageBackground = (formData.get("imageBackground") as string)?.trim();
 
   if (!name || name.trim().length === 0) {
     return { error: "nameRequired" };
@@ -24,20 +25,31 @@ export async function updateProfile(formData: FormData) {
     return { error: "invalidUrl" };
   }
 
+  if (
+    imageBackground &&
+    !imageBackground.startsWith("http://") &&
+    !imageBackground.startsWith("https://")
+  ) {
+    return { error: "invalidUrl" };
+  }
+
   try {
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         name: name.trim(),
         image: image || null,
+        imageBackground: imageBackground || null,
       },
     });
 
     const { token, expires } = await createSessionToken({
       id: updatedUser.id,
       name: updatedUser.name,
+      username: updatedUser.username,
       email: updatedUser.email,
       image: updatedUser.image,
+      imageBackground: updatedUser.imageBackground,
       role: session.user.role,
     });
 

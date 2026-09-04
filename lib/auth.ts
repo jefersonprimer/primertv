@@ -10,8 +10,10 @@ const SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 export type SessionUser = {
   id: string;
   name: string;
+  username?: string | null;
   email: string;
   image?: string | null;
+  imageBackground?: string | null;
   role?: "admin" | "user";
 };
 

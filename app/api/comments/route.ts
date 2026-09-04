@@ -50,15 +50,15 @@ export async function GET(request: NextRequest) {
       new Set(comments.map((c) => c.userId).filter((id): id is string => Boolean(id)))
     );
 
-    const userMap: Record<string, { image: string | null; name: string | null }> = {};
+    const userMap: Record<string, { image: string | null; name: string | null; username: string | null }> = {};
     if (userIds.length > 0) {
       try {
         const users = await prisma.user.findMany({
           where: { id: { in: userIds } },
-          select: { id: true, image: true, name: true },
+          select: { id: true, image: true, name: true, username: true },
         });
         for (const u of users) {
-          userMap[u.id] = { image: u.image, name: u.name };
+          userMap[u.id] = { image: u.image, name: u.name, username: u.username };
         }
       } catch (e) {
         console.error("Error fetching comment user profiles from Prisma:", e);
@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
         parentId: comment.parentId || null,
         content: comment.content,
         userId: comment.userId || null,
+        userUsername: dbUser?.username || null,
         visitorId: comment.visitorId || null,
         userName: dbUser?.name || comment.userName,
         userImage: dbUser?.image || comment.userImage || null,

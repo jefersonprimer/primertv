@@ -10,6 +10,8 @@ type AuthState = {
   error?: string;
 };
 
+import { generateUniqueUsername } from "@/lib/username";
+
 export async function signup(_prevState: AuthState | undefined, formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
@@ -32,10 +34,12 @@ export async function signup(_prevState: AuthState | undefined, formData: FormDa
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  const username = await generateUniqueUsername(name);
 
   const user = await prisma.user.create({
     data: {
       name,
+      username,
       email,
       password: hashedPassword,
     },

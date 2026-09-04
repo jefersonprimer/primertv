@@ -5,11 +5,12 @@ import pg from "pg";
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 const getPrismaClient = () => {
+  const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
   const pool = new pg.Pool({ 
-    connectionString: process.env.DATABASE_URL,
-    max: 3, // Limit to 3 connections to stay under the 15 limit
+    connectionString,
+    max: 10,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000,
   });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });

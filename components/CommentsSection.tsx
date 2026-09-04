@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   Send,
   User,
@@ -21,6 +22,7 @@ interface CommentItem {
   parentId?: string | null;
   content: string;
   userId?: string;
+  userUsername?: string | null;
   visitorId?: string;
   userName: string;
   userImage?: string | null;
@@ -439,32 +441,64 @@ export function CommentsSection({
           }`}
         >
           {/* User Avatar */}
-          <div
-            className={`flex shrink-0 items-center justify-center rounded-full font-bold text-zinc-300 overflow-hidden border border-zinc-700/50 ${
-              isReply
-                ? "h-7 w-7 text-xs bg-zinc-800/80"
-                : "h-9 w-9 text-sm bg-zinc-800"
-            }`}
-          >
-            {comment.userImage ? (
-              <img
-                src={comment.userImage}
-                alt={comment.userName || "Avatar"}
-                className="h-full w-full object-cover"
-              />
-            ) : comment.userName ? (
-              comment.userName.charAt(0).toUpperCase()
-            ) : (
-              <User className={isReply ? "h-3.5 w-3.5" : "h-4 w-4"} />
-            )}
-          </div>
+          {comment.userId ? (
+            <Link
+              href={`/user/${comment.userUsername || comment.userId}`}
+              className={`flex shrink-0 items-center justify-center rounded-full font-bold text-zinc-300 overflow-hidden border border-zinc-700/50 hover:border-blue-500 transition-colors ${
+                isReply
+                  ? "h-7 w-7 text-xs bg-zinc-800/80"
+                  : "h-9 w-9 text-sm bg-zinc-800"
+              }`}
+            >
+              {comment.userImage ? (
+                <img
+                  src={comment.userImage}
+                  alt={comment.userName || "Avatar"}
+                  className="h-full w-full object-cover"
+                />
+              ) : comment.userName ? (
+                comment.userName.charAt(0).toUpperCase()
+              ) : (
+                <User className={isReply ? "h-3.5 w-3.5" : "h-4 w-4"} />
+              )}
+            </Link>
+          ) : (
+            <div
+              className={`flex shrink-0 items-center justify-center rounded-full font-bold text-zinc-300 overflow-hidden border border-zinc-700/50 ${
+                isReply
+                  ? "h-7 w-7 text-xs bg-zinc-800/80"
+                  : "h-9 w-9 text-sm bg-zinc-800"
+              }`}
+            >
+              {comment.userImage ? (
+                <img
+                  src={comment.userImage}
+                  alt={comment.userName || "Avatar"}
+                  className="h-full w-full object-cover"
+                />
+              ) : comment.userName ? (
+                comment.userName.charAt(0).toUpperCase()
+              ) : (
+                <User className={isReply ? "h-3.5 w-3.5" : "h-4 w-4"} />
+              )}
+            </div>
+          )}
 
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="text-sm font-semibold text-zinc-200 truncate">
-                {comment.userName}
-              </span>
+              {comment.userId ? (
+                <Link
+                  href={`/user/${comment.userUsername || comment.userId}`}
+                  className="text-sm font-semibold text-zinc-200 hover:text-blue-400 transition-colors truncate"
+                >
+                  {comment.userName}
+                </Link>
+              ) : (
+                <span className="text-sm font-semibold text-zinc-200 truncate">
+                  {comment.userName}
+                </span>
+              )}
               <div className="flex items-center gap-1.5 shrink-0">
                 {comment.isEdited && (
                   <span className="text-[10px] text-zinc-500 italic font-normal">
