@@ -416,5 +416,17 @@
     "loginRequired": "Log in to submit your rating and contribute to the community score.",
     "trustSystemTitle": "Fair & Anti-Review Bomb Voting System",
     "trustSystemDescription": "Your rating is recorded immediately on your profile and can be changed at any time. To protect public scores from manipulation and spam, the weight of your vote on the community score increases progressively with your account age and activity."
+  },
+  "QuickViewModal": {
+    "startWatching": "Start E1",
+    "continueWatching": "Continue: E{number}",
+    "watchEpisode": "Watch E{number}",
+    "year": "Year",
+    "rating": "Rating",
+    "genres": "Genres",
+    "dubbed": "Dubbed",
+    "subtitled": "Subtitled",
+    "subDub": "Sub | Dub",
+    "loading": "Loading details..."
   }
 }

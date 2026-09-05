@@ -36,12 +36,12 @@ interface EpisodeSidebarProps {
 }
 
 function formatDuration(duration: string | null | undefined): string {
-  if (!duration) return "";
+  if (!duration || duration.toLowerCase() === "unknown") return "";
   const matches = duration.match(/\d+/);
   if (matches) {
     return `${matches[0]}m`;
   }
-  return duration;
+  return "";
 }
 
 export default function EpisodeSidebar({
@@ -342,7 +342,7 @@ function EpisodeCard({
           </div>
         )}
         {/* Duration bottom-right */}
-        {animeDuration && (
+        {formatDuration(animeDuration) && (
           <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
             {formatDuration(animeDuration)}
           </div>
@@ -352,7 +352,7 @@ function EpisodeCard({
       {/* Right: Info */}
       <div className="flex flex-col min-w-0">
         <h3 className="text-sm font-bold text-white line-clamp-2">
-          EP {ep.number} - {ep.title || `${tLabels("episode")} ${ep.number}`}
+          E{ep.number} - {ep.title || `${tLabels("episode")} ${ep.number}`}
         </h3>
         {(isDubbed || isSubtitled) && (
           <div className="flex gap-1.5 items-center mt-1">

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Calendar, ChevronRight, Clock, Play } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
 import { Link } from "@/i18n/routing";
+import { QuickViewModal } from "@/components/QuickViewModal";
 
 interface AnimeItem {
   id: string;
@@ -55,6 +56,16 @@ export function TodayReleasesClient({
   const tWeekdays = useTranslations("Weekdays");
   const [showMore, setShowMore] = useState(false);
   const [currentDay] = useState(serverCurrentDay);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openQuickView = (slug: string, e: React.MouseEvent) => {
+    if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      setSelectedSlug(slug);
+      setIsModalOpen(true);
+    }
+  };
 
   const yesterday = (currentDay - 1 + 7) % 7;
   const dayBeforeYesterday = (currentDay - 2 + 7) % 7;
@@ -226,8 +237,9 @@ export function TodayReleasesClient({
           <div>
             {/* Anime Title */}
             <Link
-              href={cardHref}
-              className={`text-sm font-bold text-[#f2f2f2] hover:text-white transition-colors line-clamp-2 leading-snug
+              href={`/animes/${anime.slug}`}
+              onClick={(e) => openQuickView(anime.slug, e)}
+              className={`text-sm font-bold text-[#f2f2f2] hover:text-white transition-colors line-clamp-2 leading-snug cursor-pointer
                 ${multipleEpisodeRelease ? "" : "hover:underline"}`}
             >
               {anime.title}
@@ -425,6 +437,12 @@ export function TodayReleasesClient({
           </Link>
         )}
       </div>
+
+      <QuickViewModal
+        slug={selectedSlug}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

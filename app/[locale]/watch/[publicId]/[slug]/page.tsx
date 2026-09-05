@@ -406,7 +406,7 @@ export default async function WatchPage({
                     <div className="flex flex-col flex-wrap gap-2 tracking-wider mt-1">
                       <h1 className="text-white text-[22px] font-bold line-clamp-2">
                         {animeEpisode.title
-                          ? `EP${animeEpisode.number} - ${animeEpisode.title}`
+                          ? `E${animeEpisode.number} - ${animeEpisode.title}`
                           : t("seasonEpisodeLabel", {
                               season: animeEpisode.season.number,
                               episode: animeEpisode.number,
