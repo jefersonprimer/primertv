@@ -183,7 +183,7 @@ export default function EpisodeSidebar({
       {/* 2. "Ver mais episódios" Button */}
       <button
         onClick={handleToggleShowAll}
-        className="flex items-center rounded-md gap-2 w-full md:w-fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all hover:bg-[#272727] active:scale-95 justify-center text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
+        className="flex items-center rounded-md gap-2 w-full md:w-fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all active:scale-95 justify-center text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
       >
         <ListVideo size={24} />
         {showAllEpisodes ? t("backToSummary") : t("seeMoreEpisodes")}
@@ -191,12 +191,12 @@ export default function EpisodeSidebar({
 
       {/* 3. Season Selector & Episode List (shown if showAllEpisodes is true) */}
       {showAllEpisodes && (
-        <div className="flex flex-col gap-4 shadow-sm">
+        <div className="flex flex-col gap-4 shadow-sm ">
           {/* Season Dropdown */}
           <div className="relative w-full max-w-[378px]" ref={seasonRef}>
             <button
               onClick={() => setSeasonDropdownOpen(!seasonDropdownOpen)}
-              className="flex w-full items-center gap-2 px-2 text-lg font-bold text-white hover:text-blue-500 transition-colors"
+              className="flex w-full items-center gap-2 px-2 text-lg font-bold text-white hover:text-[#0077FD] transition-colors"
             >
               <span>
                 {tSelector("season", {
@@ -211,7 +211,7 @@ export default function EpisodeSidebar({
             </button>
 
             {seasonDropdownOpen && (
-              <div className="absolute left-2 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto custom-scrollbar bg-[#272727]">
+              <div className="absolute left-2 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto custom-scrollbar bg-[#272727] rounded-md">
                 {seasons.map((season) => (
                   <button
                     key={season.id}

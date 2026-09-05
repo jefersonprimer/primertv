@@ -104,6 +104,15 @@ pub async fn try_scrape_from_site(
                     {
                         if let Some(href) = link.value().attr("href") {
                             if let Ok(resolved_url) = resolve_site_url(base_url, href) {
+                                if resolved_url.contains("/community/")
+                                    || resolved_url.contains("/group/")
+                                    || resolved_url.contains("/profile/")
+                                    || resolved_url.contains("/collection/")
+                                    || resolved_url.contains("/tag/")
+                                {
+                                    continue;
+                                }
+
                                 if seen_urls.insert(resolved_url.clone()) {
                                     // Try to find image in the same container
                                     let mut image_url = None;

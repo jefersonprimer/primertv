@@ -275,20 +275,20 @@ export default async function AnimeDetailsPage({
                 <div className="mt-2 flex items-center justify-center md:justify-start gap-3 flex-wrap">
                   {anime.rank !== null &&
                     anime.rank !== undefined &&
-                    anime.rank <= 1000 && (
+                    anime.rank <= 100 && (
                       <div
                         title={t("malTitle", {
                           rank: anime.rank ?? 0,
                           score: anime.score ?? 0,
                           members: formatMembers(anime.members),
                         })}
-                        className="inline-flex items-center rounded-md overflow-hidden text-xs font-bold shadow-sm cursor-help"
+                        className="inline-flex items-center rounded overflow-hidden text-xs font-bold shadow-sm cursor-help"
                       >
                         <span className="bg-[#2E51A2] px-2 py-1.5 text-white uppercase tracking-wider text-[10px] leading-none">
                           MAL
                         </span>
                         <span className="bg-zinc-900 md:bg-zinc-100 md:dark:bg-zinc-900 text-zinc-200 md:text-zinc-800 md:dark:text-zinc-200 px-2 py-1.5 flex items-center gap-1 leading-none">
-                          #{anime.rank}
+                          Top #{anime.rank}
                         </span>
                       </div>
                     )}
@@ -510,6 +510,7 @@ type LocalSeason = {
     publicId: string | null;
     videoUrl: string | null;
     imageUrl: string | null;
+    createdAt?: Date | null;
   }>;
 };
 
@@ -522,6 +523,7 @@ type MergedEpisode = {
   imageUrl: string | null;
   publicId: string | null;
   slug: string | null;
+  createdAt?: Date | null;
 };
 
 type MergedSeason = {
@@ -562,6 +564,7 @@ function buildMergedSeasons({
           imageUrl: episode.imageUrl,
           publicId: episode.publicId,
           slug: episode.slug,
+          createdAt: episode.createdAt,
         })),
     });
   }

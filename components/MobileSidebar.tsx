@@ -7,7 +7,6 @@ import {
   X,
   Tv,
   Film,
-  Sparkles,
   BookOpen,
   Radio,
   Layers,
@@ -15,6 +14,7 @@ import {
   Heart,
   TrendingUp,
   Clock,
+  MonitorPlay,
 } from "lucide-react";
 import { NAV_LINKS } from "./nav-links";
 import { Link } from "@/i18n/routing";
@@ -41,7 +41,7 @@ const linkIconMap: Record<
 > = {
   "/series": Tv,
   "/movies": Film,
-  "/animes": Sparkles,
+  "/animes": MonitorPlay,
   "/mangas": BookOpen,
   "/livetv": Radio,
   "/seasons": Layers,
@@ -70,7 +70,7 @@ export function MobileSidebar() {
         aria-hidden="true"
       />
 
-      <aside className="fixed top-14 2xl:top-16 bottom-0 left-0 z-[70] w-66 bg-[#0E0E0E] border-r border-zinc-800/80 shadow-2xl flex flex-col justify-between overflow-y-auto">
+      <aside className="fixed top-14 2xl:top-16 bottom-0 left-0 z-[70] w-66 bg-[#0E0E0E]  shadow-2xl flex flex-col justify-between overflow-y-auto">
         <nav className="flex flex-col gap-1 py-3 px-2">
           {NAV_LINKS.map((link) => {
             const Icon = linkIconMap[link.href];
@@ -96,7 +96,8 @@ export function MobileSidebar() {
         <div className="border-t border-zinc-800/80 p-4 flex flex-col gap-3.5 bg-[#0E0E0E]">
           <LanguageSwitcher />
           <div className="text-xs text-zinc-500 font-medium leading-relaxed">
-            © {new Date().getFullYear()} primer tv. Todos os direitos reservados.
+            © {new Date().getFullYear()} primer tv. Todos os direitos
+            reservados.
           </div>
         </div>
       </aside>
@@ -108,16 +109,16 @@ export function MobileSidebar() {
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
-        className={`flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors ${
+        className={`flex p-2 2xl:p-2.5 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors ${
           isOpen ? "text-white bg-[#151515]" : ""
         }`}
         aria-label={isOpen ? t("closeMenu") : t("openMenu")}
         aria-expanded={isOpen}
       >
         {isOpen ? (
-          <X className="w-5 h-5 2xl:w-6 2xl:h-6" />
+          <X className="w-6 h-6 2xl:w-6 2xl:h-6" />
         ) : (
-          <Menu className="w-5 h-5 2xl:w-6 2xl:h-6" />
+          <Menu className="w-6 h-6 2xl:w-6 2xl:h-6" />
         )}
       </button>
 

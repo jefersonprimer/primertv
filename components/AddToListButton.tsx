@@ -50,7 +50,7 @@ export default function AddToListButton({
   const [error, setError] = useState<string | null>(null);
 
   const iconSize = size ?? (compact ? 14 : 16);
-  const sizeClass = compact ? "p-1.5" : "h-[42px] w-[42px]";
+  const sizeClass = compact ? "p-1.5" : "p-2";
   const borderClass = hasBorder ? "border border-zinc-800" : "";
   const roundedClass = roundedFull ? "rounded-full" : "rounded-md";
 
@@ -181,7 +181,7 @@ export default function AddToListButton({
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md overflow-hidden bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-2xl">
+          <div className="relative rounded-xl w-full max-w-md overflow-hidden bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
               <h2 className="text-lg font-bold text-zinc-50 flex items-center gap-2">
@@ -189,7 +189,7 @@ export default function AddToListButton({
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors cursor-pointer"
+                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -224,7 +224,7 @@ export default function AddToListButton({
                         key={list.id}
                         type="button"
                         onClick={() => handleToggle(list.id)}
-                        className="flex w-full items-center justify-between border border-zinc-800 bg-zinc-950/40 p-3 hover:bg-zinc-800 hover:border-zinc-700 transition-all text-left group cursor-pointer"
+                        className="flex rounded-md w-full items-center justify-between border border-zinc-800 bg-zinc-950/40 p-3 hover:bg-zinc-800 hover:border-zinc-700 transition-all text-left group cursor-pointer"
                       >
                         <div className="flex-1 min-w-0 pr-2">
                           <p className="font-medium text-sm text-zinc-100 group-hover:text-white transition-colors truncate">
@@ -269,7 +269,7 @@ export default function AddToListButton({
                       value={newListName}
                       onChange={(e) => setNewListName(e.target.value)}
                       maxLength={50}
-                      className="w-full border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                      className="w-full rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                       required
                     />
                     <input
@@ -278,19 +278,15 @@ export default function AddToListButton({
                       value={newListDesc}
                       onChange={(e) => setNewListDesc(e.target.value)}
                       maxLength={150}
-                      className="w-full border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                      className="w-full rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={isCreating || !newListName.trim()}
-                    className="flex w-full items-center justify-center gap-2 bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="flex rounded-md w-full items-center justify-center gap-2 bg-blue-500 hover:bg-[#0077FD] px-4 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
-                    {isCreating ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Plus className="h-4 w-4" />
-                    )}
+                    {isCreating && <Loader2 className="h-4 w-4 animate-spin" />}
                     {t("createList")}
                   </button>
                 </form>

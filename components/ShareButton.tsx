@@ -25,7 +25,7 @@ export default function ShareButton({
   const [copied, setCopied] = useState(false);
 
   const iconSize = size ?? (compact ? 14 : 16);
-  const sizeClass = compact ? "p-1.5" : "h-[42px] w-[42px]";
+  const sizeClass = compact ? "p-1.5" : "p-2";
 
   const borderClass = hasBorder ? "border border-zinc-800" : "";
   const roundedClass = roundedFull ? "rounded-full" : "rounded-md";

@@ -14,6 +14,7 @@ interface Episode {
   publicId?: string | null;
   slug?: string | null;
   href?: string | null;
+  createdAt?: string | Date | null;
 }
 
 interface Season {
@@ -83,7 +84,7 @@ export default function SeasonSelector({
             onClick={() => seasons.length > 1 && setIsOpen(!isOpen)}
             className={`flex items-center gap-2 text-lg font-bold text-[#f2f2f2] ${
               seasons.length > 1
-                ? "cursor-pointer hover:text-blue-500 transition-colors"
+                ? "cursor-pointer hover:text-[#0077FD] transition-colors"
                 : ""
             }`}
           >
@@ -101,7 +102,7 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsOpen(false)}
               />
-              <div className="absolute left-0 top-full z-50 mt-2 py-2 w-60 overflow-hidden bg-[#272727] shadow-xl">
+              <div className="absolute left-0 top-full rounded-md z-50 mt-2 py-2 w-60 overflow-hidden bg-[#272727] shadow-xl">
                 {seasons.map((season, index) => (
                   <button
                     key={season.id}
@@ -129,7 +130,7 @@ export default function SeasonSelector({
         <div className="relative inline-block">
           <button
             onClick={() => setIsSortOpen(!isSortOpen)}
-            className={`flex items-center p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
+            className={`flex items-center rounded-md p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
               isSortOpen
                 ? "bg-[#272727] text-[#f2f2f2]"
                 : "hover:bg-[#151515] text-[#bbb] hover:text-[#f2f2f2]"
@@ -147,7 +148,7 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsSortOpen(false)}
               />
-              <div className="absolute right-0 top-full z-50 w-40 overflow-hidden bg-[#272727] py-2 shadow-xl">
+              <div className="absolute right-0 top-full rounded-md z-50 w-40 overflow-hidden bg-[#272727] py-2 shadow-xl">
                 <button
                   onClick={() => {
                     setSortBy("oldest");

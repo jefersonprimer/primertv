@@ -344,6 +344,8 @@
     "forgotPasswordSubtitle": "Digite seu e-mail para receber um código de 6 dígitos para redefinir sua senha.",
     "sendCodeButton": "Enviar Código",
     "sendingCodeButton": "Enviando...",
+    "verifyCodeButton": "Verificar Código",
+    "verifyingCodeButton": "Verificando...",
     "enterCodeTitle": "Digite o Código e Nova Senha",
     "enterCodeSubtitle": "Enviamos um código de verificação para {email}.",
     "codeLabel": "Código de 6 dígitos",

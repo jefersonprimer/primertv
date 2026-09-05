@@ -1,9 +1,9 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
-import { PlayIcon, BookOpen, ChevronDown } from "lucide-react";
+import { PlayIcon, BookOpen, ChevronDown, Calendar } from "lucide-react";
 import RatingBadge from "./RatingBadge";
 import Link from "next/link";
 
@@ -17,6 +17,10 @@ interface Item {
   animeRating?: string | null;
   animeDuration?: string | null;
   href?: string;
+  createdAt?: string | Date | null;
+  releaseDate?: string | Date | null;
+  releaseDay?: string | number | null;
+  airDate?: string | Date | null;
 }
 
 interface EpisodeListProps {
@@ -122,6 +126,29 @@ function isGenericTitle(
   return false;
 }
 
+function formatReleaseDate(
+  dateInput?: string | Date | null,
+  localeStr: string = "pt-br",
+): string | null {
+  if (!dateInput) return null;
+  try {
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return null;
+    const normLocale = localeStr?.toLowerCase();
+    return new Intl.DateTimeFormat(
+      normLocale === "pt-br" || normLocale === "pt" ? "pt-BR" : "en-US",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "America/Sao_Paulo",
+      },
+    ).format(d);
+  } catch {
+    return null;
+  }
+}
+
 export default function EpisodeList({
   items = [],
   isLoading = false,
@@ -136,6 +163,7 @@ export default function EpisodeList({
   isSubtitled = false,
 }: EpisodeListProps) {
   const t = useTranslations("Labels");
+  const locale = useLocale();
   const tSort = useTranslations("SeasonSelector");
   const tMedia = useTranslations("MediaCard");
   const [visibleCount, setVisibleCount] = useState(
@@ -254,6 +282,13 @@ export default function EpisodeList({
           const displayAnimeRating = item.animeRating || animeRating;
           const displayAnimeDuration = item.animeDuration || animeDuration;
           const formattedNum = formatItemNumber(item.number);
+          const releaseDateRaw =
+            item.releaseDate || item.createdAt || item.airDate;
+          const releaseDateDisplay = releaseDateRaw
+            ? formatReleaseDate(releaseDateRaw, locale)
+            : item.releaseDay
+              ? String(item.releaseDay)
+              : null;
 
           return (
             <Link
@@ -261,12 +296,12 @@ export default function EpisodeList({
               href={item.href || (baseUrl ? `${baseUrl}/${item.id}` : "#")}
               className={
                 itemType === "episode"
-                  ? "group relative flex gap-3 p-2 md:p-0 hover:bg-[#151515] transition-all duration-300 overflow-hidden flex-row sm:flex-col"
+                  ? "group rounded-md relative flex gap-3 p-2 md:p-0 hover:bg-[#151515] transition-all duration-300 overflow-hidden flex-row sm:flex-col"
                   : "group relative flex items-center justify-between p-4 bg-zinc-900/10 hover:bg-zinc-900/40 border border-zinc-800/80 hover:border-blue-500/50 transition-all duration-300 rounded-md"
               }
             >
               {itemType === "episode" && (
-                <div className="relative aspect-video w-38 sm:w-full flex-shrink-0 overflow-hidden bg-zinc-800">
+                <div className="relative aspect-video rounded-md w-38 sm:w-full flex-shrink-0 overflow-hidden bg-zinc-800">
                   {item.imageUrl || fallbackImageUrl ? (
                     <Image
                       src={item.imageUrl || fallbackImageUrl || ""}
@@ -290,7 +325,7 @@ export default function EpisodeList({
 
                   {/* Duration badge on bottom-right */}
                   {displayAnimeDuration && (
-                    <div className="absolute bottom-1 right-1 bg-black/60 px-1.5 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
+                    <div className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
                       {formatDuration(displayAnimeDuration)}
                     </div>
                   )}
@@ -370,16 +405,29 @@ export default function EpisodeList({
                 <div className="hidden sm:flex absolute inset-0 bg-zinc-950 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex-col p-4 justify-between text-white z-20 pointer-events-none group-hover:pointer-events-auto">
                   <div className="flex flex-col gap-1">
                     {displayAnimeTitle && (
-                      <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider line-clamp-1">
+                      <span className="text-[10px] font-bold text-[#8c8c8c] uppercase tracking-wider line-clamp-1">
                         {displayAnimeTitle}
                       </span>
                     )}
                     <h4 className="line-clamp-2 text-base font-normal text-white">
                       {item.title || `${displayLabel} ${formattedNum}`}
                     </h4>
+                    {(displayAnimeRating || releaseDateDisplay) && (
+                      <div className="flex items-center gap-2 mt-1">
+                        {displayAnimeRating && (
+                          <RatingBadge rating={displayAnimeRating} size={16} />
+                        )}
+                        {releaseDateDisplay && (
+                          <span className="text-sm text-[#8c8c8c] font-medium flex items-center gap-1">
+                            <Calendar size={14} className="text-[#8c8c8c]" />
+                            {releaseDateDisplay}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="w-full inline-flex items-center justify-center bg-blue-600 gap-2 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 mt-auto uppercase">
+                  <div className="w-full inline-flex items-center  gap-2  text-sm font-semibold text-white transition-colors  mt-auto uppercase">
                     <PlayIcon size={20} />
                     {label === "Filme" || label.toLowerCase() === "movie"
                       ? t("watchMovie")
@@ -396,7 +444,7 @@ export default function EpisodeList({
         <div className="w-full max-w-[1018px] mx-auto">
           <button
             onClick={showMore}
-            className="bg-blue-600 w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all hover:bg-blue-700 uppercase"
+            className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
           >
             {t("showMore")}
           </button>

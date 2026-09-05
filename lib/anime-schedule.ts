@@ -90,7 +90,7 @@ export async function getAnimeScheduleRows({
       e."publicId" AS "episodePublicId",
       e."slug" AS "episodeSlug"
     FROM base b
-    LEFT JOIN "Season" s ON s.id = b."latestSeasonId"
+    LEFT JOIN "Season" s ON (b."latestSeasonId" IS NOT NULL AND s.id = b."latestSeasonId") OR (b."latestSeasonId" IS NULL AND s."animeId" = b.id)
     LEFT JOIN "Episode" e ON e."seasonId" = s.id
     ORDER BY b.id, e.number ASC NULLS LAST
   `;

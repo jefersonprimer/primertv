@@ -58,7 +58,7 @@ export default function MediaDescription({
         {shouldShowButton && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-blue-500 hover:text-blue-600 text-sm font-bold self-start uppercase mt-1"
+            className="text-blue-500 hover:text-[#0077FD] text-sm font-bold self-start uppercase mt-1"
           >
             {isExpanded ? t("showLess") : t("showMore")}
           </button>

@@ -59,8 +59,11 @@ export function TodayReleasesClient({
   const yesterday = (currentDay - 1 + 7) % 7;
   const dayBeforeYesterday = (currentDay - 2 + 7) % 7;
 
+  // Limit to top 10 latest releases overall
+  const recentAnimes = animes.slice(0, 10);
+
   // Filter animes and sort by release time
-  const todayAnimes = animes
+  const todayAnimes = recentAnimes
     .filter(
       (anime) =>
         anime.releaseDay === currentDay &&
@@ -71,7 +74,7 @@ export function TodayReleasesClient({
       (a, b) =>
         parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
     );
-  const yesterdayAnimes = animes
+  const yesterdayAnimes = recentAnimes
     .filter(
       (anime) =>
         anime.releaseDay === yesterday &&
@@ -82,7 +85,7 @@ export function TodayReleasesClient({
       (a, b) =>
         parseTimeToMinutes(a.releaseTime) - parseTimeToMinutes(b.releaseTime),
     );
-  const dayBeforeAnimes = animes
+  const dayBeforeAnimes = recentAnimes
     .filter(
       (anime) =>
         anime.releaseDay === dayBeforeYesterday &&
@@ -362,7 +365,7 @@ export function TodayReleasesClient({
               <h3 className="text-base sm:text-[22px] font-bold text-white border-b-2 pb-2 border-zinc-800">
                 {t("yesterday")}
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 space-x-2 lg:space-x-4">
                 {yesterdayAnimes.map((anime) =>
                   renderAnimeCard(anime, false, t("yesterday")),
                 )}
@@ -409,14 +412,14 @@ export function TodayReleasesClient({
         {!showMore ? (
           <button
             onClick={() => setShowMore(true)}
-            className="w-full rounded-md py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-[#0078FD] hover:bg-blue-700 uppercase"
+            className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
           >
             {t("showMore")}
           </button>
         ) : (
           <Link
             href="/calendar"
-            className="flex  rounded-md items-center justify-center w-full py-3 text-sm font-bold text-[#f2f2f2] hover:text-white transition-all bg-[#0078FD] hover:bg-blue-700 uppercase"
+            className="flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
           >
             {t("viewCalendar")}
           </Link>

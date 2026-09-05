@@ -15,7 +15,10 @@ interface PlayerDropdownProps {
   activePlayerId: string;
 }
 
-export function PlayerDropdown({ players, activePlayerId }: PlayerDropdownProps) {
+export function PlayerDropdown({
+  players,
+  activePlayerId,
+}: PlayerDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +45,7 @@ export function PlayerDropdown({ players, activePlayerId }: PlayerDropdownProps)
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="inline-flex items-center justify-between gap-x-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-zinc-100 shadow-sm border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-zinc-700"
+        className="inline-flex items-center justify-between gap-x-2 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-100 shadow-sm border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-zinc-700"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -84,9 +87,7 @@ export function PlayerDropdown({ players, activePlayerId }: PlayerDropdownProps)
                   <span className="flex items-center gap-2">
                     <Play
                       className={`h-3.5 w-3.5 ${
-                        isActive
-                          ? "text-white fill-white"
-                          : "text-zinc-500"
+                        isActive ? "text-white fill-white" : "text-zinc-500"
                       }`}
                     />
                     {p.label}

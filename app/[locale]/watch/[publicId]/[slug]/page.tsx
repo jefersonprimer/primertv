@@ -23,7 +23,6 @@ import { PlayerDropdown } from "@/components/PlayerDropdown";
 import { CommentsSection } from "@/components/CommentsSection";
 import { getSession } from "@/lib/auth";
 
-
 interface WatchPageProps {
   params: Promise<{ locale: string; publicId: string; slug: string }>;
   searchParams?: Promise<{
@@ -388,9 +387,9 @@ export default async function WatchPage({
                       slug={anime.slug}
                       initialInWatchlist={inWatchlist}
                       isLoggedIn={Boolean(userId)}
-                      size={24}
+                      size={20}
                     />
-                    <ShareButton size={24} />
+                    <ShareButton size={20} />
                   </div>
                 </div>
 
@@ -466,10 +465,9 @@ export default async function WatchPage({
               </div>
             </div>
 
-
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
-              <div className="sticky top-4 overflow-hidden">
+              <div className="sticky top-20">
                 <AnimeEpisodeSidebar
                   seasons={animeEpisode.season.anime.seasons}
                   currentEpisodeId={animeEpisode.id}
@@ -663,10 +661,9 @@ export default async function WatchPage({
               </div>
             </div>
 
-
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
-              <div className="sticky top-4 overflow-hidden">
+              <div className="sticky top-20">
                 {episodeItems.length > 0 ? (
                   <AnimeEpisodeSidebar
                     seasons={[
@@ -980,10 +977,9 @@ export default async function WatchPage({
               </div>
             </div>
 
-
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
-              <div className="sticky top-4 overflow-hidden">
+              <div className="sticky top-20">
                 <SeriesEpisodeSidebar
                   seasons={seriesEpisode.season.series.seasons}
                   currentEpisodeId={seriesEpisode.id}
@@ -1222,15 +1218,11 @@ export default async function WatchPage({
                   description={movie.description || t("noDescription")}
                 />
               </div>
-              <CommentsSection
-                targetId={movie.id}
-                currentUser={currentUser}
-              />
+              <CommentsSection targetId={movie.id} currentUser={currentUser} />
             </div>
           </div>
         </main>
       </div>
-
     );
   }
 

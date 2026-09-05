@@ -344,6 +344,8 @@
     "forgotPasswordSubtitle": "Enter your email to receive a 6-digit code to reset your password.",
     "sendCodeButton": "Send Code",
     "sendingCodeButton": "Sending...",
+    "verifyCodeButton": "Verify Code",
+    "verifyingCodeButton": "Verifying...",
     "enterCodeTitle": "Enter Code & New Password",
     "enterCodeSubtitle": "We sent a verification code to {email}.",
     "codeLabel": "6-digit code",

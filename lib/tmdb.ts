@@ -253,7 +253,7 @@ export const getMovieLogo = cache(async (movieId: string, title: string): Promis
         const movieIdTmdb = searchData.results?.[0]?.id;
 
         if (movieIdTmdb) {
-          const imagesUrl = `https://api.themoviedb.org/3/movie/${movieIdTmdb}/images`;
+          const imagesUrl = `https://api.themoviedb.org/3/movie/${movieIdTmdb}/images?include_image_language=ja,en,null`;
           const imagesResponse = await fetch(
             tmdbKey && !tmdbToken ? `${imagesUrl}&api_key=${tmdbKey}` : imagesUrl,
             { headers, next: { revalidate: 3600 } }
@@ -263,8 +263,9 @@ export const getMovieLogo = cache(async (movieId: string, title: string): Promis
             const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
             const logos = imagesData.logos || [];
 
-            const preferred = logos.find((l) => l.iso_639_1 === "pt") ||
+            const preferred = logos.find((l) => l.iso_639_1 === "ja") ||
                               logos.find((l) => l.iso_639_1 === "en") ||
+                              logos.find((l) => l.iso_639_1 === null) ||
                               logos[0];
 
             if (preferred?.file_path) {

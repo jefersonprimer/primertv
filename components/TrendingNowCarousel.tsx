@@ -71,10 +71,12 @@ export function TrendingNowCarousel({
         {showLeftArrow && (
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 z-10 flex h-full w-12 items-center justify-center bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent text-zinc-50 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100"
+            className="absolute left-0 top-0 z-10 flex h-full items-center text-zinc-200 hover:text-white transition-colors"
             aria-label="Scroll left"
           >
-            <ChevronLeft size={32} />
+            <div className="bg-[#303030] px-0.5 py-12 flex items-center justify-center rounded-r-xl">
+              <ChevronLeft size={32} />
+            </div>
           </button>
         )}
 
@@ -100,10 +102,12 @@ export function TrendingNowCarousel({
         {showRightArrow && (
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-0 z-10 flex h-full w-12 items-center justify-center bg-gradient-to-l from-zinc-950 via-zinc-950/80 to-transparent text-zinc-50 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100"
+            className="absolute right-0 top-0 z-10 flex h-full items-center text-zinc-200 hover:text-white transition-colors"
             aria-label="Scroll right"
           >
-            <ChevronRight size={32} />
+            <div className="bg-[#303030] px-0.5 py-12 flex items-center justify-center rounded-l-xl">
+              <ChevronRight size={32} />
+            </div>
           </button>
         )}
       </div>

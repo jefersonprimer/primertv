@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-[80vh] md:h-auto md:min-h-[calc(100vh-4rem)] bg-black text-white">
-      <div className="w-full h-full md:h-auto md:max-w-md p-6 sm:p-8 space-y-8 bg-black md:bg-zinc-900 md:rounded-lg md:shadow-xl flex flex-col justify-center">
+      <div className="w-full h-full md:h-auto md:max-w-md p-6 sm:p-8 space-y-8  flex flex-col justify-center">
         <h2 className="text-3xl font-bold text-center">{t("loginTitle")}</h2>
         <form action={action} className="space-y-6">
           <div>
@@ -52,7 +52,10 @@ export default function LoginPage() {
               </button>
             </div>
             <div className="flex justify-end mt-1">
-              <Link href="/forgot-password" className="text-xs text-blue-400 hover:underline">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-blue-400 hover:underline"
+              >
                 {t("forgotPasswordLink")}
               </Link>
             </div>
@@ -63,7 +66,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-2 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+            className="w-full py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
           >
             {isPending ? t("loggingInButton") : t("loginButton")}
           </button>

@@ -81,6 +81,11 @@ export async function TodayReleases() {
       OR a."status" IS NULL
       OR (a."status" = 'Finished Airing' AND a."latestEpisodeAt" >= NOW() - INTERVAL '7 days')
       OR a."latestEpisodeAt" >= NOW() - INTERVAL '3 days'
+      OR EXISTS (
+        SELECT 1 FROM "Season" s
+        JOIN "Episode" e ON e."seasonId" = s.id
+        WHERE s."animeId" = a.id AND e."createdAt" >= NOW() - INTERVAL '3 days'
+      )
     `,
   });
 
@@ -94,8 +99,9 @@ export async function TodayReleases() {
 
   for (const row of rows) {
     const existing = animeMap.get(row.id);
+    const initialLatestAt = row.latestEpisodeAt ?? row.episodeCreatedAt ?? null;
+
     if (!existing) {
-      const latestEpisodeAt = row.latestEpisodeAt ?? null;
       animeMap.set(row.id, {
         id: row.id,
         slug: row.slug,
@@ -104,15 +110,15 @@ export async function TodayReleases() {
         bannerUrl: row.bannerUrl === "none" ? null : row.bannerUrl,
         description: row.description,
         rating: row.rating,
-        releaseDay: latestEpisodeAt ? getSaoPauloDayOfWeek(latestEpisodeAt) : getDeterministicDay(row.id),
-        releaseTime: latestEpisodeAt ? formatReleaseTime(latestEpisodeAt) : "6:00am",
+        releaseDay: initialLatestAt ? getSaoPauloDayOfWeek(initialLatestAt) : getDeterministicDay(row.id),
+        releaseTime: initialLatestAt ? formatReleaseTime(initialLatestAt) : "6:00am",
         lastEpisode: row.latestEpisodeNumber ?? row.episodeNumber ?? 20,
         latestEpisodeId: row.latestEpisodeId ?? row.episodeId,
         latestEpisodePublicId: row.episodePublicId,
         latestEpisodeSlug: row.episodeSlug,
         episodeImageUrl: row.episodeImageUrl,
         episodeNumbers: row.episodeNumber !== null ? [row.episodeNumber] : [],
-        latestEpisodeAt,
+        latestEpisodeAt: initialLatestAt,
         episodeCreatedAtEntries:
           row.episodeNumber !== null && row.episodeCreatedAt
             ? [{ number: row.episodeNumber, createdAt: row.episodeCreatedAt }]
@@ -128,6 +134,12 @@ export async function TodayReleases() {
           number: row.episodeNumber,
           createdAt: row.episodeCreatedAt,
         });
+
+        if (!existing.latestEpisodeAt || row.episodeCreatedAt > existing.latestEpisodeAt) {
+          existing.latestEpisodeAt = row.episodeCreatedAt;
+          existing.releaseDay = getSaoPauloDayOfWeek(row.episodeCreatedAt);
+          existing.releaseTime = formatReleaseTime(row.episodeCreatedAt);
+        }
       }
 
       const candidateNumber = row.latestEpisodeNumber ?? row.episodeNumber;
@@ -178,15 +190,21 @@ export async function TodayReleases() {
   const dayBeforeYesterday = new Date(now.getTime() - 48 * 60 * 60 * 1000);
   const dayBeforeYesterdayKey = getSaoPauloDateKey(dayBeforeYesterday);
 
-  const filteredDbAnimes = processedDbAnimes.filter((anime) => {
-    if (!anime.latestEpisodeAt) return false;
-    const dateKey = getSaoPauloDateKey(anime.latestEpisodeAt);
-    return (
-      dateKey === todayKey ||
-      dateKey === yesterdayKey ||
-      dateKey === dayBeforeYesterdayKey
+  const filteredDbAnimes = processedDbAnimes
+    .filter((anime) => {
+      if (!anime.latestEpisodeAt) return false;
+      const dateKey = getSaoPauloDateKey(anime.latestEpisodeAt);
+      return (
+        dateKey === todayKey ||
+        dateKey === yesterdayKey ||
+        dateKey === dayBeforeYesterdayKey
+      );
+    })
+    .sort(
+      (a, b) =>
+        (b.latestEpisodeAt?.getTime() ?? 0) -
+        (a.latestEpisodeAt?.getTime() ?? 0),
     );
-  });
 
   let currentDay = new Date().getDay();
   try {

@@ -64,7 +64,9 @@ export function CommentsSection({
   const [replyAuthorName, setReplyAuthorName] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
   const [replyError, setReplyError] = useState<string | null>(null);
-  const [expandedReplies, setExpandedReplies] = useState<Record<string, boolean>>({});
+  const [expandedReplies, setExpandedReplies] = useState<
+    Record<string, boolean>
+  >({});
 
   const toggleExpandReplies = (commentId: string) => {
     setExpandedReplies((prev) => ({
@@ -739,7 +741,15 @@ export function CommentsSection({
         {/* Toggle & Nested Replies */}
         {replies.length > 0 && (
           <div className="flex flex-col gap-2">
-            <div className={depth === 0 ? "ml-4 sm:ml-8" : depth === 1 ? "ml-3 sm:ml-6" : "ml-2 sm:ml-4"}>
+            <div
+              className={
+                depth === 0
+                  ? "ml-4 sm:ml-8"
+                  : depth === 1
+                    ? "ml-3 sm:ml-6"
+                    : "ml-2 sm:ml-4"
+              }
+            >
               <button
                 type="button"
                 onClick={() => toggleExpandReplies(comment.id)}
@@ -764,8 +774,8 @@ export function CommentsSection({
                   depth === 0
                     ? "ml-4 sm:ml-8 pl-3 border-l-2 border-zinc-800/80 space-y-3"
                     : depth === 1
-                    ? "ml-3 sm:ml-6 pl-2.5 border-l-2 border-zinc-800/60 space-y-3"
-                    : "ml-2 sm:ml-4 pl-2 border-l border-zinc-800/40 space-y-3"
+                      ? "ml-3 sm:ml-6 pl-2.5 border-l-2 border-zinc-800/60 space-y-3"
+                      : "ml-2 sm:ml-4 pl-2 border-l border-zinc-800/40 space-y-3"
                 }
               >
                 {replies.map((reply) => renderCommentCard(reply, depth + 1))}
@@ -839,7 +849,7 @@ export function CommentsSection({
               <button
                 type="submit"
                 disabled={submitting || !newComment.trim()}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0077FD] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {submitting ? (
                   <>

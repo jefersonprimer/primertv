@@ -58,6 +58,39 @@ export async function requestPasswordReset(
   }
 }
 
+export async function verifyPasswordResetCode(
+  _prevState: ResetPasswordState | undefined,
+  formData: FormData
+): Promise<ResetPasswordState> {
+  const email = (formData.get("email") as string)?.trim()?.toLowerCase();
+  const code = (formData.get("code") as string)?.trim();
+
+  if (!email || !code) {
+    return { error: "allFieldsRequired" };
+  }
+
+  try {
+    const validCode = await prisma.passwordResetCode.findFirst({
+      where: {
+        email,
+        code,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!validCode) {
+      return { error: "invalidOrExpiredCode" };
+    }
+
+    return { success: true, email };
+  } catch (error) {
+    console.error("Error verifying code:", error);
+    return { error: "invalidOrExpiredCode" };
+  }
+}
+
 export async function resetPasswordWithCode(
   _prevState: ResetPasswordState | undefined,
   formData: FormData

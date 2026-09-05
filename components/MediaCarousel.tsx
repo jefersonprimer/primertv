@@ -88,10 +88,10 @@ export function MediaCarousel({
         {showLeftArrow && (
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 z-10 flex h-full w-12 items-center justify-center bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent text-zinc-50 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100"
+            className="absolute left-0 top-0 z-10 flex h-full w-14 items-center justify-center bg-gradient-to-r from-black/40 via-black/10 to-transparent hover:from-black/60 hover:via-black/25 text-[#f2f2f2] hover:text-white transition-all duration-300"
             aria-label="Scroll left"
           >
-            <ChevronLeft size={32} />
+            <ChevronLeft size={32} className="-translate-y-8   translate-x-3" />
           </button>
         )}
 
@@ -121,10 +121,10 @@ export function MediaCarousel({
         {showRightArrow && (
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-0 z-10 flex h-full w-12 items-center justify-center bg-gradient-to-l from-zinc-950 via-zinc-950/80 to-transparent text-zinc-50 opacity-0 transition-opacity duration-300 group-hover/carousel:opacity-100"
+            className="absolute right-0 top-0 z-10 flex h-full w-14 items-center justify-center bg-gradient-to-l from-black/40 via-black/10 to-transparent hover:from-black/60 hover:via-black/25 text-[#f2f2f2] hover:text-white transition-all duration-300"
             aria-label="Scroll right"
           >
-            <ChevronRight size={32} />
+            <ChevronRight size={32} className="-translate-y-8 -translate-x-3" />
           </button>
         )}
       </div>

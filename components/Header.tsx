@@ -52,19 +52,19 @@ export async function Header() {
         <div className="flex h-full items-center gap-1.5">
           <Link
             href="/search"
-            className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
+            className="flex p-2 2xl:p2.5 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
           >
-            <Search className="w-5 h-5 2xl:w-6 2xl:h-6" />
+            <Search className="w-6 h-6" />
           </Link>
 
           {user ? (
             <div className="flex h-full items-center gap-2">
               <Link
                 href="/watchlist"
-                className="hidden md:flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
+                className="hidden md:flex p-2 2xl:p-2.5 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
                 title="Sua Lista"
               >
-                <Bookmark className="w-5 h-5 2xl:w-6 2xl:h-6" />
+                <Bookmark className="w-6 h-6" />
               </Link>
               {user.role === "admin" && <AddMediaButton />}
               <UserMenu user={user} />
@@ -72,9 +72,9 @@ export async function Header() {
           ) : (
             <Link
               href="/login"
-              className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
+              className="flex p-2 2xl:p-2.5 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors"
             >
-              <User className="w-5 h-5 2xl:w-6 2xl:h-6" />
+              <User className="w-6 h-6" />
             </Link>
           )}
         </div>
