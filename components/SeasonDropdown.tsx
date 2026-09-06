@@ -58,7 +58,7 @@ export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className={`inline-flex w-full items-center justify-between gap-x-2 px-4 py-2 text-sm font-semibold text-[#bbb] transition-colors focus:outline-none hover:text-white hover:bg-[#272727] uppercase ${isOpen ? "text-white bg-[#272727]" : ""}`}
+          className={`inline-flex rounded w-full items-center justify-between gap-x-2 px-4 py-2 text-sm font-semibold text-[#bbb] transition-colors focus:outline-none hover:text-white hover:bg-[#272727] uppercase ${isOpen ? "text-white bg-[#272727]" : ""}`}
           id="menu-button"
           aria-expanded={isOpen}
           aria-haspopup="true"
@@ -72,7 +72,7 @@ export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
 
       {isOpen && (
         <div
-          className="absolute right-0 z-50 w-54 py-2 origin-top-right bg-[#272727] shadow-lg ring-1 ring-black/5 focus:outline-none"
+          className="absolute rounded-xl right-0 z-50 w-54 py-2 origin-top-right bg-[#272727] shadow-lg ring-1 ring-black/5 focus:outline-none"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"

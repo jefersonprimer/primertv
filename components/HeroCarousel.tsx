@@ -201,7 +201,7 @@ export async function HeroCarousel({
 
 export function HeroCarouselSkeleton() {
   return (
-    <section className="relative h-[80vh] sm:h-screen md:h-[80vh] lg:h-screen w-full overflow-hidden bg-zinc-900">
+    <section className="-mt-14 2xl:-mt-16 relative h-[80vh] sm:h-screen md:h-[90vh] lg:h-screen w-full overflow-hidden bg-zinc-900">
       <style>{`
         @media (max-width: 639px) {
           .mobile-bottom-blur {
@@ -209,9 +209,9 @@ export function HeroCarouselSkeleton() {
             bottom: 0;
             left: 0;
             right: 0;
-            height: 180px;
+            height: 480px;
             pointer-events: none;
-            background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.15) 75%, transparent 100%);
+            background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.8) 100%, rgba(0, 0, 0, 0.15) 75%, transparent 100%);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             mask-image: linear-gradient(to top, black 25%, transparent 100%);
@@ -232,33 +232,33 @@ export function HeroCarouselSkeleton() {
       {/* Mobile bottom blur & gradient overlay for screens < sm */}
       <div className="mobile-bottom-blur sm:hidden" />
 
-      <div className="absolute inset-0 flex items-end pb-40 sm:pb-0 md:pb-[24px] md:items-center md:pb-0">
-        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-20 2xl:-translate-y-16">
+      <div className="absolute inset-0 flex items-end pb-30 sm:pb-14 md:pb-[24px] md:items-center">
+        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-6 2xl:-translate-y-16">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl 2xl:max-w-2xl 2xl:space-y-6">
-            <div className="flex justify-center md:justify-start">
-              <div className="aspect-[3/1] w-full max-w-[200px] animate-pulse bg-zinc-700 md:max-w-[400px] 2xl:max-w-[480px]" />
+            <div className="aspect-[3/1] w-full max-w-[200px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[400px] 2xl:max-w-[480px] mx-auto md:mx-0 animate-pulse rounded-lg bg-zinc-800" />
+
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 2xl:gap-2">
+              <div className="h-5 w-9 animate-pulse rounded bg-zinc-800" />
+              <div className="h-4 w-16 animate-pulse rounded bg-zinc-800" />
+              <div className="h-4 w-28 animate-pulse rounded bg-zinc-800" />
             </div>
 
-            <div className="flex items-center justify-center md:justify-start gap-2">
-              <div className="h-4 w-2/3 animate-pulse bg-zinc-700" />
+            <div className="hidden lg:block space-y-2 max-w-[380px] 2xl:max-w-[540px]">
+              <div className="h-4 w-full animate-pulse rounded bg-zinc-800" />
+              <div className="h-4 w-5/6 animate-pulse rounded bg-zinc-800" />
+              <div className="h-4 w-4/6 animate-pulse rounded bg-zinc-800" />
             </div>
 
-            <div className="hidden lg:block space-y-2">
-              <div className="h-4 w-3/4 animate-pulse bg-zinc-700" />
-              <div className="h-4 w-3/4 animate-pulse bg-zinc-700" />
-              <div className="h-4 w-3/4 animate-pulse bg-zinc-700" />
+            <div className="flex items-center justify-center md:justify-start gap-3 2xl:gap-4 pt-1 2xl:pt-2">
+              <div className="h-11 md:h-12 w-full max-w-[340px] md:w-[180px] 2xl:w-[210px] rounded-full animate-pulse bg-zinc-800" />
+              <div className="h-11 w-11 md:h-12 md:w-12 rounded-full animate-pulse bg-zinc-800 shrink-0" />
             </div>
 
-            <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
-              <div className="h-10 w-[340px] md:w-[240px] animate-pulse bg-zinc-700 md:px-6" />
-              <div className="h-10 w-10 animate-pulse bg-zinc-700 md:h-10 md:w-10" />
-            </div>
-
-            <div className="flex items-center justify-center md:justify-start gap-2 pt-4 md:pt-6 lg:pt-8">
+            <div className="flex items-center justify-center md:justify-start gap-2 pt-4 md:pt-6 lg:pt-8 2xl:pt-10">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="h-2 animate-pulse rounded-full bg-zinc-700"
+                  className="h-2 2xl:h-2.5 animate-pulse rounded-full bg-zinc-800"
                   style={{ width: i === 1 ? 48 : 24 }}
                 />
               ))}

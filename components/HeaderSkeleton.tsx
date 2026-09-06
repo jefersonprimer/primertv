@@ -2,7 +2,7 @@ import { Menu } from "lucide-react";
 
 export function HeaderSkeleton() {
   return (
-    <header className="sticky top-0 md:px-4 lg:px-2 xl:px-0 z-50 w-full bg-[#272727]">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full px-4 bg-gradient-to-b from-black/80 via-black/30 to-transparent">
       <div className="mx-auto flex h-16 max-w-full items-center justify-between">
         <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-1">

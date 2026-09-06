@@ -182,28 +182,48 @@ export default async function AnimeDetailsPage({
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
-      <div className="relative md:min-h-[90vh]  w-full md:flex md:flex-col md:justify-end">
+      <div className="-mt-14 2xl:-mt-16 relative md:min-h-[95vh] lg:min-h-screen w-full md:flex md:flex-col md:justify-end">
         {/* Banner Section */}
-        <div className="absolute top-0 left-0 right-0 h-[90vh] hidden md:block bg-zinc-900 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[95vh] lg:h-screen hidden md:block bg-zinc-900 overflow-hidden">
           {finalBannerUrl ? (
-            <Image
-              src={finalBannerUrl}
-              alt={anime.title}
-              fill
-              sizes="100vw"
-              className="object-cover opacity-100"
-              priority
-            />
-          ) : (
-            anime.imageUrl && (
+            <>
               <Image
-                src={anime.imageUrl}
+                src={finalBannerUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover blur-xl opacity-40 scale-105"
+                priority
+              />
+              <Image
+                src={finalBannerUrl}
                 alt={anime.title}
                 fill
                 sizes="100vw"
-                className="object-cover opacity-100"
+                className="object-contain opacity-100"
                 priority
               />
+            </>
+          ) : (
+            anime.imageUrl && (
+              <>
+                <Image
+                  src={anime.imageUrl}
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  className="object-cover blur-xl opacity-40 scale-105"
+                  priority
+                />
+                <Image
+                  src={anime.imageUrl}
+                  alt={anime.title}
+                  fill
+                  sizes="100vw"
+                  className="object-contain opacity-100"
+                  priority
+                />
+              </>
             )
           )}
           {/* Bottom Gradient (fades to page bg) */}
@@ -249,7 +269,7 @@ export default async function AnimeDetailsPage({
               />
               <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:max-w-2xl">
                 {finalLogoUrl ? (
-                  <div className="relative w-full max-w-[280px] md:max-w-[400px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
+                  <div className="relative w-full max-w-[200px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[400px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
                     <Image
                       src={finalLogoUrl}
                       alt={anime.title}

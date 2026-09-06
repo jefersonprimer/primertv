@@ -51,7 +51,7 @@ const linkIconMap: Record<
   "/new": Clock,
 };
 
-export function MobileSidebar() {
+export function MobileSidebar({ className = "" }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("Header");
 
@@ -111,7 +111,7 @@ export function MobileSidebar() {
         onClick={() => setIsOpen((open) => !open)}
         className={`flex p-2 2xl:p-2.5 items-center justify-center rounded-full text-[#bbb] hover:text-white hover:bg-[#151515] transition-colors ${
           isOpen ? "text-white bg-[#151515]" : ""
-        }`}
+        } ${className}`}
         aria-label={isOpen ? t("closeMenu") : t("openMenu")}
         aria-expanded={isOpen}
       >

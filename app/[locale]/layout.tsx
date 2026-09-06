@@ -12,7 +12,9 @@ interface GenerateMetadataProps {
   params: Promise<{ locale: string }>;
 }
 
-export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: GenerateMetadataProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Layout" });
   return {
@@ -39,12 +41,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 
   return (
     <html lang={locale} className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-black text-zinc-100">
+      <body className="min-h-full flex flex-col text-zinc-100">
         <NextIntlClientProvider messages={messages}>
           <Suspense fallback={<HeaderSkeleton />}>
             <Header />
           </Suspense>
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pt-14 2xl:pt-16">{children}</main>
         </NextIntlClientProvider>
       </body>
     </html>

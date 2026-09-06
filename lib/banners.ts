@@ -17,11 +17,44 @@ interface TmdbSearchResponse {
   }>;
 }
 
+interface TmdbBackdrop {
+  file_path: string;
+  aspect_ratio: number;
+  vote_average?: number;
+}
+
 interface TmdbImagesResponse {
   logos?: Array<{
     file_path: string;
     iso_639_1: string | null;
   }>;
+  backdrops?: TmdbBackdrop[];
+}
+
+function selectBest16by9Backdrop(
+  backdrops: TmdbBackdrop[] | undefined,
+  fallbackPath: string | null,
+): string | null {
+  if (!backdrops || backdrops.length === 0) return fallbackPath;
+
+  // Filtra backdrops com proporção próxima a 16:9 (1.777...)
+  // Descarta banners ultrawides (ex: 2.35+) ou muito estreitos
+  const standardRatioBackdrops = backdrops.filter(
+    (b) => b.aspect_ratio >= 1.60 && b.aspect_ratio <= 1.90,
+  );
+
+  if (standardRatioBackdrops.length > 0) {
+    standardRatioBackdrops.sort(
+      (a, b) => (b.vote_average || 0) - (a.vote_average || 0),
+    );
+    return standardRatioBackdrops[0].file_path;
+  }
+
+  const sortedByProximity = [...backdrops].sort(
+    (a, b) => Math.abs(a.aspect_ratio - 1.778) - Math.abs(b.aspect_ratio - 1.778),
+  );
+
+  return sortedByProximity[0]?.file_path || fallbackPath;
 }
 
 /**
@@ -92,8 +125,23 @@ export const getAnimeBanner = cache(async (animeId: string, title: string): Prom
         if (response.ok) {
           const data = (await response.json()) as TmdbSearchResponse;
           const firstMatch = data.results?.find((item) => item.backdrop_path);
-          if (firstMatch?.backdrop_path) {
-            resolvedBanner = `https://image.tmdb.org/t/p/original${firstMatch.backdrop_path}`;
+          if (firstMatch && firstMatch.id) {
+            const mediaType = firstMatch.media_type === "movie" ? "movie" : "tv";
+            const imagesUrl = `https://api.themoviedb.org/3/${mediaType}/${firstMatch.id}/images`;
+            const imagesResponse = await fetch(
+              tmdbKey && !tmdbToken ? `${imagesUrl}?api_key=${tmdbKey}` : imagesUrl,
+              { headers, next: { revalidate: 3600 } },
+            );
+
+            let bestPath = firstMatch.backdrop_path;
+            if (imagesResponse.ok) {
+              const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
+              bestPath = selectBest16by9Backdrop(imagesData.backdrops, firstMatch.backdrop_path);
+            }
+
+            if (bestPath) {
+              resolvedBanner = `https://image.tmdb.org/t/p/original${bestPath}`;
+            }
           }
         }
       } catch (error) {
@@ -235,8 +283,22 @@ export const getSeriesBanner = cache(async (seriesId: string, title: string): Pr
       if (response.ok) {
         const data = (await response.json()) as TmdbSearchResponse;
         const firstMatch = data.results?.find((item) => item.backdrop_path);
-        if (firstMatch?.backdrop_path) {
-          resolvedBanner = `https://image.tmdb.org/t/p/original${firstMatch.backdrop_path}`;
+        if (firstMatch && firstMatch.id) {
+          const imagesUrl = `https://api.themoviedb.org/3/tv/${firstMatch.id}/images`;
+          const imagesResponse = await fetch(
+            tmdbKey && !tmdbToken ? `${imagesUrl}?api_key=${tmdbKey}` : imagesUrl,
+            { headers, next: { revalidate: 3600 } },
+          );
+
+          let bestPath = firstMatch.backdrop_path;
+          if (imagesResponse.ok) {
+            const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
+            bestPath = selectBest16by9Backdrop(imagesData.backdrops, firstMatch.backdrop_path);
+          }
+
+          if (bestPath) {
+            resolvedBanner = `https://image.tmdb.org/t/p/original${bestPath}`;
+          }
         }
       }
     } catch (error) {
@@ -365,8 +427,22 @@ export const getMovieBanner = cache(async (movieId: string, title: string): Prom
       if (response.ok) {
         const data = (await response.json()) as TmdbSearchResponse;
         const firstMatch = data.results?.find((item) => item.backdrop_path);
-        if (firstMatch?.backdrop_path) {
-          resolvedBanner = `https://image.tmdb.org/t/p/original${firstMatch.backdrop_path}`;
+        if (firstMatch && firstMatch.id) {
+          const imagesUrl = `https://api.themoviedb.org/3/movie/${firstMatch.id}/images`;
+          const imagesResponse = await fetch(
+            tmdbKey && !tmdbToken ? `${imagesUrl}?api_key=${tmdbKey}` : imagesUrl,
+            { headers, next: { revalidate: 3600 } },
+          );
+
+          let bestPath = firstMatch.backdrop_path;
+          if (imagesResponse.ok) {
+            const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
+            bestPath = selectBest16by9Backdrop(imagesData.backdrops, firstMatch.backdrop_path);
+          }
+
+          if (bestPath) {
+            resolvedBanner = `https://image.tmdb.org/t/p/original${bestPath}`;
+          }
         }
       }
     } catch (error) {

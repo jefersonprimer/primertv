@@ -43,7 +43,13 @@ export function MediaCard({
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (type === "anime") {
       // Se não for clique com botão direito ou Ctrl/Cmd (para abrir nova aba)
-      if (!e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey && e.button === 0) {
+      if (
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.shiftKey &&
+        !e.altKey &&
+        e.button === 0
+      ) {
         e.preventDefault();
         e.stopPropagation();
         setIsModalOpen(true);
@@ -58,7 +64,7 @@ export function MediaCard({
         onClick={handleClick}
         className="flex flex-col gap-2 relative group cursor-pointer"
       >
-        <div className="relative overflow-hidden aspect-2/3">
+        <div className="relative overflow-hidden aspect-2/3 rounded-md">
           {item.imageUrl ? (
             <Image
               src={item.imageUrl}
@@ -108,4 +114,3 @@ export function MediaCard({
     </>
   );
 }
-

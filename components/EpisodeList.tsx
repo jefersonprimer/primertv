@@ -38,12 +38,12 @@ interface EpisodeListProps {
 }
 
 function formatDuration(duration: string | null | undefined): string {
-  if (!duration) return "";
+  if (!duration || duration.toLowerCase() === "unknown") return "";
   const matches = duration.match(/\d+/);
   if (matches) {
     return `${matches[0]}m`;
   }
-  return duration;
+  return "";
 }
 
 function formatItemNumber(num: number): string {
@@ -281,6 +281,7 @@ export default function EpisodeList({
           const displayAnimeTitle = item.animeTitle || animeTitle;
           const displayAnimeRating = item.animeRating || animeRating;
           const displayAnimeDuration = item.animeDuration || animeDuration;
+          const formattedDuration = formatDuration(displayAnimeDuration);
           const formattedNum = formatItemNumber(item.number);
           const releaseDateRaw =
             item.releaseDate || item.createdAt || item.airDate;
@@ -324,9 +325,9 @@ export default function EpisodeList({
                   )}
 
                   {/* Duration badge on bottom-right */}
-                  {displayAnimeDuration && (
+                  {formattedDuration && (
                     <div className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
-                      {formatDuration(displayAnimeDuration)}
+                      {formattedDuration}
                     </div>
                   )}
                 </div>

@@ -130,9 +130,9 @@ export default async function MovieDetailsPage({
   return (
     <div className="min-h-screen bg-black pb-12">
       {/* Header/Banner Section */}
-      <div className="relative md:min-h-[90vh] w-full flex flex-col justify-end bg-zinc-900">
+      <div className="-mt-14 2xl:-mt-16 relative md:min-h-[95vh] lg:min-h-screen w-full flex flex-col justify-end bg-zinc-900">
         {/* Banner Section */}
-        <div className="absolute top-0 left-0 right-0 h-[90vh] hidden md:block bg-zinc-900 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[95vh] lg:h-screen hidden md:block bg-zinc-900 overflow-hidden">
           {finalBannerUrl ? (
             <Image
               src={finalBannerUrl}

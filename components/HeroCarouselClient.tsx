@@ -103,7 +103,7 @@ export function HeroCarouselClient({
 
   return (
     <section
-      className="relative h-[70vh] sm:h-screen md:h-[80vh] lg:h-screen w-full overflow-hidden bg-zinc-900"
+      className="-mt-14 2xl:-mt-16 relative h-[80vh] sm:h-screen md:h-[90vh] lg:h-screen w-full overflow-hidden bg-zinc-900"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={onTouchStart}
@@ -139,26 +139,46 @@ export function HeroCarouselClient({
           style={{ opacity: index === currentIndex ? 1 : 0 }}
         >
           {item.imageUrl && (
-            <Image
-              src={item.imageUrl}
-              alt={item.title}
-              fill
-              sizes="100vw"
-              className="object-cover md:hidden"
-              priority={index === 0}
-              loading={index === 0 ? undefined : "lazy"}
-            />
+            <>
+              <Image
+                src={item.imageUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover blur-xl opacity-40 scale-105 md:hidden"
+                priority={index === 0}
+              />
+              <Image
+                src={item.imageUrl}
+                alt={item.title}
+                fill
+                sizes="100vw"
+                className="object-contain md:hidden"
+                priority={index === 0}
+                loading={index === 0 ? undefined : "lazy"}
+              />
+            </>
           )}
           {item.bannerUrl && (
-            <Image
-              src={item.bannerUrl}
-              alt={item.title}
-              fill
-              sizes="100vw"
-              className="hidden object-cover md:block"
-              priority={index === 0}
-              loading={index === 0 ? undefined : "lazy"}
-            />
+            <>
+              <Image
+                src={item.bannerUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                className="hidden object-cover blur-xl opacity-40 scale-105 md:block"
+                priority={index === 0}
+              />
+              <Image
+                src={item.bannerUrl}
+                alt={item.title}
+                fill
+                sizes="100vw"
+                className="hidden object-contain md:block"
+                priority={index === 0}
+                loading={index === 0 ? undefined : "lazy"}
+              />
+            </>
           )}
         </div>
       ))}
@@ -176,12 +196,12 @@ export function HeroCarouselClient({
       <div className="mobile-bottom-blur sm:hidden" />
 
       <div className="absolute inset-0 flex items-end pb-30 sm:pb-14 md:pb-[24px] md:items-center">
-        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-20 2xl:-translate-y-16">
+        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-6 2xl:-translate-y-16">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl 2xl:max-w-2xl 2xl:space-y-6">
             {current.logoUrl ? (
               <Link
                 href={detailUrl}
-                className="relative block aspect-[3/1] w-full max-w-[200px] mx-auto md:mx-0 md:max-w-[400px] 2xl:max-w-[480px] hover:opacity-90 transition-opacity"
+                className="relative block aspect-[3/1] w-full max-w-[200px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[400px] 2xl:max-w-[480px] mx-auto md:mx-0 hover:opacity-90 transition-opacity"
               >
                 <Image
                   src={current.logoUrl}
@@ -193,7 +213,7 @@ export function HeroCarouselClient({
                 <h1 className="sr-only">{current.title}</h1>
               </Link>
             ) : (
-              <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] 2xl:text-[44px] line-clamp-2 md:max-w-[380px] 2xl:max-w-[540px] hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+              <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] 2xl:text-[44px] line-clamp-2 w-full max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] 2xl:max-w-[520px] mx-auto md:mx-0 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
                 <Link href={detailUrl}>{current.title}</Link>
               </h1>
             )}

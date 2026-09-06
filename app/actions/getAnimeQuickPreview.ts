@@ -34,6 +34,9 @@ export type AnimeQuickPreviewData = {
   rating: string | null;
   isDubbed: boolean;
   isSubtitled: boolean;
+  audio?: string[];
+  subtitles?: string[];
+  duration?: string | null;
   seasons: SeasonPreviewItem[];
   nextEpisode: {
     id: string;
@@ -42,6 +45,7 @@ export type AnimeQuickPreviewData = {
     title: string | null;
     publicId: string;
     slug: string;
+    imageUrl?: string | null;
   } | null;
   firstEpisode: {
     id: string;
@@ -50,10 +54,13 @@ export type AnimeQuickPreviewData = {
     title: string | null;
     publicId: string;
     slug: string;
+    imageUrl?: string | null;
   } | null;
   hasHistory: boolean;
   inWatchlist: boolean;
   isLoggedIn: boolean;
+  rank: number | null;
+  members: number | null;
 };
 
 export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPreviewData | null> {
@@ -75,6 +82,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
           title: ep1.title,
           publicId: ep1.publicId || ep1.id,
           slug: ep1.slug || `episode-${ep1.number}`,
+          imageUrl: ep1.imageUrl || null,
         };
       }
     }
@@ -115,6 +123,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
               title: nextInSeason.title,
               publicId: nextInSeason.publicId || nextInSeason.id,
               slug: nextInSeason.slug || `episode-${nextInSeason.number}`,
+              imageUrl: nextInSeason.imageUrl || null,
             };
           }
         }
@@ -130,6 +139,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
               title: firstOfNextSeason.title,
               publicId: firstOfNextSeason.publicId || firstOfNextSeason.id,
               slug: firstOfNextSeason.slug || `episode-${firstOfNextSeason.number}`,
+              imageUrl: firstOfNextSeason.imageUrl || null,
             };
           }
         }
@@ -144,6 +154,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
             title: lastWatched.episode.title,
             publicId: lastWatched.episode.publicId || lastWatched.episode.id,
             slug: lastWatched.episode.slug || `episode-${lastWatched.episode.number}`,
+            imageUrl: lastWatched.episode.imageUrl || null,
           };
         }
       }
@@ -176,12 +187,18 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
       rating: anime.rating,
       isDubbed: anime.isDubbed,
       isSubtitled: anime.isSubtitled,
+      audio: anime.audio,
+      subtitles: anime.subtitles,
+      awards: anime.awards,
+      duration: anime.duration,
       seasons: seasonsFormatted,
       nextEpisode,
       firstEpisode,
       hasHistory,
       inWatchlist,
       isLoggedIn,
+      rank: anime.rank,
+      members: anime.members,
     };
   } catch (error) {
     console.error("Erro em getAnimeQuickPreview Server Action:", error);

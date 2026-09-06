@@ -130,7 +130,7 @@ export default function SeasonSelector({
         <div className="relative inline-block">
           <button
             onClick={() => setIsSortOpen(!isSortOpen)}
-            className={`flex items-center rounded-md p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
+            className={`flex items-center rounded p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
               isSortOpen
                 ? "bg-[#272727] text-[#f2f2f2]"
                 : "hover:bg-[#151515] text-[#bbb] hover:text-[#f2f2f2]"

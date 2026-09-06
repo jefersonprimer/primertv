@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
-import { Bookmark, List, History } from "lucide-react";
 
 export function ProfileTabs() {
   const pathname = usePathname();
@@ -13,19 +12,16 @@ export function ProfileTabs() {
       id: "watchlist",
       href: "/watchlist",
       label: t("watchlist"),
-      icon: Bookmark,
     },
     {
       id: "lists",
       href: "/lists",
       label: t("myLists"),
-      icon: List,
     },
     {
       id: "history",
       href: "/history",
       label: t("history"),
-      icon: History,
     },
   ];
 
@@ -36,7 +32,6 @@ export function ProfileTabs() {
           // Match exactly or check if it's a sub-route (e.g. /lists/[id])
           const isActive =
             pathname === tab.href || pathname.startsWith(`${tab.href}/`);
-          const Icon = tab.icon;
 
           return (
             <Link
@@ -46,14 +41,6 @@ export function ProfileTabs() {
                 isActive ? "text-white" : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
-              <Icon
-                size={18}
-                className={`transition-transform duration-300 group-hover:scale-110 ${
-                  isActive
-                    ? "text-blue-400"
-                    : "text-zinc-500 group-hover:text-zinc-400"
-                }`}
-              />
               <span
                 className={`isActive
                     ? "text-blue-400"

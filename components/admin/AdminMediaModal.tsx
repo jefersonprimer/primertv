@@ -134,8 +134,7 @@ export function AdminMediaModal({
   const chapters = (item?.chapters as ChapterData[]) || [];
 
   const effectiveSeasonId = selectedSeasonId ?? seasons[0]?.id ?? null;
-  const currentSeason =
-    seasons.find((s) => s.id === effectiveSeasonId) || null;
+  const currentSeason = seasons.find((s) => s.id === effectiveSeasonId) || null;
 
   if (!isOpen) return null;
 
@@ -247,7 +246,7 @@ export function AdminMediaModal({
       />
 
       {/* Modal Content */}
-      <div className="relative z-10 w-full max-w-4xl max-h-[92vh] overflow-y-auto border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl md:p-8 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative z-10 w-full max-w-4xl max-h-[92vh] rounded-xl overflow-y-auto border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl md:p-8 animate-in fade-in zoom-in-95 duration-200">
         {/* Close Button */}
         <button
           onClick={handleClose}
@@ -554,8 +553,8 @@ export function AdminMediaModal({
                   </div>
                 ) : (
                   <div className="flex h-40 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 text-zinc-500 text-sm">
-                  Selecione um capítulo ao lado para editar ou clique no
-                  &quot;+&quot; para adicionar.
+                    Selecione um capítulo ao lado para editar ou clique no
+                    &quot;+&quot; para adicionar.
                   </div>
                 )
               ) : /* Anime / Series / Novel Structure Forms */
@@ -662,8 +661,8 @@ export function AdminMediaModal({
               ) : (
                 <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 text-zinc-500 text-sm p-6 text-center">
                   Selecione uma temporada ou episódio ao lado para editar, ou
-                  clique nos botões &quot;+&quot; correspondentes para adicionar novos
-                  registros.
+                  clique nos botões &quot;+&quot; correspondentes para adicionar
+                  novos registros.
                 </div>
               )}
             </div>

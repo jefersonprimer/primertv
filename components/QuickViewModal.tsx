@@ -12,12 +12,15 @@ import {
   Loader2,
   ChevronDown,
   Calendar,
+  Clock,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { StartWatchingButton } from "./StartWatchingButton";
 import { WatchlistButton } from "./WatchlistButton";
 import ShareButton from "./ShareButton";
 import AddToListButton from "./AddToListButton";
 import RatingBadge from "./RatingBadge";
+import MediaDescription from "./MediaDescription";
 import {
   getAnimeQuickPreview,
   type AnimeQuickPreviewData,
@@ -113,11 +116,22 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
     ? `/watch/${targetEpisode.publicId}/${targetEpisode.slug}`
     : `/animes/${slug}`;
 
+  const headerBanner = data?.bannerUrl || data?.imageUrl;
+
   const buttonText = data?.hasHistory
     ? t("continueWatching", { number: targetEpisode?.number ?? 1 })
     : targetEpisode?.number
       ? t("watchEpisode", { number: targetEpisode.number })
       : t("startWatching");
+
+  const formatDuration = (duration?: string | null): string => {
+    if (!duration || duration.toLowerCase() === "unknown") return "";
+    const matches = duration.match(/\d+/);
+    if (matches) {
+      return `${matches[0]}m`;
+    }
+    return "";
+  };
 
   const currentSeason = data?.seasons?.find(
     (s) => s.number === selectedSeasonNumber,
@@ -154,9 +168,61 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
         </button>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-28 gap-3 text-zinc-400">
-            <Loader2 className="animate-spin text-[#0077FD]" size={36} />
-            <p className="text-sm font-medium">{t("loading")}</p>
+          <div className="overflow-y-auto custom-scrollbar flex flex-col animate-pulse">
+            {/* Banner Skeleton */}
+            <div className="relative aspect-16/9 w-full max-h-[340px] sm:max-h-[420px] md:max-h-[480px] bg-zinc-800/60 flex-shrink-0 flex items-end p-4 sm:p-6">
+              <div className="flex flex-wrap items-center gap-3 w-full">
+                <div className="h-11 w-36 bg-zinc-700/80 rounded-xl" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full ml-auto" />
+              </div>
+            </div>
+
+            {/* Content Skeleton */}
+            <div className="p-4 sm:p-6 flex flex-col gap-6">
+              {/* Title & Badges Skeleton */}
+              <div className="flex flex-col gap-3">
+                <div className="h-8 w-2/3 bg-zinc-800 rounded-md" />
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-12 bg-zinc-800 rounded-md" />
+                  <div className="h-6 w-14 bg-zinc-800 rounded-md" />
+                  <div className="h-6 w-16 bg-zinc-800 rounded-md" />
+                  <div className="h-6 w-20 bg-zinc-800 rounded-md" />
+                </div>
+              </div>
+
+              {/* Description Skeleton */}
+              <div className="flex flex-col gap-2">
+                <div className="h-4 w-full bg-zinc-800/80 rounded" />
+                <div className="h-4 w-5/6 bg-zinc-800/80 rounded" />
+                <div className="h-4 w-4/6 bg-zinc-800/80 rounded" />
+              </div>
+
+              {/* Episodes Section Skeleton */}
+              <div className="flex flex-col gap-4 border-t border-zinc-800/80 pt-5">
+                <div className="flex items-center justify-between">
+                  <div className="h-6 w-24 bg-zinc-800 rounded" />
+                  <div className="h-9 w-36 bg-zinc-800 rounded-xl" />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/70"
+                    >
+                      <div className="aspect-16/9 w-full sm:w-44 bg-zinc-800 rounded-lg flex-shrink-0" />
+                      <div className="flex flex-col justify-center flex-1 gap-2">
+                        <div className="h-5 w-3/4 bg-zinc-800 rounded" />
+                        <div className="h-4 w-1/4 bg-zinc-800/60 rounded" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         ) : error || !data ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4 text-center px-4">
@@ -174,15 +240,24 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
         ) : (
           <div className="overflow-y-auto custom-scrollbar flex flex-col">
             {/* Banner Header */}
-            <div className="relative aspect-16/9 w-full max-h-[280px] sm:max-h-[320px] overflow-hidden bg-zinc-900 flex-shrink-0">
-              {data.bannerUrl || data.imageUrl ? (
-                <Image
-                  src={data.bannerUrl || data.imageUrl!}
-                  alt={data.title}
-                  fill
-                  priority
-                  className="object-cover"
-                />
+            <div className="relative aspect-16/9 w-full max-h-[340px] sm:max-h-[420px] md:max-h-[480px] overflow-hidden bg-zinc-900 flex-shrink-0">
+              {headerBanner ? (
+                <>
+                  <Image
+                    src={headerBanner}
+                    alt=""
+                    fill
+                    priority
+                    className="object-cover blur-md opacity-40 scale-105"
+                  />
+                  <Image
+                    src={headerBanner}
+                    alt={targetEpisode?.title || data.title}
+                    fill
+                    priority
+                    className="object-contain"
+                  />
+                </>
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-zinc-500 font-bold">
                   {data.title}
@@ -195,14 +270,11 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
 
               {/* Botões Principais no Banner */}
               <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 flex flex-wrap items-center gap-3">
-                <Link
+                <StartWatchingButton
                   href={watchUrl}
                   onClick={onClose}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#0077FD] hover:bg-[#0066D6] text-white text-sm sm:text-base font-bold shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                >
-                  <Play size={20} className="fill-white" />
-                  <span>{buttonText}</span>
-                </Link>
+                  text={buttonText}
+                />
 
                 <WatchlistButton
                   mediaType="ANIME"
@@ -268,37 +340,27 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                     </span>
                   )}
 
-                  {(data.isDubbed || data.isSubtitled) && (
-                    <span className="flex items-center justify-center gap-1 text-sm font-medium text-[#bbb] px-1 py-0.5 bg-zinc-800/60 rounded-md border border-zinc-700/40">
-                      {data.isDubbed && data.isSubtitled
-                        ? t("subDub")
-                        : data.isDubbed
-                          ? t("dubbed")
-                          : t("subtitled")}
+                  {data.seasons && data.seasons.length > 0 && (
+                    <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 font-medium">
+                      {data.seasons.length}{" "}
+                      {data.seasons.length === 1 ? "Temporada" : "Temporadas"}
                     </span>
-                  )}
-
-                  {/* Gêneros */}
-                  {data.genres && data.genres.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {data.genres.map((g) => (
-                        <span
-                          key={g}
-                          className="px-2.5 py-1 text-xs font-medium text-zinc-400 bg-zinc-800/60 rounded-full border border-zinc-700/40"
-                        >
-                          {g}
-                        </span>
-                      ))}
-                    </div>
                   )}
                 </div>
               </div>
 
-              {/* Sinopse */}
+              {/* Sinopse / MediaDescription */}
               {data.description && (
-                <p className="text-sm sm:text-base text-zinc-300/90 leading-relaxed line-clamp-3">
-                  {data.description}
-                </p>
+                <MediaDescription
+                  description={data.description}
+                  rating={data.rating || undefined}
+                  genres={data.genres}
+                  year={data.year}
+                  awards={data.awards}
+                  audio={data.audio}
+                  subtitles={data.subtitles}
+                  className="text-zinc-300/90 text-sm sm:text-base"
+                />
               )}
 
               {/* Seção de Episódios & Dropdown de Temporadas */}
@@ -316,7 +378,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                         onChange={(e) =>
                           handleSeasonChange(Number(e.target.value))
                         }
-                        className="appearance-none bg-zinc-800/90 text-white text-sm font-semibold py-2 pl-4 pr-10 rounded-xl border border-zinc-700/70 focus:outline-none focus:border-[#0077FD] cursor-pointer transition-all"
+                        className="appearance-none bg-zinc-800/90 text-white text-sm font-semibold py-2 pl-4 pr-10 rounded border border-zinc-700/70 focus:outline-none focus:border-[#0077FD] cursor-pointer transition-all"
                       >
                         {data.seasons.map((s) => (
                           <option key={s.id} value={s.number}>
@@ -371,8 +433,15 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                                 </div>
                               )}
 
+                              {/* Badge de Duração na Thumbnail (Estilo EpisodeSidebar) */}
+                              {formatDuration(data?.duration) && (
+                                <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-xs font-bold text-white backdrop-blur-sm z-10">
+                                  {formatDuration(data?.duration)}
+                                </div>
+                              )}
+
                               {/* Ícone de Play Hover */}
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20">
                                 <div className="p-2.5 rounded-full bg-[#0077FD] text-white shadow-lg transform group-hover:scale-110 transition-transform">
                                   <Play size={18} className="fill-white" />
                                 </div>
@@ -396,7 +465,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
 
                               {formattedDate && (
                                 <div className="flex items-center gap-1 text-xs text-zinc-400">
-                                  <Calendar size={12} />
+                                  <Calendar size={12} className="text-zinc-500" />
                                   <span>{formattedDate}</span>
                                 </div>
                               )}

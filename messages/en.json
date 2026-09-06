@@ -90,8 +90,8 @@
     "continueWatching": "Continue Watching",
     "viewHistory": "View History",
     "episodeAlt": "Episode {number} of {title}",
-    "seasonEpisodeBadge": "S{season} : EP {episode}",
-    "continueWatchingEp": "Continue watching EP{number}"
+    "seasonEpisodeBadge": "S{season} : E{episode}",
+    "continueWatchingEp": "Continue watching: E{number}"
   },
   "Watchlist": {
     "title": "My Watchlist",
@@ -139,7 +139,7 @@
     "errorUpdate": "Error updating the list."
   },
   "Buttons": {
-    "startWatching": "Start watching EP1",
+    "startWatching": "Start watching E1",
     "watch": "Watch",
     "share": "Share",
     "copied": "Copied!",
@@ -166,7 +166,7 @@
     "readNow": "Read Now",
     "showMore": "Show More",
     "watchMovie": "watch movie",
-    "playEpisode": "play ep {number}",
+    "playEpisode": "play e{number}",
     "noImage": "No image"
   },
   "SeasonSelector": {
@@ -294,7 +294,7 @@
     "loadingData": "Loading data...",
     "noDescription": "No description available for this anime at the moment.",
     "viewDetails": "View Details",
-    "watchEpisode": "Watch EP {number}",
+    "watchEpisode": "Watch E{number}",
     "latestReleasedEpisode": "Latest Released Episode",
     "noEpisodeImage": "No Episode Image"
   },
@@ -367,7 +367,7 @@
   },
   "FavoriteCard": {
     "firstEpisodeAlt": "First episode of {title}",
-    "startWatchingEp": "Start watching EP: {number}",
+    "startWatchingEp": "Start watching: E{number}",
     "viewDetails": "View details"
   },
   "MediaCard": {
@@ -427,6 +427,7 @@
     "dubbed": "Dubbed",
     "subtitled": "Subtitled",
     "subDub": "Sub | Dub",
-    "loading": "Loading details..."
+    "loading": "Loading details...",
+    "malTitle": "Top #{rank} in ranking, score {score} and {members} members on MyAnimeList.net"
   }
 }

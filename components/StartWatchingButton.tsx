@@ -9,6 +9,7 @@ interface StartWatchingButtonProps {
   className?: string;
   uppercase?: boolean;
   text?: string;
+  onClick?: () => void;
 }
 
 export function StartWatchingButton({
@@ -16,6 +17,7 @@ export function StartWatchingButton({
   className = "",
   uppercase = true,
   text,
+  onClick,
 }: StartWatchingButtonProps) {
   const t = useTranslations("Buttons");
 
@@ -33,6 +35,7 @@ export function StartWatchingButton({
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={baseClass}
     >
       <Play className="h-4 w-4 fill-current text-white group-hover:text-white transition-transform duration-200 group-hover:scale-110" />

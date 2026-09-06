@@ -151,7 +151,7 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
               href={`/animes/${anime.slug}`}
               className="group flex flex-col gap-3"
             >
-              <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-900 shadow-md ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15">
+              <div className="relative aspect-[2/3] rounded-md w-full overflow-hidden bg-zinc-900 shadow-md ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15">
                 {anime.imageUrl ? (
                   <Image
                     src={anime.imageUrl}
