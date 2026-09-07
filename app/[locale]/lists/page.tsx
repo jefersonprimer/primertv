@@ -60,14 +60,14 @@ export default async function ListasPage({
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
             {lists.map((list) => {
               const count = list._count.items;
 
               return (
                 <div
                   key={list.id}
-                  className="flex flex-col justify-between overflow-hidden bg-[#272727] px-6 py-4 shadow-sm hover:shadow-md transition-shadow"
+                  className="flex flex-col justify-between overflow-hidden bg-[#272727] px-6 py-4 shadow-sm hover:shadow-md transition-shadow rounded-xl"
                 >
                   <div>
                     {/* Card Header */}

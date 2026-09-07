@@ -110,6 +110,9 @@ export async function getUserListsWithAnimeState(animeId?: string, seriesId?: st
       where: { userId },
       orderBy: { createdAt: "desc" },
       include: {
+        _count: {
+          select: { items: true },
+        },
         items: {
           where: {
             ...(animeId ? { animeId } : { seriesId }),
@@ -124,6 +127,7 @@ export async function getUserListsWithAnimeState(animeId?: string, seriesId?: st
       name: list.name,
       description: list.description,
       isChecked: list.items.length > 0,
+      itemCount: list._count.items,
     }));
   } catch (err) {
     console.error("Erro ao obter listas: ", err);

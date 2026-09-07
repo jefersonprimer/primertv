@@ -60,15 +60,14 @@ export default function EditListModal({
       {triggerType === "button" ? (
         <button
           onClick={openModal}
-          className="flex items-center gap-2 border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-4 py-2 text-sm font-semibold text-white transition-colors cursor-pointer rounded-sm"
+          className="flex items-center gap-2 border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 px-4 py-2 text-sm font-semibold text-white transition-all cursor-pointer rounded-xl"
         >
-          <Pencil className="h-4 w-4" />
           {t("editList")}
         </button>
       ) : (
         <button
           onClick={openModal}
-          className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-sm transition-colors cursor-pointer flex items-center justify-center"
+          className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800/80 rounded-lg transition-all cursor-pointer flex items-center justify-center"
           title={t("editList")}
         >
           <Pencil className="h-4 w-4" />
@@ -76,84 +75,87 @@ export default function EditListModal({
       )}
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="absolute inset-0 bg-black/70 backdrop-blur-md transition-opacity animate-in fade-in duration-200"
             onClick={closeModal}
           />
 
           {/* Modal Container */}
-          <div className="relative z-10 w-full max-w-md overflow-hidden border border-zinc-800 bg-zinc-900 p-1 shadow-2xl transition-all animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-zinc-800/90 bg-zinc-950/95 p-6 shadow-2xl shadow-black/80 transition-all animate-in fade-in zoom-in-95 duration-200">
             {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute right-4 top-4 p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors cursor-pointer z-20"
+              className="absolute right-4 top-4 p-1.5 text-zinc-400 hover:bg-zinc-800/80 hover:text-white rounded-full transition-all cursor-pointer z-20"
               aria-label={t("close")}
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
 
             {/* Form */}
-            <div className="pt-4">
-              <form
-                onSubmit={handleSubmit}
-                className="flex flex-col h-full justify-between p-6 bg-transparent"
-              >
-                <div className="space-y-4 w-full">
-                  <h3 className="text-lg font-bold text-white">
-                    {t("editTitle")}
-                  </h3>
-                  {error && (
-                    <p className="text-xs text-red-400 bg-red-950/30 border border-red-900/50 p-2 rounded-sm">
-                      {error}
-                    </p>
-                  )}
-                  <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-zinc-400 uppercase">
-                      {t("listNamePlaceholder").split("(")[0].trim()}
-                    </label>
-                    <input
-                      type="text"
-                      placeholder={t("listNamePlaceholder")}
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full text-sm px-3 py-2.5 rounded-sm border border-zinc-800 bg-zinc-950 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-zinc-500 text-white transition-colors"
-                      maxLength={50}
-                      required
-                    />
-                    <label className="block text-xs font-semibold text-zinc-400 uppercase pt-2">
-                      {t("descriptionPlaceholder").split("(")[0].trim()}
-                    </label>
-                    <textarea
-                      placeholder={t("descriptionPlaceholder")}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      className="w-full text-sm px-3 py-2.5 rounded-sm border border-zinc-800 bg-zinc-950 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-zinc-500 text-white resize-none transition-colors"
-                      maxLength={150}
-                      rows={3}
-                    />
-                  </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-white tracking-tight">
+                  {t("editTitle")}
+                </h3>
+              </div>
+
+              {error && (
+                <p className="text-xs text-red-300 bg-red-950/40 border border-red-800/60 p-3 rounded-xl">
+                  {error}
+                </p>
+              )}
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    {t("listNamePlaceholder").split("(")[0].trim()}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={t("listNamePlaceholder")}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white transition-all"
+                    maxLength={50}
+                    required
+                  />
                 </div>
-                <div className="mt-6 flex gap-3">
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="flex-1 rounded-sm border border-zinc-800 px-4 py-2.5 text-sm font-semibold text-zinc-400 hover:text-white transition-colors hover:bg-zinc-800 cursor-pointer"
-                  >
-                    {t("cancel")}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading || !name.trim()}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-sm bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
-                  >
-                    {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {t("save")}
-                  </button>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    {t("descriptionPlaceholder").split("(")[0].trim()}
+                  </label>
+                  <textarea
+                    placeholder={t("descriptionPlaceholder")}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white resize-none transition-all"
+                    maxLength={150}
+                    rows={3}
+                  />
                 </div>
-              </form>
-            </div>
+              </div>
+
+              <div className="mt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+                >
+                  {t("cancel")}
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading || !name.trim()}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition-all shadow-md shadow-blue-600/25 disabled:opacity-50 cursor-pointer active:scale-95"
+                >
+                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {t("save")}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

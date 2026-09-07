@@ -2,7 +2,15 @@
 
 import { useTranslations } from "next-intl";
 import { useState, useCallback, useRef, useEffect } from "react";
-import { X, Plus, Check, Loader2, ListPlus, FolderPlus, ArrowLeft } from "lucide-react";
+import {
+  X,
+  Plus,
+  Check,
+  Loader2,
+  ListPlus,
+  FolderPlus,
+  ArrowLeft,
+} from "lucide-react";
 import {
   createList,
   toggleAnimeInList,
@@ -27,6 +35,7 @@ interface UserList {
   name: string;
   description: string | null;
   isChecked: boolean;
+  itemCount: number;
 }
 
 export default function AddToListButton({
@@ -89,7 +98,15 @@ export default function AddToListButton({
     setError(null);
     setLists((prev) =>
       prev.map((l) =>
-        l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
+        l.id === listId
+          ? {
+              ...l,
+              isChecked: !l.isChecked,
+              itemCount: l.isChecked
+                ? Math.max(0, l.itemCount - 1)
+                : l.itemCount + 1,
+            }
+          : l,
       ),
     );
 
@@ -98,7 +115,15 @@ export default function AddToListButton({
       if (!res.success) {
         setLists((prev) =>
           prev.map((l) =>
-            l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
+            l.id === listId
+              ? {
+                  ...l,
+                  isChecked: !l.isChecked,
+                  itemCount: l.isChecked
+                    ? l.itemCount + 1
+                    : Math.max(0, l.itemCount - 1),
+                }
+              : l,
           ),
         );
         setError(res.error || t("errorUpdate"));
@@ -107,7 +132,15 @@ export default function AddToListButton({
       console.error(err);
       setLists((prev) =>
         prev.map((l) =>
-          l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
+          l.id === listId
+            ? {
+                ...l,
+                isChecked: !l.isChecked,
+                itemCount: l.isChecked
+                  ? l.itemCount + 1
+                  : Math.max(0, l.itemCount - 1),
+              }
+            : l,
         ),
       );
       setError(t("errorUpdate"));
@@ -200,18 +233,10 @@ export default function AddToListButton({
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
           <div className="relative rounded-2xl w-full max-w-[95vw] sm:w-[720px] h-[495px] max-h-[90vh] overflow-hidden bg-zinc-950/95 border border-zinc-800/90 text-zinc-100 shadow-2xl shadow-black/80 flex flex-col transition-all">
-            
             {/* Modal Top Header */}
             <div className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-4 bg-zinc-900/60">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-                  {showCreateSubModal ? (
-                    <FolderPlus className="h-4 w-4" />
-                  ) : (
-                    <ListPlus className="h-4 w-4" />
-                  )}
-                </div>
-                <h2 className="text-base font-bold text-white tracking-tight">
+                <h2 className="text-xl font-bold text-white tracking-tight">
                   {showCreateSubModal ? t("createList") : t("title")}
                 </h2>
               </div>
@@ -270,12 +295,10 @@ export default function AddToListButton({
 
               {showCreateSubModal ? (
                 /* Native Creation Form view inside the modal canvas */
-                <form onSubmit={handleCreateList} className="space-y-4 py-2 max-w-lg mx-auto animate-in fade-in duration-200">
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-semibold text-zinc-200">Detalhes da nova lista</h3>
-                    <p className="text-xs text-zinc-500">Informe um nome e descrição para identificar sua lista.</p>
-                  </div>
-
+                <form
+                  onSubmit={handleCreateList}
+                  className="space-y-4 py-2 max-w-lg mx-auto animate-in fade-in duration-200"
+                >
                   <div className="space-y-4 pt-2">
                     <div>
                       <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
@@ -340,7 +363,9 @@ export default function AddToListButton({
                   <div className="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-1">
                     <FolderPlus className="h-8 w-8" />
                   </div>
-                  <p className="font-semibold text-zinc-200 text-sm">{t("noLists")}</p>
+                  <p className="font-semibold text-zinc-200 text-sm">
+                    {t("noLists")}
+                  </p>
                   <p className="text-xs text-zinc-500 max-w-[280px] leading-relaxed">
                     {t("emptySubtitle")}
                   </p>
@@ -370,24 +395,24 @@ export default function AddToListButton({
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0 pr-2">
-                        <div
-                          className={`p-2 rounded-lg transition-colors shrink-0 ${
-                            list.isChecked
-                              ? "bg-blue-600/20 text-blue-400"
-                              : "bg-zinc-800/70 text-zinc-400 group-hover:text-zinc-200"
-                          }`}
-                        >
-                          <ListPlus className="h-4 w-4" />
-                        </div>
                         <div className="min-w-0">
                           <p className="font-semibold text-sm text-zinc-100 group-hover:text-white transition-colors truncate">
                             {list.name}
                           </p>
-                          {list.description && (
-                            <p className="text-xs text-zinc-500 truncate mt-0.5">
-                              {list.description}
-                            </p>
-                          )}
+                          <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
+                            <span className="font-medium text-zinc-400">
+                              {list.itemCount}{" "}
+                              {list.itemCount === 1 ? "item" : "itens"}
+                            </span>
+                            {list.description && (
+                              <>
+                                <span className="text-zinc-600">•</span>
+                                <span className="text-zinc-500 truncate">
+                                  {list.description}
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
 
@@ -413,7 +438,6 @@ export default function AddToListButton({
               <span>{t("limitLabel")}</span>
               <span>{t("maxItemsLabel")}</span>
             </div>
-
           </div>
         </div>
       )}
