@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Tv } from "lucide-react";
 import { getNewReleases, ReleaseItem } from "@/app/actions/newReleases";
 import Link from "next/link";
+import { QuickViewModal } from "./QuickViewModal";
 
 interface NewReleasesListProps {
   initialItems: ReleaseItem[];
@@ -20,6 +21,26 @@ export function NewReleasesList({
   const [items, setItems] = useState<ReleaseItem[]>(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  const handleItemClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    item: ReleaseItem,
+  ) => {
+    if (activeTab === "animes" || item.href.includes("/animes/")) {
+      if (
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.shiftKey &&
+        !e.altKey &&
+        e.button === 0
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        setSelectedSlug(item.slug);
+      }
+    }
+  };
 
   const observerRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(1);
@@ -110,9 +131,10 @@ export function NewReleasesList({
           <Link
             key={`${item.id}-${item.slug}`}
             href={item.href}
+            onClick={(e) => handleItemClick(e, item)}
             className="group flex flex-col gap-3"
           >
-            <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-900 shadow-md ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15">
+            <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-zinc-900 shadow-md ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15">
               {item.imageUrl ? (
                 <Image
                   src={item.imageUrl}
@@ -162,7 +184,7 @@ export function NewReleasesList({
               key={`skeleton-${idx}`}
               className="flex flex-col gap-3 animate-pulse"
             >
-              <div className="relative aspect-[2/3] w-full bg-zinc-800 shadow-md ring-1 ring-white/10" />
+              <div className="relative aspect-[2/3] w-full rounded-md bg-zinc-800 shadow-md ring-1 ring-white/10" />
               <div className="flex flex-col gap-2">
                 <div className="h-4 w-3/4 bg-zinc-800" />
                 <div className="h-3 w-1/2 bg-zinc-800" />
@@ -172,6 +194,14 @@ export function NewReleasesList({
       </div>
 
       {hasMore && <div ref={observerRef} className="h-px w-full" aria-hidden />}
+
+      {selectedSlug && (
+        <QuickViewModal
+          slug={selectedSlug}
+          isOpen={!!selectedSlug}
+          onClose={() => setSelectedSlug(null)}
+        />
+      )}
     </div>
   );
 }

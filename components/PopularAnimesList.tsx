@@ -2,27 +2,72 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { Award, Tv, Star, Trophy } from "lucide-react";
+import { Award, Tv, Star, Trophy, ChevronDown, Filter } from "lucide-react";
 import { getPopularAnimes, PopularAnimeItem } from "@/app/actions/popular";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { QuickViewModal } from "./QuickViewModal";
 
 interface PopularAnimesListProps {
+  title?: string;
   initialItems: PopularAnimeItem[];
   initialHasMore: boolean;
 }
 
 export function PopularAnimesList({
+  title,
   initialItems,
   initialHasMore,
 }: PopularAnimesListProps) {
   const t = useTranslations("MediaCard");
+  const tFilter = useTranslations("PopularPage.filters");
+  type FilterType = "all" | "airing" | "upcoming" | "bypopularity";
+  const [filter, setFilter] = useState<FilterType>("all");
   const [items, setItems] = useState<PopularAnimeItem[]>(initialItems);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  const handleItemClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    slug: string,
+  ) => {
+    if (
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.altKey &&
+      e.button === 0
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      setSelectedSlug(slug);
+    }
+  };
 
   const observerRef = useRef<HTMLDivElement>(null);
+
+  const handleFilterChange = async (newFilter: FilterType) => {
+    if (newFilter === filter || loading) return;
+    setFilter(newFilter);
+    setLoading(true);
+    setPage(1);
+
+    try {
+      const res = await getPopularAnimes({
+        page: 1,
+        limit: 24,
+        filter: newFilter,
+      });
+      setItems(res.items);
+      setHasMore(res.hasMore);
+    } catch (err) {
+      console.error("Erro ao filtrar animes:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -33,10 +78,10 @@ export function PopularAnimesList({
       const res = await getPopularAnimes({
         page: nextPage,
         limit: 24,
+        filter,
       });
 
       if (res.items.length > 0) {
-        // Filter out any duplicates just in case
         setItems((prev) => {
           const existingIds = new Set(prev.map((item) => item.id));
           const newItems = res.items.filter(
@@ -52,7 +97,7 @@ export function PopularAnimesList({
     } finally {
       setLoading(false);
     }
-  }, [page, loading, hasMore]);
+  }, [page, loading, hasMore, filter]);
 
   // Set up IntersectionObserver
   useEffect(() => {
@@ -102,29 +147,57 @@ export function PopularAnimesList({
     return null;
   };
 
-  if (items.length === 0 && !loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="rounded-full p-4 bg-zinc-900">
-          <Tv className="h-12 w-12 text-zinc-400" />
-        </div>
-        <h3 className="mt-4 text-lg font-bold text-zinc-100">
-          Nenhum anime encontrado
-        </h3>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-8">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+    <div className="flex flex-col gap-6">
+      {/* Page Header with Title on Left and Dropdown Filter on Right */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+        {title && (
+          <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px]">
+            {title}
+          </h1>
+        )}
+
+        {/* Dropdown Filter */}
+        <div className="relative inline-block text-left sm:ml-auto">
+          <div className="relative flex items-center">
+            <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+            <select
+              value={filter}
+              onChange={(e) =>
+                handleFilterChange(e.target.value as FilterType)
+              }
+              disabled={loading}
+              className="appearance-none cursor-pointer bg-zinc-900/90 hover:bg-zinc-800/90 text-zinc-100 text-sm font-semibold pl-10 pr-10 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm"
+            >
+              <option value="all">{tFilter("all")}</option>
+              <option value="bypopularity">{tFilter("bypopularity")}</option>
+              <option value="airing">{tFilter("airing")}</option>
+              <option value="upcoming">{tFilter("upcoming")}</option>
+            </select>
+            <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
+      {items.length === 0 && !loading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="rounded-full p-4 bg-zinc-900">
+            <Tv className="h-12 w-12 text-zinc-400" />
+          </div>
+          <h3 className="mt-4 text-lg font-bold text-zinc-100">
+            Nenhum anime encontrado
+          </h3>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
         {items.map((item) => (
           <Link
             key={item.id}
             href={`/animes/${item.slug}`}
+            onClick={(e) => handleItemClick(e, item.slug)}
             className="group flex flex-col gap-3"
           >
-            <div className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-900 shadow-md ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/20">
+            <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-zinc-900 shadow-md ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/20">
               {item.imageUrl ? (
                 <Image
                   src={item.imageUrl}
@@ -211,7 +284,7 @@ export function PopularAnimesList({
               key={`skeleton-${idx}`}
               className="flex flex-col gap-3 animate-pulse"
             >
-              <div className="relative aspect-[2/3] w-full bg-zinc-800 shadow-md ring-1 ring-white/10" />
+              <div className="relative aspect-[2/3] w-full rounded-md bg-zinc-800 shadow-md ring-1 ring-white/10" />
               <div className="flex flex-col gap-2">
                 <div className="h-4 w-3/4 bg-zinc-800" />
                 <div className="h-3.5 w-1/3 bg-zinc-800" />
@@ -219,7 +292,8 @@ export function PopularAnimesList({
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
 
       {/* Target element for IntersectionObserver */}
       {hasMore && !loading && (
@@ -229,6 +303,14 @@ export function PopularAnimesList({
         >
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-t-blue-600 border-t-blue-500" />
         </div>
+      )}
+
+      {selectedSlug && (
+        <QuickViewModal
+          slug={selectedSlug}
+          isOpen={!!selectedSlug}
+          onClose={() => setSelectedSlug(null)}
+        />
       )}
     </div>
   );

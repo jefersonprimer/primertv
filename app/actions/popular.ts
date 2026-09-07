@@ -20,22 +20,45 @@ export interface PopularAnimeItem {
 export async function getPopularAnimes({
   page = 1,
   limit = 24,
+  filter = "all",
 }: {
   page: number;
   limit?: number;
+  filter?: "all" | "airing" | "upcoming" | "bypopularity";
 }): Promise<{ items: PopularAnimeItem[]; hasMore: boolean }> {
   try {
     const skip = (page - 1) * limit;
 
+    const whereClause: Record<string, unknown> = {};
+
+    if (filter === "airing") {
+      whereClause.rank = { not: null };
+      whereClause.status = {
+        contains: "Airing",
+        mode: "insensitive",
+      };
+    } else if (filter === "upcoming") {
+      whereClause.status = {
+        contains: "Not yet aired",
+        mode: "insensitive",
+      };
+    } else if (filter === "bypopularity") {
+      whereClause.popularity = { not: null };
+    } else {
+      whereClause.rank = { not: null };
+    }
+
+    let orderByClause: Array<Record<string, "asc" | "desc">> = [
+      { rank: "asc" },
+    ];
+
+    if (filter === "upcoming" || filter === "bypopularity") {
+      orderByClause = [{ popularity: "asc" }, { createdAt: "desc" }];
+    }
+
     const animes = await prisma.anime.findMany({
-      where: {
-        rank: {
-          not: null,
-        },
-      },
-      orderBy: {
-        rank: "asc",
-      },
+      where: whereClause,
+      orderBy: orderByClause,
       select: {
         id: true,
         slug: true,

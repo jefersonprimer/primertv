@@ -263,9 +263,15 @@
     "metaDescription": "Leia seus mangás favoritos online no PrimerTv."
   },
   "PopularPage": {
-    "title": "Animes Mais Populares",
+    "title": "Animes Populares",
     "metaTitle": "Mais Populares - PrimerTv",
-    "metaDescription": "Explore os animes mais populares e bem avaliados de acordo com o ranking global do MyAnimeList/Jikan."
+    "metaDescription": "Explore os animes mais populares e bem avaliados de acordo com o ranking global do MyAnimeList/Jikan.",
+    "filters": {
+      "all": "Mais Bem Avaliados",
+      "bypopularity": "Mais Populares",
+      "airing": "Em Exibição",
+      "upcoming": "Próximos Lançamentos"
+    }
   },
   "NewReleasesPage": {
     "metaTitle": "Recém Adicionados - PrimerTv",

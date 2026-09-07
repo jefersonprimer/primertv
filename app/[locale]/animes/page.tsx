@@ -47,6 +47,42 @@ async function TopAnimesCarousel() {
   );
 }
 
+async function TopAiringCarousel() {
+  const items = await prisma.anime.findMany({
+    where: {
+      status: {
+        contains: "Airing",
+        mode: "insensitive",
+      },
+      score: { not: null },
+    },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+      isDubbed: true,
+      isSubtitled: true,
+    },
+    orderBy: [
+      { score: "desc" },
+      { popularity: "asc" },
+    ],
+    take: 15,
+  });
+
+  if (items.length === 0) return null;
+
+  return (
+    <MediaCarousel
+      title="Top Airing (Em Exibição)"
+      subtitle="Os animes em exibição mais bem avaliados"
+      items={items}
+      type="anime"
+    />
+  );
+}
+
 async function CurrentSeasonCarousel() {
   const currentSlug = getCurrentSeasonSlug();
   const [currentSeason, currentYearStr] = currentSlug.split("-");
@@ -223,6 +259,10 @@ export default async function Home() {
         <main className="space-y-8 lg:space-y-16">
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <TopAnimesCarousel />
+          </Suspense>
+
+          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+            <TopAiringCarousel />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
