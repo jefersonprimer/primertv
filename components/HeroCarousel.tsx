@@ -239,9 +239,9 @@ export function HeroCarouselSkeleton() {
       {/* Mobile gradient overlay for poster readability */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-transparent md:hidden" />
       {/* Left Gradient */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/80 hidden md:block" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[45%] bg-gradient-to-r from-zinc-50 via-zinc-50/75 to-transparent dark:from-black dark:via-black/75 hidden md:block" />
       {/* Right Gradient */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-zinc-50/50 to-transparent dark:from-black/50 hidden md:block" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-[20%] bg-gradient-to-l from-zinc-50 via-zinc-50/75 to-transparent dark:from-black dark:via-black/75 hidden md:block" />
       {/* Bottom Gradient for sm and larger */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-68 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black hidden sm:block" />
 

@@ -242,22 +242,13 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
             {/* Banner Header */}
             <div className="relative aspect-16/9 w-full max-h-[340px] sm:max-h-[420px] md:max-h-[480px] overflow-hidden bg-zinc-900 flex-shrink-0">
               {headerBanner ? (
-                <>
-                  <Image
-                    src={headerBanner}
-                    alt=""
-                    fill
-                    priority
-                    className="object-cover blur-md opacity-40 scale-105"
-                  />
-                  <Image
-                    src={headerBanner}
-                    alt={targetEpisode?.title || data.title}
-                    fill
-                    priority
-                    className="object-contain"
-                  />
-                </>
+                <Image
+                  src={headerBanner}
+                  alt={targetEpisode?.title || data.title}
+                  fill
+                  priority
+                  className="object-cover"
+                />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-zinc-500 font-bold">
                   {data.title}
@@ -271,7 +262,11 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
               {/* Conteúdo Inferior no Banner (Logo/Nome + Botões) */}
               <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 z-10 flex flex-col gap-3 sm:gap-4">
                 {/* Logo ou Nome do Anime */}
-                <div className="max-w-[75%] sm:max-w-[55%]">
+                <Link
+                  href={`/animes/${data.slug}`}
+                  onClick={onClose}
+                  className="block max-w-[75%] sm:max-w-[55%] hover:opacity-90 transition-opacity group cursor-pointer"
+                >
                   {data.logoUrl ? (
                     <div className="relative aspect-[3/1] w-full max-w-[160px] sm:max-w-[240px] md:max-w-[280px]">
                       <Image
@@ -283,11 +278,11 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                       />
                     </div>
                   ) : (
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white drop-shadow-md line-clamp-2">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white drop-shadow-md line-clamp-2 group-hover:text-blue-400 transition-colors">
                       {data.title}
                     </h2>
                   )}
-                </div>
+                </Link>
 
                 {/* Botões Principais no Banner */}
                 <div className="flex flex-wrap items-center gap-3">
