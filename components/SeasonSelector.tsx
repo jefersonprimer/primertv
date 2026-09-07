@@ -20,6 +20,7 @@ interface Episode {
 interface Season {
   id: string;
   number: number;
+  title?: string | null;
   episodes: Episode[];
 }
 
@@ -88,7 +89,7 @@ export default function SeasonSelector({
                 : ""
             }`}
           >
-            {t("season", { number: currentSeason.number })}
+            {currentSeason.title || t("season", { number: currentSeason.number })}
             {seasons.length > 1 && (
               <ChevronDown
                 className={`h-6 w-6 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -102,7 +103,7 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsOpen(false)}
               />
-              <div className="absolute left-0 top-full rounded-md z-50 mt-2 py-2 w-60 overflow-hidden bg-[#272727] shadow-xl">
+              <div className="absolute left-0 top-full rounded-md z-50 mt-2 py-2 w-72 overflow-hidden bg-[#272727] shadow-xl">
                 {seasons.map((season, index) => (
                   <button
                     key={season.id}
@@ -116,7 +117,7 @@ export default function SeasonSelector({
                         : "text-[#bbb]"
                     }`}
                   >
-                    <span>{t("season", { number: season.number })}</span>
+                    <span className="truncate max-w-[180px]">{season.title || t("season", { number: season.number })}</span>
                     <span className="text-xs text-[#bbb] font-normal">
                       {t("episodesCount", { count: season.episodes.length })}
                     </span>

@@ -182,7 +182,7 @@ export default async function AnimeDetailsPage({
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
-      <div className="-mt-14 2xl:-mt-16 relative md:min-h-[95vh] lg:min-h-screen w-full md:flex md:flex-col md:justify-end">
+      <div className="relative md:min-h-[95vh] lg:min-h-[calc(100vh-4rem)] w-full md:flex md:flex-col md:justify-end">
         {/* Banner Section */}
         <div className="absolute top-0 left-0 right-0 h-[95vh] lg:h-screen hidden md:block bg-zinc-900 overflow-hidden">
           {finalBannerUrl ? (

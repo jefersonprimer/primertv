@@ -68,85 +68,85 @@ export const getAnimeBanner = cache(async (animeId: string, title: string): Prom
 
   let resolvedBanner: string | null = null;
 
-  // 1. Tentar AniList (GraphQL)
-  try {
-    const query = `
-      query ($search: String) {
-        Media(search: $search, type: ANIME) {
-          bannerImage
+// 1. Tentar TMDB primeiro (para garantir backdrops na proporção 16:9 de alta resolução)
+  const tmdbKey = process.env.TMDB_API_KEY;
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+
+  if (tmdbKey || tmdbToken) {
+    try {
+      const url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&language=pt-BR`;
+      const headers: HeadersInit = {};
+
+      if (tmdbToken) {
+        headers["Authorization"] = `Bearer ${tmdbToken}`;
+      }
+
+      const response = await fetch(
+        tmdbKey && !tmdbToken ? `${url}&api_key=${tmdbKey}` : url,
+        {
+          headers,
+          next: { revalidate: 3600 },
+        }
+      );
+
+      if (response.ok) {
+        const data = (await response.json()) as TmdbSearchResponse;
+        const firstMatch = data.results?.find((item) => item.backdrop_path);
+        if (firstMatch && firstMatch.id) {
+          const mediaType = firstMatch.media_type === "movie" ? "movie" : "tv";
+          const imagesUrl = `https://api.themoviedb.org/3/${mediaType}/${firstMatch.id}/images`;
+          const imagesResponse = await fetch(
+            tmdbKey && !tmdbToken ? `${imagesUrl}?api_key=${tmdbKey}` : imagesUrl,
+            { headers, next: { revalidate: 3600 } },
+          );
+
+          let bestPath = firstMatch.backdrop_path;
+          if (imagesResponse.ok) {
+            const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
+            bestPath = selectBest16by9Backdrop(imagesData.backdrops, firstMatch.backdrop_path);
+          }
+
+          if (bestPath) {
+            resolvedBanner = `https://image.tmdb.org/t/p/original${bestPath}`;
+          }
         }
       }
-    `;
-
-    const response = await fetch("https://graphql.anilist.co", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query,
-        variables: { search: title },
-      }),
-      next: { revalidate: 3600 }, // Integração com o cache do Next.js
-    });
-
-    if (response.ok) {
-      const data = (await response.json()) as AniListResponse;
-      if (data.data?.Media?.bannerImage) {
-        resolvedBanner = data.data.Media.bannerImage;
-      }
+    } catch (error) {
+      console.error("Erro ao buscar banner no TMDB:", error);
     }
-  } catch (error) {
-    console.error("Erro ao buscar banner no AniList:", error);
   }
 
-  // 2. Tentar TMDB (Se AniList falhar ou não retornar banner)
+  // 2. Tentar AniList (Se TMDB falhar ou não retornar banner)
   if (!resolvedBanner) {
-    const tmdbKey = process.env.TMDB_API_KEY;
-    const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
-
-    if (tmdbKey || tmdbToken) {
-      try {
-        const url = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(title)}&language=pt-BR`;
-        const headers: HeadersInit = {};
-
-        if (tmdbToken) {
-          headers["Authorization"] = `Bearer ${tmdbToken}`;
-        }
-
-        const response = await fetch(
-          tmdbKey && !tmdbToken ? `${url}&api_key=${tmdbKey}` : url,
-          {
-            headers,
-            next: { revalidate: 3600 },
-          }
-        );
-
-        if (response.ok) {
-          const data = (await response.json()) as TmdbSearchResponse;
-          const firstMatch = data.results?.find((item) => item.backdrop_path);
-          if (firstMatch && firstMatch.id) {
-            const mediaType = firstMatch.media_type === "movie" ? "movie" : "tv";
-            const imagesUrl = `https://api.themoviedb.org/3/${mediaType}/${firstMatch.id}/images`;
-            const imagesResponse = await fetch(
-              tmdbKey && !tmdbToken ? `${imagesUrl}?api_key=${tmdbKey}` : imagesUrl,
-              { headers, next: { revalidate: 3600 } },
-            );
-
-            let bestPath = firstMatch.backdrop_path;
-            if (imagesResponse.ok) {
-              const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
-              bestPath = selectBest16by9Backdrop(imagesData.backdrops, firstMatch.backdrop_path);
-            }
-
-            if (bestPath) {
-              resolvedBanner = `https://image.tmdb.org/t/p/original${bestPath}`;
-            }
+    try {
+      const query = `
+        query ($search: String) {
+          Media(search: $search, type: ANIME) {
+            bannerImage
           }
         }
-      } catch (error) {
-        console.error("Erro ao buscar banner no TMDB:", error);
+      `;
+
+      const response = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query,
+          variables: { search: title },
+        }),
+        next: { revalidate: 3600 },
+      });
+
+      if (response.ok) {
+        const data = (await response.json()) as AniListResponse;
+        if (data.data?.Media?.bannerImage) {
+          resolvedBanner = data.data.Media.bannerImage;
+        }
       }
+    } catch (error) {
+      console.error("Erro ao buscar banner no AniList:", error);
     }
   }
 

@@ -11,6 +11,7 @@ CREATE INDEX IF NOT EXISTS "Series_score_createdAt_idx" ON "Series" ("score", "c
 CREATE INDEX IF NOT EXISTS "Series_updatedAt_idx" ON "Series" ("updatedAt");
 
 -- CreateIndex
+ALTER TABLE "Movie" ADD COLUMN IF NOT EXISTS "score" DOUBLE PRECISION;
 CREATE INDEX IF NOT EXISTS "Movie_score_createdAt_idx" ON "Movie" ("score", "createdAt");
 
 -- CreateIndex

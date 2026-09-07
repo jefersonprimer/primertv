@@ -1,7 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { HeroCarouselClient } from "./HeroCarouselClient";
-import { getAnimeLogo, getSeriesLogo } from "@/lib/banners";
+import {
+  getAnimeLogo,
+  getSeriesLogo,
+  getAnimeBanner,
+  getSeriesBanner,
+  getMovieBanner,
+} from "@/lib/banners";
 import { getMovieLogo } from "@/lib/tmdb";
 import {
   FirstEpisodeRow,
@@ -35,7 +41,7 @@ export async function HeroCarousel({
   const mediaList: HeroCarouselMedia[] = isSeries
     ? await prisma.series.findMany({
         where: {
-          bannerUrl: { not: null },
+          bannerUrl: { not: "none" },
         },
         select: {
           id: true,
@@ -54,7 +60,7 @@ export async function HeroCarousel({
     : isMovie
       ? await prisma.movie.findMany({
           where: {
-            bannerUrl: { not: null },
+            bannerUrl: { not: "none" },
           },
           select: {
             id: true,
@@ -75,7 +81,7 @@ export async function HeroCarousel({
         })
       : await prisma.anime.findMany({
           where: {
-            bannerUrl: { not: null },
+            bannerUrl: { not: "none" },
           },
           select: {
             id: true,
@@ -149,6 +155,16 @@ export async function HeroCarousel({
 
   const items = await Promise.all(
     mediaList.map(async (media) => {
+      let bannerUrl = media.bannerUrl;
+      if (!bannerUrl) {
+        bannerUrl = isSeries
+          ? await getSeriesBanner(media.id, media.title)
+          : isMovie
+            ? await getMovieBanner(media.id, media.title)
+            : await getAnimeBanner(media.id, media.title);
+      }
+      const finalBannerUrl = bannerUrl === "none" ? null : bannerUrl;
+
       let logoUrl = media.logoUrl;
       if (!logoUrl) {
         logoUrl = isSeries
@@ -175,7 +191,7 @@ export async function HeroCarousel({
         slug: media.slug,
         title: media.title,
         description: media.description,
-        bannerUrl: media.bannerUrl,
+        bannerUrl: finalBannerUrl,
         imageUrl: media.imageUrl,
         logoUrl: finalLogoUrl,
         genres: media.genres,
@@ -201,7 +217,7 @@ export async function HeroCarousel({
 
 export function HeroCarouselSkeleton() {
   return (
-    <section className="-mt-14 2xl:-mt-16 relative h-[80vh] sm:h-screen md:h-[90vh] lg:h-screen w-full overflow-hidden bg-zinc-900">
+    <section className="relative h-[95vh] lg:h-screen 2xl:h-[calc(100vh-4rem)] w-full overflow-hidden bg-zinc-900">
       <style>{`
         @media (max-width: 639px) {
           .mobile-bottom-blur {
@@ -223,11 +239,11 @@ export function HeroCarouselSkeleton() {
       {/* Mobile gradient overlay for poster readability */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-transparent md:hidden" />
       {/* Left Gradient */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[50%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/90 hidden md:block" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/80 hidden md:block" />
       {/* Right Gradient */}
       <div className="pointer-events-none absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-zinc-50/50 to-transparent dark:from-black/50 hidden md:block" />
       {/* Bottom Gradient for sm and larger */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black hidden sm:block" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-68 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black hidden sm:block" />
 
       {/* Mobile bottom blur & gradient overlay for screens < sm */}
       <div className="mobile-bottom-blur sm:hidden" />

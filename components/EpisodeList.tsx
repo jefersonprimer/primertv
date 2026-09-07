@@ -117,10 +117,7 @@ function isGenericTitle(
 
   const parsedStripped = Number(stripped);
   if (!isNaN(parsedStripped)) {
-    const roundedParsed = Number(parsedStripped.toFixed(4));
-    if (roundedParsed === roundedNum) {
-      return true;
-    }
+    return true;
   }
 
   return false;

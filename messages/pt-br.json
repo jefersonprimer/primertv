@@ -69,6 +69,7 @@
     "noResults": "Nenhum resultado encontrado para \"{query}\".",
     "checkSpelling": "Tente buscar por termos diferentes ou verifique a ortografia.",
     "animes": "Animes",
+    "topResults": "Principais Resultados",
     "series": "Séries",
     "movies": "Filmes",
     "mangas": "Mangás",
@@ -418,6 +419,7 @@
     "trustSystemDescription": "Sua avaliação é registrada imediatamente no seu perfil e pode ser alterada a qualquer momento. Para proteger as notas públicas contra manipulação e spam, a relevância do seu voto na média da comunidade cresce progressivamente com a maturidade e atividade da sua conta."
   },
   "QuickViewModal": {
+    "moreDetails": "Mais Detalhes",
     "startWatching": "Assistir E1",
     "continueWatching": "Continuar: E{number}",
     "watchEpisode": "Assistir E{number}",

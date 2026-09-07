@@ -103,7 +103,7 @@ export function HeroCarouselClient({
 
   return (
     <section
-      className="-mt-14 2xl:-mt-16 relative h-[80vh] sm:h-screen md:h-[90vh] lg:h-screen w-full overflow-hidden bg-zinc-900"
+      className="relative h-[95vh] lg:h-screen 2xl:h-[calc(100vh-4rem)] w-full overflow-hidden bg-zinc-900"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={onTouchStart}
@@ -153,7 +153,7 @@ export function HeroCarouselClient({
                 alt={item.title}
                 fill
                 sizes="100vw"
-                className="object-contain md:hidden"
+                className="object-cover md:hidden opacity-100"
                 priority={index === 0}
                 loading={index === 0 ? undefined : "lazy"}
               />
@@ -174,7 +174,7 @@ export function HeroCarouselClient({
                 alt={item.title}
                 fill
                 sizes="100vw"
-                className="hidden object-contain md:block"
+                className="hidden object-contain opacity-100 md:block"
                 priority={index === 0}
                 loading={index === 0 ? undefined : "lazy"}
               />
@@ -185,18 +185,18 @@ export function HeroCarouselClient({
 
       {/* Mobile gradient overlay for poster readability */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-transparent md:hidden" />
-      {/* Left Gradient */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[50%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/90 hidden md:block" />
+      {/* Left Gradient (occupies 40% of the width, fading softer to transparent) */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-zinc-50/80 to-transparent dark:from-black/80 hidden md:block" />
       {/* Right Gradient */}
       <div className="pointer-events-none absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-zinc-50/50 to-transparent dark:from-black/50 hidden md:block" />
       {/* Bottom Gradient for sm and larger */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black hidden sm:block" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-68 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black hidden sm:block" />
 
       {/* Mobile bottom blur & gradient overlay for screens < sm */}
       <div className="mobile-bottom-blur sm:hidden" />
 
       <div className="absolute inset-0 flex items-end pb-30 sm:pb-14 md:pb-[24px] md:items-center">
-        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-6 2xl:-translate-y-16">
+        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-20 2xl:-translate-y-16">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl 2xl:max-w-2xl 2xl:space-y-6">
             {current.logoUrl ? (
               <Link

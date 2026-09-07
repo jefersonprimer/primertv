@@ -5,6 +5,8 @@ import { getAnimeDetailsBySlug } from "@/lib/media-details";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { getAnimeWatchHistory } from "@/lib/history";
 
+import { getAnimeLogo } from "@/lib/banners";
+
 export type EpisodePreviewItem = {
   id: string;
   number: number;
@@ -28,6 +30,7 @@ export type AnimeQuickPreviewData = {
   description: string | null;
   imageUrl: string | null;
   bannerUrl: string | null;
+  logoUrl?: string | null;
   genres: string[];
   year: number | null;
   score: number | null;
@@ -36,6 +39,7 @@ export type AnimeQuickPreviewData = {
   isSubtitled: boolean;
   audio?: string[];
   subtitles?: string[];
+  awards?: string[];
   duration?: string | null;
   seasons: SeasonPreviewItem[];
   nextEpisode: {
@@ -174,6 +178,12 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
       })),
     }));
 
+    let logoUrl = anime.logoUrl;
+    if (!logoUrl) {
+      logoUrl = await getAnimeLogo(anime.id, anime.title);
+    }
+    const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
+
     return {
       id: anime.id,
       slug: anime.slug,
@@ -181,6 +191,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
       description: anime.description,
       imageUrl: anime.imageUrl,
       bannerUrl: anime.bannerUrl,
+      logoUrl: finalLogoUrl,
       genres: anime.genres,
       year: anime.year,
       score: anime.score,

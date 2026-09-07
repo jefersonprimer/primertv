@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { MediaCard } from "@/components/MediaCard";
+import { SearchTopResultCard } from "@/components/SearchTopResultCard";
 import { SearchBar } from "@/components/SearchBar";
 import { getTranslations } from "next-intl/server";
 
@@ -44,6 +45,7 @@ export default async function SearchPage({
         slug: true,
         title: true,
         imageUrl: true,
+        bannerUrl: true,
         isDubbed: true,
         isSubtitled: true,
       },
@@ -133,6 +135,23 @@ export default async function SearchPage({
                 {t("checkSpelling")}
               </p>
             </div>
+          )}
+
+          {animes.length > 0 && (
+            <section>
+              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+                {t("topResults")}
+              </h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {animes.slice(0, 3).map((anime) => (
+                  <SearchTopResultCard
+                    key={anime.id}
+                    item={anime}
+                    type="anime"
+                  />
+                ))}
+              </div>
+            </section>
           )}
 
           {animes.length > 0 && (

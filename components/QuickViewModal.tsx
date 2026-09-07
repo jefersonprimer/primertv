@@ -268,45 +268,67 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-[#141414]/80 via-transparent to-transparent" />
 
-              {/* Botões Principais no Banner */}
-              <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 flex flex-wrap items-center gap-3">
-                <StartWatchingButton
-                  href={watchUrl}
-                  onClick={onClose}
-                  text={buttonText}
-                />
+              {/* Conteúdo Inferior no Banner (Logo/Nome + Botões) */}
+              <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 z-10 flex flex-col gap-3 sm:gap-4">
+                {/* Logo ou Nome do Anime */}
+                <div className="max-w-[75%] sm:max-w-[55%]">
+                  {data.logoUrl ? (
+                    <div className="relative aspect-[3/1] w-full max-w-[160px] sm:max-w-[240px] md:max-w-[280px]">
+                      <Image
+                        src={data.logoUrl}
+                        alt={data.title}
+                        fill
+                        priority
+                        className="object-contain object-left"
+                      />
+                    </div>
+                  ) : (
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white drop-shadow-md line-clamp-2">
+                      {data.title}
+                    </h2>
+                  )}
+                </div>
 
-                <WatchlistButton
-                  mediaType="ANIME"
-                  mediaId={data.id}
-                  slug={data.slug}
-                  initialInWatchlist={data.inWatchlist}
-                  isLoggedIn={data.isLoggedIn}
-                  size={24}
-                />
+                {/* Botões Principais no Banner */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <StartWatchingButton
+                    href={watchUrl}
+                    onClick={onClose}
+                    text={buttonText}
+                  />
 
-                <AddToListButton
-                  animeId={data.id}
-                  isLoggedIn={data.isLoggedIn}
-                  size={24}
-                />
+                  <WatchlistButton
+                    mediaType="ANIME"
+                    mediaId={data.id}
+                    slug={data.slug}
+                    initialInWatchlist={data.inWatchlist}
+                    isLoggedIn={data.isLoggedIn}
+                    size={24}
+                  />
 
-                <ShareButton
-                  url={
-                    typeof window !== "undefined"
-                      ? `${window.location.origin}/animes/${data.slug}`
-                      : undefined
-                  }
-                  size={24}
-                />
+                  <AddToListButton
+                    animeId={data.id}
+                    isLoggedIn={data.isLoggedIn}
+                    size={24}
+                  />
 
-                <Link
-                  href={`/animes/${data.slug}`}
-                  onClick={onClose}
-                  className="flex items-center gap-2 p-2 rounded-full bg-zinc-800/90 hover:bg-zinc-700 text-white text-sm font-semibold border border-zinc-700/60 hover:border-zinc-500 transition-all ml-auto"
-                >
-                  <Info size={24} />
-                </Link>
+                  <ShareButton
+                    url={
+                      typeof window !== "undefined"
+                        ? `${window.location.origin}/animes/${data.slug}`
+                        : undefined
+                    }
+                    size={24}
+                  />
+
+                  <Link
+                    href={`/animes/${data.slug}`}
+                    onClick={onClose}
+                    className="flex items-center gap-2 p-2 rounded-full bg-zinc-800/90 hover:bg-zinc-700 text-white text-sm font-semibold border border-zinc-700/60 hover:border-zinc-500 transition-all ml-auto"
+                  >
+                    <Info size={24} />
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -314,13 +336,6 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
             <div className="p-4 sm:p-6 flex flex-col gap-6">
               {/* Título & Badges */}
               <div className="flex flex-col gap-2">
-                <Link
-                  href={`/animes/${data.slug}`}
-                  className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white hover:underline tracking-tight"
-                >
-                  {data.title}
-                </Link>
-
                 <div className="flex flex-wrap items-center gap-2.5 text-xs sm:text-sm text-zinc-300">
                   {data.rating && (
                     <RatingBadge rating={data.rating} size={22} />
@@ -465,7 +480,10 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
 
                               {formattedDate && (
                                 <div className="flex items-center gap-1 text-xs text-zinc-400">
-                                  <Calendar size={12} className="text-zinc-500" />
+                                  <Calendar
+                                    size={12}
+                                    className="text-zinc-500"
+                                  />
                                   <span>{formattedDate}</span>
                                 </div>
                               )}

@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState, useCallback } from "react";
-import { X, Plus, Check, Loader2, Info } from "lucide-react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { X, Plus, Check, Loader2, ListPlus, FolderPlus, ArrowLeft } from "lucide-react";
 import {
   createList,
   toggleAnimeInList,
@@ -44,10 +44,15 @@ export default function AddToListButton({
   const [isOpen, setIsOpen] = useState(false);
   const [lists, setLists] = useState<UserList[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Sub-view toggle state for list creation
+  const [showCreateSubModal, setShowCreateSubModal] = useState(false);
   const [newListName, setNewListName] = useState("");
   const [newListDesc, setNewListDesc] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const iconSize = size ?? (compact ? 14 : 16);
   const sizeClass = compact ? "p-1.5" : "p-2";
@@ -82,7 +87,6 @@ export default function AddToListButton({
 
   const handleToggle = async (listId: string) => {
     setError(null);
-    // Optimistic UI update
     setLists((prev) =>
       prev.map((l) =>
         l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
@@ -92,7 +96,6 @@ export default function AddToListButton({
     try {
       const res = await toggleAnimeInList(listId, animeId, seriesId);
       if (!res.success) {
-        // Revert UI update
         setLists((prev) =>
           prev.map((l) =>
             l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
@@ -102,7 +105,6 @@ export default function AddToListButton({
       }
     } catch (err) {
       console.error(err);
-      // Revert UI update
       setLists((prev) =>
         prev.map((l) =>
           l.id === listId ? { ...l, isChecked: !l.isChecked } : l,
@@ -123,7 +125,7 @@ export default function AddToListButton({
       if (res.success && res.list) {
         setNewListName("");
         setNewListDesc("");
-        // Refresh list
+        setShowCreateSubModal(false);
         await loadLists();
       } else {
         setError(res.error || t("errorCreate"));
@@ -138,8 +140,24 @@ export default function AddToListButton({
 
   const handleOpen = () => {
     setIsOpen(true);
+    setShowCreateSubModal(false);
     void loadLists();
   };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setShowCreateSubModal(false);
+    setError(null);
+  };
+
+  useEffect(() => {
+    if (showCreateSubModal) {
+      const timer = setTimeout(() => {
+        nameInputRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [showCreateSubModal]);
 
   if (!isLoggedIn) {
     return (
@@ -178,56 +196,191 @@ export default function AddToListButton({
         {tooltipElement}
       </button>
 
-      {/* Modal */}
+      {/* Main Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="relative rounded-xl w-full max-w-md overflow-hidden bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-2xl">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-              <h2 className="text-lg font-bold text-zinc-50 flex items-center gap-2">
-                {t("title")}
-              </h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="relative rounded-2xl w-full max-w-[95vw] sm:w-[720px] h-[495px] max-h-[90vh] overflow-hidden bg-zinc-950/95 border border-zinc-800/90 text-zinc-100 shadow-2xl shadow-black/80 flex flex-col transition-all">
+            
+            {/* Modal Top Header */}
+            <div className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-4 bg-zinc-900/60">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                  {showCreateSubModal ? (
+                    <FolderPlus className="h-4 w-4" />
+                  ) : (
+                    <ListPlus className="h-4 w-4" />
+                  )}
+                </div>
+                <h2 className="text-base font-bold text-white tracking-tight">
+                  {showCreateSubModal ? t("createList") : t("title")}
+                </h2>
+              </div>
               <button
-                onClick={() => setIsOpen(false)}
-                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors cursor-pointer"
+                onClick={handleClose}
+                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+                aria-label="Fechar"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            {/* Content */}
-            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+            {/* Action Bar Sub-Header: Left Action / Back, Right Counter */}
+            <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-800/60 bg-zinc-900/30">
+              {showCreateSubModal ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCreateSubModal(false);
+                    setError(null);
+                  }}
+                  className="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="h-4 w-4 text-blue-400" />
+                  <span>Voltar para minhas listas</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={lists.length >= 10}
+                  onClick={() => {
+                    setError(null);
+                    setShowCreateSubModal(true);
+                  }}
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+                >
+                  <Plus className="h-4 w-4 stroke-[2.5]" />
+                  <span>{t("createList")}</span>
+                </button>
+              )}
+
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold text-zinc-400">
+                <span className="text-blue-400 font-bold">{lists.length}</span>
+                <span className="text-zinc-600">/</span>
+                <span>10</span>
+              </div>
+            </div>
+
+            {/* Main Canvas Body */}
+            <div className="p-6 space-y-4 overflow-y-auto flex-1 relative">
               {error && (
-                <div className="rounded-lg bg-red-950/55 border border-red-800 p-3 text-sm text-red-200">
+                <div className="rounded-xl bg-red-950/40 border border-red-800/60 p-3 text-xs text-red-200">
                   {error}
                 </div>
               )}
 
-              {/* Lists Checklist */}
-              <div>
-                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-                  {t("chooseList")}
-                </h3>
+              {showCreateSubModal ? (
+                /* Native Creation Form view inside the modal canvas */
+                <form onSubmit={handleCreateList} className="space-y-4 py-2 max-w-lg mx-auto animate-in fade-in duration-200">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-semibold text-zinc-200">Detalhes da nova lista</h3>
+                    <p className="text-xs text-zinc-500">Informe um nome e descrição para identificar sua lista.</p>
+                  </div>
 
-                {loading ? (
-                  <div className="flex justify-center items-center py-6">
-                    <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                  <div className="space-y-4 pt-2">
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                        Nome da lista
+                      </label>
+                      <input
+                        ref={nameInputRef}
+                        type="text"
+                        placeholder={t("listNamePlaceholder")}
+                        value={newListName}
+                        onChange={(e) => setNewListName(e.target.value)}
+                        maxLength={50}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                        Descrição (opcional)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={t("descriptionPlaceholder")}
+                        value={newListDesc}
+                        onChange={(e) => setNewListDesc(e.target.value)}
+                        maxLength={150}
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                      />
+                    </div>
                   </div>
-                ) : lists.length === 0 ? (
-                  <div className="text-center py-6 text-zinc-500 text-sm">
-                    {t("noLists")}
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800/60">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCreateSubModal(false);
+                        setError(null);
+                      }}
+                      className="px-5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+                    >
+                      {t("cancel")}
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isCreating || !newListName.trim()}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-semibold text-white transition-all shadow-md shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-95"
+                    >
+                      {isCreating && (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      )}
+                      {t("createList")}
+                    </button>
                   </div>
-                ) : (
-                  <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                    {lists.map((list) => (
-                      <button
-                        key={list.id}
-                        type="button"
-                        onClick={() => handleToggle(list.id)}
-                        className="flex rounded-md w-full items-center justify-between border border-zinc-800 bg-zinc-950/40 p-3 hover:bg-zinc-800 hover:border-zinc-700 transition-all text-left group cursor-pointer"
-                      >
-                        <div className="flex-1 min-w-0 pr-2">
-                          <p className="font-medium text-sm text-zinc-100 group-hover:text-white transition-colors truncate">
+                </form>
+              ) : loading ? (
+                <div className="flex justify-center items-center py-16">
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                </div>
+              ) : lists.length === 0 ? (
+                <div className="text-center py-12 px-4 text-zinc-400 text-sm flex flex-col items-center justify-center gap-2">
+                  <div className="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-1">
+                    <FolderPlus className="h-8 w-8" />
+                  </div>
+                  <p className="font-semibold text-zinc-200 text-sm">{t("noLists")}</p>
+                  <p className="text-xs text-zinc-500 max-w-[280px] leading-relaxed">
+                    {t("emptySubtitle")}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setError(null);
+                      setShowCreateSubModal(true);
+                    }}
+                    className="mt-3 flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-500 hover:to-indigo-500 transition-all cursor-pointer shadow-md shadow-blue-600/20"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>{t("createList")}</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+                  {lists.map((list) => (
+                    <button
+                      key={list.id}
+                      type="button"
+                      onClick={() => handleToggle(list.id)}
+                      className={`group relative flex rounded-xl w-full items-center justify-between border p-3.5 transition-all text-left cursor-pointer ${
+                        list.isChecked
+                          ? "border-blue-500/60 bg-blue-950/20 hover:bg-blue-950/30"
+                          : "border-zinc-800/80 bg-zinc-900/40 hover:bg-zinc-800/60 hover:border-zinc-700/80"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0 pr-2">
+                        <div
+                          className={`p-2 rounded-lg transition-colors shrink-0 ${
+                            list.isChecked
+                              ? "bg-blue-600/20 text-blue-400"
+                              : "bg-zinc-800/70 text-zinc-400 group-hover:text-zinc-200"
+                          }`}
+                        >
+                          <ListPlus className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-sm text-zinc-100 group-hover:text-white transition-colors truncate">
                             {list.name}
                           </p>
                           {list.description && (
@@ -236,73 +389,31 @@ export default function AddToListButton({
                             </p>
                           )}
                         </div>
-                        <div
-                          className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
-                            list.isChecked
-                              ? "border-blue-500 bg-blue-600 text-white"
-                              : "border-zinc-700 bg-zinc-900 group-hover:border-zinc-500"
-                          }`}
-                        >
-                          {list.isChecked && (
-                            <Check className="h-3 w-3 stroke-[3]" />
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                      </div>
 
-              {/* Create new list form */}
-              {lists.length < 10 ? (
-                <form
-                  onSubmit={handleCreateList}
-                  className="space-y-3 pt-4 border-t border-zinc-800"
-                >
-                  <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                    {t("createList")}
-                  </h3>
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      placeholder={t("listNamePlaceholder")}
-                      value={newListName}
-                      onChange={(e) => setNewListName(e.target.value)}
-                      maxLength={50}
-                      className="w-full rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                      required
-                    />
-                    <input
-                      type="text"
-                      placeholder={t("descriptionPlaceholder")}
-                      value={newListDesc}
-                      onChange={(e) => setNewListDesc(e.target.value)}
-                      maxLength={150}
-                      className="w-full rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isCreating || !newListName.trim()}
-                    className="flex rounded-md w-full items-center justify-center gap-2 bg-blue-500 hover:bg-[#0077FD] px-4 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    {isCreating && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {t("createList")}
-                  </button>
-                </form>
-              ) : (
-                <div className="flex items-start gap-2 rounded-xl bg-zinc-950/60 border border-zinc-855 p-3 text-xs text-zinc-400">
-                  <Info className="h-4 w-4 text-zinc-500 flex-shrink-0 mt-0.5" />
-                  <p>{t("limitInfo")}</p>
+                      <div
+                        className={`flex h-5 w-5 items-center justify-center rounded-lg border transition-all shrink-0 ${
+                          list.isChecked
+                            ? "border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/30 scale-105"
+                            : "border-zinc-700 bg-zinc-900 group-hover:border-zinc-500"
+                        }`}
+                      >
+                        {list.isChecked && (
+                          <Check className="h-3.5 w-3.5 stroke-[3]" />
+                        )}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               )}
-
-              {/* Info limits */}
-              <div className="text-[10px] text-zinc-500 flex justify-between pt-2 border-t border-zinc-800">
-                <span>{t("limitLabel")}</span>
-                <span>{t("maxItemsLabel")}</span>
-              </div>
             </div>
+
+            {/* Footer limits */}
+            <div className="px-6 py-3 text-[11px] text-zinc-500 flex justify-between items-center bg-zinc-950 border-t border-zinc-800/60 font-medium mt-auto">
+              <span>{t("limitLabel")}</span>
+              <span>{t("maxItemsLabel")}</span>
+            </div>
+
           </div>
         </div>
       )}

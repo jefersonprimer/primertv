@@ -97,6 +97,420 @@ struct Args {
     channels: bool,
 }
 
+
+
+async fn fetch_and_traverse_prequeles(
+    jikan: &JikanService,
+    initial_mal_id: i32,
+) -> Vec<jikan::JikanAnime> {
+    let mut chain = Vec::new();
+    let mut current_id = initial_mal_id;
+    let mut visited = std::collections::HashSet::new();
+    let mut next_title: Option<String> = None;
+
+    // 1. Traverse backwards (Prequels) to find root / Season 1
+    loop {
+        if !visited.insert(current_id) {
+            break;
+        }
+
+        // Fetch anime details if we have current_id
+        let anime_opt = match jikan.get_anime_by_id(current_id).await {
+            Ok(opt) => opt,
+            Err(e) => {
+                eprintln!("[WARN] Error fetching anime details by mal_id {}: {}. Using fallback metadata.", current_id, e);
+                let fallback = jikan::JikanAnime {
+                    mal_id: Some(current_id),
+                    title: next_title.clone().unwrap_or_else(|| format!("Anime {}", current_id)),
+                    titles: None,
+                    synopsis: None,
+                    images: None,
+                    genres: None,
+                    aired: None,
+                    rating: None,
+                    score: None,
+                    status: None,
+                    duration: None,
+                    type_name: Some("TV".to_string()),
+                    season: None,
+                    year: None,
+                    broadcast: None,
+                    rank: None,
+                    popularity: None,
+                    members: None,
+                };
+                Some(fallback)
+            }
+        };
+
+        let anime = match anime_opt {
+            Some(a) => a,
+            None => break,
+        };
+
+        chain.push(anime);
+
+        // Sleep to respect rate limit
+        tokio::time::sleep(tokio::time::Duration::from_millis(1000)).await;
+
+        // Fetch relations
+        let relations = match jikan.get_anime_relations(current_id).await {
+            Ok(rels) => rels,
+            Err(e) => {
+                eprintln!("[WARN] Could not fetch relations for mal_id {}: {}.", current_id, e);
+                break;
+            }
+        };
+
+        // Find prequel relation of type "anime"
+        let mut prequel_id = None;
+        let mut prequel_title = None;
+        for rel in relations {
+            if rel.relation.to_lowercase() == "prequel" {
+                for entry in rel.entry {
+                    if entry.entry_type.to_lowercase() == "anime" {
+                        prequel_id = Some(entry.mal_id);
+                        prequel_title = Some(entry.name);
+                        break;
+                    }
+                }
+            }
+            if prequel_id.is_some() {
+                break;
+            }
+        }
+
+        match prequel_id {
+            Some(pid) => {
+                println!("Found prequel mal_id {} ({}) for mal_id {}", pid, prequel_title.as_deref().unwrap_or(""), current_id);
+                current_id = pid;
+                next_title = prequel_title;
+            }
+            None => break, // Reached root / season 1
+        }
+
+        tokio::time::sleep(tokio::time::Duration::from_millis(600)).await;
+    }
+
+    // Reverse so season 1 (oldest prequel) comes first!
+    chain.reverse();
+
+    // 2. Traverse forwards (Sequels) from the latest item in chain
+    if let Some(last_item) = chain.last().cloned() {
+        if let Some(mut current_sequel_id) = last_item.mal_id {
+            loop {
+                tokio::time::sleep(tokio::time::Duration::from_millis(600)).await;
+                let relations = match jikan.get_anime_relations(current_sequel_id).await {
+                    Ok(rels) => rels,
+                    Err(_) => break,
+                };
+
+                let mut sequel_id = None;
+                for rel in relations {
+                    if rel.relation.to_lowercase() == "sequel" {
+                        for entry in rel.entry {
+                            if entry.entry_type.to_lowercase() == "anime" {
+                                sequel_id = Some(entry.mal_id);
+                                break;
+                            }
+                        }
+                    }
+                    if sequel_id.is_some() {
+                        break;
+                    }
+                }
+
+                match sequel_id {
+                    Some(sid) => {
+                        if !visited.insert(sid) {
+                            break;
+                        }
+                        println!("Found sequel mal_id {} for mal_id {}", sid, current_sequel_id);
+                        if let Ok(Some(seq_anime)) = jikan.get_anime_by_id(sid).await {
+                            chain.push(seq_anime);
+                            current_sequel_id = sid;
+                        } else {
+                            break;
+                        }
+                    }
+                    None => break,
+                }
+            }
+        }
+    }
+
+    chain
+}
+
+async fn process_anime_item(
+    pool: &sqlx::PgPool,
+    anime_scraper: &AnimeScraper,
+    anime: &jikan::JikanAnime,
+    override_season_number: Option<i32>,
+    override_parent_title: Option<String>,
+) -> Result<()> {
+    let description = anime.synopsis.clone();
+    let image_url = anime.get_image_url();
+    let genres: Vec<String> = anime
+        .genres
+        .clone()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|g| g.name)
+        .collect();
+    let default_title = anime.get_default_title();
+    let english_title = anime.get_english_title();
+    let parent_english_title = english_title.as_ref().map(|eng| {
+        let (cleaned_eng, _, _) = scraper::utils::parse_anime_title(eng);
+        cleaned_eng
+    });
+
+    let (parsed_parent_title, parsed_season_number, _part_number) = scraper::utils::parse_anime_title(&default_title);
+    let parent_title = override_parent_title.unwrap_or(parsed_parent_title);
+    let season_number = override_season_number.unwrap_or(parsed_season_number);
+    let parent_slug = slugify(&parent_title);
+    let aired = anime.aired.as_ref().and_then(|a| a.string.clone());
+    let rating = anime.rating.clone();
+    let status = anime.status.clone();
+    let duration = anime.duration.clone();
+    let season = anime.season.clone();
+    let year = anime.year;
+    let broadcast_day = anime.broadcast.as_ref().and_then(|b| b.day.clone());
+    let broadcast_time = anime.broadcast.as_ref().and_then(|b| b.time.clone());
+    let broadcast_timezone = anime.broadcast.as_ref().and_then(|b| b.timezone.clone());
+    let broadcast_string = anime.broadcast.as_ref().and_then(|b| b.string.clone());
+
+    let default_audio = vec!["Japanese".to_string()];
+    let default_subtitles = vec!["Português (Brasil)".to_string()];
+
+    let existing = sqlx::query_as::<_, IdRow>(r#"SELECT id FROM "Anime" WHERE slug = $1"#)
+        .bind(&parent_slug)
+        .fetch_optional(pool)
+        .await;
+
+    let parent_id = match existing {
+        Ok(Some(row)) => {
+            let _ = sqlx::query(
+                r#"
+                UPDATE "Anime"
+                SET rank = COALESCE($1, rank),
+                    popularity = COALESCE($2, popularity),
+                    members = COALESCE($3, members),
+                    score = COALESCE($4, score),
+                    "titleEnglish" = COALESCE("titleEnglish", $5),
+                    "broadcastDay" = COALESCE("broadcastDay", $6),
+                    "broadcastTime" = COALESCE("broadcastTime", $7),
+                    "broadcastTimezone" = COALESCE("broadcastTimezone", $8),
+                    "broadcastString" = COALESCE("broadcastString", $9),
+                    "updatedAt" = NOW()
+                WHERE id = $10
+                "#,
+            )
+            .bind(&(anime.rank))
+            .bind(&(anime.popularity))
+            .bind(&(anime.members))
+            .bind(&(anime.score))
+            .bind(&parent_english_title)
+            .bind(&broadcast_day)
+            .bind(&broadcast_time)
+            .bind(&broadcast_timezone)
+            .bind(&broadcast_string)
+            .bind(&row.id)
+            .execute(pool)
+            .await;
+            row.id
+        }
+        _ => {
+            let new_id = uuid::Uuid::new_v4().to_string();
+            match sqlx::query(
+                r#"
+                INSERT INTO "Anime" (id, slug, title, "titleEnglish", description, "imageUrl", genres, audio, subtitles, aired, rating, score, status, duration, season, year, "broadcastDay", "broadcastTime", "broadcastTimezone", "broadcastString", rank, popularity, members, "createdAt", "updatedAt")
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, NOW(), NOW())
+                ON CONFLICT (slug) DO UPDATE 
+                SET title = COALESCE("Anime".title, EXCLUDED.title),
+                    "titleEnglish" = COALESCE("Anime"."titleEnglish", EXCLUDED."titleEnglish"),
+                    description = COALESCE("Anime".description, EXCLUDED.description),
+                    "imageUrl" = COALESCE("Anime"."imageUrl", EXCLUDED."imageUrl"),
+                    genres = EXCLUDED.genres,
+                    audio = COALESCE("Anime".audio, EXCLUDED.audio),
+                    subtitles = COALESCE("Anime".subtitles, EXCLUDED.subtitles),
+                    aired = COALESCE("Anime".aired, EXCLUDED.aired),
+                    rating = COALESCE("Anime".rating, EXCLUDED.rating),
+                    score = COALESCE("Anime".score, EXCLUDED.score),
+                    status = COALESCE("Anime".status, EXCLUDED.status),
+                    duration = COALESCE("Anime".duration, EXCLUDED.duration),
+                    season = COALESCE("Anime".season, EXCLUDED.season),
+                    year = COALESCE("Anime".year, EXCLUDED.year),
+                    "broadcastDay" = COALESCE("Anime"."broadcastDay", EXCLUDED."broadcastDay"),
+                    "broadcastTime" = COALESCE("Anime"."broadcastTime", EXCLUDED."broadcastTime"),
+                    "broadcastTimezone" = COALESCE("Anime"."broadcastTimezone", EXCLUDED."broadcastTimezone"),
+                    "broadcastString" = COALESCE("Anime"."broadcastString", EXCLUDED."broadcastString"),
+                    rank = EXCLUDED.rank,
+                    popularity = EXCLUDED.popularity,
+                    members = EXCLUDED.members,
+                    "updatedAt" = NOW()
+                "#,
+            )
+            .bind(&new_id)
+            .bind(&parent_slug)
+            .bind(&parent_title)
+            .bind(&parent_english_title)
+            .bind(&description)
+            .bind(&image_url)
+            .bind(&genres)
+            .bind(&default_audio)
+            .bind(&default_subtitles)
+            .bind(&aired)
+            .bind(&rating)
+            .bind(&anime.score)
+            .bind(&status)
+            .bind(&duration)
+            .bind(&season)
+            .bind(&year)
+            .bind(&broadcast_day)
+            .bind(&broadcast_time)
+            .bind(&broadcast_timezone)
+            .bind(&broadcast_string)
+            .bind(&anime.rank)
+            .bind(&anime.popularity)
+            .bind(&anime.members)
+            .execute(pool)
+            .await
+            {
+                Ok(_) => new_id,
+                Err(e) => {
+                    eprintln!("Error inserting parent anime {}: {}", parent_title, e);
+                    return Err(e.into());
+                }
+            }
+        }
+    };
+
+    let season_title = if default_title != parent_title {
+        Some(default_title.clone())
+    } else {
+        None
+    };
+
+    // Ensure Season row exists for this season_number under parent_id
+    let _ = sqlx::query(
+        r#"
+        INSERT INTO "Season" (id, number, title, "animeId", "createdAt", "updatedAt")
+        VALUES ($1, $2, $3, $4, NOW(), NOW())
+        ON CONFLICT ("animeId", number) DO UPDATE SET title = COALESCE(EXCLUDED.title, "Season".title), "updatedAt" = NOW()
+        "#,
+    )
+    .bind(&(uuid::Uuid::new_v4().to_string()))
+    .bind(&season_number)
+    .bind(&season_title)
+    .bind(&parent_id)
+    .execute(pool)
+    .await;
+
+    // Scrape episodes immediately ("vai atras dos episodios")
+    println!("Scraping episodes for anime (season {}): {}", season_number, parent_title);
+    match anime_scraper.scrape(&default_title).await.or(anime_scraper.scrape(&parent_title).await) {
+        Ok(Some(scraped_data)) => {
+            println!("Found {} episodes for {}", scraped_data.episodes.len(), default_title);
+            let final_image_url = image_url.clone().or(scraped_data.image_url.clone());
+            for ep in scraped_data.episodes {
+                let ep_season_number = if ep.season_number == 1 && season_number > 1 {
+                    season_number
+                } else {
+                    ep.season_number
+                };
+
+                let season_id: String = match sqlx::query_as::<_, IdRow>(
+                    r#"
+                    INSERT INTO "Season" (id, number, title, "animeId", "createdAt", "updatedAt")
+                    VALUES ($1, $2, $3, $4, NOW(), NOW())
+                    ON CONFLICT ("animeId", number) DO UPDATE SET title = COALESCE(EXCLUDED.title, "Season".title), "updatedAt" = NOW()
+                    RETURNING id
+                    "#,
+                )
+                .bind(&(uuid::Uuid::new_v4().to_string()))
+                .bind(&ep_season_number)
+                .bind(&season_title)
+                .bind(&parent_id)
+                .fetch_optional(pool)
+                .await
+                {
+                    Ok(Some(row)) => row.id,
+                    _ => match sqlx::query_as::<_, IdRow>(
+                        r#"SELECT id FROM "Season" WHERE "animeId" = $1 AND number = $2"#,
+                    )
+                    .bind(&parent_id)
+                    .bind(&ep_season_number)
+                    .fetch_optional(pool)
+                    .await
+                    {
+                        Ok(Some(row)) => row.id,
+                        _ => {
+                            eprintln!(
+                                "Failed to get/insert season row for anime {} season {}",
+                                parent_title, ep_season_number
+                            );
+                            continue;
+                        }
+                    },
+                };
+
+                let ep_image = ep.image_url.or(final_image_url.clone());
+                let _ = sqlx::query(
+                    r#"
+                    INSERT INTO "Episode" (id, number, title, "videoUrl", "imageUrl", "seasonId", "createdAt", "updatedAt")
+                    VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+                    ON CONFLICT ("seasonId", number) DO UPDATE 
+                    SET "videoUrl" = EXCLUDED."videoUrl", 
+                        title = EXCLUDED.title, 
+                        "imageUrl" = COALESCE(EXCLUDED."imageUrl", "Episode"."imageUrl"),
+                        "updatedAt" = NOW()
+                    "#,
+                )
+                .bind(&(uuid::Uuid::new_v4().to_string()))
+                .bind(&(ep.number))
+                .bind(&(ep.title))
+                .bind(&(ep.url))
+                .bind(&(ep_image))
+                .bind(&(season_id))
+                .execute(pool)
+                .await;
+            }
+
+            let _ = sqlx::query(
+                r#"
+                UPDATE "Anime" 
+                SET "lastScrapedAt" = NOW(), 
+                    "imageUrl" = COALESCE($1, "imageUrl"),
+                    "updatedAt" = NOW()
+                WHERE id = $2
+                "#,
+            )
+            .bind(&final_image_url)
+            .bind(&parent_id)
+            .execute(pool)
+            .await;
+        }
+        _ => {
+            let _ = sqlx::query(
+                r#"
+                UPDATE "Anime" 
+                SET "lastScrapedAt" = NOW(), 
+                    "updatedAt" = NOW()
+                WHERE id = $1
+                "#,
+            )
+            .bind(&parent_id)
+            .execute(pool)
+            .await;
+            println!("No episodes found/failed scraping for anime: {}", parent_title);
+        }
+    }
+
+    Ok(())
+}
+
+
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
@@ -120,8 +534,6 @@ async fn main() -> Result<()> {
         .or_else(|_| env::var("DATABASE_URL"))
         .expect("Neither DIRECT_URL nor DATABASE_URL is set");
 
-    // For Supabase/PgBouncer compatibility, we must disable the statement cache.
-    // While ?pgbouncer=true in the URL should handle this, we set it explicitly here as well.
     let connect_options = PgConnectOptions::from_str(&database_url)?.statement_cache_capacity(0);
 
     let pool = PgPoolOptions::new()
@@ -130,7 +542,6 @@ async fn main() -> Result<()> {
         .connect_with(connect_options)
         .await?;
 
-    // Debug: reset some manga to force scrape
     if do_manga {
         let _ = sqlx::query(r#"UPDATE "Manga" SET "lastScrapedAt" = NULL"#)
             .execute(&pool)
@@ -167,251 +578,41 @@ async fn main() -> Result<()> {
                 Ok((top_animes, pagination_opt)) => {
                     let is_empty = top_animes.is_empty();
                     for anime in top_animes {
-                        let description = anime.synopsis.clone();
-                        let image_url = anime.get_image_url();
-                        let genres: Vec<String> = anime
-                            .genres
-                            .clone()
-                            .unwrap_or_default()
-                            .into_iter()
-                            .map(|g| g.name)
-                            .collect();
-                        let default_title = anime.get_default_title();
-                        let english_title = anime.get_english_title();
-                        let parent_english_title = english_title.as_ref().map(|eng| {
-                            let (cleaned_eng, _, _) = scraper::utils::parse_anime_title(eng);
-                            cleaned_eng
-                        });
+                        if let Some(mal_id) = anime.mal_id {
+                            println!("Traversing prequel franchise chain for anime: {} (mal_id: {})", anime.title, mal_id);
+                            let chain = fetch_and_traverse_prequeles(&jikan, mal_id).await;
+                            println!("Franchise chain length for {}: {}", anime.title, chain.len());
 
-                        // Parse title for season & parts
-                        let (parent_title, season_number, _part_number) = scraper::utils::parse_anime_title(&default_title);
-                        let parent_slug = slugify(&parent_title);
-                        let aired = anime.aired.as_ref().and_then(|a| a.string.clone());
-                        let rating = anime.rating.clone();
-                        let status = anime.status.clone();
-                        let duration = anime.duration.clone();
-                        let season = anime.season.clone();
-                        let year = anime.year;
-                        let broadcast_day = anime.broadcast.as_ref().and_then(|b| b.day.clone());
-                        let broadcast_time = anime.broadcast.as_ref().and_then(|b| b.time.clone());
-                        let broadcast_timezone = anime.broadcast.as_ref().and_then(|b| b.timezone.clone());
-                        let broadcast_string = anime.broadcast.as_ref().and_then(|b| b.string.clone());
+                            let root_parent_title = chain.first().map(|item| {
+                                let (parsed, _, _) = scraper::utils::parse_anime_title(&item.get_default_title());
+                                parsed
+                            });
 
-                        let default_audio = vec![
-                            "Japanese".to_string(),
-                        ];
-                        let default_subtitles = vec![
-                            "Português (Brasil)".to_string(),
-                        ];
+                            let mut tv_season_counter = 0;
+                            for item in &chain {
+                                let is_tv = item.type_name.as_deref().unwrap_or("TV").to_uppercase() == "TV";
+                                let season_num = if is_tv {
+                                    tv_season_counter += 1;
+                                    tv_season_counter
+                                } else {
+                                    0 // Season 0 for Movies / OVAs / Specials
+                                };
 
-                        // Look up parent anime
-                        let existing = sqlx::query_as::<_, IdRow>(
-                            r#"SELECT id FROM "Anime" WHERE slug = $1"#
-                        )
-                        .bind(&parent_slug)
-                        .fetch_optional(&pool)
-                        .await;
-
-                        let parent_id = match existing {
-                            Ok(Some(row)) => {
-                                // Update parent anime with rank, popularity, etc.
-                                let _ = sqlx::query(
-                                    r#"
-                                    UPDATE "Anime"
-                                    SET rank = COALESCE($1, rank),
-                                        popularity = COALESCE($2, popularity),
-                                        members = COALESCE($3, members),
-                                        score = COALESCE($4, score),
-                                        "titleEnglish" = COALESCE("titleEnglish", $5),
-                                        "broadcastDay" = COALESCE("broadcastDay", $6),
-                                        "broadcastTime" = COALESCE("broadcastTime", $7),
-                                        "broadcastTimezone" = COALESCE("broadcastTimezone", $8),
-                                        "broadcastString" = COALESCE("broadcastString", $9),
-                                        "updatedAt" = NOW()
-                                    WHERE id = $10
-                                    "#
-                                )
-                                .bind(&(anime.rank))
-                                .bind(&(anime.popularity))
-                                .bind(&(anime.members))
-                                .bind(&(anime.score))
-                                .bind(&parent_english_title)
-                                .bind(&broadcast_day)
-                                .bind(&broadcast_time)
-                                .bind(&broadcast_timezone)
-                                .bind(&broadcast_string)
-                                .bind(&row.id)
-                                .execute(&pool)
-                                .await;
-                                row.id
-                            }
-                            _ => {
-                                // Insert parent anime
-                                let new_id = uuid::Uuid::new_v4().to_string();
-                                match sqlx::query(
-                                    r#"
-                                    INSERT INTO "Anime" (id, slug, title, "titleEnglish", description, "imageUrl", genres, audio, subtitles, aired, rating, score, status, duration, season, year, "broadcastDay", "broadcastTime", "broadcastTimezone", "broadcastString", rank, popularity, members, "createdAt", "updatedAt")
-                                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, NOW(), NOW())
-                                    ON CONFLICT (slug) DO UPDATE 
-                                    SET title = EXCLUDED.title,
-                                        "titleEnglish" = COALESCE("Anime"."titleEnglish", EXCLUDED."titleEnglish"),
-                                        description = COALESCE("Anime".description, EXCLUDED.description),
-                                        "imageUrl" = COALESCE("Anime"."imageUrl", EXCLUDED."imageUrl"),
-                                        genres = EXCLUDED.genres,
-                                        audio = COALESCE("Anime".audio, EXCLUDED.audio),
-                                        subtitles = COALESCE("Anime".subtitles, EXCLUDED.subtitles),
-                                        aired = COALESCE("Anime".aired, EXCLUDED.aired),
-                                        rating = COALESCE("Anime".rating, EXCLUDED.rating),
-                                        score = COALESCE("Anime".score, EXCLUDED.score),
-                                        status = COALESCE("Anime".status, EXCLUDED.status),
-                                        duration = COALESCE("Anime".duration, EXCLUDED.duration),
-                                        season = COALESCE("Anime".season, EXCLUDED.season),
-                                        year = COALESCE("Anime".year, EXCLUDED.year),
-                                        "broadcastDay" = COALESCE("Anime"."broadcastDay", EXCLUDED."broadcastDay"),
-                                        "broadcastTime" = COALESCE("Anime"."broadcastTime", EXCLUDED."broadcastTime"),
-                                        "broadcastTimezone" = COALESCE("Anime"."broadcastTimezone", EXCLUDED."broadcastTimezone"),
-                                        "broadcastString" = COALESCE("Anime"."broadcastString", EXCLUDED."broadcastString"),
-                                        rank = EXCLUDED.rank,
-                                        popularity = EXCLUDED.popularity,
-                                        members = EXCLUDED.members,
-                                        "updatedAt" = NOW()
-                                    "#)
-                                    .bind(&new_id)
-                                    .bind(&parent_slug)
-                                    .bind(&parent_title)
-                                    .bind(&parent_english_title)
-                                    .bind(&description)
-                                    .bind(&image_url)
-                                    .bind(&genres)
-                                    .bind(&default_audio)
-                                    .bind(&default_subtitles)
-                                    .bind(&aired)
-                                    .bind(&rating)
-                                    .bind(&anime.score)
-                                    .bind(&status)
-                                    .bind(&duration)
-                                    .bind(&season)
-                                    .bind(&year)
-                                    .bind(&broadcast_day)
-                                    .bind(&broadcast_time)
-                                    .bind(&broadcast_timezone)
-                                    .bind(&broadcast_string)
-                                    .bind(&anime.rank)
-                                    .bind(&anime.popularity)
-                                    .bind(&anime.members)
-                                .execute(&pool)
-                                .await {
-                                    Ok(_) => new_id,
-                                    Err(e) => {
-                                        eprintln!("Error inserting parent anime {}: {}", parent_title, e);
-                                        continue;
-                                    }
+                                println!(
+                                    "Processing franchise item ({:?}, Season {}): {}",
+                                    item.type_name, season_num, item.title
+                                );
+                                if let Err(e) = process_anime_item(&pool, &anime_scraper, item, Some(season_num), root_parent_title.clone()).await {
+                                    eprintln!("Error processing anime item {}: {}", item.title, e);
                                 }
+                                tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
                             }
-                        };
-
-                        // Ensure Season row exists for this season_number under parent_id
-                        let _ = sqlx::query(
-                            r#"
-                            INSERT INTO "Season" (id, number, "animeId", "createdAt", "updatedAt")
-                            VALUES ($1, $2, $3, NOW(), NOW())
-                            ON CONFLICT ("animeId", number) DO NOTHING
-                            "#
-                        )
-                        .bind(&(uuid::Uuid::new_v4().to_string()))
-                        .bind(&season_number)
-                        .bind(&parent_id)
-                        .execute(&pool)
-                        .await;
-
-                        // Scrape episodes immediately ("vai atras dos episodios")
-                        println!("Scraping episodes for discovered anime: {}", parent_title);
-                        match anime_scraper.scrape(&parent_title).await {
-                            Ok(Some(scraped_data)) => {
-                                println!("Found {} episodes for {}", scraped_data.episodes.len(), parent_title);
-                                let final_image_url = image_url.clone().or(scraped_data.image_url.clone());
-                                for ep in scraped_data.episodes {
-                                    let season_id: String = match sqlx::query_as::<_, IdRow>(
-                                        r#"
-                                        INSERT INTO "Season" (id, number, "animeId", "createdAt", "updatedAt")
-                                        VALUES ($1, $2, $3, NOW(), NOW())
-                                        ON CONFLICT ("animeId", number) DO UPDATE SET "updatedAt" = NOW()
-                                        RETURNING id
-                                        "#)
-                                        .bind(&(uuid::Uuid::new_v4().to_string()))
-                                        .bind(&(ep.season_number))
-                                        .bind(&parent_id)
-                                        .fetch_optional(&pool)
-                                        .await {
-                                            Ok(Some(row)) => row.id,
-                                            _ => match sqlx::query_as::<_, IdRow>(
-                                                r#"SELECT id FROM "Season" WHERE "animeId" = $1 AND number = $2"#)
-                                                .bind(&parent_id)
-                                                .bind(&(ep.season_number))
-                                                .fetch_optional(&pool)
-                                                .await {
-                                                    Ok(Some(row)) => row.id,
-                                                    _ => {
-                                                        eprintln!("Failed to get/insert season row for anime {} season {}", parent_title, ep.season_number);
-                                                        continue;
-                                                    }
-                                                }
-                                        };
-
-                                    let ep_image = ep.image_url.or(final_image_url.clone());
-                                    let _ = sqlx::query(
-                                        r#"
-                                        INSERT INTO "Episode" (id, number, title, "videoUrl", "imageUrl", "seasonId", "createdAt", "updatedAt")
-                                        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-                                        ON CONFLICT ("seasonId", number) DO UPDATE 
-                                        SET "videoUrl" = EXCLUDED."videoUrl", 
-                                            title = EXCLUDED.title, 
-                                            "imageUrl" = COALESCE(EXCLUDED."imageUrl", "Episode"."imageUrl"),
-                                            "updatedAt" = NOW()
-                                        "#)
-                                        .bind(&(uuid::Uuid::new_v4().to_string()))
-                                        .bind(&(ep.number))
-                                        .bind(&(ep.title))
-                                        .bind(&(ep.url))
-                                        .bind(&(ep_image))
-                                        .bind(&(season_id))
-                                        .execute(&pool)
-                                        .await;
-                                }
-
-                                // Update Anime to set lastScrapedAt = NOW() and metadata
-                                let _ = sqlx::query(
-                                    r#"
-                                    UPDATE "Anime" 
-                                    SET "lastScrapedAt" = NOW(), 
-                                        "imageUrl" = COALESCE($1, "imageUrl"),
-                                        "updatedAt" = NOW()
-                                    WHERE id = $2
-                                    "#)
-                                    .bind(&final_image_url)
-                                    .bind(&parent_id)
-                                    .execute(&pool)
-                                    .await;
+                        } else {
+                            if let Err(e) = process_anime_item(&pool, &anime_scraper, &anime, None, None).await {
+                                eprintln!("Error processing anime item {}: {}", anime.title, e);
                             }
-                            _ => {
-                                // Update Anime to set lastScrapedAt = NOW() even if scraping failed/returned None
-                                let _ = sqlx::query(
-                                    r#"
-                                    UPDATE "Anime" 
-                                    SET "lastScrapedAt" = NOW(), 
-                                        "updatedAt" = NOW()
-                                    WHERE id = $1
-                                    "#)
-                                    .bind(&parent_id)
-                                    .execute(&pool)
-                                    .await;
-                                println!("No episodes found/failed scraping for anime: {}", parent_title);
-                            }
+                            tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
                         }
-
-                        // Sleep briefly between scraping different animes on the same page
-                        // to avoid overloading the streaming sites and our own CPU/bandwidth
-                        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
                     }
 
                     // Check pagination to proceed to next page or transition source

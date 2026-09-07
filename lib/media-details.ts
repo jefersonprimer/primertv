@@ -39,6 +39,7 @@ const animeDetailsSelect = {
     select: {
       id: true,
       number: true,
+      title: true,
       episodes: {
         orderBy: { number: "asc" },
         select: {

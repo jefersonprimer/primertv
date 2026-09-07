@@ -69,6 +69,7 @@
     "noResults": "No results found for \"{query}\".",
     "checkSpelling": "Try searching for different terms or check spelling.",
     "animes": "Anime",
+    "topResults": "Top Results",
     "series": "Series",
     "movies": "Movies",
     "mangas": "Manga",
@@ -418,6 +419,7 @@
     "trustSystemDescription": "Your rating is recorded immediately on your profile and can be changed at any time. To protect public scores from manipulation and spam, the weight of your vote on the community score increases progressively with your account age and activity."
   },
   "QuickViewModal": {
+    "moreDetails": "More Details",
     "startWatching": "Start E1",
     "continueWatching": "Continue: E{number}",
     "watchEpisode": "Watch E{number}",

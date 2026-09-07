@@ -651,10 +651,14 @@ pub fn unpack_dean_edwards(packed: &str) -> Option<String> {
 
 pub fn parse_anime_title(title: &str) -> (String, i32, Option<i32>) {
     let mut title_cleaned = title.trim().to_string();
+
+    // Strip common movie/OVA/special/TV suffixes for parent title calculation
+    let re_extra = regex::Regex::new(r"(?i)\s+(Movie|Filme|Film|OVA|OAV|Special|Especial|TV)\b.*").unwrap();
+    title_cleaned = re_extra.replace_all(&title_cleaned, "").into_owned();
     
-    // Check and strip "Part X" or "Parte X"
+    // Check and strip "Part X" or "Parte X" or "Cour X"
     let mut part_num = None;
-    let re_part = regex::Regex::new(r"(?i)\s+Part(?:e)?\s+(\d+)").unwrap();
+    let re_part = regex::Regex::new(r"(?i)\s+(?:Part(?:e)?|Cour)\s+(\d+)").unwrap();
     if let Some(caps) = re_part.captures(&title_cleaned) {
         if let Ok(num) = caps[1].parse::<i32>() {
             part_num = Some(num);
@@ -663,21 +667,24 @@ pub fn parse_anime_title(title: &str) -> (String, i32, Option<i32>) {
     }
 
     let mut season_num = 1;
+    let mut season_found = false;
 
-    // 1. Season X (e.g. "Season 2")
-    let re_season_prefix = regex::Regex::new(r"(?i)\s+Season\s+(\d+)").unwrap();
+    // 1. Season X / S2 / S3 (e.g. "Season 2", ": Season 2", " S2", " S3")
+    let re_season_prefix = regex::Regex::new(r"(?i)(?:\s*:)?\s+(?:Season\s+|S)(\d+)").unwrap();
     if let Some(caps) = re_season_prefix.captures(&title_cleaned) {
         if let Ok(num) = caps[1].parse::<i32>() {
             season_num = num;
+            season_found = true;
         }
         title_cleaned = re_season_prefix.replace_all(&title_cleaned, "").into_owned();
     }
-    // 2. Xnd Season (e.g. "2nd Season", "2 Season")
+    // 2. Xnd Season (e.g. "2nd Season", "2 Season" or ": 2nd Season")
     else {
-        let re_season_suffix = regex::Regex::new(r"(?i)\s+(\d+)(?:st|nd|rd|th)?\s+Season").unwrap();
+        let re_season_suffix = regex::Regex::new(r"(?i)(?:\s*:)?\s+(\d+)(?:st|nd|rd|th)?\s+Season").unwrap();
         if let Some(caps) = re_season_suffix.captures(&title_cleaned) {
             if let Ok(num) = caps[1].parse::<i32>() {
                 season_num = num;
+                season_found = true;
             }
             title_cleaned = re_season_suffix.replace_all(&title_cleaned, "").into_owned();
         }
@@ -698,12 +705,35 @@ pub fn parse_anime_title(title: &str) -> (String, i32, Option<i32>) {
                     "X" => 10,
                     _ => 1,
                 };
+                season_found = season_num > 1;
                 let suffix = &caps[2];
                 title_cleaned = re_roman.replace(&title_cleaned, suffix).into_owned();
             }
         }
     }
 
-    (title_cleaned.trim().to_string(), season_num, part_num)
+    // 4. Generic Subtitle / Arc / Sequel detection (e.g. "Franchise: Arc Name" or "Franchise - Arc Name" or "Franchise: Subtitle")
+    let re_arc_subtitle = regex::Regex::new(r"(?i)(?:\s*:\s*|\s+-\s+)(?:.*(?:-hen|-tan|Arc|Season|Cour|Part|Stage|Chapter|Act|Final|Blood War|Kessen|Shippuden|Z|Super|Next Generations|Sennen)\b.*)").unwrap();
+    if re_arc_subtitle.is_match(&title_cleaned) {
+        if !season_found {
+            season_num = 2; // Default to season 2+ for subtitled sequels
+        }
+        title_cleaned = re_arc_subtitle.replace_all(&title_cleaned, "").into_owned();
+    } else if !season_found && title_cleaned.contains(':') {
+        let parts: Vec<&str> = title_cleaned.splitn(2, ':').collect();
+        if parts.len() == 2 && !parts[0].trim().is_empty() && !parts[1].trim().is_empty() {
+            let main_title = parts[0].trim().to_string();
+            let subtitle = parts[1].trim().to_lowercase();
+            if main_title.len() >= 3 && (subtitle.contains("season") || subtitle.contains("part") || subtitle.contains("arc") || subtitle.contains("hen") || subtitle.contains("final") || subtitle.contains("2") || subtitle.contains("3") || subtitle.contains("4")) {
+                season_num = 2;
+                title_cleaned = main_title;
+            }
+        }
+    }
+
+    // Clean up trailing colons, dashes or whitespace
+    title_cleaned = title_cleaned.trim_end_matches(&[':', '-', ' '][..]).trim().to_string();
+
+    (title_cleaned, season_num, part_num)
 }
 

@@ -319,7 +319,7 @@ export default async function WatchPage({
     }
 
     return (
-      <div className="min-h-screen  text-zinc-50">
+      <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
         <main className="w-full lg:px-4 pb-6 md:pb-10">
           <div className="grid gap-4 lg:grid-cols-3 pt-1 lg:pt-4">
             {/* Main Content: Player & Info / Description */}
