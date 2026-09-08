@@ -20,6 +20,7 @@ interface Episode {
 interface Season {
   id: string;
   number: number;
+  title?: string | null;
   episodes: Episode[];
 }
 
@@ -199,9 +200,11 @@ export default function EpisodeSidebar({
               className="flex w-full items-center gap-2 px-2 text-lg font-bold text-white hover:text-[#0077FD] transition-colors"
             >
               <span>
-                {tSelector("season", {
-                  number: selectedSeason ? selectedSeason.number : 1,
-                })}
+                {selectedSeason?.title
+                  ? selectedSeason.title
+                  : tSelector("season", {
+                      number: selectedSeason ? selectedSeason.number : 1,
+                    })}
               </span>
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-200 ${
@@ -227,7 +230,9 @@ export default function EpisodeSidebar({
                     }`}
                   >
                     <span>
-                      {tSelector("season", { number: season.number })}
+                      {season.title
+                        ? season.title
+                        : tSelector("season", { number: season.number })}
                     </span>
                     <span className="text-xs text-[#bbb] font-normal">
                       {tSelector("episodesCount", {

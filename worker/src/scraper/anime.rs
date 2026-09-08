@@ -17,6 +17,7 @@ impl AnimeScraper {
                 .unwrap(),
             base_urls: vec![
                 "https://animesonlinecc.to",
+                "https://animeq.cloud",
                 "https://topanimes.net/",
                 "https://animesonlines.net",
                 "https://animesonlineto.to",

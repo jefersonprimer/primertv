@@ -522,6 +522,7 @@ export default async function AnimeDetailsPage({
 type LocalSeason = {
   id: string;
   number: number;
+  title?: string | null;
   episodes: Array<{
     id: string;
     number: number;
@@ -549,6 +550,7 @@ type MergedEpisode = {
 type MergedSeason = {
   id: string;
   number: number;
+  title?: string | null;
   episodes: MergedEpisode[];
 };
 
@@ -571,6 +573,7 @@ function buildMergedSeasons({
     seasonsMap.set(season.number, {
       id: season.id,
       number: season.number,
+      title: season.title,
       episodes: [...season.episodes]
         .sort((a, b) => a.number - b.number)
         .map((episode) => ({

@@ -62,7 +62,7 @@ export function PlayerDropdown({
 
       {isOpen && (
         <div
-          className="absolute left-0 z-50 mt-2 w-56 origin-top-left rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl py-1.5 ring-1 ring-black/10 focus:outline-none backdrop-blur-md"
+          className="absolute left-0 z-50 mt-2 min-w-[15rem] w-max max-w-xs origin-top-left rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl py-1.5 ring-1 ring-black/10 focus:outline-none backdrop-blur-md"
           role="menu"
           aria-orientation="vertical"
         >

@@ -252,6 +252,7 @@ export async function getCollectionDetail(
         seasons: anime.seasons.map((season) => ({
           id: season.id,
           number: season.number,
+          title: season.title || "",
           episodes: season.episodes.map((episode) => ({
             id: episode.id,
             number: episode.number,

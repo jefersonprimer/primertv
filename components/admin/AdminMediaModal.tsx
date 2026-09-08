@@ -39,6 +39,7 @@ interface EpisodeData {
 interface SeasonData {
   id: string;
   number: number;
+  title?: string | null;
   episodes: EpisodeData[];
 }
 
@@ -56,6 +57,12 @@ const seasonFields: AdminField[] = [
     type: "number",
     required: true,
     step: "1",
+  },
+  {
+    name: "title",
+    label: "Título da temporada (opcional)",
+    type: "text",
+    placeholder: "Ex: Ore dake Level Up na Ken Season 2: Arise from the Shadow",
   },
 ];
 
@@ -175,7 +182,10 @@ export function AdminMediaModal({
   ];
 
   const seasonDefaults = editingSeason
-    ? { number: String(editingSeason.number) }
+    ? {
+        number: String(editingSeason.number),
+        title: editingSeason.title || "",
+      }
     : undefined;
 
   const episodeHiddenFields = [
@@ -199,10 +209,10 @@ export function AdminMediaModal({
           },
           {
             name: "customPlayers",
-            label: "Players Adicionais (uma URL por linha)",
+            label: "Players Adicionais (JSON ou URL por linha)",
             type: "textarea",
             placeholder:
-              "Insira as URLs dos players (ex: https://streamtape.com/e/...), uma por linha.",
+              'Ex: {"Dublado em Português": "https://..."}\nou: {"Dubbed in English": "https://..."}\nou simples: https://...',
           },
         ]
       : episodeFields;
@@ -420,7 +430,7 @@ export function AdminMediaModal({
                                   : "bg-zinc-50 border border-zinc-200 text-zinc-700 hover:border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"
                               }`}
                             >
-                              <span>T{season.number}</span>
+                              <span>T{season.number}{season.title ? `: ${season.title}` : ""}</span>
                               <Edit2
                                 size={10}
                                 className="cursor-pointer opacity-70 hover:opacity-100"

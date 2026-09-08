@@ -20,6 +20,7 @@ import { getAnimeDetailsBySlug } from "@/lib/media-details";
 import RatingBadge from "@/components/RatingBadge";
 import { VoteButtons } from "@/components/VoteButtons";
 import { PlayerDropdown } from "@/components/PlayerDropdown";
+import { parseCustomPlayerLine } from "@/lib/player-utils";
 import { CommentsSection } from "@/components/CommentsSection";
 import { getSession } from "@/lib/auth";
 
@@ -255,13 +256,13 @@ export default async function WatchPage({
     }
 
     if (animeEpisode.customPlayers && animeEpisode.customPlayers.length > 0) {
-      animeEpisode.customPlayers.forEach((playerUrl, idx) => {
-        const trimmedUrl = playerUrl.trim();
-        if (trimmedUrl) {
+      animeEpisode.customPlayers.forEach((line, idx) => {
+        const parsed = parseCustomPlayerLine(line, playersList.length + 1);
+        if (parsed && parsed.url) {
           playersList.push({
             id: `custom-${idx}`,
-            label: `Player ${playersList.length + 1}`,
-            url: trimmedUrl,
+            label: parsed.label,
+            url: parsed.url,
           });
         }
       });
