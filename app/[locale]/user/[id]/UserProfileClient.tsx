@@ -61,6 +61,8 @@ export interface WatchHistoryData {
   watchedAt: Date | string;
   episode?: {
     id: string;
+    publicId?: string | null;
+    slug?: string | null;
     number: number;
     title: string | null;
     imageUrl: string | null;
@@ -720,7 +722,7 @@ export function UserProfileClient({
                     return (
                       <Link
                         key={h.id}
-                        href={`/${locale}/watch/${ep.id}/${anime.slug}`}
+                        href={`/${locale}/watch/${ep.publicId || ep.id}/${ep.slug || "episode-" + ep.number}`}
                         className="group flex items-center gap-3.5 bg-zinc-900/60 border border-white/10 hover:border-purple-500/40 rounded-2xl p-3 transition-all hover:bg-zinc-800/60 shadow-md"
                       >
                         <div className="h-16 w-24 rounded-xl bg-zinc-950 overflow-hidden relative shrink-0">
@@ -879,7 +881,7 @@ export function UserProfileClient({
                   return (
                     <Link
                       key={h.id}
-                      href={`/${locale}/watch/${ep.id}/${anime.slug}`}
+                      href={`/${locale}/watch/${ep.publicId || ep.id}/${ep.slug || "episode-" + ep.number}`}
                       className="group flex items-center gap-4 bg-zinc-900/60 border border-white/10 hover:border-purple-500/40 rounded-2xl p-3.5 transition-all hover:bg-zinc-800/60 shadow-md"
                     >
                       <div className="h-20 w-32 rounded-xl bg-zinc-950 overflow-hidden relative shrink-0">

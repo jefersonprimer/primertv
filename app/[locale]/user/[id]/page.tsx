@@ -90,6 +90,8 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
         episode: {
           select: {
             id: true,
+            publicId: true,
+            slug: true,
             number: true,
             title: true,
             imageUrl: true,
