@@ -9,16 +9,33 @@ use scraper::{Html, Selector};
 use std::collections::HashSet;
 
 fn build_search_url(base_url: &str, search_query: &str) -> Result<String> {
-    let mut url = reqwest::Url::parse(base_url)?;
     let query = urlencoding::encode(search_query);
+    let parsed = reqwest::Url::parse(base_url)?;
+    let host = parsed.host_str().unwrap_or("").to_lowercase();
 
-    if base_url.contains("animesonlineto.to") {
-        url.set_path("search");
-        url.set_query(Some(&format!("q={}", query)));
-    } else {
-        url.set_query(Some(&format!("s={}", query)));
-    }
-    Ok(url.to_string())
+    let search_url = match host.as_str() {
+        h if h.contains("animesonlinecc.to") => format!("https://animesonlinecc.to/search/{}", query),
+        h if h.contains("sushianimes.com.br") => format!("https://sushianimes.com.br/search/{}", query),
+        h if h.contains("animesdigital.org") => format!("https://animesdigital.org/pesquisa/{}/", query),
+        h if h.contains("animesonlines.net") => format!("https://animesonlines.net/?post_type=anime&s={}", query),
+        h if h.contains("chia-anime.su") => format!("https://chia-anime.su/browse?keyword={}", query),
+        h if h.contains("animesbr.lat") => format!("https://animesbr.lat/buscar?q={}", query),
+        h if h.contains("otakuplay.com.br") => format!("https://otakuplay.com.br/animes/?search={}", query),
+        h if h.contains("animeav1.com") => format!("https://animeav1.com/catalogo?search={}", query),
+        h if h.contains("anikoto.cz") => format!("https://anikoto.cz/filter?keyword={}", query),
+        h if h.contains("tsukuyomi.tv") => format!("https://tsukuyomi.tv/search?q={}", query),
+        h if h.contains("anizone.to") => format!("https://anizone.to/anime?search={}", query),
+        h if h.contains("gaiaflix.live") => format!("https://gaiaflix.live/search?q={}", query),
+        h if h.contains("gogoanime.com.by") => format!("https://gogoanime.com.by/search.php?keyword={}", query),
+        _ => {
+            let scheme = parsed.scheme();
+            let root_host = parsed.host_str().unwrap_or("");
+            let port_str = parsed.port().map(|p| format!(":{}", p)).unwrap_or_default();
+            format!("{}://{}{}/?s={}", scheme, root_host, port_str, query)
+        }
+    };
+
+    Ok(search_url)
 }
 
 fn resolve_site_url(base_url: &str, href: &str) -> Result<String> {
@@ -27,6 +44,15 @@ fn resolve_site_url(base_url: &str, href: &str) -> Result<String> {
     }
 
     let base = reqwest::Url::parse(base_url)?;
+    if href.starts_with('/') {
+        let scheme = base.scheme();
+        let host = base.host_str().unwrap_or("");
+        let port_str = base.port().map(|p| format!(":{}", p)).unwrap_or_default();
+        let origin = format!("{}://{}{}", scheme, host, port_str);
+        let root_url = reqwest::Url::parse(&origin)?;
+        return Ok(root_url.join(href)?.to_string());
+    }
+
     Ok(base.join(href)?.to_string())
 }
 

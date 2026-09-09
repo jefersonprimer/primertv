@@ -32,6 +32,10 @@ export function UserMenu({ user }: UserMenuProps) {
   const languages = [
     { code: "pt-br", label: "Português (Brasil)" },
     { code: "en", label: "English" },
+    { code: "es", label: "Español" },
+    { code: "fr", label: "Français" },
+    { code: "de", label: "Deutsch" },
+    { code: "ar", label: "العربية" },
   ];
 
   const currentLanguage =
