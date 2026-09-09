@@ -10,7 +10,6 @@ import {
   Info,
   Star,
   ChevronDown,
-  Calendar,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StartWatchingButton } from "./StartWatchingButton";
@@ -133,20 +132,6 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
     (s) => s.number === selectedSeasonNumber,
   );
   const episodesList = currentSeason?.episodes || [];
-
-  const formatDate = (dateInput?: Date | string) => {
-    if (!dateInput) return null;
-    try {
-      const d = new Date(dateInput);
-      return d.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      });
-    } catch {
-      return null;
-    }
-  };
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/80 backdrop-blur-sm animate-fadeIn">
@@ -370,7 +355,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
               )}
 
               {/* Seção de Episódios & Dropdown de Temporadas */}
-              <div className="flex flex-col gap-4 border-t border-zinc-800/80 pt-5">
+              <div className="flex flex-col gap-4 pt-2">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     {t("episodes")}
@@ -404,7 +389,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                 </div>
 
                 {/* Lista de Episódios em Linha (Rows) */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col">
                   {episodesList.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic py-4">
                       {t("noEpisodes")}
@@ -413,21 +398,32 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                     <>
                       {episodesList.slice(0, visibleCount).map((ep) => {
                         const isNextTarget = targetEpisode?.id === ep.id;
-                        const formattedDate = formatDate(ep.createdAt);
 
                         return (
                           <Link
                             key={ep.id}
                             href={`/watch/${ep.publicId || ep.id}/${ep.slug || `episode-${ep.number}`}`}
                             onClick={onClose}
-                            className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl transition-all border ${
-                              isNextTarget
-                                ? "bg-blue-950/30 border-blue-600/50 hover:bg-blue-900/40"
-                                : "bg-zinc-900/60 border-zinc-800/70 hover:bg-zinc-800/80 hover:border-zinc-700"
+                            className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl transition-colors ${
+                              isNextTarget ? "bg-[#151515]" : "hover:bg-[#151515]"
                             }`}
                           >
                             {/* Thumb do Episódio */}
                             <div className="relative aspect-16/9 w-full sm:w-44 overflow-hidden rounded-lg bg-zinc-950 flex-shrink-0">
+                              {isNextTarget ? (
+                                <div className="absolute top-1.5 left-1.5 z-10">
+                                  <span className="px-2 py-0.5 text-[11px] font-bold text-blue-400 bg-blue-950/80 backdrop-blur-sm rounded border border-blue-500/40 whitespace-nowrap shadow-md">
+                                    {t("next")}
+                                  </span>
+                                </div>
+                              ) : (
+                                data.rating && (
+                                  <div className="absolute top-1.5 left-1.5 z-10 drop-shadow-md">
+                                    <RatingBadge rating={data.rating} size={18} />
+                                  </div>
+                                )
+                              )}
+
                               {ep.imageUrl ? (
                                 <Image
                                   src={ep.imageUrl}
@@ -464,21 +460,17 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                                   {ep.number}.{" "}
                                   {ep.title || t("episodeNumber", { number: ep.number })}
                                 </h4>
-
-                                {isNextTarget && (
-                                  <span className="px-2 py-0.5 text-[11px] font-bold text-blue-400 bg-blue-500/10 rounded border border-blue-500/20 whitespace-nowrap">
-                                    {t("next")}
-                                  </span>
-                                )}
                               </div>
 
-                              {formattedDate && (
-                                <div className="flex items-center gap-1 text-xs text-zinc-400">
-                                  <Calendar
-                                    size={12}
-                                    className="text-zinc-500"
-                                  />
-                                  <span>{formattedDate}</span>
+                              {(data.isDubbed || data.isSubtitled) && (
+                                <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium">
+                                  {data.isDubbed && data.isSubtitled ? (
+                                    <span>{t("subDub")}</span>
+                                  ) : data.isDubbed ? (
+                                    <span>{t("dubbed")}</span>
+                                  ) : (
+                                    <span>{t("subtitled")}</span>
+                                  )}
                                 </div>
                               )}
                             </div>
