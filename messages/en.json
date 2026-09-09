@@ -436,6 +436,16 @@
     "subtitled": "Subtitled",
     "subDub": "Sub | Dub",
     "loading": "Loading details...",
-    "malTitle": "Top #{rank} in ranking, score {score} and {members} members on MyAnimeList.net"
+    "malTitle": "Top #{rank} in ranking, score {score} and {members} members on MyAnimeList.net",
+    "failedToLoad": "Failed to load quick details.",
+    "close": "Close",
+    "episodes": "Episodes",
+    "season": "Season",
+    "seasons": "Seasons",
+    "seasonOption": "Season {number} ({count} eps)",
+    "noEpisodes": "No episodes available in this season.",
+    "episodeNumber": "Episode {number}",
+    "next": "Next",
+    "loadMoreEpisodes": "Load more episodes ({remaining} remaining)"
   }
 }

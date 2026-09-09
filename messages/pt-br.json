@@ -436,6 +436,16 @@
     "subtitled": "Legendado",
     "subDub": "Leg | Dub",
     "loading": "Carregando detalhes...",
-    "malTitle": "Top #{rank} no ranking, score {score} e {members} de membros no MyAnimeList.net"
+    "malTitle": "Top #{rank} no ranking, score {score} e {members} de membros no MyAnimeList.net",
+    "failedToLoad": "Não foi possível carregar os detalhes rápidos.",
+    "close": "Fechar",
+    "episodes": "Episódios",
+    "season": "Temporada",
+    "seasons": "Temporadas",
+    "seasonOption": "Temporada {number} ({count} eps)",
+    "noEpisodes": "Nenhum episódio cadastrado nesta temporada.",
+    "episodeNumber": "Episódio {number}",
+    "next": "Próximo",
+    "loadMoreEpisodes": "Carregar mais episódios ({remaining} restantes)"
   }
 }
