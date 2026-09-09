@@ -10,8 +10,7 @@ import {
   Info,
   Star,
   ChevronDown,
-  Clock,
-  Sparkles,
+  Calendar,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StartWatchingButton } from "./StartWatchingButton";
@@ -135,70 +134,85 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
   );
   const episodesList = currentSeason?.episodes || [];
 
+  const formatDate = (dateInput?: Date | string) => {
+    if (!dateInput) return null;
+    try {
+      const d = new Date(dateInput);
+      return d.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    } catch {
+      return null;
+    }
+  };
+
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/80 backdrop-blur-sm animate-fadeIn">
       {/* Overlay click to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-[#0d0d0f] text-zinc-100 shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 z-10 flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-4xl overflow-hidden rounded-xl bg-[#141414] text-[#f2f2f2] shadow-2xl border border-zinc-800/80 z-10 flex flex-col max-h-[92vh]">
         {/* Botão Fechar */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-950/70 text-zinc-300 hover:text-white hover:bg-zinc-800/90 transition-all duration-200 border border-white/15 shadow-lg backdrop-blur-md hover:scale-105 active:scale-95"
+          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white/80 hover:text-white hover:bg-black/90 transition-all border border-white/10"
           aria-label={t("close")}
         >
-          <X size={20} />
+          <X size={24} />
         </button>
 
         {loading ? (
           <div className="overflow-y-auto custom-scrollbar flex flex-col animate-pulse">
             {/* Banner Skeleton */}
-            <div className="relative aspect-16/9 w-full max-h-[360px] sm:max-h-[440px] md:max-h-[480px] bg-zinc-900/80 flex-shrink-0 flex items-end p-4 sm:p-6">
+            <div className="relative aspect-16/9 w-full max-h-[340px] sm:max-h-[420px] md:max-h-[480px] bg-zinc-800/60 flex-shrink-0 flex items-end p-4 sm:p-6">
               <div className="flex flex-wrap items-center gap-3 w-full">
-                <div className="h-11 w-40 bg-zinc-800/80 rounded-xl" />
-                <div className="h-10 w-10 bg-zinc-800/80 rounded-full" />
-                <div className="h-10 w-10 bg-zinc-800/80 rounded-full" />
-                <div className="h-10 w-10 bg-zinc-800/80 rounded-full" />
-                <div className="h-10 w-10 bg-zinc-800/80 rounded-full ml-auto" />
+                <div className="h-11 w-36 bg-zinc-700/80 rounded-xl" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
+                <div className="h-10 w-10 bg-zinc-700/80 rounded-full ml-auto" />
               </div>
             </div>
 
             {/* Content Skeleton */}
-            <div className="p-5 sm:p-7 flex flex-col gap-6">
+            <div className="p-4 sm:p-6 flex flex-col gap-6">
               {/* Title & Badges Skeleton */}
               <div className="flex flex-col gap-3">
-                <div className="h-8 w-2/3 bg-zinc-800/70 rounded-lg" />
+                <div className="h-8 w-2/3 bg-zinc-800 rounded-md" />
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-14 bg-zinc-800/70 rounded-md" />
-                  <div className="h-6 w-16 bg-zinc-800/70 rounded-md" />
-                  <div className="h-6 w-20 bg-zinc-800/70 rounded-md" />
+                  <div className="h-6 w-12 bg-zinc-800 rounded-md" />
+                  <div className="h-6 w-14 bg-zinc-800 rounded-md" />
+                  <div className="h-6 w-16 bg-zinc-800 rounded-md" />
+                  <div className="h-6 w-20 bg-zinc-800 rounded-md" />
                 </div>
               </div>
 
               {/* Description Skeleton */}
-              <div className="flex flex-col gap-2.5">
-                <div className="h-4 w-full bg-zinc-800/60 rounded" />
-                <div className="h-4 w-5/6 bg-zinc-800/60 rounded" />
-                <div className="h-4 w-4/6 bg-zinc-800/60 rounded" />
+              <div className="flex flex-col gap-2">
+                <div className="h-4 w-full bg-zinc-800/80 rounded" />
+                <div className="h-4 w-5/6 bg-zinc-800/80 rounded" />
+                <div className="h-4 w-4/6 bg-zinc-800/80 rounded" />
               </div>
 
               {/* Episodes Section Skeleton */}
-              <div className="flex flex-col gap-4 border-t border-white/5 pt-6">
+              <div className="flex flex-col gap-4 border-t border-zinc-800/80 pt-5">
                 <div className="flex items-center justify-between">
-                  <div className="h-6 w-28 bg-zinc-800/70 rounded-md" />
-                  <div className="h-9 w-40 bg-zinc-800/70 rounded-xl" />
+                  <div className="h-6 w-24 bg-zinc-800 rounded" />
+                  <div className="h-9 w-36 bg-zinc-800 rounded-xl" />
                 </div>
 
                 <div className="flex flex-col gap-3">
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 rounded-xl bg-zinc-900/40 border border-white/5"
+                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/70"
                     >
-                      <div className="aspect-16/9 w-full sm:w-44 bg-zinc-800/60 rounded-lg flex-shrink-0" />
+                      <div className="aspect-16/9 w-full sm:w-44 bg-zinc-800 rounded-lg flex-shrink-0" />
                       <div className="flex flex-col justify-center flex-1 gap-2">
-                        <div className="h-5 w-3/4 bg-zinc-800/60 rounded" />
-                        <div className="h-4 w-1/4 bg-zinc-800/40 rounded" />
+                        <div className="h-5 w-3/4 bg-zinc-800 rounded" />
+                        <div className="h-4 w-1/4 bg-zinc-800/60 rounded" />
                       </div>
                     </div>
                   ))}
@@ -207,14 +221,14 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
             </div>
           </div>
         ) : error || !data ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4 text-center px-4">
-            <p className="text-zinc-400 font-medium">
+          <div className="flex flex-col items-center justify-center py-20 gap-4 text-center px-4">
+            <p className="text-zinc-400">
               {t("failedToLoad")}
             </p>
             <Link
               href={`/animes/${slug}`}
               onClick={onClose}
-              className="px-6 py-2.5 rounded-xl bg-[#0077FD] hover:bg-[#0066D6] text-white text-sm font-bold shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95"
+              className="px-5 py-2.5 rounded-lg bg-[#0077FD] hover:bg-[#0066D6] text-white text-sm font-bold transition-all"
             >
               {t("moreDetails")}
             </Link>
@@ -222,7 +236,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
         ) : (
           <div className="overflow-y-auto custom-scrollbar flex flex-col">
             {/* Banner Header */}
-            <div className="relative aspect-16/9 w-full max-h-[360px] sm:max-h-[440px] md:max-h-[480px] overflow-hidden bg-zinc-950 flex-shrink-0">
+            <div className="relative aspect-16/9 w-full max-h-[340px] sm:max-h-[420px] md:max-h-[480px] overflow-hidden bg-zinc-900 flex-shrink-0">
               {headerBanner ? (
                 <Image
                   src={headerBanner}
@@ -232,26 +246,25 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-zinc-500 font-bold text-lg">
+                <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-zinc-500 font-bold">
                   {data.title}
                 </div>
               )}
 
-              {/* Soft Multi-layered Gradient Overlays */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0f] via-[#0d0d0f]/50 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d0f]/90 via-[#0d0d0f]/30 to-transparent" />
-              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent" />
+              {/* Gradient Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#141414]/80 via-transparent to-transparent" />
 
               {/* Conteúdo Inferior no Banner (Logo/Nome + Botões) */}
-              <div className="absolute bottom-5 left-5 right-5 sm:left-7 sm:right-7 z-10 flex flex-col gap-3.5 sm:gap-4">
+              <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 z-10 flex flex-col gap-3 sm:gap-4">
                 {/* Logo ou Nome do Anime */}
                 <Link
                   href={`/animes/${data.slug}`}
                   onClick={onClose}
-                  className="block max-w-[80%] sm:max-w-[60%] hover:opacity-90 transition-opacity group cursor-pointer"
+                  className="block max-w-[75%] sm:max-w-[55%] hover:opacity-90 transition-opacity group cursor-pointer"
                 >
                   {data.logoUrl ? (
-                    <div className="relative aspect-[3/1] w-full max-w-[180px] sm:max-w-[260px] md:max-w-[300px] drop-shadow-xl">
+                    <div className="relative aspect-[3/1] w-full max-w-[160px] sm:max-w-[240px] md:max-w-[280px]">
                       <Image
                         src={data.logoUrl}
                         alt={data.title}
@@ -261,7 +274,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                       />
                     </div>
                   ) : (
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white drop-shadow-lg line-clamp-2 group-hover:text-blue-400 transition-colors tracking-tight">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white drop-shadow-md line-clamp-2 group-hover:text-blue-400 transition-colors">
                       {data.title}
                     </h2>
                   )}
@@ -275,68 +288,66 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                     text={buttonText}
                   />
 
-                  <div className="flex items-center gap-2 bg-zinc-900/60 backdrop-blur-md p-1 rounded-full border border-white/10">
-                    <WatchlistButton
-                      mediaType="ANIME"
-                      mediaId={data.id}
-                      slug={data.slug}
-                      initialInWatchlist={data.inWatchlist}
-                      isLoggedIn={data.isLoggedIn}
-                      size={20}
-                    />
+                  <WatchlistButton
+                    mediaType="ANIME"
+                    mediaId={data.id}
+                    slug={data.slug}
+                    initialInWatchlist={data.inWatchlist}
+                    isLoggedIn={data.isLoggedIn}
+                    size={24}
+                  />
 
-                    <AddToListButton
-                      animeId={data.id}
-                      isLoggedIn={data.isLoggedIn}
-                      size={20}
-                    />
+                  <AddToListButton
+                    animeId={data.id}
+                    isLoggedIn={data.isLoggedIn}
+                    size={24}
+                  />
 
-                    <ShareButton
-                      url={
-                        typeof window !== "undefined"
-                          ? `${window.location.origin}/animes/${data.slug}`
-                          : undefined
-                      }
-                      size={20}
-                    />
-                  </div>
+                  <ShareButton
+                    url={
+                      typeof window !== "undefined"
+                        ? `${window.location.origin}/animes/${data.slug}`
+                        : undefined
+                    }
+                    size={24}
+                  />
 
                   <Link
                     href={`/animes/${data.slug}`}
                     onClick={onClose}
-                    className="flex items-center gap-2 p-2.5 rounded-full bg-zinc-900/70 hover:bg-zinc-800 text-white/90 hover:text-white border border-white/10 hover:border-white/25 backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95 ml-auto shadow-md"
-                    title={t("moreDetails")}
+                    className="flex items-center gap-2 p-2 rounded-full bg-zinc-800/90 hover:bg-zinc-700 text-white text-sm font-semibold border border-zinc-700/60 hover:border-zinc-500 transition-all ml-auto"
                   >
-                    <Info size={20} />
+                    <Info size={24} />
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Conteúdo com Informações Detalhadas */}
-            <div className="p-5 sm:p-7 flex flex-col gap-6">
+            <div className="p-4 sm:p-6 flex flex-col gap-6">
               {/* Título & Badges */}
               <div className="flex flex-col gap-2">
-                <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
-                  {data.score && (
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 px-2.5 py-1 bg-amber-500/10 rounded-md border border-amber-500/20 shadow-sm">
-                      <Star size={14} className="fill-amber-400 text-amber-400" />
-                      <span>{data.score.toFixed(1)}</span>
-                    </div>
-                  )}
-
+                <div className="flex flex-wrap items-center gap-2.5 text-xs sm:text-sm text-zinc-300">
                   {data.rating && (
                     <RatingBadge rating={data.rating} size={22} />
                   )}
 
+                  {data.score && (
+                    <div className="flex items-center justify-center gap-1 text-sm font-medium text-[#bbb] px-1 py-0.5 bg-zinc-800/60 rounded-md border border-zinc-700/40">
+                      <span>{data.score.toFixed(1)}</span>
+
+                      <Star size={16} fill="#bbb" />
+                    </div>
+                  )}
+
                   {data.year && (
-                    <span className="px-2.5 py-1 rounded-md bg-zinc-800/80 text-zinc-300 font-medium text-xs border border-white/5">
+                    <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 font-medium">
                       {data.year}
                     </span>
                   )}
 
                   {data.seasons && data.seasons.length > 0 && (
-                    <span className="px-2.5 py-1 rounded-md bg-zinc-800/80 text-zinc-300 font-medium text-xs border border-white/5">
+                    <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 font-medium">
                       {data.seasons.length}{" "}
                       {data.seasons.length === 1 ? t("season") : t("seasons")}
                     </span>
@@ -354,15 +365,15 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                   awards={data.awards}
                   audio={data.audio}
                   subtitles={data.subtitles}
-                  className="text-zinc-300/90 text-sm sm:text-base leading-relaxed"
+                  className="text-zinc-300/90 text-sm sm:text-base"
                 />
               )}
 
               {/* Seção de Episódios & Dropdown de Temporadas */}
-              <div className="flex flex-col gap-4 border-t border-white/10 pt-6">
+              <div className="flex flex-col gap-4 border-t border-zinc-800/80 pt-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2 tracking-tight">
-                    <span>{t("episodes")}</span>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    {t("episodes")}
                   </h3>
 
                   {/* Dropdown de Temporadas */}
@@ -373,10 +384,10 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                         onChange={(e) =>
                           handleSeasonChange(Number(e.target.value))
                         }
-                        className="appearance-none bg-zinc-900/90 hover:bg-zinc-800 text-zinc-100 text-xs sm:text-sm font-semibold py-2 pl-3.5 pr-9 rounded-xl border border-white/10 focus:outline-none focus:border-[#0077FD] cursor-pointer transition-all shadow-sm"
+                        className="appearance-none bg-zinc-800/90 text-white text-sm font-semibold py-2 pl-4 pr-10 rounded border border-zinc-700/70 focus:outline-none focus:border-[#0077FD] cursor-pointer transition-all"
                       >
                         {data.seasons.map((s) => (
-                          <option key={s.id} value={s.number} className="bg-zinc-900 text-zinc-100">
+                          <option key={s.id} value={s.number}>
                             {t("seasonOption", {
                               number: s.number,
                               count: s.episodes.length,
@@ -395,27 +406,28 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                 {/* Lista de Episódios em Linha (Rows) */}
                 <div className="flex flex-col gap-3">
                   {episodesList.length === 0 ? (
-                    <p className="text-sm text-zinc-500 italic py-6 text-center">
+                    <p className="text-sm text-zinc-500 italic py-4">
                       {t("noEpisodes")}
                     </p>
                   ) : (
                     <>
                       {episodesList.slice(0, visibleCount).map((ep) => {
                         const isNextTarget = targetEpisode?.id === ep.id;
+                        const formattedDate = formatDate(ep.createdAt);
 
                         return (
                           <Link
                             key={ep.id}
                             href={`/watch/${ep.publicId || ep.id}/${ep.slug || `episode-${ep.number}`}`}
                             onClick={onClose}
-                            className={`group flex flex-col sm:flex-row gap-3.5 sm:gap-4 p-3 rounded-xl transition-all duration-200 border ${
+                            className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl transition-all border ${
                               isNextTarget
-                                ? "bg-blue-950/20 border-blue-500/40 hover:bg-blue-900/30 hover:border-blue-500/60 shadow-lg shadow-blue-950/30"
-                                : "bg-zinc-900/40 border-white/[0.06] hover:bg-zinc-800/60 hover:border-white/15 shadow-sm"
+                                ? "bg-blue-950/30 border-blue-600/50 hover:bg-blue-900/40"
+                                : "bg-zinc-900/60 border-zinc-800/70 hover:bg-zinc-800/80 hover:border-zinc-700"
                             }`}
                           >
                             {/* Thumb do Episódio */}
-                            <div className="relative aspect-16/9 w-full sm:w-44 overflow-hidden rounded-lg bg-zinc-950 flex-shrink-0 border border-white/5">
+                            <div className="relative aspect-16/9 w-full sm:w-44 overflow-hidden rounded-lg bg-zinc-950 flex-shrink-0">
                               {ep.imageUrl ? (
                                 <Image
                                   src={ep.imageUrl}
@@ -425,23 +437,22 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-xs font-medium text-zinc-500 bg-zinc-900">
+                                <div className="w-full h-full flex items-center justify-center text-xs text-zinc-600">
                                   Ep {ep.number}
                                 </div>
                               )}
 
-                              {/* Badge de Duração na Thumbnail */}
+                              {/* Badge de Duração na Thumbnail (Estilo EpisodeSidebar) */}
                               {formatDuration(data?.duration) && (
-                                <div className="absolute bottom-1.5 right-1.5 rounded bg-black/80 px-1.5 py-0.5 text-[11px] font-semibold text-zinc-200 backdrop-blur-md z-10 border border-white/10 flex items-center gap-1">
-                                  <Clock size={10} className="text-zinc-400" />
-                                  <span>{formatDuration(data?.duration)}</span>
+                                <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-xs font-bold text-white backdrop-blur-sm z-10">
+                                  {formatDuration(data?.duration)}
                                 </div>
                               )}
 
                               {/* Ícone de Play Hover */}
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20 backdrop-blur-[2px]">
-                                <div className="p-3 rounded-full bg-[#0077FD] text-white shadow-lg shadow-blue-500/30 transform group-hover:scale-110 transition-transform">
-                                  <Play size={18} className="fill-white translate-x-0.5" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20">
+                                <div className="p-2.5 rounded-full bg-[#0077FD] text-white shadow-lg transform group-hover:scale-110 transition-transform">
+                                  <Play size={18} className="fill-white" />
                                 </div>
                               </div>
                             </div>
@@ -449,27 +460,37 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                             {/* Infos do Episódio */}
                             <div className="flex flex-col justify-center min-w-0 flex-1 gap-1">
                               <div className="flex items-center justify-between gap-2">
-                                <h4 className="text-sm sm:text-base font-bold text-zinc-100 group-hover:text-blue-400 transition-colors line-clamp-1">
+                                <h4 className="text-sm sm:text-base font-bold text-zinc-100 group-hover:text-[#0077FD] transition-colors line-clamp-1">
                                   {ep.number}.{" "}
                                   {ep.title || t("episodeNumber", { number: ep.number })}
                                 </h4>
 
                                 {isNextTarget && (
-                                  <span className="px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 rounded-full border border-blue-500/30 whitespace-nowrap shadow-sm">
+                                  <span className="px-2 py-0.5 text-[11px] font-bold text-blue-400 bg-blue-500/10 rounded border border-blue-500/20 whitespace-nowrap">
                                     {t("next")}
                                   </span>
                                 )}
                               </div>
+
+                              {formattedDate && (
+                                <div className="flex items-center gap-1 text-xs text-zinc-400">
+                                  <Calendar
+                                    size={12}
+                                    className="text-zinc-500"
+                                  />
+                                  <span>{formattedDate}</span>
+                                </div>
+                              )}
                             </div>
                           </Link>
                         );
                       })}
 
-                      {/* Botão para carregar mais episódios */}
+                      {/* Botão para carregar mais 12 episódios */}
                       {visibleCount < episodesList.length && (
                         <button
                           onClick={() => setVisibleCount((prev) => prev + 12)}
-                          className="mt-2 w-full py-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800/90 text-zinc-300 hover:text-white text-sm font-semibold border border-white/10 hover:border-white/20 transition-all duration-200 shadow-sm active:scale-[0.99] flex items-center justify-center gap-2"
+                          className="mt-2 w-full py-3 rounded-md bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 hover:text-white text-sm font-bold border border-zinc-700/60 transition-all active:scale-[0.99]"
                         >
                           {t("loadMoreEpisodes", {
                             remaining: episodesList.length - visibleCount,
