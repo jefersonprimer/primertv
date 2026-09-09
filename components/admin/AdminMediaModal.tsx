@@ -40,6 +40,8 @@ interface SeasonData {
   id: string;
   number: number;
   title?: string | null;
+  malId?: number | null;
+  anilistId?: number | null;
   episodes: EpisodeData[];
 }
 
@@ -62,7 +64,7 @@ const seasonFields: AdminField[] = [
     name: "title",
     label: "Título da temporada (opcional)",
     type: "text",
-    placeholder: "Ex: Ore dake Level Up na Ken Season 2: Arise from the Shadow",
+    placeholder: "Ex: Sennen Kessen-hen",
   },
 ];
 
@@ -181,10 +183,35 @@ export function AdminMediaModal({
     { name: "redirectTo", value: "public" },
   ];
 
+  const seasonFormFields: AdminField[] =
+    selectedCollection === "animes"
+      ? [
+          ...seasonFields,
+          {
+            name: "malId",
+            label: "MAL ID da Temporada (opcional)",
+            type: "number",
+            step: "1",
+            placeholder: "Ex: 41467",
+            helpText: "ID do MyAnimeList para esta temporada específica.",
+          },
+          {
+            name: "anilistId",
+            label: "AniList ID da Temporada (opcional)",
+            type: "number",
+            step: "1",
+            placeholder: "Ex: 114446",
+            helpText: "ID do AniList para esta temporada específica.",
+          },
+        ]
+      : seasonFields;
+
   const seasonDefaults = editingSeason
     ? {
         number: String(editingSeason.number),
         title: editingSeason.title || "",
+        malId: editingSeason.malId != null ? String(editingSeason.malId) : "",
+        anilistId: editingSeason.anilistId != null ? String(editingSeason.anilistId) : "",
       }
     : undefined;
 
@@ -570,21 +597,23 @@ export function AdminMediaModal({
               ) : /* Anime / Series / Novel Structure Forms */
               isAddingSeason ? (
                 <AdminCrudForm
+                  key="new-season"
                   title="Nova Temporada"
                   description="Adicione uma nova temporada ao catálogo."
                   action={saveSeason}
                   submitLabel="Criar temporada"
-                  fields={seasonFields}
+                  fields={seasonFormFields}
                   hiddenFields={seasonHiddenFields}
                 />
               ) : editingSeason ? (
                 <div className="space-y-4">
                   <AdminCrudForm
+                    key={`season-${editingSeason.id}`}
                     title={`Editar Temporada ${editingSeason.number}`}
                     description="Modifique as propriedades da temporada."
                     action={saveSeason}
                     submitLabel="Atualizar temporada"
-                    fields={seasonFields}
+                    fields={seasonFormFields}
                     hiddenFields={seasonHiddenFields}
                     defaults={seasonDefaults}
                   />
@@ -616,6 +645,7 @@ export function AdminMediaModal({
                 </div>
               ) : isAddingEpisode ? (
                 <AdminCrudForm
+                  key="new-episode"
                   title="Novo Episódio"
                   description={`Cadastre um novo episódio para a Temporada ${currentSeason?.number || ""}.`}
                   action={saveEpisode}
@@ -626,6 +656,7 @@ export function AdminMediaModal({
               ) : editingEpisode ? (
                 <div className="space-y-4">
                   <AdminCrudForm
+                    key={`episode-${editingEpisode.id}`}
                     title={`Editar Episódio ${editingEpisode.number}`}
                     description={`Atualize os links e players do episódio da Temporada ${currentSeason?.number || ""}.`}
                     action={saveEpisode}

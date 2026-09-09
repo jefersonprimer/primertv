@@ -272,6 +272,8 @@ export default async function WatchPage({
       JSON.stringify({
         anilistId: animeEpisode.season.anime.anilistId,
         malId: animeEpisode.season.anime.malId,
+        seasonAnilistId: animeEpisode.season.anilistId,
+        seasonMalId: animeEpisode.season.malId,
         title: animeEpisode.season.anime.title,
         titleEnglish: animeEpisode.season.anime.titleEnglish,
         slug: animeEpisode.season.anime.slug,

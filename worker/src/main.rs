@@ -386,8 +386,9 @@ async fn process_anime_item(
         }
     };
 
-    let season_title = if default_title != parent_title {
-        Some(default_title.clone())
+    let cleaned_title = scraper::utils::clean_part_suffix(&default_title);
+    let season_title = if cleaned_title != parent_title {
+        Some(cleaned_title)
     } else {
         None
     };
@@ -397,7 +398,16 @@ async fn process_anime_item(
         r#"
         INSERT INTO "Season" (id, number, title, "animeId", "createdAt", "updatedAt")
         VALUES ($1, $2, $3, $4, NOW(), NOW())
-        ON CONFLICT ("animeId", number) DO UPDATE SET title = COALESCE(EXCLUDED.title, "Season".title), "updatedAt" = NOW()
+        ON CONFLICT ("animeId", number) DO UPDATE SET 
+        title = CASE
+            WHEN EXCLUDED.title IS NULL THEN "Season".title
+            WHEN "Season".title IS NOT NULL 
+                 AND "Season".title NOT ILIKE '%Part%' 
+                 AND "Season".title NOT ILIKE '%Cour%' 
+                 AND "Season".title NOT ILIKE '% - %' THEN "Season".title
+            ELSE EXCLUDED.title
+        END,
+        "updatedAt" = NOW()
         "#,
     )
     .bind(&(uuid::Uuid::new_v4().to_string()))
@@ -424,7 +434,16 @@ async fn process_anime_item(
                     r#"
                     INSERT INTO "Season" (id, number, title, "animeId", "createdAt", "updatedAt")
                     VALUES ($1, $2, $3, $4, NOW(), NOW())
-                    ON CONFLICT ("animeId", number) DO UPDATE SET title = COALESCE(EXCLUDED.title, "Season".title), "updatedAt" = NOW()
+                    ON CONFLICT ("animeId", number) DO UPDATE SET 
+                    title = CASE
+                        WHEN EXCLUDED.title IS NULL THEN "Season".title
+                        WHEN "Season".title IS NOT NULL 
+                             AND "Season".title NOT ILIKE '%Part%' 
+                             AND "Season".title NOT ILIKE '%Cour%' 
+                             AND "Season".title NOT ILIKE '% - %' THEN "Season".title
+                        ELSE EXCLUDED.title
+                    END,
+                    "updatedAt" = NOW()
                     RETURNING id
                     "#,
                 )
@@ -588,12 +607,34 @@ async fn main() -> Result<()> {
                                 parsed
                             });
 
-                            let mut tv_season_counter = 0;
+                            let mut current_tv_season = 1;
+                            let mut has_seen_tv = false;
                             for item in &chain {
-                                let is_tv = item.type_name.as_deref().unwrap_or("TV").to_uppercase() == "TV";
+                                let type_str = item.type_name.as_deref().unwrap_or("TV").to_uppercase();
+                                let is_tv = type_str == "TV";
+                                let default_title = item.get_default_title();
+                                let (_, parsed_season_number, part_number) = scraper::utils::parse_anime_title(&default_title);
+
                                 let season_num = if is_tv {
-                                    tv_season_counter += 1;
-                                    tv_season_counter
+                                    if parsed_season_number > 1 {
+                                        current_tv_season = parsed_season_number;
+                                        has_seen_tv = true;
+                                        current_tv_season
+                                    } else if part_number.is_some() {
+                                        if !has_seen_tv {
+                                            has_seen_tv = true;
+                                            current_tv_season = 1;
+                                        }
+                                        current_tv_season
+                                    } else {
+                                        if has_seen_tv {
+                                            current_tv_season += 1;
+                                        } else {
+                                            has_seen_tv = true;
+                                            current_tv_season = 1;
+                                        }
+                                        current_tv_season
+                                    }
                                 } else {
                                     0 // Season 0 for Movies / OVAs / Specials
                                 };

@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 
 const ANIKOTO_BASE_URL = "https://anikotoapi.site";
 const MEGAPLAY_BASE_URL = "https://megaplay.buzz";
+const ZOKOANIME_BASE_URL = "https://zokoanime.video";
 const REQUEST_TIMEOUT_MS = 8000;
 const MAX_PAGES = 6;
 const PAGE_SIZE = 100;
@@ -28,6 +29,8 @@ export type MegaPlayAnimeCatalog = {
 type AnimeSource = {
   anilistId?: number | null;
   malId?: number | null;
+  seasonAnilistId?: number | null;
+  seasonMalId?: number | null;
   title?: string | null;
   titleEnglish?: string | null;
   slug?: string | null;
@@ -153,16 +156,17 @@ function parseAnimeSource(titleKey: string): AnimeSource | null {
 }
 
 async function resolveCatalogSeriesId(source: AnimeSource): Promise<string | null> {
-  const isSeasonOne = !source.seasonNumber || source.seasonNumber === 1;
-  if (isSeasonOne) {
-    const directCandidates = [source.anilistId, source.malId]
-      .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  const directCandidates = [
+    source.seasonAnilistId,
+    source.seasonMalId,
+    !source.seasonNumber || source.seasonNumber === 1 ? source.anilistId : null,
+    !source.seasonNumber || source.seasonNumber === 1 ? source.malId : null,
+  ].filter((value): value is number => typeof value === "number" && Number.isFinite(value));
 
-    for (const candidate of directCandidates) {
-      const series = await fetchSeries(String(candidate));
-      if (extractEpisodes(series).length > 0) {
-        return String(candidate);
-      }
+  for (const candidate of directCandidates) {
+    const series = await fetchSeries(String(candidate));
+    if (extractEpisodes(series).length > 0) {
+      return String(candidate);
     }
   }
 
@@ -295,13 +299,16 @@ function buildDirectPlayers(
 ): MegaPlayAnimePlayer[] {
   const players: MegaPlayAnimePlayer[] = [];
 
-  // Skip direct season-1 anilistId/malId paths for higher seasons
-  if (source.seasonNumber && source.seasonNumber > 1) {
-    return players;
-  }
+  const effectiveAnilistId =
+    source.seasonAnilistId ??
+    (!source.seasonNumber || source.seasonNumber === 1 ? source.anilistId : null);
 
-  if (source.anilistId) {
-    const basePath = `/stream/ani/${encodeURIComponent(String(source.anilistId))}/${episodeNumber}`;
+  const effectiveMalId =
+    source.seasonMalId ??
+    (!source.seasonNumber || source.seasonNumber === 1 ? source.malId : null);
+
+  if (effectiveAnilistId) {
+    const basePath = `/stream/ani/${encodeURIComponent(String(effectiveAnilistId))}/${episodeNumber}`;
     players.push({
       id: "megaplay-anilist-sub",
       label: "MegaPlay (AniList Sub)",
@@ -312,11 +319,20 @@ function buildDirectPlayers(
       label: "MegaPlay (AniList Dub)",
       url: `${MEGAPLAY_BASE_URL}${basePath}/dub`,
     });
-    return players;
+    players.push({
+      id: "zokoanime-anilist-sub",
+      label: "ZokoAnime (AniList Sub)",
+      url: `${ZOKOANIME_BASE_URL}${basePath}/sub`,
+    });
+    players.push({
+      id: "zokoanime-anilist-dub",
+      label: "ZokoAnime (AniList Dub)",
+      url: `${ZOKOANIME_BASE_URL}${basePath}/dub`,
+    });
   }
 
-  if (source.malId) {
-    const basePath = `/stream/mal/${encodeURIComponent(String(source.malId))}/${episodeNumber}`;
+  if (effectiveMalId) {
+    const basePath = `/stream/mal/${encodeURIComponent(String(effectiveMalId))}/${episodeNumber}`;
     players.push({
       id: "megaplay-mal-sub",
       label: "MegaPlay (MAL Sub)",
@@ -327,7 +343,16 @@ function buildDirectPlayers(
       label: "MegaPlay (MAL Dub)",
       url: `${MEGAPLAY_BASE_URL}${basePath}/dub`,
     });
-    return players;
+    players.push({
+      id: "zokoanime-mal-sub",
+      label: "ZokoAnime (Sub)",
+      url: `${ZOKOANIME_BASE_URL}${basePath}/sub`,
+    });
+    players.push({
+      id: "zokoanime-mal-dub",
+      label: "ZokoAnime (Dub)",
+      url: `${ZOKOANIME_BASE_URL}${basePath}/dub`,
+    });
   }
 
   return players;

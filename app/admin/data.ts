@@ -15,6 +15,9 @@ export type AdminListItem = {
 export type AdminSeasonItem = {
   id: string;
   number: number;
+  title?: string | null;
+  malId?: number | null;
+  anilistId?: number | null;
   episodes: AdminEpisodeItem[];
 };
 
@@ -253,6 +256,8 @@ export async function getCollectionDetail(
           id: season.id,
           number: season.number,
           title: season.title || "",
+          malId: season.malId,
+          anilistId: season.anilistId,
           episodes: season.episodes.map((episode) => ({
             id: episode.id,
             number: episode.number,

@@ -116,6 +116,8 @@ model Season {
   id        String    @id @default(cuid())
   number    Int
   title     String?
+  anilistId Int?
+  malId     Int?
   animeId   String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -124,6 +126,8 @@ model Season {
 
   @@unique([animeId, number])
   @@index([animeId])
+  @@index([malId])
+  @@index([anilistId])
 }
 
 model Episode {

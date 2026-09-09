@@ -737,3 +737,46 @@ pub fn parse_anime_title(title: &str) -> (String, i32, Option<i32>) {
     (title_cleaned, season_num, part_num)
 }
 
+pub fn clean_part_suffix(title: &str) -> String {
+    let re_part = regex::Regex::new(r"(?i)\s+(?:Part(?:e)?|Cour)\s+\d+").unwrap();
+    let cleaned = re_part.replace_all(title, "").into_owned();
+    cleaned.trim_end_matches(&[':', '-', ' '][..]).trim().to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_mushoku_tensei_titles() {
+        assert_eq!(
+            clean_part_suffix("Mushoku Tensei: Isekai Ittara Honki Dasu Part 2"),
+            "Mushoku Tensei: Isekai Ittara Honki Dasu"
+        );
+        assert_eq!(
+            clean_part_suffix("Mushoku Tensei II: Isekai Ittara Honki Dasu Part 2"),
+            "Mushoku Tensei II: Isekai Ittara Honki Dasu"
+        );
+
+        let (_parent1, season1, part1) = parse_anime_title("Mushoku Tensei: Isekai Ittara Honki Dasu");
+        assert_eq!(season1, 1);
+        assert_eq!(part1, None);
+
+        let (_parent2, season2, part2) = parse_anime_title("Mushoku Tensei: Isekai Ittara Honki Dasu Part 2");
+        assert_eq!(season2, 1);
+        assert_eq!(part2, Some(2));
+
+        let (_parent3, season3, part3) = parse_anime_title("Mushoku Tensei II: Isekai Ittara Honki Dasu");
+        assert_eq!(season3, 2);
+        assert_eq!(part3, None);
+
+        let (_parent4, season4, part4) = parse_anime_title("Mushoku Tensei II: Isekai Ittara Honki Dasu Part 2");
+        assert_eq!(season4, 2);
+        assert_eq!(part4, Some(2));
+
+        let (_parent5, season5, part5) = parse_anime_title("Mushoku Tensei III: Isekai Ittara Honki Dasu");
+        assert_eq!(season5, 3);
+        assert_eq!(part5, None);
+    }
+}
+

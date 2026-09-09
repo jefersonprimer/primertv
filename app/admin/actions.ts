@@ -544,6 +544,8 @@ export async function saveSeason(
   const id = readId(formData, "id");
   const number = readNumber(formData, "number");
   const title = readString(formData, "title") || null;
+  const malId = readNumber(formData, "malId");
+  const anilistId = readNumber(formData, "anilistId");
 
   if (!collection || !["animes", "series", "novelas"].includes(collection)) {
     return { error: "Coleção inválida." };
@@ -562,7 +564,7 @@ export async function saveSeason(
       if (collection === "animes") {
         await prisma.season.update({
           where: { id },
-          data: { number, title },
+          data: { number, title, malId, anilistId },
         });
       } else {
         await model.update({
@@ -575,7 +577,7 @@ export async function saveSeason(
       const created =
         collection === "animes"
           ? await prisma.season.create({
-              data: { number, title, animeId: parentId },
+              data: { number, title, malId, anilistId, animeId: parentId },
             })
           : collection === "series"
             ? await prisma.seriesSeason.create({
