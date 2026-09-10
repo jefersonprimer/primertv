@@ -28,14 +28,24 @@ export default async function SearchPage({
         OR: [
           {
             title: {
-              startsWith: query,
+              contains: query,
               mode: "insensitive",
             },
           },
           {
             titleEnglish: {
-              startsWith: query,
+              contains: query,
               mode: "insensitive",
+            },
+          },
+          {
+            seasons: {
+              some: {
+                title: {
+                  contains: query,
+                  mode: "insensitive",
+                },
+              },
             },
           },
         ],
@@ -54,7 +64,7 @@ export default async function SearchPage({
     prisma.series.findMany({
       where: {
         title: {
-          startsWith: query,
+          contains: query,
           mode: "insensitive",
         },
       },
@@ -69,7 +79,7 @@ export default async function SearchPage({
     prisma.movie.findMany({
       where: {
         title: {
-          startsWith: query,
+          contains: query,
           mode: "insensitive",
         },
       },
@@ -84,7 +94,7 @@ export default async function SearchPage({
     prisma.manga.findMany({
       where: {
         title: {
-          startsWith: query,
+          contains: query,
           mode: "insensitive",
         },
       },
@@ -99,7 +109,7 @@ export default async function SearchPage({
     prisma.novela.findMany({
       where: {
         title: {
-          startsWith: query,
+          contains: query,
           mode: "insensitive",
         },
       },
