@@ -193,6 +193,18 @@ export type MergedSeason = {
   episodes: MergedEpisode[];
 };
 
+async function fetchJikanEpisodeCount(malId: number): Promise<number | null> {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${malId}`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    const count = json.data?.episodes;
+    return typeof count === "number" && count > 0 ? count : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function buildMergedSeasons({
   animeSlug,
   animeTitle,
@@ -277,6 +289,31 @@ export async function buildMergedSeasons({
           publicId: null,
           slug: `episode-${extEp.number}`,
         });
+      }
+
+      if (mergedEpisodes.length === 0) {
+        const effectiveMalId = season.malId ?? (season.number === 1 ? animeMalId : null);
+        const effectiveAnilistId = season.anilistId ?? (season.number === 1 ? animeAnilistId : null);
+
+        if (effectiveMalId || effectiveAnilistId) {
+          let count = effectiveMalId ? await fetchJikanEpisodeCount(effectiveMalId) : null;
+          if (!count || count <= 0) {
+            count = 24;
+          }
+
+          for (let epNum = 1; epNum <= count; epNum++) {
+            mergedEpisodes.push({
+              id: `fallback-s${season.number}-${epNum}`,
+              number: epNum,
+              title: `${animeTitle} - ${getEpText(epNum)}`,
+              href: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+              videoUrl: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+              imageUrl: null,
+              publicId: null,
+              slug: `episode-${epNum}`,
+            });
+          }
+        }
       }
 
       mergedEpisodes.sort((a, b) => a.number - b.number);
