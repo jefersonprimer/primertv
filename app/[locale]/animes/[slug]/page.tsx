@@ -82,7 +82,14 @@ export default async function AnimeDetailsPage({
   const { slug } = await params;
   const anime = await getAnimeDetailsBySlug(slug);
 
-  if (!anime) {
+  const isStubAnime =
+    anime &&
+    (anime.slug.startsWith("anime-") || anime.title.startsWith("Anime ")) &&
+    !anime.imageUrl &&
+    !anime.description &&
+    (!anime.seasons || anime.seasons.length === 0);
+
+  if (!anime || isStubAnime) {
     notFound();
   }
 

@@ -106,7 +106,6 @@ async fn fetch_and_traverse_prequeles(
     let mut chain = Vec::new();
     let mut current_id = initial_mal_id;
     let mut visited = std::collections::HashSet::new();
-    let mut next_title: Option<String> = None;
 
     // 1. Traverse backwards (Prequels) to find root / Season 1
     loop {
@@ -118,28 +117,8 @@ async fn fetch_and_traverse_prequeles(
         let anime_opt = match jikan.get_anime_by_id(current_id).await {
             Ok(opt) => opt,
             Err(e) => {
-                eprintln!("[WARN] Error fetching anime details by mal_id {}: {}. Using fallback metadata.", current_id, e);
-                let fallback = jikan::JikanAnime {
-                    mal_id: Some(current_id),
-                    title: next_title.clone().unwrap_or_else(|| format!("Anime {}", current_id)),
-                    titles: None,
-                    synopsis: None,
-                    images: None,
-                    genres: None,
-                    aired: None,
-                    rating: None,
-                    score: None,
-                    status: None,
-                    duration: None,
-                    type_name: Some("TV".to_string()),
-                    season: None,
-                    year: None,
-                    broadcast: None,
-                    rank: None,
-                    popularity: None,
-                    members: None,
-                };
-                Some(fallback)
+                eprintln!("[WARN] Error fetching anime details by mal_id {}: {}. Skipping item to avoid creating empty stub.", current_id, e);
+                None
             }
         };
 
@@ -184,7 +163,6 @@ async fn fetch_and_traverse_prequeles(
             Some(pid) => {
                 println!("Found prequel mal_id {} ({}) for mal_id {}", pid, prequel_title.as_deref().unwrap_or(""), current_id);
                 current_id = pid;
-                next_title = prequel_title;
             }
             None => break, // Reached root / season 1
         }
@@ -269,6 +247,11 @@ async fn process_anime_item(
     let parent_title = override_parent_title.unwrap_or(parsed_parent_title);
     let season_number = override_season_number.unwrap_or(parsed_season_number);
     let parent_slug = slugify(&parent_title);
+
+    if (parent_title.starts_with("Anime ") || parent_slug.starts_with("anime-")) && image_url.is_none() && description.is_none() {
+        println!("[WARN] Skipping DB save for incomplete stub anime: {} ({})", parent_title, parent_slug);
+        return Ok(());
+    }
     let aired = anime.aired.as_ref().and_then(|a| a.string.clone());
     let rating = anime.rating.clone();
     let status = anime.status.clone();
@@ -579,6 +562,18 @@ async fn main() -> Result<()> {
 
     println!("Worker started (Anime: {}, Series: {}, Movies: {}, Manga: {}, Novelas: {}, Channels: {}), polling...", 
         do_anime, do_series, do_movies, do_manga, do_novela, do_channels);
+
+    // Clean up any incomplete dummy stubs from the database
+    let cleanup_res = sqlx::query(
+        r#"DELETE FROM "Anime" WHERE (slug LIKE 'anime-%' OR title LIKE 'Anime %') AND "imageUrl" IS NULL AND description IS NULL"#
+    )
+    .execute(&pool)
+    .await;
+    if let Ok(deleted) = cleanup_res {
+        if deleted.rows_affected() > 0 {
+            println!("[CLEANUP] Deleted {} incomplete dummy anime stubs from database", deleted.rows_affected());
+        }
+    }
 
     let mut anime_source = AnimeSource::CurrentSeason;
     let mut anime_page = 1;
