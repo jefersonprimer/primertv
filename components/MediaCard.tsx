@@ -33,7 +33,7 @@ export function MediaCard({
     type === "novela"
       ? "novelas"
       : type === "movie"
-        ? "filmes"
+        ? "movies"
         : type === "anime"
           ? "animes"
           : type === "manga"
@@ -41,7 +41,7 @@ export function MediaCard({
             : type;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (type === "anime") {
+    if (type === "anime" || type === "series") {
       // Se não for clique com botão direito ou Ctrl/Cmd (para abrir nova aba)
       if (
         !e.ctrlKey &&
@@ -104,9 +104,10 @@ export function MediaCard({
         </div>
       </Link>
 
-      {type === "anime" && (
+      {(type === "anime" || type === "series") && (
         <QuickViewModal
           slug={item.slug}
+          type={type}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
         />

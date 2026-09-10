@@ -353,7 +353,7 @@ export const getSeriesLogo = cache(async (seriesId: string, title: string): Prom
         const tvId = searchData.results?.[0]?.id;
 
         if (tvId) {
-          const imagesUrl = `https://api.themoviedb.org/3/tv/${tvId}/images?include_image_language=ja,en,null`;
+          const imagesUrl = `https://api.themoviedb.org/3/tv/${tvId}/images?include_image_language=en,null,ja`;
           const imagesResponse = await fetch(
             tmdbKey && !tmdbToken ? `${imagesUrl}&api_key=${tmdbKey}` : imagesUrl,
             { headers, next: { revalidate: 3600 } }
@@ -363,10 +363,10 @@ export const getSeriesLogo = cache(async (seriesId: string, title: string): Prom
             const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
             const logos = imagesData.logos || [];
 
-            // Prefer Japanese logo, then English, then textless, fallback to any
-            const preferred = logos.find((l) => l.iso_639_1 === "ja") ||
-                              logos.find((l) => l.iso_639_1 === "en") ||
+            // Prefer English logo, then textless, then Japanese, fallback to any
+            const preferred = logos.find((l) => l.iso_639_1 === "en") ||
                               logos.find((l) => l.iso_639_1 === null) ||
+                              logos.find((l) => l.iso_639_1 === "ja") ||
                               logos[0];
 
             if (preferred?.file_path) {

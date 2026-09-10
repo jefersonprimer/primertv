@@ -195,6 +195,7 @@ model Series {
   score           Float?
   year            Int?
   tmdbId          String?
+  imdbId          String?
   lastScrapedAt   DateTime?
   latestSeasonId    String?
   latestEpisodeId   String?
@@ -263,6 +264,7 @@ model Movie {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   tmdbId        String?
+  imdbId        String?
 
   @@index([createdAt])
   @@index([bannerUrl, createdAt])

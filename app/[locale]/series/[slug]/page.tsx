@@ -15,9 +15,11 @@ import { MediaCarousel } from "@/components/MediaCarousel";
 import { getSeriesBanner, getSeriesLogo } from "@/lib/banners";
 import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
+import { DeleteSeriesButton } from "@/components/admin/DeleteSeriesButton";
 import { getFirstSeriesEpisodes } from "@/lib/media-performance";
 import { getSeriesDetailsBySlug } from "@/lib/media-details";
 import { StartWatchingButton } from "@/components/StartWatchingButton";
+import { getSeriesTmdbSeasons } from "@/lib/tmdb";
 
 export const revalidate = 3600;
 
@@ -117,15 +119,68 @@ export default async function SeriesDetailsPage({
         })
       : [];
 
-  const mappedSeasons = series.seasons.map((season) => ({
+  let mappedSeasons = series.seasons.map((season) => ({
     ...season,
     episodes: season.episodes.map((ep) => ({
       ...ep,
       imageUrl: series.imageUrl,
+      href: ep.publicId
+        ? `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`
+        : `/watch/${ep.id}/${ep.slug || "episode-" + ep.number}`,
     })),
   }));
 
-  const totalEpisodes = series.seasons.reduce(
+  if (mappedSeasons.length === 0 && (series.tmdbId || (series as any).imdbId)) {
+    const externalId = series.tmdbId || (series as any).imdbId;
+    const tmdbSeasons = await getSeriesTmdbSeasons(externalId!);
+    if (tmdbSeasons && tmdbSeasons.length > 0) {
+      mappedSeasons = tmdbSeasons.map((season) => ({
+        id: season.id,
+        number: season.number,
+        episodes: season.episodes.map((ep) => ({
+          id: ep.id,
+          number: ep.number,
+          title: ep.title,
+          videoUrl: null,
+          publicId: null,
+          slug: `episode-${ep.number}`,
+          createdAt: new Date(),
+          href: `/watch/${series.slug}/episode-${ep.number}?season=${season.number}&episode=${ep.number}&source=vidnest`,
+          imageUrl: ep.stillPath || series.imageUrl,
+        })),
+      }));
+    } else {
+      mappedSeasons = [
+        {
+          id: "default-season-1",
+          number: 1,
+          episodes: Array.from({ length: 8 }, (_, i) => ({
+            id: `default-s1-e${i + 1}`,
+            number: i + 1,
+            title: `Episódio ${i + 1}`,
+            videoUrl: null,
+            publicId: null,
+            slug: `episode-${i + 1}`,
+            createdAt: new Date(),
+            href: `/watch/${series.slug}/episode-${i + 1}?season=1&episode=${i + 1}&source=vidnest`,
+            imageUrl: series.imageUrl,
+          })),
+        },
+      ];
+    }
+  }
+
+  const externalFirstEpisodeLink =
+    mappedSeasons[0]?.episodes[0]?.href ||
+    (series.tmdbId || (series as any).imdbId
+      ? `/watch/${series.slug}/episode-1?season=1&episode=1&source=vidnest`
+      : null);
+
+  if (!firstEpisodeLink && externalFirstEpisodeLink) {
+    firstEpisodeLink = externalFirstEpisodeLink;
+  }
+
+  const totalEpisodes = mappedSeasons.reduce(
     (acc, season) => acc + (season.episodes?.length || 0),
     0,
   );
@@ -318,18 +373,28 @@ export default async function SeriesDetailsPage({
                   slug={series.slug}
                   initialInWatchlist={inWatchlist}
                   isLoggedIn={Boolean(userId)}
+                  size={24}
                 />
                 <AddToListButton
                   seriesId={series.id}
                   isLoggedIn={Boolean(userId)}
+                  size={24}
                 />
-                <ShareButton />
+                <ShareButton size={24} />
                 {isAdmin && (
-                  <EditMediaButton
-                    collection="series"
-                    item={series}
-                    className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
-                  />
+                  <div className="flex items-center gap-3">
+                    <EditMediaButton
+                      collection="series"
+                      item={series}
+                      className="flex h-10 items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors md:h-auto md:py-2.5 uppercase"
+                    />
+                    <DeleteSeriesButton
+                      seriesId={series.id}
+                      seriesSlug={series.slug}
+                      className="flex h-10 items-center justify-center gap-2 rounded-full border border-red-200 bg-white px-4 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-950 dark:bg-zinc-950 dark:text-red-300 dark:hover:bg-red-950/30 md:h-auto md:py-2.5 uppercase"
+                      redirectTo="/series"
+                    />
+                  </div>
                 )}
               </div>
 

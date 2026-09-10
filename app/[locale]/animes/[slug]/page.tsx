@@ -26,6 +26,7 @@ import {
 } from "@/lib/anikoto";
 import { AnimeStarRating } from "@/components/AnimeStarRating";
 import { getAnimeRatingStats } from "@/app/actions/animeRating";
+import { buildMergedSeasons } from "@/lib/seasons";
 
 export const revalidate = 3600;
 
@@ -150,31 +151,20 @@ export default async function AnimeDetailsPage({
         })
       : [];
 
-  const totalEpisodes = anime.seasons.reduce(
+  const mergedSeasons = await buildMergedSeasons({
+    animeSlug: anime.slug,
+    animeTitle: anime.title,
+    animeAnilistId: anime.anilistId,
+    animeMalId: anime.malId,
+    animeTitleEnglish: anime.titleEnglish,
+    localSeasons: anime.seasons,
+    translateEpisode: (num: number) => t("episodeNumber", { number: num }),
+  });
+
+  const totalEpisodes = mergedSeasons.reduce(
     (acc, season) => acc + (season.episodes?.length || 0),
     0,
   );
-
-  const externalSourceKey = JSON.stringify({
-    anilistId: anime.anilistId,
-    malId: anime.malId,
-    title: anime.title,
-    titleEnglish: anime.titleEnglish,
-    slug: anime.slug,
-  });
-
-  const externalCatalog =
-    totalEpisodes === 0 || anime.anilistId || anime.malId
-      ? await getMegaPlayAnimeCatalog(externalSourceKey)
-      : null;
-
-  const mergedSeasons = buildMergedSeasons({
-    animeSlug: anime.slug,
-    animeTitle: anime.title,
-    localSeasons: anime.seasons,
-    externalEpisodes: externalCatalog?.episodes || [],
-    translateEpisode: (num: number) => t("episodeNumber", { number: num }),
-  });
 
   const externalFirstEpisodeLink =
     mergedSeasons[0]?.episodes[0]?.href ||
@@ -526,125 +516,4 @@ export default async function AnimeDetailsPage({
   );
 }
 
-type LocalSeason = {
-  id: string;
-  number: number;
-  title?: string | null;
-  episodes: Array<{
-    id: string;
-    number: number;
-    title: string | null;
-    slug: string | null;
-    publicId: string | null;
-    videoUrl: string | null;
-    imageUrl: string | null;
-    createdAt?: Date | null;
-  }>;
-};
 
-type MergedEpisode = {
-  id: string;
-  number: number;
-  title: string | null;
-  href: string;
-  videoUrl: string | null;
-  imageUrl: string | null;
-  publicId: string | null;
-  slug: string | null;
-  createdAt?: Date | null;
-};
-
-type MergedSeason = {
-  id: string;
-  number: number;
-  title?: string | null;
-  episodes: MergedEpisode[];
-};
-
-function buildMergedSeasons({
-  animeSlug,
-  animeTitle,
-  localSeasons,
-  externalEpisodes,
-  translateEpisode,
-}: {
-  animeSlug: string;
-  animeTitle: string;
-  localSeasons: LocalSeason[];
-  externalEpisodes: MegaPlayCatalogEpisode[];
-  translateEpisode: (num: number) => string;
-}): MergedSeason[] {
-  const seasonsMap = new Map<number, MergedSeason>();
-
-  for (const season of localSeasons) {
-    seasonsMap.set(season.number, {
-      id: season.id,
-      number: season.number,
-      title: season.title,
-      episodes: [...season.episodes]
-        .sort((a, b) => a.number - b.number)
-        .map((episode) => ({
-          id: episode.id,
-          number: episode.number,
-          title: episode.title,
-          href: episode.publicId
-            ? `/watch/${episode.publicId}/${episode.slug || "episode-" + episode.number}`
-            : `/watch/${episode.id}/${episode.slug || "episode-" + episode.number}`,
-          videoUrl: episode.videoUrl,
-          imageUrl: episode.imageUrl,
-          publicId: episode.publicId,
-          slug: episode.slug,
-          createdAt: episode.createdAt,
-        })),
-    });
-  }
-
-  const externalOnlyEpisodes = externalEpisodes.sort(
-    (a, b) => a.number - b.number,
-  );
-
-  const targetSeasonNumber =
-    localSeasons.length > 0
-      ? Math.max(...localSeasons.map((season) => season.number))
-      : 1;
-
-  if (!seasonsMap.has(targetSeasonNumber)) {
-    seasonsMap.set(targetSeasonNumber, {
-      id: `megaplay-season-${targetSeasonNumber}`,
-      number: targetSeasonNumber,
-      episodes: [],
-    });
-  }
-
-  const targetSeason = seasonsMap.get(targetSeasonNumber)!;
-  const currentMaxEpisodeNumber =
-    targetSeason.episodes.reduce(
-      (max, episode) => Math.max(max, episode.number),
-      0,
-    ) || 0;
-
-  for (const episode of externalOnlyEpisodes) {
-    if (episode.number <= currentMaxEpisodeNumber) {
-      continue;
-    }
-    targetSeason.episodes.push({
-      id: `megaplay-${episode.number}`,
-      number: episode.number,
-      title:
-        episode.title || `${animeTitle} - ${translateEpisode(episode.number)}`,
-      href: `/watch/${animeSlug}/episode-${episode.number}?source=megaplay&episode=${episode.number}&season=${targetSeasonNumber}`,
-      videoUrl: `/watch/${animeSlug}/episode-${episode.number}?source=megaplay&episode=${episode.number}&season=${targetSeasonNumber}`,
-      imageUrl: null,
-      publicId: null,
-      slug: `episode-${episode.number}`,
-    });
-  }
-
-  return Array.from(seasonsMap.values())
-    .map((season) => ({
-      ...season,
-      episodes: season.episodes.sort((a, b) => a.number - b.number),
-    }))
-    .filter((season) => season.episodes.length > 0)
-    .sort((a, b) => a.number - b.number);
-}

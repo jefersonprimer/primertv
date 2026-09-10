@@ -81,6 +81,7 @@ function isKnownEmbedUrl(url: string): boolean {
     "mcloud.to",
     "myembed.biz",
     "2embed.cc",
+    "vidnest.fun",
   ];
   return embedPatterns.some((pattern) => url.includes(pattern));
 }

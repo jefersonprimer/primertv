@@ -22,14 +22,21 @@ import {
   getAnimeQuickPreview,
   type AnimeQuickPreviewData,
 } from "@/app/actions/getAnimeQuickPreview";
+import { getSeriesQuickPreview } from "@/app/actions/getSeriesQuickPreview";
 
 interface QuickViewModalProps {
   slug: string | null;
+  type?: "anime" | "series" | "movie" | "manga" | "novela";
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
+export function QuickViewModal({
+  slug,
+  type = "anime",
+  isOpen,
+  onClose,
+}: QuickViewModalProps) {
   const t = useTranslations("QuickViewModal");
   const [data, setData] = useState<AnimeQuickPreviewData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,6 +44,8 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
   const [visibleCount, setVisibleCount] = useState<number>(12);
   const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number>(1);
   const [mounted, setMounted] = useState(false);
+
+  const basePath = type === "series" ? "series" : "animes";
 
   useEffect(() => {
     setMounted(true);
@@ -53,7 +62,10 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
     setLoading(true);
     setError(false);
 
-    getAnimeQuickPreview(slug)
+    const fetcher =
+      type === "series" ? getSeriesQuickPreview : getAnimeQuickPreview;
+
+    fetcher(slug)
       .then((resData) => {
         if (!resData) {
           setError(true);
@@ -74,7 +86,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
       .finally(() => {
         setLoading(false);
       });
-  }, [isOpen, slug]);
+  }, [isOpen, slug, type]);
 
   const handleSeasonChange = (seasonNum: number) => {
     setSelectedSeasonNumber(seasonNum);
@@ -107,9 +119,11 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
   if (!isOpen || !mounted) return null;
 
   const targetEpisode = data?.nextEpisode || data?.firstEpisode;
-  const watchUrl = targetEpisode
-    ? `/watch/${targetEpisode.publicId}/${targetEpisode.slug}`
-    : `/animes/${slug}`;
+  const watchUrl = targetEpisode?.href
+    ? targetEpisode.href
+    : targetEpisode
+      ? `/watch/${targetEpisode.publicId || targetEpisode.id}/${targetEpisode.slug || "episode-" + targetEpisode.number}`
+      : `/animes/${slug}`;
 
   const headerBanner = data?.bannerUrl || data?.imageUrl;
 
@@ -211,7 +225,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
               {t("failedToLoad")}
             </p>
             <Link
-              href={`/animes/${slug}`}
+              href={`/${basePath}/${slug}`}
               onClick={onClose}
               className="px-5 py-2.5 rounded-lg bg-[#0077FD] hover:bg-[#0066D6] text-white text-sm font-bold transition-all"
             >
@@ -242,9 +256,9 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
 
               {/* Conteúdo Inferior no Banner (Logo/Nome + Botões) */}
               <div className="absolute bottom-4 left-4 right-4 sm:left-6 sm:right-6 z-10 flex flex-col gap-3 sm:gap-4">
-                {/* Logo ou Nome do Anime */}
+                {/* Logo ou Nome */}
                 <Link
-                  href={`/animes/${data.slug}`}
+                  href={`/${basePath}/${data.slug}`}
                   onClick={onClose}
                   className="block max-w-[75%] sm:max-w-[55%] hover:opacity-90 transition-opacity group cursor-pointer"
                 >
@@ -274,7 +288,7 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                   />
 
                   <WatchlistButton
-                    mediaType="ANIME"
+                    mediaType={type === "series" ? "SERIES" : "ANIME"}
                     mediaId={data.id}
                     slug={data.slug}
                     initialInWatchlist={data.inWatchlist}
@@ -283,7 +297,8 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                   />
 
                   <AddToListButton
-                    animeId={data.id}
+                    animeId={type !== "series" ? data.id : undefined}
+                    seriesId={type === "series" ? data.id : undefined}
                     isLoggedIn={data.isLoggedIn}
                     size={24}
                   />
@@ -291,14 +306,14 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                   <ShareButton
                     url={
                       typeof window !== "undefined"
-                        ? `${window.location.origin}/animes/${data.slug}`
+                        ? `${window.location.origin}/${basePath}/${data.slug}`
                         : undefined
                     }
                     size={24}
                   />
 
                   <Link
-                    href={`/animes/${data.slug}`}
+                    href={`/${basePath}/${data.slug}`}
                     onClick={onClose}
                     className="flex items-center gap-2 p-2 rounded-full bg-zinc-800/90 hover:bg-zinc-700 text-white text-sm font-semibold border border-zinc-700/60 hover:border-zinc-500 transition-all ml-auto"
                   >
@@ -402,7 +417,10 @@ export function QuickViewModal({ slug, isOpen, onClose }: QuickViewModalProps) {
                         return (
                           <Link
                             key={ep.id}
-                            href={`/watch/${ep.publicId || ep.id}/${ep.slug || `episode-${ep.number}`}`}
+                            href={
+                              ep.href ||
+                              `/watch/${ep.publicId || ep.id}/${ep.slug || `episode-${ep.number}`}`
+                            }
                             onClick={onClose}
                             className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl transition-colors ${
                               isNextTarget ? "bg-[#151515]" : "hover:bg-[#151515]"

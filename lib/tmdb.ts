@@ -253,7 +253,7 @@ export const getMovieLogo = cache(async (movieId: string, title: string): Promis
         const movieIdTmdb = searchData.results?.[0]?.id;
 
         if (movieIdTmdb) {
-          const imagesUrl = `https://api.themoviedb.org/3/movie/${movieIdTmdb}/images?include_image_language=ja,en,null`;
+          const imagesUrl = `https://api.themoviedb.org/3/movie/${movieIdTmdb}/images?include_image_language=en,null,ja`;
           const imagesResponse = await fetch(
             tmdbKey && !tmdbToken ? `${imagesUrl}&api_key=${tmdbKey}` : imagesUrl,
             { headers, next: { revalidate: 3600 } }
@@ -263,9 +263,9 @@ export const getMovieLogo = cache(async (movieId: string, title: string): Promis
             const imagesData = (await imagesResponse.json()) as TmdbImagesResponse;
             const logos = imagesData.logos || [];
 
-            const preferred = logos.find((l) => l.iso_639_1 === "ja") ||
-                              logos.find((l) => l.iso_639_1 === "en") ||
+            const preferred = logos.find((l) => l.iso_639_1 === "en") ||
                               logos.find((l) => l.iso_639_1 === null) ||
+                              logos.find((l) => l.iso_639_1 === "ja") ||
                               logos[0];
 
             if (preferred?.file_path) {
@@ -292,3 +292,83 @@ export const getMovieLogo = cache(async (movieId: string, title: string): Promis
 
   return resolvedLogo;
 });
+
+export interface TmdbEpisodeInfo {
+  id: string;
+  number: number;
+  title: string;
+  overview: string | null;
+  stillPath: string | null;
+}
+
+export interface TmdbSeasonInfo {
+  id: string;
+  number: number;
+  name: string;
+  episodes: TmdbEpisodeInfo[];
+}
+
+export const getSeriesTmdbSeasons = cache(async (
+  tmdbId: string | number
+): Promise<TmdbSeasonInfo[]> => {
+  if (!tmdbId) return [];
+
+  try {
+    const mainRes = await tmdbFetch(
+      `https://api.themoviedb.org/3/tv/${tmdbId}?language=pt-BR`
+    );
+    if (!mainRes.ok) return [];
+
+    const mainData = await mainRes.json();
+    const seasonsList: Array<{ season_number: number; name?: string; episode_count?: number }> =
+      mainData.seasons || [];
+
+    const validSeasons = seasonsList.filter((s) => s.season_number > 0);
+
+    const seasonsDataRaw = await Promise.all(
+      validSeasons.map(async (s) => {
+        try {
+          const seasonRes = await tmdbFetch(
+            `https://api.themoviedb.org/3/tv/${tmdbId}/season/${s.season_number}?language=pt-BR`
+          );
+          if (!seasonRes.ok) return null;
+          const seasonJson = await seasonRes.json();
+          const rawEpisodes: Array<{
+            id: number;
+            episode_number: number;
+            name?: string;
+            overview?: string;
+            still_path?: string;
+          }> = seasonJson.episodes || [];
+
+          return {
+            id: `tmdb-s${s.season_number}`,
+            number: s.season_number,
+            name: s.name ? String(s.name) : `Temporada ${s.season_number}`,
+            episodes: rawEpisodes.map((ep) => ({
+              id: `tmdb-s${s.season_number}-e${ep.episode_number}`,
+              number: ep.episode_number,
+              title: ep.name ? String(ep.name) : `Episódio ${ep.episode_number}`,
+              overview: ep.overview || null,
+              stillPath: ep.still_path ? `https://image.tmdb.org/t/p/w500${ep.still_path}` : null,
+            })),
+          };
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    const result: TmdbSeasonInfo[] = [];
+    for (const item of seasonsDataRaw) {
+      if (item && item.episodes.length > 0) {
+        result.push(item);
+      }
+    }
+    return result;
+  } catch (error) {
+    console.error(`Erro ao buscar temporadas do TMDB para ID ${tmdbId}:`, error);
+    return [];
+  }
+});
+

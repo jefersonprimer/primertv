@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 const ANIKOTO_BASE_URL = "https://anikotoapi.site";
 const MEGAPLAY_BASE_URL = "https://megaplay.buzz";
 const ZOKOANIME_BASE_URL = "https://zokoanime.video";
+const VIDNEST_BASE_URL = "https://vidnest.fun";
 const REQUEST_TIMEOUT_MS = 8000;
 const MAX_PAGES = 6;
 const PAGE_SIZE = 100;
@@ -309,6 +310,7 @@ function buildDirectPlayers(
 
   if (effectiveAnilistId) {
     const basePath = `/stream/ani/${encodeURIComponent(String(effectiveAnilistId))}/${episodeNumber}`;
+    const vidnestPath = `/anime/${encodeURIComponent(String(effectiveAnilistId))}/${episodeNumber}`;
     players.push({
       id: "megaplay-anilist-sub",
       label: "MegaPlay (AniList Sub)",
@@ -318,6 +320,16 @@ function buildDirectPlayers(
       id: "megaplay-anilist-dub",
       label: "MegaPlay (AniList Dub)",
       url: `${MEGAPLAY_BASE_URL}${basePath}/dub`,
+    });
+    players.push({
+      id: "vidnest-anilist-sub",
+      label: "VidNest (Sub)",
+      url: `${VIDNEST_BASE_URL}${vidnestPath}/sub`,
+    });
+    players.push({
+      id: "vidnest-anilist-dub",
+      label: "VidNest (Dub)",
+      url: `${VIDNEST_BASE_URL}${vidnestPath}/dub`,
     });
     players.push({
       id: "zokoanime-anilist-sub",

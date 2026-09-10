@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ListVideo } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
 import { useTranslations } from "next-intl";
 
@@ -14,11 +14,13 @@ interface Episode {
   videoUrl: string | null;
   publicId: string | null;
   slug: string | null;
+  href?: string | null;
 }
 
 interface Season {
   id: string;
   number: number;
+  title?: string | null;
   episodes: Episode[];
 }
 
@@ -102,7 +104,7 @@ export default function SeriesEpisodeSidebar({
             <>
               {nextEpisode && (
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-bold text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <h3 className="font-bold text-sm text-white uppercase tracking-wider md:px-2">
                     {t("next")}
                   </h3>
                   <EpisodeCard
@@ -119,7 +121,7 @@ export default function SeriesEpisodeSidebar({
             <>
               {nextEpisode && (
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-bold text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <h3 className="font-bold text-sm text-white uppercase tracking-wider md:px-2">
                     {t("nextEp")}
                   </h3>
                   <EpisodeCard
@@ -132,7 +134,7 @@ export default function SeriesEpisodeSidebar({
               )}
               {prevEpisode && (
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-bold text-sm text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  <h3 className="font-bold text-sm text-white uppercase tracking-wider md:px-2">
                     {t("prevEp")}
                   </h3>
                   <EpisodeCard
@@ -151,24 +153,27 @@ export default function SeriesEpisodeSidebar({
       {/* 2. "Ver mais episódios" Button */}
       <button
         onClick={handleToggleShowAll}
-        className="w-fit py-2.5 px-4 bg-zinc-200 dark:bg-zinc-800 text-sm font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-300 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-300 dark:border-zinc-700"
+        className="flex items-center rounded-md gap-2 w-full md:w-fit px-2.5 py-1.5 md:mx-2 text-sm font-bold text-[#bbb] hover:text-white transition-all active:scale-95 justify-center text-center uppercase tracking-wide border-2 border-[#bbb] hover:border-white"
       >
+        <ListVideo size={24} />
         {showAllEpisodes ? t("backToSummary") : t("seeMoreEpisodes")}
       </button>
 
       {/* 3. Season Selector & Episode List (shown if showAllEpisodes is true) */}
       {showAllEpisodes && (
-        <div className="flex flex-col gap-4 bg-zinc-900 shadow-sm">
+        <div className="flex flex-col gap-4 shadow-sm">
           {/* Season Dropdown */}
-          <div className="relative w-full" ref={seasonRef}>
+          <div className="relative w-full max-w-[378px]" ref={seasonRef}>
             <button
               onClick={() => setSeasonDropdownOpen(!seasonDropdownOpen)}
-              className="flex w-full items-center justify-between px-4 py-2.5 text-sm font-semibold border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-50 transition-colors"
+              className="flex w-full items-center gap-2 px-2 text-lg font-bold text-white hover:text-[#0077FD] transition-colors"
             >
               <span>
-                {tSelector("season", {
-                  number: selectedSeason ? selectedSeason.number : 1,
-                })}
+                {selectedSeason?.title
+                  ? selectedSeason.title
+                  : tSelector("season", {
+                      number: selectedSeason ? selectedSeason.number : 1,
+                    })}
               </span>
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-200 ${
@@ -178,7 +183,7 @@ export default function SeriesEpisodeSidebar({
             </button>
 
             {seasonDropdownOpen && (
-              <div className="absolute left-0 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto custom-scrollbar border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="absolute left-2 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto custom-scrollbar bg-[#272727] rounded-md">
                 {seasons.map((season) => (
                   <button
                     key={season.id}
@@ -187,13 +192,22 @@ export default function SeriesEpisodeSidebar({
                       setSeasonDropdownOpen(false);
                       setVisibleCount(12);
                     }}
-                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#151515] flex items-center justify-between ${
                       season.id === selectedSeasonId
-                        ? "bg-blue-50 text-blue-600 font-bold dark:bg-blue-900/20 dark:text-blue-400"
-                        : "text-zinc-700 dark:text-zinc-300"
+                        ? "text-white bg-[#151515]"
+                        : "text-[#bbb] hover:text-white"
                     }`}
                   >
-                    {tSelector("season", { number: season.number })}
+                    <span>
+                      {season.title
+                        ? season.title
+                        : tSelector("season", { number: season.number })}
+                    </span>
+                    <span className="text-xs text-[#bbb] font-normal">
+                      {tSelector("episodesCount", {
+                        count: season.episodes.length,
+                      })}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -201,7 +215,7 @@ export default function SeriesEpisodeSidebar({
           </div>
 
           {/* Episode List */}
-          <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
+          <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-1 py-2">
             <div className="flex flex-col">
               {episodesOfSelectedSeason.slice(0, visibleCount).map((ep) => {
                 const isCurrent = ep.id === currentEpisodeId;
@@ -221,7 +235,7 @@ export default function SeriesEpisodeSidebar({
             {episodesOfSelectedSeason.length > visibleCount && (
               <button
                 onClick={() => setVisibleCount((prev) => prev + 12)}
-                className="w-full mt-2 py-2 px-4 bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-200 dark:border-zinc-700"
+                className="w-full rounded-md mt-2 py-3 px-4 bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-200 dark:border-zinc-700"
               >
                 {tLabels("showMore")}
               </button>
@@ -249,17 +263,19 @@ function EpisodeCard({
   isCurrent = false,
 }: EpisodeCardProps) {
   const tLabels = useTranslations("Labels");
-  const watchHref = ep.publicId
-    ? `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`
-    : `/watch/${ep.id}/${ep.slug || "episode-" + ep.number}`;
+  const watchHref =
+    ep.href ||
+    (ep.publicId
+      ? `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`
+      : `/watch/${ep.id}/${ep.slug || "episode-" + ep.number}`);
 
   return (
     <Link
       href={watchHref}
-      className={`flex items-center gap-3 sm:p-2 transition-colors ${
+      className={`flex items-center gap-3 sm:p-2 transition-colors rounded-md ${
         isCurrent
-          ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-500"
-          : "border-zinc-200 dark:border-zinc-800 hover:bg-zinc-800"
+          ? "border-blue-500 bg-[#151515] dark:border-blue-500"
+          : "border-zinc-200 dark:border-zinc-800 hover:bg-[#151515]"
       }`}
     >
       {/* Left: Image Container */}
@@ -270,7 +286,7 @@ function EpisodeCard({
             alt={ep.title || `${tLabels("episode")} ${ep.number}`}
             fill
             sizes="128px"
-            className="object-cover"
+            className="object-cover rounded-md"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-xs text-zinc-500">
@@ -287,12 +303,9 @@ function EpisodeCard({
 
       {/* Right: Info */}
       <div className="flex flex-col min-w-0">
-        <span className="text-xs text-zinc-500 font-semibold mb-0.5">
-          {tLabels("episode")} {ep.number}
-        </span>
-        <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 truncate leading-snug">
-          {ep.title || `${tLabels("episode")} ${ep.number}`}
-        </h4>
+        <h3 className="text-sm font-bold text-white line-clamp-2">
+          E{ep.number} - {ep.title || `${tLabels("episode")} ${ep.number}`}
+        </h3>
       </div>
     </Link>
   );

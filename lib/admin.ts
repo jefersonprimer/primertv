@@ -29,10 +29,24 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
   movies: {
     label: "Filmes",
     itemLabel: "filme",
-    publicPath: "/filmes",
+    publicPath: "/movies",
     fields: [
       { name: "title", label: "Título", type: "text", required: true },
       { name: "slug", label: "Slug", type: "text", required: true },
+      {
+        name: "tmdbId",
+        label: "TMDB ID",
+        type: "text",
+        placeholder: "Ex: 550",
+        helpText: "ID do TMDB usado pelos players de embed automatizados.",
+      },
+      {
+        name: "imdbId",
+        label: "IMDb ID",
+        type: "text",
+        placeholder: "Ex: tt0111161",
+        helpText: "ID do IMDb da obra (começa com 'tt'). Serve como alternativa/fallback para players de embed.",
+      },
       {
         name: "description",
         label: "Descrição",
@@ -41,6 +55,7 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
       },
       { name: "imageUrl", label: "Imagem", type: "text" },
       { name: "bannerUrl", label: "Banner URL", type: "text" },
+      { name: "logoUrl", label: "Logo URL", type: "text" },
       {
         name: "genres",
         label: "Gêneros",
@@ -58,6 +73,20 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
     fields: [
       { name: "title", label: "Título", type: "text", required: true },
       { name: "slug", label: "Slug", type: "text", required: true },
+      {
+        name: "tmdbId",
+        label: "TMDB ID",
+        type: "text",
+        placeholder: "Ex: 1399",
+        helpText: "ID do TMDB da série para que os embeds encontrem as temporadas e episódios automaticamente.",
+      },
+      {
+        name: "imdbId",
+        label: "IMDb ID",
+        type: "text",
+        placeholder: "Ex: tt0944947",
+        helpText: "ID do IMDb da série (começa com 'tt'). Usado como alternativa aos players de embed.",
+      },
       {
         name: "description",
         label: "Descrição",

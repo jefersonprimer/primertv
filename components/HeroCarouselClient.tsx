@@ -26,9 +26,12 @@ export interface HeroCarouselItem {
   type?: "anime" | "series" | "movie";
   videoUrl?: string | null;
   tmdbId?: string | null;
+  imdbId?: string | null;
   publicId?: string | null;
   isDubbed?: boolean;
   isSubtitled?: boolean;
+  anilistId?: number | null;
+  malId?: number | null;
 }
 
 interface HeroCarouselClientProps {
@@ -97,7 +100,7 @@ export function HeroCarouselClient({
     ? current.type === "series"
       ? `/series/${current.slug}`
       : current.type === "movie"
-        ? `/filmes/${current.slug}`
+        ? `/movies/${current.slug}`
         : `/animes/${current.slug}`
     : "";
 
@@ -272,7 +275,7 @@ export function HeroCarouselClient({
                   href={
                     current.publicId
                       ? `/watch/${current.publicId}/${current.slug}`
-                      : `/filmes/${current.slug}/watch`
+                      : `/movies/${current.slug}/watch`
                   }
                   className="w-full max-w-[340px] md:max-w-[410px] 2xl:max-w-[460px] px-4 text-sm 2xl:text-base md:w-auto sm:max-w-none md:px-6 2xl:px-8 2xl:py-3"
                   text="Assistir"
@@ -284,6 +287,18 @@ export function HeroCarouselClient({
                       ? `/watch/${current.firstEpisodePublicId}/${current.firstEpisodeSlug || "episode-1"}`
                       : `/watch/${current.firstEpisodeId}/${current.firstEpisodeSlug || "episode-1"}`
                   }
+                  className="w-full max-w-[340px] md:max-w-[410px] 2xl:max-w-[460px] px-4 text-sm 2xl:text-base md:w-auto sm:max-w-none md:px-6 2xl:px-8 2xl:py-3"
+                />
+              ) : current.type === "anime" &&
+                (current.anilistId || current.malId) ? (
+                <StartWatchingButton
+                  href={`/watch/${current.slug}/episode-1?source=megaplay&episode=1&season=1`}
+                  className="w-full max-w-[340px] md:max-w-[410px] 2xl:max-w-[460px] px-4 text-sm 2xl:text-base md:w-auto sm:max-w-none md:px-6 2xl:px-8 2xl:py-3"
+                />
+              ) : current.type === "series" &&
+                (current.tmdbId || current.imdbId) ? (
+                <StartWatchingButton
+                  href={`/watch/${current.slug}/episode-1?season=1&episode=1&source=vidnest`}
                   className="w-full max-w-[340px] md:max-w-[410px] 2xl:max-w-[460px] px-4 text-sm 2xl:text-base md:w-auto sm:max-w-none md:px-6 2xl:px-8 2xl:py-3"
                 />
               ) : (

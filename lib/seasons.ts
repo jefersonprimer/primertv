@@ -153,3 +153,144 @@ export function getUniqueSeasons(animes: { season?: string | null; year?: number
     return (seasonOrder[b.season] || 0) - (seasonOrder[a.season] || 0);
   });
 }
+
+import { getMegaPlayAnimeCatalog } from "@/lib/anikoto";
+
+export type LocalSeasonForMerge = {
+  id: string;
+  number: number;
+  title?: string | null;
+  anilistId?: number | null;
+  malId?: number | null;
+  episodes: Array<{
+    id: string;
+    number: number;
+    title: string | null;
+    slug: string | null;
+    publicId: string | null;
+    videoUrl: string | null;
+    imageUrl: string | null;
+    createdAt?: Date | null;
+  }>;
+};
+
+export type MergedEpisode = {
+  id: string;
+  number: number;
+  title: string | null;
+  href: string;
+  videoUrl: string | null;
+  imageUrl: string | null;
+  publicId: string | null;
+  slug: string | null;
+  createdAt?: Date | null;
+};
+
+export type MergedSeason = {
+  id: string;
+  number: number;
+  title?: string | null;
+  episodes: MergedEpisode[];
+};
+
+export async function buildMergedSeasons({
+  animeSlug,
+  animeTitle,
+  animeAnilistId,
+  animeMalId,
+  animeTitleEnglish,
+  localSeasons,
+  translateEpisode,
+}: {
+  animeSlug: string;
+  animeTitle: string;
+  animeAnilistId?: number | null;
+  animeMalId?: number | null;
+  animeTitleEnglish?: string | null;
+  localSeasons: LocalSeasonForMerge[];
+  translateEpisode?: (num: number) => string;
+}): Promise<MergedSeason[]> {
+  const seasonsToProcess =
+    localSeasons.length > 0
+      ? localSeasons
+      : [
+          {
+            id: "megaplay-season-1",
+            number: 1,
+            title: null,
+            anilistId: animeAnilistId,
+            malId: animeMalId,
+            episodes: [],
+          },
+        ];
+
+  const defaultTranslate = (num: number) => `Episódio ${num}`;
+  const getEpText = translateEpisode || defaultTranslate;
+
+  const mergedSeasons: MergedSeason[] = await Promise.all(
+    seasonsToProcess.map(async (season) => {
+      const seasonSourceKey = JSON.stringify({
+        anilistId: animeAnilistId,
+        malId: animeMalId,
+        seasonAnilistId: season.anilistId,
+        seasonMalId: season.malId,
+        title: season.title ? `${animeTitle} ${season.title}` : animeTitle,
+        titleEnglish: animeTitleEnglish,
+        slug: animeSlug,
+        seasonNumber: season.number,
+      });
+
+      const externalCatalog = await getMegaPlayAnimeCatalog(seasonSourceKey);
+      const externalEpisodes = externalCatalog?.episodes || [];
+
+      const localEpNumbers = new Set(
+        season.episodes.map((episode) => episode.number),
+      );
+
+      const mergedEpisodes: MergedEpisode[] = [...season.episodes]
+        .sort((a, b) => a.number - b.number)
+        .map((episode) => ({
+          id: episode.id,
+          number: episode.number,
+          title: episode.title,
+          href: episode.publicId
+            ? `/watch/${episode.publicId}/${episode.slug || "episode-" + episode.number}`
+            : `/watch/${episode.id}/${episode.slug || "episode-" + episode.number}`,
+          videoUrl: episode.videoUrl,
+          imageUrl: episode.imageUrl,
+          publicId: episode.publicId,
+          slug: episode.slug,
+          createdAt: episode.createdAt,
+        }));
+
+      for (const extEp of externalEpisodes) {
+        if (localEpNumbers.has(extEp.number)) {
+          continue;
+        }
+        mergedEpisodes.push({
+          id: `megaplay-s${season.number}-${extEp.number}`,
+          number: extEp.number,
+          title: extEp.title || `${animeTitle} - ${getEpText(extEp.number)}`,
+          href: `/watch/${animeSlug}/episode-${extEp.number}?source=megaplay&episode=${extEp.number}&season=${season.number}`,
+          videoUrl: `/watch/${animeSlug}/episode-${extEp.number}?source=megaplay&episode=${extEp.number}&season=${season.number}`,
+          imageUrl: null,
+          publicId: null,
+          slug: `episode-${extEp.number}`,
+        });
+      }
+
+      mergedEpisodes.sort((a, b) => a.number - b.number);
+
+      return {
+        id: season.id,
+        number: season.number,
+        title: season.title,
+        episodes: mergedEpisodes,
+      };
+    }),
+  );
+
+  return mergedSeasons
+    .filter((season) => season.episodes.length > 0)
+    .sort((a, b) => a.number - b.number);
+}

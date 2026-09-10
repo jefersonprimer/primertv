@@ -144,7 +144,10 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          tmdbId: readString(formData, "tmdbId") || null,
+          imdbId: readString(formData, "imdbId") || null,
           bannerUrl: readString(formData, "bannerUrl") || null,
+          logoUrl: readString(formData, "logoUrl") || null,
           videoUrl,
           publicId: currentPublicId,
         };
@@ -166,6 +169,8 @@ export async function saveMedia(
         const payload = {
           ...common,
           slug: finalSlug,
+          tmdbId: readString(formData, "tmdbId") || null,
+          imdbId: readString(formData, "imdbId") || null,
           bannerUrl: readString(formData, "bannerUrl") || null,
           logoUrl: readString(formData, "logoUrl") || null,
           score: readNumber(formData, "score"),
@@ -266,8 +271,9 @@ export async function saveMedia(
         break;
       }
       case "channels": {
+        const { genres, ...commonData } = common;
         const payload = {
-          ...common,
+          ...commonData,
           slug: finalSlug,
           videoUrl: readString(formData, "videoUrl") || null,
           embedUrl: readString(formData, "embedUrl") || null,
@@ -290,6 +296,26 @@ export async function saveMedia(
     }
   } catch (error) {
     console.error(error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      const target = (error.meta?.target as string[]) || [];
+      const fieldName = target.join(", ");
+      if (fieldName.includes("slug")) {
+        return { error: "Já existe um registro cadastrado com este mesmo Slug/Título." };
+      }
+      if (fieldName.includes("title")) {
+        return { error: "Já existe um registro cadastrado com este mesmo Título." };
+      }
+      if (fieldName.includes("malId")) {
+        return { error: "Já existe um registro cadastrado com este mesmo MAL ID." };
+      }
+      if (fieldName.includes("anilistId")) {
+        return { error: "Já existe um registro cadastrado com este mesmo AniList ID." };
+      }
+      return { error: `Conflito de duplicidade no campo: ${fieldName || "único"}.` };
+    }
     return { error: "Não foi possível salvar o item." };
   }
 
@@ -334,6 +360,70 @@ export async function deleteAnime(formData: FormData): Promise<void> {
   }
 
   redirect("/animes");
+}
+
+export async function deleteSeries(formData: FormData): Promise<void> {
+  await requireAdminSession();
+
+  const id = readString(formData, "id");
+  const slug = readString(formData, "slug");
+  const redirectTo = readString(formData, "redirectTo");
+
+  if (!id || !slug) {
+    return;
+  }
+
+  try {
+    await prisma.series.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+
+  revalidatePath("/");
+  revalidatePath("/search");
+  revalidatePath("/series");
+  revalidatePath(`/series/${slug}`);
+
+  if (redirectTo) {
+    redirect(redirectTo);
+  }
+
+  redirect("/series");
+}
+
+export async function deleteMovie(formData: FormData): Promise<void> {
+  await requireAdminSession();
+
+  const id = readString(formData, "id");
+  const slug = readString(formData, "slug");
+  const redirectTo = readString(formData, "redirectTo");
+
+  if (!id || !slug) {
+    return;
+  }
+
+  try {
+    await prisma.movie.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+
+  revalidatePath("/");
+  revalidatePath("/search");
+  revalidatePath("/movies");
+  revalidatePath(`/movies/${slug}`);
+
+  if (redirectTo) {
+    redirect(redirectTo);
+  }
+
+  redirect("/movies");
 }
 
 async function getExistingRecord(collection: AdminCollection, id: string) {

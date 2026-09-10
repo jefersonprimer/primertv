@@ -73,6 +73,7 @@ const seriesDetailsSelect = {
   score: true,
   year: true,
   tmdbId: true,
+  imdbId: true,
   latestSeasonId: true,
   latestEpisodeId: true,
   latestEpisodeNumber: true,
@@ -182,6 +183,7 @@ export const getSeriesDetailsBySlug = cache(async (slug: string) => {
   return prisma.series.findFirst({
     where: {
       OR: [
+        { id: slug },
         { slug: normalizedNFC },
         { slug: normalizedNFD },
         { slug: decoded },

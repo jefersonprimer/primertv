@@ -16,13 +16,18 @@ import AnimeEpisodeSidebar from "./EpisodeSidebar";
 import SeriesEpisodeSidebar from "./SeriesEpisodeSidebar";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ShareButton from "@/components/ShareButton";
-import { getAnimeDetailsBySlug } from "@/lib/media-details";
+import {
+  getAnimeDetailsBySlug,
+  getSeriesDetailsBySlug,
+} from "@/lib/media-details";
 import RatingBadge from "@/components/RatingBadge";
 import { VoteButtons } from "@/components/VoteButtons";
 import { PlayerDropdown } from "@/components/PlayerDropdown";
 import { parseCustomPlayerLine } from "@/lib/player-utils";
 import { CommentsSection } from "@/components/CommentsSection";
 import { getSession } from "@/lib/auth";
+import { buildMergedSeasons } from "@/lib/seasons";
+import { getSeriesTmdbSeasons } from "@/lib/tmdb";
 
 interface WatchPageProps {
   params: Promise<{ locale: string; publicId: string; slug: string }>;
@@ -40,7 +45,7 @@ export async function generateMetadata({
 }: WatchPageProps): Promise<Metadata> {
   await connection();
 
-  const { locale, publicId } = await params;
+  const { locale, publicId, slug } = await params;
   const { source, episode } = (await searchParams) || {};
   const t = await getTranslations({ locale, namespace: "Watch" });
 
@@ -134,19 +139,45 @@ export async function generateMetadata({
       });
       imageUrl = seriesEpisode.season.series.imageUrl;
     } else {
-      // Try Movie
-      const movie =
-        (await prisma.movie.findUnique({
-          where: { publicId },
-        })) ||
-        (await prisma.movie.findUnique({
-          where: { id: publicId },
-        }));
+      const extSeries = await getSeriesDetailsBySlug(publicId);
+      if (extSeries && (extSeries.tmdbId || extSeries.imdbId)) {
+        const match = slug ? slug.match(/\d+/) : null;
+        const epNum = Number(episode || (match ? match[0] : 1));
+        title = t("seriesMetaTitle", {
+          title: extSeries.title,
+          number: epNum,
+        });
+        description = t("seriesMetaDescription", {
+          number: epNum,
+          title: extSeries.title,
+        });
+        imageUrl = extSeries.imageUrl;
+      } else {
+        // Try Movie
+        const decoded = decodeURIComponent(publicId);
+        const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+        const movie =
+          (await prisma.movie.findUnique({
+            where: { publicId },
+          })) ||
+          (await prisma.movie.findUnique({
+            where: { id: publicId },
+          })) ||
+          (await prisma.movie.findFirst({
+            where: {
+              OR: [
+                { slug: decoded },
+                { slug: slugified },
+                { slug: publicId },
+              ],
+            },
+          }));
 
-      if (movie) {
-        title = t("movieMetaTitle", { title: movie.title });
-        description = t("movieMetaDescription", { title: movie.title });
-        imageUrl = movie.imageUrl;
+        if (movie) {
+          title = t("movieMetaTitle", { title: movie.title });
+          description = t("movieMetaDescription", { title: movie.title });
+          imageUrl = movie.imageUrl;
+        }
       }
     }
   }
@@ -177,6 +208,7 @@ export default async function WatchPage({
 
   const t = await getTranslations("Watch");
   const tMedia = await getTranslations("MediaCard");
+  const tLabels = await getTranslations("Labels");
   const { locale, publicId, slug } = await params;
   const { player, source, episode, season } = (await searchParams) || {};
   const session = await getSession();
@@ -328,7 +360,7 @@ export default async function WatchPage({
             {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 sm:px-0">
               {/* Player Container */}
-              <div className="group relative aspect-video lg:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
+              <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
                   playableUrl.endsWith(".mp4") ||
                   playableUrl.endsWith(".m3u8") ? (
@@ -472,7 +504,14 @@ export default async function WatchPage({
             <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
               <div className="sticky top-20">
                 <AnimeEpisodeSidebar
-                  seasons={animeEpisode.season.anime.seasons}
+                  seasons={await buildMergedSeasons({
+                    animeSlug: animeEpisode.season.anime.slug,
+                    animeTitle: animeEpisode.season.anime.title,
+                    animeAnilistId: animeEpisode.season.anime.anilistId,
+                    animeMalId: animeEpisode.season.anime.malId,
+                    animeTitleEnglish: animeEpisode.season.anime.titleEnglish,
+                    localSeasons: animeEpisode.season.anime.seasons,
+                  })}
                   currentEpisodeId={animeEpisode.id}
                   animeSlug={animeEpisode.season.anime.slug}
                   animeRating={animeEpisode.season.anime.rating}
@@ -512,24 +551,40 @@ export default async function WatchPage({
     }
 
     const parsedSeason = season ? Number(season) : 1;
+    const targetSeasonObj = anime.seasons?.find(
+      (s) => s.number === parsedSeason,
+    );
     const sourceKey = JSON.stringify({
       anilistId: anime.anilistId,
       malId: anime.malId,
-      title: anime.title,
+      seasonAnilistId: targetSeasonObj?.anilistId,
+      seasonMalId: targetSeasonObj?.malId,
+      title: targetSeasonObj?.title
+        ? `${anime.title} ${targetSeasonObj.title}`
+        : anime.title,
       titleEnglish: anime.titleEnglish,
       slug: anime.slug,
       seasonNumber: parsedSeason,
     });
 
-    const catalog = await getMegaPlayAnimeCatalog(sourceKey);
-    const episodeItems =
-      catalog?.episodes.map((catalogEpisode) => ({
-        id: `megaplay-${catalogEpisode.number}`,
-        number: catalogEpisode.number,
-        title: catalogEpisode.title,
-        href: `/watch/${anime.slug}/episode-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}&season=${parsedSeason}`,
-        videoUrl: `/watch/${anime.slug}/episode-${catalogEpisode.number}?source=megaplay&episode=${catalogEpisode.number}&season=${parsedSeason}`,
-      })) || [];
+    const mergedSeasons = await buildMergedSeasons({
+      animeSlug: anime.slug,
+      animeTitle: anime.title,
+      animeAnilistId: anime.anilistId,
+      animeMalId: anime.malId,
+      animeTitleEnglish: anime.titleEnglish,
+      localSeasons: anime.seasons,
+    });
+
+    const currentSeasonObj = mergedSeasons.find(
+      (s) => s.number === parsedSeason,
+    );
+    const episodeItems = currentSeasonObj?.episodes || [];
+    const currentEpObj = currentSeasonObj?.episodes.find(
+      (e) => e.number === episodeNumber,
+    );
+    const currentEpisodeId =
+      currentEpObj?.id || `megaplay-s${parsedSeason}-${episodeNumber}`;
 
     const playersList = await getMegaPlayAnimePlayers(sourceKey, episodeNumber);
     const selectedPlayerId =
@@ -559,7 +614,7 @@ export default async function WatchPage({
             {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
               {/* Player Container */}
-              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+              <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
                   <iframe
                     src={playableUrl}
@@ -667,24 +722,10 @@ export default async function WatchPage({
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
               <div className="sticky top-20">
-                {episodeItems.length > 0 ? (
+                {mergedSeasons.length > 0 ? (
                   <AnimeEpisodeSidebar
-                    seasons={[
-                      {
-                        id: `megaplay-season-${parsedSeason}`,
-                        number: parsedSeason,
-                        episodes: episodeItems.map((item) => ({
-                          id: item.id,
-                          number: item.number,
-                          title: item.title,
-                          imageUrl: null,
-                          videoUrl: item.videoUrl,
-                          publicId: null,
-                          slug: `episode-${item.number}`,
-                        })),
-                      },
-                    ]}
-                    currentEpisodeId={`megaplay-${episodeNumber}`}
+                    seasons={mergedSeasons}
+                    currentEpisodeId={currentEpisodeId}
                     animeSlug={anime.slug}
                     animeRating={anime.rating}
                     animeDuration={anime.duration}
@@ -779,6 +820,8 @@ export default async function WatchPage({
     );
 
     const tmdbId = seriesEpisode.season.series.tmdbId;
+    const imdbId = seriesEpisode.season.series.imdbId;
+    const externalId = tmdbId || imdbId;
     const seriesFallbackUrl =
       allEpisodes.find((ep) => ep.videoUrl)?.videoUrl || null;
     const scrapedUrl = seriesEpisode.videoUrl || seriesFallbackUrl;
@@ -787,7 +830,7 @@ export default async function WatchPage({
     let defaultPlayer = 1;
     if (hasScrapedUrl) {
       defaultPlayer = 1;
-    } else if (tmdbId) {
+    } else if (externalId) {
       defaultPlayer = 2;
     }
 
@@ -795,31 +838,36 @@ export default async function WatchPage({
     let currentVideoUrl = scrapedUrl;
 
     const selectedPlayerStr = player;
-    if (selectedPlayerStr === "2" && tmdbId) {
+    if (selectedPlayerStr === "2" && externalId) {
       activePlayer = 2;
-      currentVideoUrl = `https://superflixapi.lifestyle/serie/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
-    } else if (selectedPlayerStr === "3" && tmdbId) {
+      currentVideoUrl = `https://superflixapi.lifestyle/serie/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+    } else if (selectedPlayerStr === "3" && externalId) {
       activePlayer = 3;
-      currentVideoUrl = `https://myembed.biz/serie/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
-    } else if (selectedPlayerStr === "4" && tmdbId) {
+      currentVideoUrl = `https://myembed.biz/serie/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+    } else if (selectedPlayerStr === "4" && externalId) {
       activePlayer = 4;
-      currentVideoUrl = `https://mgeb.top/embed/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
-    } else if (selectedPlayerStr === "5" && tmdbId) {
+      currentVideoUrl = `https://mgeb.top/embed/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+    } else if (selectedPlayerStr === "5" && externalId) {
       activePlayer = 5;
-      currentVideoUrl = `https://embedplayapi.top/embed/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+      currentVideoUrl = `https://embedplayapi.top/embed/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+    } else if (selectedPlayerStr === "6" && externalId) {
+      activePlayer = 6;
+      currentVideoUrl = `https://vidnest.fun/tv/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
     } else if (selectedPlayerStr === "1" && hasScrapedUrl) {
       activePlayer = 1;
       currentVideoUrl = scrapedUrl;
     } else {
       activePlayer = defaultPlayer;
-      if (activePlayer === 2 && tmdbId) {
-        currentVideoUrl = `https://superflixapi.lifestyle/serie/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
-      } else if (activePlayer === 3 && tmdbId) {
-        currentVideoUrl = `https://myembed.biz/serie/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
-      } else if (activePlayer === 4 && tmdbId) {
-        currentVideoUrl = `https://mgeb.top/embed/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
-      } else if (activePlayer === 5 && tmdbId) {
-        currentVideoUrl = `https://embedplayapi.top/embed/${tmdbId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+      if (activePlayer === 2 && externalId) {
+        currentVideoUrl = `https://superflixapi.lifestyle/serie/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+      } else if (activePlayer === 3 && externalId) {
+        currentVideoUrl = `https://myembed.biz/serie/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+      } else if (activePlayer === 4 && externalId) {
+        currentVideoUrl = `https://mgeb.top/embed/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+      } else if (activePlayer === 5 && externalId) {
+        currentVideoUrl = `https://embedplayapi.top/embed/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
+      } else if (activePlayer === 6 && externalId) {
+        currentVideoUrl = `https://vidnest.fun/tv/${externalId}/${seriesEpisode.season.number}/${seriesEpisode.number}`;
       } else {
         currentVideoUrl = scrapedUrl;
       }
@@ -844,8 +892,8 @@ export default async function WatchPage({
         href: "?player=1",
       });
     }
-    if (tmdbId) {
-      [2, 3, 4, 5].forEach((num) => {
+    if (externalId) {
+      [2, 3, 4, 5, 6].forEach((num) => {
         seriesPlayerOptions.push({
           id: String(num),
           label: t("playerLabel", { number: num }),
@@ -861,7 +909,7 @@ export default async function WatchPage({
             {/* Main Content: Player & Info / Description */}
             <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
               {/* Player Container */}
-              <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+              <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
                   playableUrl.endsWith(".mp4") ||
                   playableUrl.endsWith(".m3u8") ? (
@@ -1006,13 +1054,174 @@ export default async function WatchPage({
     );
   }
 
+  if (!seriesEpisode) {
+    const extSeries = await getSeriesDetailsBySlug(publicId);
+    if (extSeries && (extSeries.tmdbId || extSeries.imdbId)) {
+      const externalId = extSeries.tmdbId || extSeries.imdbId;
+      const seasonNum = Number(season || 1);
+      const epNum = Number(episode || (slug.match(/\d+/) ? slug.match(/\d+/)?.[0] : 1));
+
+      let activePlayer = 1;
+      if (player === "2") activePlayer = 2;
+      else if (player === "3") activePlayer = 3;
+      else if (player === "4") activePlayer = 4;
+      else if (player === "5") activePlayer = 5;
+
+      let currentVideoUrl = `https://vidnest.fun/tv/${externalId}/${seasonNum}/${epNum}`;
+      if (activePlayer === 2) {
+        currentVideoUrl = `https://superflixapi.lifestyle/serie/${externalId}/${seasonNum}/${epNum}`;
+      } else if (activePlayer === 3) {
+        currentVideoUrl = `https://myembed.biz/serie/${externalId}/${seasonNum}/${epNum}`;
+      } else if (activePlayer === 4) {
+        currentVideoUrl = `https://mgeb.top/embed/${externalId}/${seasonNum}/${epNum}`;
+      } else if (activePlayer === 5) {
+        currentVideoUrl = `https://embedplayapi.top/embed/${externalId}/${seasonNum}/${epNum}`;
+      }
+
+      const seriesPlayerOptions = [
+        { id: "1", label: t("playerLabel", { number: 1 }), href: "?player=1" },
+        { id: "2", label: t("playerLabel", { number: 2 }), href: "?player=2" },
+        { id: "3", label: t("playerLabel", { number: 3 }), href: "?player=3" },
+        { id: "4", label: t("playerLabel", { number: 4 }), href: "?player=4" },
+        { id: "5", label: t("playerLabel", { number: 5 }), href: "?player=5" },
+      ];
+
+      const tmdbSeasons = await getSeriesTmdbSeasons(externalId!);
+      const seasonsForSidebar =
+        tmdbSeasons && tmdbSeasons.length > 0
+          ? tmdbSeasons.map((s) => ({
+              id: s.id,
+              number: s.number,
+              episodes: s.episodes.map((ep) => ({
+                id: ep.id,
+                number: ep.number,
+                title: ep.title,
+                videoUrl: null,
+                publicId: null,
+                slug: `episode-${ep.number}`,
+                href: `/watch/${extSeries.slug}/episode-${ep.number}?season=${s.number}&episode=${ep.number}&source=vidnest`,
+              })),
+            }))
+          : [
+              {
+                id: "default-season-1",
+                number: 1,
+                episodes: Array.from({ length: 8 }, (_, i) => ({
+                  id: `default-s1-e${i + 1}`,
+                  number: i + 1,
+                  title: `Episódio ${i + 1}`,
+                  videoUrl: null,
+                  publicId: null,
+                  slug: `episode-${i + 1}`,
+                  href: `/watch/${extSeries.slug}/episode-${i + 1}?season=1&episode=${i + 1}&source=vidnest`,
+                })),
+              },
+            ];
+
+      const currentEpId =
+        seasonsForSidebar
+          .find((s) => s.number === seasonNum)
+          ?.episodes.find((e) => e.number === epNum)?.id ||
+        seasonsForSidebar[0]?.episodes[0]?.id ||
+        `tmdb-s${seasonNum}-e${epNum}`;
+
+      return (
+        <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
+          <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
+            <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+              {/* Main Content: Player & Info */}
+              <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
+                <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
+                  <iframe
+                    src={currentVideoUrl}
+                    className="w-full aspect-video"
+                    allowFullScreen
+                    title={`${extSeries.title} - S${seasonNum}E${epNum}`}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-6 mt-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+                    <PlayerDropdown
+                      players={seriesPlayerOptions}
+                      activePlayerId={String(activePlayer)}
+                    />
+                    <div className="flex items-center gap-2">
+                      <WatchlistButton
+                        mediaType="SERIES"
+                        mediaId={extSeries.id}
+                        slug={extSeries.slug}
+                        initialInWatchlist={false}
+                        isLoggedIn={!!session?.user}
+                      />
+                      <ShareButton />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h1 className="text-xl font-bold md:text-2xl text-white">
+                      <Link
+                        href={`/series/${extSeries.slug}`}
+                        className="text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                      >
+                        {extSeries.title}
+                      </Link>{" "}
+                      - {tLabels("episode")} {epNum} (T{seasonNum})
+                    </h1>
+                  </div>
+                  <div className="mt-4">
+                    <ExpandableDescription
+                      description={extSeries.description || t("noDescription")}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar: Episode List */}
+              <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
+                <div className="sticky top-20">
+                  <SeriesEpisodeSidebar
+                    seasons={seasonsForSidebar}
+                    currentEpisodeId={currentEpId}
+                    seriesSlug={extSeries.slug}
+                    seriesRating={extSeries.rating}
+                    seriesImageUrl={extSeries.imageUrl}
+                  />
+                </div>
+              </div>
+
+              {/* Comments Section */}
+              <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 sm:px-0">
+                <CommentsSection
+                  targetId={`extseries-${extSeries.slug}-s${seasonNum}-e${epNum}`}
+                  currentUser={currentUser}
+                />
+              </div>
+            </div>
+          </main>
+        </div>
+      );
+    }
+  }
+
   // 3. Try fetching Movie
+  const decodedPublicId = decodeURIComponent(publicId);
+  const slugifiedPublicId = decodedPublicId.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
   const movie =
     (await prisma.movie.findUnique({
       where: { publicId },
     })) ||
     (await prisma.movie.findUnique({
       where: { id: publicId },
+    })) ||
+    (await prisma.movie.findFirst({
+      where: {
+        OR: [
+          { slug: decodedPublicId },
+          { slug: slugifiedPublicId },
+          { slug: publicId },
+        ],
+      },
     }));
 
   if (movie) {
@@ -1027,58 +1236,67 @@ export default async function WatchPage({
     const isMyembedUrl = movie.videoUrl?.includes("myembed.biz");
     const is2embedUrl = movie.videoUrl?.includes("2embed.cc");
     const isEmbedplayUrl = movie.videoUrl?.includes("embedplayapi.top");
+    const isVidnestUrl = movie.videoUrl?.includes("vidnest.fun");
     const hasScrapedUrl =
       movie.videoUrl &&
       !isMgebUrl &&
       !isSuperflixUrl &&
       !isMyembedUrl &&
       !is2embedUrl &&
-      !isEmbedplayUrl;
+      !isEmbedplayUrl &&
+      !isVidnestUrl;
 
     let currentVideoUrl = movie.videoUrl;
     let activePlayer = 1;
+
+    const movieExternalId = movie.tmdbId || movie.imdbId;
 
     // Decide default player if none is explicitly selected
     let defaultPlayer = 1;
     if (hasScrapedUrl) {
       defaultPlayer = 1;
-    } else if (movie.tmdbId) {
+    } else if (movieExternalId) {
       defaultPlayer = 2; // Default to MGEB if no scraped URL exists
     }
 
     // Set active player and current URL
     const selectedPlayerStr = player;
-    if (selectedPlayerStr === "2" && movie.tmdbId) {
+    if (selectedPlayerStr === "2" && movieExternalId) {
       activePlayer = 2;
-      currentVideoUrl = `https://mgeb.top/embed/${movie.tmdbId}`;
-    } else if (selectedPlayerStr === "3" && movie.tmdbId) {
+      currentVideoUrl = `https://mgeb.top/embed/${movieExternalId}`;
+    } else if (selectedPlayerStr === "3" && movieExternalId) {
       activePlayer = 3;
-      currentVideoUrl = `https://superflixapi.lifestyle/filme/${movie.tmdbId}`;
-    } else if (selectedPlayerStr === "4" && movie.tmdbId) {
+      currentVideoUrl = `https://superflixapi.lifestyle/filme/${movieExternalId}`;
+    } else if (selectedPlayerStr === "4" && movieExternalId) {
       activePlayer = 4;
-      currentVideoUrl = `https://myembed.biz/filme/${movie.tmdbId}`;
-    } else if (selectedPlayerStr === "5" && movie.tmdbId) {
+      currentVideoUrl = `https://myembed.biz/filme/${movieExternalId}`;
+    } else if (selectedPlayerStr === "5" && movieExternalId) {
       activePlayer = 5;
-      currentVideoUrl = `https://www.2embed.cc/embed/${movie.tmdbId}`;
-    } else if (selectedPlayerStr === "6" && movie.tmdbId) {
+      currentVideoUrl = `https://www.2embed.cc/embed/${movieExternalId}`;
+    } else if (selectedPlayerStr === "6" && movieExternalId) {
       activePlayer = 6;
-      currentVideoUrl = `https://embedplayapi.top/embed/${movie.tmdbId}`;
+      currentVideoUrl = `https://embedplayapi.top/embed/${movieExternalId}`;
+    } else if (selectedPlayerStr === "7" && movieExternalId) {
+      activePlayer = 7;
+      currentVideoUrl = `https://vidnest.fun/movie/${movieExternalId}`;
     } else if (selectedPlayerStr === "1" && hasScrapedUrl) {
       activePlayer = 1;
       currentVideoUrl = movie.videoUrl;
     } else {
       // If no option or invalid option selected, use the default player
       activePlayer = defaultPlayer;
-      if (activePlayer === 2 && movie.tmdbId) {
-        currentVideoUrl = `https://mgeb.top/embed/${movie.tmdbId}`;
-      } else if (activePlayer === 3 && movie.tmdbId) {
-        currentVideoUrl = `https://superflixapi.lifestyle/filme/${movie.tmdbId}`;
-      } else if (activePlayer === 4 && movie.tmdbId) {
-        currentVideoUrl = `https://myembed.biz/filme/${movie.tmdbId}`;
-      } else if (activePlayer === 5 && movie.tmdbId) {
-        currentVideoUrl = `https://www.2embed.cc/embed/${movie.tmdbId}`;
-      } else if (activePlayer === 6 && movie.tmdbId) {
-        currentVideoUrl = `https://embedplayapi.top/embed/${movie.tmdbId}`;
+      if (activePlayer === 2 && movieExternalId) {
+        currentVideoUrl = `https://mgeb.top/embed/${movieExternalId}`;
+      } else if (activePlayer === 3 && movieExternalId) {
+        currentVideoUrl = `https://superflixapi.lifestyle/filme/${movieExternalId}`;
+      } else if (activePlayer === 4 && movieExternalId) {
+        currentVideoUrl = `https://myembed.biz/filme/${movieExternalId}`;
+      } else if (activePlayer === 5 && movieExternalId) {
+        currentVideoUrl = `https://www.2embed.cc/embed/${movieExternalId}`;
+      } else if (activePlayer === 6 && movieExternalId) {
+        currentVideoUrl = `https://embedplayapi.top/embed/${movieExternalId}`;
+      } else if (activePlayer === 7 && movieExternalId) {
+        currentVideoUrl = `https://vidnest.fun/movie/${movieExternalId}`;
       } else {
         currentVideoUrl = movie.videoUrl;
       }
@@ -1103,8 +1321,8 @@ export default async function WatchPage({
         href: "?player=1",
       });
     }
-    if (movie.tmdbId) {
-      [2, 3, 4, 5, 6].forEach((num) => {
+    if (movieExternalId) {
+      [2, 3, 4, 5, 6, 7].forEach((num) => {
         moviePlayerOptions.push({
           id: String(num),
           label: `Player ${num}`,
@@ -1115,9 +1333,9 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
-        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
+        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8 max-w-5xl mx-auto pt-4 sm:pt-6">
           {/* Player Container */}
-          <div className="group relative aspect-video w-full overflow-hidden bg-black shadow-2xl">
+          <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
             {playableUrl ? (
               isDirectVideo ? (
                 <video

@@ -14,6 +14,7 @@ interface MediaDescriptionProps {
   awards?: string[];
   audio?: string[];
   subtitles?: string[];
+  showBorder?: boolean;
 }
 
 export default function MediaDescription({
@@ -25,6 +26,7 @@ export default function MediaDescription({
   awards,
   audio,
   subtitles,
+  showBorder = true,
 }: MediaDescriptionProps) {
   const t = useTranslations("MediaDescription");
   const [isExpanded, setIsExpanded] = useState(false);
@@ -46,7 +48,7 @@ export default function MediaDescription({
     (subtitles && subtitles.length > 0);
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 w-full border-b-2 border-zinc-700 pb-4">
+    <div className={`flex flex-col md:flex-row gap-8 w-full ${showBorder ? "border-b-2 border-zinc-700 pb-4" : ""}`}>
       {/* Description Column */}
       <div
         className={`flex flex-col gap-2 ${hasExtraInfo ? "flex-2 md:w-2/3" : "w-full"}`}

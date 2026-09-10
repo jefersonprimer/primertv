@@ -5,6 +5,7 @@ import { getAnimeDetailsBySlug } from "@/lib/media-details";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { getAnimeWatchHistory } from "@/lib/history";
 
+import { buildMergedSeasons } from "@/lib/seasons";
 import { getAnimeLogo } from "@/lib/banners";
 
 export type EpisodePreviewItem = {
@@ -14,6 +15,7 @@ export type EpisodePreviewItem = {
   imageUrl: string | null;
   publicId: string;
   slug: string;
+  href?: string | null;
   createdAt: Date | string;
 };
 
@@ -49,6 +51,7 @@ export type AnimeQuickPreviewData = {
     title: string | null;
     publicId: string;
     slug: string;
+    href?: string | null;
     imageUrl?: string | null;
   } | null;
   firstEpisode: {
@@ -58,6 +61,7 @@ export type AnimeQuickPreviewData = {
     title: string | null;
     publicId: string;
     slug: string;
+    href?: string | null;
     imageUrl?: string | null;
   } | null;
   hasHistory: boolean;
@@ -74,21 +78,29 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
     const anime = await getAnimeDetailsBySlug(slug);
     if (!anime) return null;
 
+    const mergedSeasons = await buildMergedSeasons({
+      animeSlug: anime.slug,
+      animeTitle: anime.title,
+      animeAnilistId: anime.anilistId,
+      animeMalId: anime.malId,
+      animeTitleEnglish: anime.titleEnglish,
+      localSeasons: anime.seasons,
+    });
+
     let firstEpisode = null;
-    if (anime.seasons && anime.seasons.length > 0) {
-      const season1 = anime.seasons.find((s) => s.number === 1) || anime.seasons[0];
-      if (season1.episodes && season1.episodes.length > 0) {
-        const ep1 = season1.episodes.find((e) => e.number === 1) || season1.episodes[0];
-        firstEpisode = {
-          id: ep1.id,
-          number: ep1.number,
-          seasonNumber: season1.number,
-          title: ep1.title,
-          publicId: ep1.publicId || ep1.id,
-          slug: ep1.slug || `episode-${ep1.number}`,
-          imageUrl: ep1.imageUrl || null,
-        };
-      }
+    if (mergedSeasons.length > 0 && mergedSeasons[0].episodes.length > 0) {
+      const s1 = mergedSeasons[0];
+      const ep1 = s1.episodes[0];
+      firstEpisode = {
+        id: ep1.id,
+        number: ep1.number,
+        seasonNumber: s1.number,
+        title: ep1.title,
+        publicId: ep1.publicId || ep1.id,
+        slug: ep1.slug || `episode-${ep1.number}`,
+        href: ep1.href,
+        imageUrl: ep1.imageUrl || null,
+      };
     }
 
     let nextEpisode = firstEpisode;
@@ -114,7 +126,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
 
         let foundNext = null;
 
-        const currentSeasonObj = anime.seasons.find((s) => s.number === currentSeasonNumber);
+        const currentSeasonObj = mergedSeasons.find((s) => s.number === currentSeasonNumber);
         if (currentSeasonObj) {
           const nextInSeason = currentSeasonObj.episodes.find(
             (e) => e.number === currentEpNumber + 1
@@ -127,13 +139,14 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
               title: nextInSeason.title,
               publicId: nextInSeason.publicId || nextInSeason.id,
               slug: nextInSeason.slug || `episode-${nextInSeason.number}`,
+              href: nextInSeason.href,
               imageUrl: nextInSeason.imageUrl || null,
             };
           }
         }
 
         if (!foundNext) {
-          const nextSeasonObj = anime.seasons.find((s) => s.number === currentSeasonNumber + 1);
+          const nextSeasonObj = mergedSeasons.find((s) => s.number === currentSeasonNumber + 1);
           if (nextSeasonObj && nextSeasonObj.episodes.length > 0) {
             const firstOfNextSeason = nextSeasonObj.episodes[0];
             foundNext = {
@@ -143,6 +156,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
               title: firstOfNextSeason.title,
               publicId: firstOfNextSeason.publicId || firstOfNextSeason.id,
               slug: firstOfNextSeason.slug || `episode-${firstOfNextSeason.number}`,
+              href: firstOfNextSeason.href,
               imageUrl: firstOfNextSeason.imageUrl || null,
             };
           }
@@ -158,13 +172,14 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
             title: lastWatched.episode.title,
             publicId: lastWatched.episode.publicId || lastWatched.episode.id,
             slug: lastWatched.episode.slug || `episode-${lastWatched.episode.number}`,
+            href: `/watch/${lastWatched.episode.publicId || lastWatched.episode.id}/${lastWatched.episode.slug || "episode-" + lastWatched.episode.number}`,
             imageUrl: lastWatched.episode.imageUrl || null,
           };
         }
       }
     }
 
-    const seasonsFormatted: SeasonPreviewItem[] = (anime.seasons || []).map((s) => ({
+    const seasonsFormatted: SeasonPreviewItem[] = mergedSeasons.map((s) => ({
       id: s.id,
       number: s.number,
       episodes: s.episodes.map((ep) => ({
@@ -174,7 +189,8 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
         imageUrl: ep.imageUrl || anime.imageUrl,
         publicId: ep.publicId || ep.id,
         slug: ep.slug || `episode-${ep.number}`,
-        createdAt: ep.createdAt,
+        href: ep.href,
+        createdAt: ep.createdAt || new Date(),
       })),
     }));
 

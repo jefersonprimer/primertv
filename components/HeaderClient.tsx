@@ -81,7 +81,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
             </Link>
           </div>
 
-          <nav className="hidden h-full items-center md:flex gap-1">
+          <nav className="hidden h-full items-center md:flex">
             {MAIN_NAV_LINKS.map((link) => {
               const active = isActive(link.href);
               return (

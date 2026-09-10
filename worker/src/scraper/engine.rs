@@ -23,10 +23,19 @@ fn build_search_url(base_url: &str, search_query: &str) -> Result<String> {
         h if h.contains("otakuplay.com.br") => format!("https://otakuplay.com.br/animes/?search={}", query),
         h if h.contains("animeav1.com") => format!("https://animeav1.com/catalogo?search={}", query),
         h if h.contains("anikoto.cz") => format!("https://anikoto.cz/filter?keyword={}", query),
+        h if h.contains("anicrush.cam") => format!("https://anicrush.cam/?s={}", query),
+        h if h.contains("anigo.ro") => format!("https://anigo.ro/?s={}", query),
+        h if h.contains("hinatasoul.com") => format!("https://www.hinatasoul.com/busca?busca={}", query),
+        h if h.contains("reanime.to") => format!("https://reanime.to/search?q={}&limit=36&offset=0", query),
         h if h.contains("tsukuyomi.tv") => format!("https://tsukuyomi.tv/search?q={}", query),
         h if h.contains("anizone.to") => format!("https://anizone.to/anime?search={}", query),
         h if h.contains("gaiaflix.live") => format!("https://gaiaflix.live/search?q={}", query),
         h if h.contains("gogoanime.com.by") => format!("https://gogoanime.com.by/search.php?keyword={}", query),
+        h if h.contains("hianimes.se") => format!("https://hianimes.se/filter?keyword={}", query),
+        h if h.contains("4animo.xyz") => format!("https://4animo.xyz/search?keyword={}", query),
+        h if h.contains("aniwaves.ru") => format!("https://aniwaves.ru/filter?keyword={}", query),
+        h if h.contains("animeshd.to") => format!("https://animeshd.to/?s={}", query),
+        h if h.contains("animotvslash.org") => format!("https://animotvslash.org/?s={}", query),
         _ => {
             let scheme = parsed.scheme();
             let root_host = parsed.host_str().unwrap_or("");

@@ -43,7 +43,17 @@ impl AnimeScraper {
                 "https://jkanime.net",
                 "https://anizone.to/",
                 "https://gaiaflix.live/",
-                "https://gogoanime.com.by"
+                "https://gogoanime.com.by",
+                "https://anicrush.cam",
+                "https://anigo.ro",
+                "https://anikoto.cz/home",
+                "https://www.hinatasoul.com",
+                "https://reanime.to/home",
+                "https://hianimes.se",
+                "https://4animo.xyz",
+                "https://aniwaves.ru",
+                "https://animeshd.to",
+                "https://animotvslash.org"
             ],
         }
     }

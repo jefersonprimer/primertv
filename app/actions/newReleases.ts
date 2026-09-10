@@ -77,7 +77,7 @@ export async function getNewReleases({
             : type === "novelas"
               ? `/novelas/${item.slug}`
               : type === "filmes"
-                ? `/filmes/${item.slug}`
+                ? `/movies/${item.slug}`
                 : `/mangas/${item.slug}`,
     }));
   } catch (error) {

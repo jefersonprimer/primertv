@@ -27,6 +27,7 @@ type HeroCarouselMedia = {
   rating: string | null;
   videoUrl?: string | null;
   tmdbId?: string | null;
+  imdbId?: string | null;
   publicId?: string | null;
   isDubbed?: boolean;
   isSubtitled?: boolean;
@@ -53,6 +54,8 @@ export async function HeroCarousel({
           logoUrl: true,
           genres: true,
           rating: true,
+          tmdbId: true,
+          imdbId: true,
         },
         orderBy: { createdAt: "desc" },
         take: 6,
@@ -95,6 +98,8 @@ export async function HeroCarousel({
             rating: true,
             isDubbed: true,
             isSubtitled: true,
+            anilistId: true,
+            malId: true,
           },
           orderBy: { createdAt: "desc" },
           take: 6,
@@ -203,9 +208,12 @@ export async function HeroCarousel({
         type,
         videoUrl: media.videoUrl ?? null,
         tmdbId: media.tmdbId ?? null,
+        imdbId: media.imdbId ?? null,
         publicId: media.publicId ?? null,
         isDubbed: media.isDubbed ?? false,
         isSubtitled: media.isSubtitled ?? false,
+        anilistId: (media as any).anilistId ?? null,
+        malId: (media as any).malId ?? null,
       };
     }),
   );

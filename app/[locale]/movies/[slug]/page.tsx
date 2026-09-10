@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 
+import Link from "next/link";
+import { PlayIcon } from "lucide-react";
+import RatingBadge from "@/components/RatingBadge";
 import { getMovieBanner } from "@/lib/banners";
 import { getMovieDetails, getMovieLogo } from "@/lib/tmdb";
 import MediaDescription from "@/components/MediaDescription";
@@ -12,6 +15,7 @@ import AddToListButton from "@/components/AddToListButton";
 import ShareButton from "@/components/ShareButton";
 import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
+import { DeleteMovieButton } from "@/components/admin/DeleteMovieButton";
 import { StartWatchingButton } from "@/components/StartWatchingButton";
 
 export const revalidate = 3600;
@@ -36,6 +40,8 @@ export async function generateMetadata({
   const movie = await prisma.movie.findFirst({
     where: {
       OR: [
+        { id: slug },
+        { publicId: slug },
         { slug: normalizedNFC },
         { slug: normalizedNFD },
         { slug: decoded },
@@ -84,6 +90,8 @@ export default async function MovieDetailsPage({
   const movie = await prisma.movie.findFirst({
     where: {
       OR: [
+        { id: slug },
+        { publicId: slug },
         { slug: normalizedNFC },
         { slug: normalizedNFD },
         { slug: decoded },
@@ -269,16 +277,24 @@ export default async function MovieDetailsPage({
                   isLoggedIn={false}
                   hasBorder={true}
                   roundedFull={true}
+                  size={24}
                 />
                 <AddToListButton
                   seriesId={movie.id}
                   isLoggedIn={false}
                   hasBorder={true}
                   roundedFull={true}
+                  size={24}
                 />
-                <ShareButton hasBorder={true} roundedFull={true} />
+                <ShareButton size={24} hasBorder={true} roundedFull={true} />
                 {isAdmin && (
-                  <EditMediaButton collection="movies" item={movie} />
+                  <>
+                    <EditMediaButton collection="movies" item={movie} />
+                    <DeleteMovieButton
+                      movieId={movie.id}
+                      movieSlug={movie.slug}
+                    />
+                  </>
                 )}
               </div>
               {(movieDetails.description || movie.description) && (
@@ -294,6 +310,7 @@ export default async function MovieDetailsPage({
                         : movie.genres
                     }
                     year={movieDetails.year || undefined}
+                    showBorder={false}
                   />
                 </div>
               )}
@@ -301,6 +318,61 @@ export default async function MovieDetailsPage({
           </div>
         </div>
       </div>
+
+      {/* Movie Section */}
+      <main className="mx-auto max-w-[1240px] py-8 px-4 md:px-0">
+        <h3 className="text-xl font-bold text-white mb-4">Filme</h3>
+        <div className="max-w-md">
+          <Link
+            href={
+              movie.publicId
+                ? `/watch/${movie.publicId}/${movie.slug}`
+                : `/movies/${movie.slug}/watch`
+            }
+            className="group rounded-md relative flex gap-3 p-2 hover:bg-[#151515] transition-all duration-300 overflow-hidden flex-row border border-zinc-800/80 hover:border-blue-500/50 bg-zinc-900/40"
+          >
+            <div className="relative aspect-video rounded-md w-40 flex-shrink-0 overflow-hidden bg-zinc-800">
+              {movie.imageUrl ? (
+                <Image
+                  src={movie.imageUrl}
+                  alt={movie.title}
+                  fill
+                  sizes="160px"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-xs text-zinc-500">
+                  Sem imagem
+                </div>
+              )}
+              {movie.rating && (
+                <div className="absolute top-1 left-1 z-10">
+                  <RatingBadge rating={movie.rating} size={16} />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                <div className="h-8 w-8 rounded-full bg-blue-600/90 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <PlayIcon className="h-4 w-4 fill-white ml-0.5" />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1 flex-1 justify-center">
+              <span className="text-xs font-bold text-[#8c8c8c] uppercase tracking-wider">
+                Filme Completo
+              </span>
+              <h3 className="line-clamp-2 text-base font-bold text-white group-hover:text-blue-400 transition-colors">
+                {movie.title}
+              </h3>
+              {movieDetails.runtime && (
+                <span className="text-xs text-zinc-400">
+                  {Math.floor(movieDetails.runtime / 60)}h{" "}
+                  {movieDetails.runtime % 60}m
+                </span>
+              )}
+            </div>
+          </Link>
+        </div>
+      </main>
 
       {similarMovies.length > 0 && (
         <div className="pl-2 lg:pl-0 pb-12">
