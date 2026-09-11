@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { Award, Tv, Star, Trophy, ChevronDown, Filter } from "lucide-react";
+import { Award, Tv, Star, Trophy, ChevronDown } from "lucide-react";
 import { getPopularAnimes, PopularAnimeItem } from "@/app/actions/popular";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -23,11 +23,36 @@ export function PopularAnimesList({
   const tFilter = useTranslations("PopularPage.filters");
   type FilterType = "all" | "airing" | "upcoming" | "bypopularity";
   const [filter, setFilter] = useState<FilterType>("all");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<PopularAnimeItem[]>(initialItems);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  const filterOptions: { value: FilterType; label: string }[] = [
+    { value: "all", label: tFilter("all") },
+    { value: "bypopularity", label: tFilter("bypopularity") },
+    { value: "airing", label: tFilter("airing") },
+    { value: "upcoming", label: tFilter("upcoming") },
+  ];
+
+  const selectedFilterLabel =
+    filterOptions.find((opt) => opt.value === filter)?.label || tFilter("all");
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleItemClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -150,7 +175,7 @@ export function PopularAnimesList({
   return (
     <div className="flex flex-col gap-6">
       {/* Page Header with Title on Left and Dropdown Filter on Right */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+      <div className="flex items-center justify-between gap-3 sm:gap-4 border-b border-zinc-800 pb-4">
         {title && (
           <h1 className="text-xl font-bold tracking-tight text-white sm:text-[28px]">
             {title}
@@ -158,24 +183,56 @@ export function PopularAnimesList({
         )}
 
         {/* Dropdown Filter */}
-        <div className="relative inline-block text-left sm:ml-auto">
-          <div className="relative flex items-center">
-            <Filter className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
-            <select
-              value={filter}
-              onChange={(e) =>
-                handleFilterChange(e.target.value as FilterType)
-              }
+        <div className="relative inline-block shrink-0" ref={dropdownRef}>
+          <div>
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               disabled={loading}
-              className="appearance-none cursor-pointer bg-zinc-900/90 hover:bg-zinc-800/90 text-zinc-100 text-sm font-semibold pl-10 pr-10 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm"
+              className={`inline-flex rounded items-center justify-between gap-x-2 px-4 py-2 text-sm font-semibold text-[#bbb] transition-colors focus:outline-none hover:text-white hover:bg-[#272727] uppercase ${
+                isDropdownOpen ? "text-white bg-[#272727]" : ""
+              }`}
+              id="popular-filter-button"
+              aria-expanded={isDropdownOpen}
+              aria-haspopup="true"
             >
-              <option value="all">{tFilter("all")}</option>
-              <option value="bypopularity">{tFilter("bypopularity")}</option>
-              <option value="airing">{tFilter("airing")}</option>
-              <option value="upcoming">{tFilter("upcoming")}</option>
-            </select>
-            <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+              <span>{selectedFilterLabel}</span>
+              <ChevronDown
+                className={`h-4 w-4 transition-transform duration-200 ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
           </div>
+
+          {isDropdownOpen && (
+            <div
+              className="absolute rounded-xl right-0 z-50 w-48 sm:w-54 py-2 origin-top-right bg-[#272727] shadow-lg ring-1 ring-black/5 focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="popular-filter-button"
+            >
+              <div role="none">
+                {filterOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      handleFilterChange(option.value);
+                    }}
+                    className={`flex w-full items-center px-4 py-2 text-sm transition-colors ${
+                      option.value === filter
+                        ? "text-white font-semibold bg-[#151515]"
+                        : "text-[#bbb] hover:bg-[#151515] hover:text-white"
+                    }`}
+                    role="menuitem"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

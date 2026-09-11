@@ -19,6 +19,15 @@ impl MangaScraper {
                 "https://mangalivre.to",
                 "https://mangalivre.blog",
                 "https://mangaonline.blue",
+                "https://sakuramangas.org",
+                "https://taiyo.moe",
+                "https://toonlivre.net",
+                "https://atsu.moe",
+                "https://comix.to",
+                "https://mangafire.to",
+                "https://silentquill.net",
+                "https://asurascans.com",
+                "https://comikey.com",
             ],
         }
     }
@@ -74,7 +83,7 @@ impl MangaScraper {
     }
 
     fn extract_chapter_number(&self, url: &str, text: &str) -> f32 {
-        // 1. Try to find a pattern like "capitulo-X-Y" or "capitulo-X" in the URL segments
+        // 1. Try to find a pattern like "capitulo-X-Y" or "capitulo-X" or "chapter/X" in the URL segments
         for segment in url.split('/') {
             if segment.contains("capitulo-") {
                 let clean = segment.replace("capitulo-", "");
@@ -120,31 +129,54 @@ impl MangaScraper {
     }
 
     async fn scrape_wp_manga(&self, base_url: &str, title: &str) -> Result<Option<ScrapedManga>> {
+        let encoded_title = urlencoding::encode(title);
         let search_url = if base_url.contains("mangaonline.blue") {
-            format!("{}/?s={}", base_url, urlencoding::encode(title))
+            format!("{}/?s={}", base_url, encoded_title)
+        } else if base_url.contains("asurascans.com") {
+            format!("{}/browse?search={}", base_url, encoded_title)
+        } else if base_url.contains("silentquill.net") {
+            format!("{}/search/?q={}", base_url, encoded_title)
+        } else if base_url.contains("atsu.moe") || base_url.contains("taiyo.moe") {
+            format!("{}/explore?search={}", base_url, encoded_title)
+        } else if base_url.contains("comix.to") {
+            format!("{}/browse?q={}&sort=relevance%3Adesc", base_url, encoded_title)
+        } else if base_url.contains("mangafire.to") {
+            format!("{}/browse?keyword={}&sort=relevance:desc", base_url, encoded_title)
+        } else if base_url.contains("comikey.com") {
+            format!("{}/comics/?q={}&lang_eng=on", base_url, encoded_title)
         } else {
             format!(
                 "{}/?s={}&post_type=wp-manga",
                 base_url,
-                urlencoding::encode(title)
+                encoded_title
             )
         };
-        let response = self.client.get(&search_url).send().await?.text().await?;
+
+        let response = match self.client.get(&search_url).send().await {
+            Ok(res) => match res.text().await {
+                Ok(text) => text,
+                Err(_) => return Ok(None),
+            },
+            Err(_) => return Ok(None),
+        };
         let document = Html::parse_document(&response);
 
-        let link_selector = Selector::parse(".post-title h3 a, .post-title a, .manga-card-link, .manga-card a, .result-item .details .title a").unwrap();
+        let link_selector = Selector::parse(".post-title h3 a, .post-title a, .manga-card-link, .manga-card a, .result-item .details .title a, a[href*=\"/comics/\"], a[href*=\"/series/\"], a[href*=\"/manga/\"], a[href*=\"/title/\"], a[href*=\"/media/\"]").unwrap();
 
         if let Some(link) = document.select(&link_selector).next() {
-            let manga_url = link.value().attr("href").unwrap_or_default().to_string();
+            let mut manga_url = link.value().attr("href").unwrap_or_default().to_string();
+            if manga_url.starts_with('/') {
+                manga_url = format!("{}{}", base_url.trim_end_matches('/'), manga_url);
+            }
 
-            let title_selector = Selector::parse(".manga-card-title, .post-title, h3.manga-card-title, .result-item .details .title a").unwrap();
+            let title_selector = Selector::parse(".manga-card-title, .post-title, h3.manga-card-title, .result-item .details .title a, h1, .entry-title").unwrap();
             let manga_title = if let Some(title_el) = document.select(&title_selector).next() {
                 title_el.text().collect::<String>().trim().to_string()
             } else {
                 link.text().collect::<String>().trim().to_string()
             };
 
-            let image_selector = Selector::parse(".tab-thumb img, .post-thumb img, .manga-cover-img, .manga-card-image img, .img-responsive, .result-item .image img").unwrap();
+            let image_selector = Selector::parse(".tab-thumb img, .post-thumb img, .manga-cover-img, .manga-card-image img, .img-responsive, .result-item .image img, img[src*=\"cover\"], img[src*=\"poster\"], img[src*=\"uploads\"]").unwrap();
             let image_url = document
                 .select(&image_selector)
                 .next()
@@ -155,9 +187,12 @@ impl MangaScraper {
                 })
                 .map(|s| s.to_string());
 
-            let mut chapter_page = self.client.get(&manga_url).send().await?.text().await?;
+            let mut chapter_page = match self.client.get(&manga_url).send().await {
+                Ok(res) => res.text().await.unwrap_or_default(),
+                Err(_) => String::new(),
+            };
             let mut chapter_doc = Html::parse_document(&chapter_page);
-            let chapter_selector = Selector::parse("li.wp-manga-chapter a, .chapter-link, .chapter-grid-link, .chapter-box a, .wp-manga-chapter a, .list-chapters .chapter a").unwrap();
+            let chapter_selector = Selector::parse("li.wp-manga-chapter a, .chapter-link, .chapter-grid-link, .chapter-box a, .wp-manga-chapter a, .list-chapters .chapter a, a[href*=\"/chapter/\"], a[href*=\"-chapter-\"], a[href*=\"-ch-\"]").unwrap();
 
             let mut chapters_elements: Vec<_> = chapter_doc.select(&chapter_selector).collect();
 
@@ -177,13 +212,16 @@ impl MangaScraper {
             let mut seen_numbers = std::collections::HashSet::new();
 
             for chap_link in chapters_elements {
-                let chap_url = chap_link
+                let mut chap_url = chap_link
                     .value()
                     .attr("href")
                     .unwrap_or_default()
                     .to_string();
                 if chap_url.is_empty() {
                     continue;
+                }
+                if chap_url.starts_with('/') {
+                    chap_url = format!("{}{}", base_url.trim_end_matches('/'), chap_url);
                 }
                 let chap_text = chap_link.text().collect::<String>();
 
@@ -197,7 +235,7 @@ impl MangaScraper {
                 if let Ok(pages_page) = self.client.get(&chap_url).send().await {
                     if let Ok(html) = pages_page.text().await {
                         let pages_doc = Html::parse_document(&html);
-                        let img_selector = Selector::parse(".reading-content img, .images-container img, #images-container img, .wp-manga-chapter-img, .chapter-image, .chapter-image-container img").unwrap();
+                        let img_selector = Selector::parse(".reading-content img, .images-container img, #images-container img, .wp-manga-chapter-img, .chapter-image, .chapter-image-container img, img[src*=\"asura-images\"], img[src*=\"chapters\"], .reader-images img, #reader img").unwrap();
                         let pages = pages_doc
                             .select(&img_selector)
                             .filter_map(|img| {
@@ -242,3 +280,4 @@ impl MangaScraper {
         Ok(None)
     }
 }
+

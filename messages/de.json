@@ -131,6 +131,7 @@
     "removeItemError": "Fehler beim Entfernen des Eintrags.",
     "removeItemTitle": "Aus Liste entfernen",
     "tooltip": "Zur Liste hinzufügen",
+    "myList": "Meine Liste",
     "chooseList": "Wähle eine Liste",
     "noLists": "Du hast noch keine benutzerdefinierten Listen.",
     "limitInfo": "Du hast das Limit von 10 benutzerdefinierten Listen erreicht. Lösche eine, um neue zu erstellen.",

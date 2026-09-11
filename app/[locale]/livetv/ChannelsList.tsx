@@ -61,17 +61,17 @@ export function ChannelsList({ initialChannels }: ChannelsListProps) {
               <Link
                 key={channel.id}
                 href={`/livetv/${channel.slug}`}
-                className="group flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-5 shadow-sm transition-all duration-300 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5 hover:-translate-y-0.5"
+                className="group flex items-center justify-between rounded-xl border border-[#1F1F1F] bg-[#141414] p-5 shadow-sm transition-all duration-300 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
                 <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1C1C1C] text-zinc-400 group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300">
                     <Tv className="h-5 w-5" />
                   </div>
-                  <h3 className="truncate font-semibold text-zinc-800 dark:text-zinc-100 group-hover:text-blue-500 transition-colors duration-300">
+                  <h3 className="truncate font-semibold text-zinc-100 group-hover:text-blue-500 transition-colors duration-300">
                     {channel.title}
                   </h3>
                 </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-50 dark:bg-zinc-800 text-zinc-400 group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all duration-300">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1C1C1C] text-zinc-400 group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all duration-300">
                   <Play className="h-4 w-4 fill-current opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               </Link>

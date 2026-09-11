@@ -155,7 +155,12 @@ export async function generateMetadata({
       } else {
         // Try Movie
         const decoded = decodeURIComponent(publicId);
-        const slugified = decoded.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+        const slugified = decoded
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9\-]+/g, "")
+          .replace(/-+/g, "-");
         const movie =
           (await prisma.movie.findUnique({
             where: { publicId },
@@ -165,11 +170,7 @@ export async function generateMetadata({
           })) ||
           (await prisma.movie.findFirst({
             where: {
-              OR: [
-                { slug: decoded },
-                { slug: slugified },
-                { slug: publicId },
-              ],
+              OR: [{ slug: decoded }, { slug: slugified }, { slug: publicId }],
             },
           }));
 
@@ -355,12 +356,12 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
-        <main className="w-full lg:px-4 pb-6 md:pb-10">
-          <div className="grid gap-4 lg:grid-cols-3 pt-1 lg:pt-4">
+        <main className="w-full px-0 md:px-4 pb-6 md:pb-10 lg:px-6">
+          <div className="grid gap-4 lg:grid-cols-3 pt-0 md:pt-3 sm:pt-0">
             {/* Main Content: Player & Info / Description */}
-            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1">
               {/* Player Container */}
-              <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
+              <div className="group relative aspect-video rounded-none md:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
                   playableUrl.endsWith(".mp4") ||
                   playableUrl.endsWith(".m3u8") ? (
@@ -392,7 +393,7 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-6 mt-4 px-4 lg:px-0">
+              <div className="flex flex-col gap-6 mt-4 px-4 md:px-0">
                 {/* Unified Action Controls Row */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
                   {playersList.length > 0 ? (
@@ -501,7 +502,7 @@ export default async function WatchPage({
             </div>
 
             {/* Sidebar: Episode List */}
-            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
+            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 md:px-0">
               <div className="sticky top-20">
                 <AnimeEpisodeSidebar
                   seasons={await buildMergedSeasons({
@@ -527,7 +528,7 @@ export default async function WatchPage({
             </div>
 
             {/* Comments Section */}
-            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 lg:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 md:px-0">
               <CommentsSection
                 targetId={animeEpisode.id}
                 currentUser={currentUser}
@@ -609,12 +610,12 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
-        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+        <main className="w-full px-0 md:px-4 pb-6 md:pb-10 lg:px-6">
+          <div className="grid gap-4 lg:grid-cols-3 pt-0 md:pt-3 sm:pt-0">
             {/* Main Content: Player & Info / Description */}
-            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1">
               {/* Player Container */}
-              <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
+              <div className="group relative aspect-video rounded-none md:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
                   <iframe
                     src={playableUrl}
@@ -632,7 +633,7 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-6 mt-4">
+              <div className="flex flex-col gap-6 mt-4 px-4 md:px-0">
                 {/* Unified Action Controls Row */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
                   {playersList.length > 0 ? (
@@ -720,7 +721,7 @@ export default async function WatchPage({
             </div>
 
             {/* Sidebar: Episode List */}
-            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
+            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 md:px-0">
               <div className="sticky top-20">
                 {mergedSeasons.length > 0 ? (
                   <AnimeEpisodeSidebar
@@ -743,7 +744,7 @@ export default async function WatchPage({
             </div>
 
             {/* Comments Section */}
-            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 md:px-0">
               <CommentsSection
                 targetId={`megaplay-${anime.slug}-${episodeNumber}`}
                 currentUser={currentUser}
@@ -904,12 +905,12 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
-        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+        <main className="w-full px-0 md:px-4 pb-6 md:pb-10 lg:px-6">
+          <div className="grid gap-4 lg:grid-cols-3 pt-0 md:pt-3 sm:pt-0">
             {/* Main Content: Player & Info / Description */}
-            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1">
               {/* Player Container */}
-              <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
+              <div className="group relative aspect-video rounded-none md:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                 {playableUrl ? (
                   playableUrl.endsWith(".mp4") ||
                   playableUrl.endsWith(".m3u8") ? (
@@ -937,7 +938,7 @@ export default async function WatchPage({
                 )}
               </div>
 
-              <div className="flex flex-col gap-6 mt-4">
+              <div className="flex flex-col gap-6 mt-4 px-4 md:px-0">
                 {/* Unified Action Controls Row */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
                   {seriesPlayerOptions.length > 0 ? (
@@ -1029,7 +1030,7 @@ export default async function WatchPage({
             </div>
 
             {/* Sidebar: Episode List */}
-            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
+            <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 md:px-0">
               <div className="sticky top-20">
                 <SeriesEpisodeSidebar
                   seasons={seriesEpisode.season.series.seasons}
@@ -1042,7 +1043,7 @@ export default async function WatchPage({
             </div>
 
             {/* Comments Section */}
-            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 sm:px-0">
+            <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 md:px-0">
               <CommentsSection
                 targetId={seriesEpisode.id}
                 currentUser={currentUser}
@@ -1059,7 +1060,9 @@ export default async function WatchPage({
     if (extSeries && (extSeries.tmdbId || extSeries.imdbId)) {
       const externalId = extSeries.tmdbId || extSeries.imdbId;
       const seasonNum = Number(season || 1);
-      const epNum = Number(episode || (slug.match(/\d+/) ? slug.match(/\d+/)?.[0] : 1));
+      const epNum = Number(
+        episode || (slug.match(/\d+/) ? slug.match(/\d+/)?.[0] : 1),
+      );
 
       let activePlayer = 1;
       if (player === "2") activePlayer = 2;
@@ -1127,11 +1130,11 @@ export default async function WatchPage({
 
       return (
         <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
-          <main className="w-full px-4 pb-6 md:pb-10 lg:px-8">
-            <div className="grid gap-8 lg:grid-cols-3 pt-4 sm:pt-6">
+          <main className="w-full px-0 md:px-4 pb-6 md:pb-10 lg:px-6">
+            <div className="grid gap-4 lg:grid-cols-3 pt-0 md:pt-3 sm:pt-0">
               {/* Main Content: Player & Info */}
-              <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 px-4 sm:px-0">
-                <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
+              <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1">
+                <div className="group relative aspect-video rounded-none md:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
                   <iframe
                     src={currentVideoUrl}
                     className="w-full aspect-video"
@@ -1140,7 +1143,7 @@ export default async function WatchPage({
                   />
                 </div>
 
-                <div className="flex flex-col gap-6 mt-4">
+                <div className="flex flex-col gap-6 mt-4 px-4 md:px-0">
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
                     <PlayerDropdown
                       players={seriesPlayerOptions}
@@ -1178,7 +1181,7 @@ export default async function WatchPage({
               </div>
 
               {/* Sidebar: Episode List */}
-              <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 sm:px-0">
+              <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 md:px-0">
                 <div className="sticky top-20">
                   <SeriesEpisodeSidebar
                     seasons={seasonsForSidebar}
@@ -1191,7 +1194,7 @@ export default async function WatchPage({
               </div>
 
               {/* Comments Section */}
-              <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 sm:px-0">
+              <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 px-4 md:px-0">
                 <CommentsSection
                   targetId={`extseries-${extSeries.slug}-s${seasonNum}-e${epNum}`}
                   currentUser={currentUser}
@@ -1206,7 +1209,12 @@ export default async function WatchPage({
 
   // 3. Try fetching Movie
   const decodedPublicId = decodeURIComponent(publicId);
-  const slugifiedPublicId = decodedPublicId.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\-]+/g, "").replace(/-+/g, "-");
+  const slugifiedPublicId = decodedPublicId
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\-]+/g, "")
+    .replace(/-+/g, "-");
   const movie =
     (await prisma.movie.findUnique({
       where: { publicId },
@@ -1333,9 +1341,9 @@ export default async function WatchPage({
 
     return (
       <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
-        <main className="w-full px-4 pb-6 md:pb-10 lg:px-8 max-w-5xl mx-auto pt-4 sm:pt-6">
+        <main className="w-full px-0 md:px-4 pb-6 md:pb-10 lg:px-6 max-w-5xl mx-auto pt-0 md:pt-6">
           {/* Player Container */}
-          <div className="group relative aspect-video rounded-xl w-full overflow-hidden bg-black shadow-2xl">
+          <div className="group relative aspect-video rounded-none md:rounded-xl w-full overflow-hidden bg-black shadow-2xl">
             {playableUrl ? (
               isDirectVideo ? (
                 <video
@@ -1365,7 +1373,7 @@ export default async function WatchPage({
           </div>
 
           {/* Controls & Title Below Player */}
-          <div className="mt-4 flex flex-col gap-6">
+          <div className="mt-4 flex flex-col gap-6 px-4 md:px-0">
             {/* Unified Action Controls Row */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
               {moviePlayerOptions.length > 0 ? (

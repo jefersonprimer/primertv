@@ -26,6 +26,7 @@ interface ListSelectorProps {
   hasBorder?: boolean;
   roundedFull?: boolean;
   mobileVertical?: boolean;
+  showLabel?: boolean;
   size?: number;
   className?: string;
 }
@@ -46,6 +47,7 @@ export default function AddToListButton({
   hasBorder = true,
   roundedFull = true,
   mobileVertical = false,
+  showLabel = false,
   size,
   className = "",
 }: ListSelectorProps) {
@@ -193,6 +195,30 @@ export default function AddToListButton({
   }, [showCreateSubModal]);
 
   if (!isLoggedIn) {
+    if (showLabel) {
+      return (
+        <Link
+          href="/login"
+          className={`group relative inline-flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-0 focus:outline-none cursor-pointer ${className}`}
+          aria-label={t("myList")}
+          title={t("tooltip")}
+        >
+          <div
+            className={`inline-flex items-center justify-center ${roundedClass} bg-zinc-900/90 ${borderClass} ${sizeClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700 group-active:scale-95`}
+          >
+            <Plus
+              size={iconSize}
+              className="text-white transition-transform duration-200 group-hover:scale-110"
+            />
+          </div>
+          <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors sm:hidden whitespace-nowrap">
+            {t("myList")}
+          </span>
+          {tooltipElement}
+        </Link>
+      );
+    }
+
     return (
       <Link
         href="/login"
@@ -214,40 +240,61 @@ export default function AddToListButton({
 
   return (
     <>
-      <button
-        onClick={handleOpen}
-        className={buttonClass}
-        aria-label="Adicionar a uma lista personalizada"
-      >
-        <Plus
-          size={iconSize}
-          className="text-white transition-transform duration-200 group-hover:scale-110"
-        />
-        {mobileVertical && (
-          <span className="text-xs md:hidden font-medium">{t("title")}</span>
-        )}
-        {tooltipElement}
-      </button>
+      {showLabel ? (
+        <button
+          onClick={handleOpen}
+          className={`group relative inline-flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-0 focus:outline-none cursor-pointer ${className}`}
+          aria-label={t("myList")}
+        >
+          <div
+            className={`inline-flex items-center justify-center ${roundedClass} bg-zinc-900/90 ${borderClass} ${sizeClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700 group-active:scale-95`}
+          >
+            <Plus
+              size={iconSize}
+              className="text-white transition-transform duration-200 group-hover:scale-110"
+            />
+          </div>
+          <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors sm:hidden whitespace-nowrap">
+            {t("myList")}
+          </span>
+          {tooltipElement}
+        </button>
+      ) : (
+        <button
+          onClick={handleOpen}
+          className={buttonClass}
+          aria-label="Adicionar a uma lista personalizada"
+        >
+          <Plus
+            size={iconSize}
+            className="text-white transition-transform duration-200 group-hover:scale-110"
+          />
+          {mobileVertical && (
+            <span className="text-xs md:hidden font-medium">{t("title")}</span>
+          )}
+          {tooltipElement}
+        </button>
+      )}
 
       {/* Main Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative rounded-2xl w-full max-w-[95vw] sm:w-[720px] h-[495px] max-h-[90vh] overflow-hidden bg-zinc-950/95 border border-zinc-800/90 text-zinc-100 shadow-2xl shadow-black/80 flex flex-col transition-all">
-            {/* Modal Top Header */}
-            <div className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-4 bg-zinc-900/60">
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-white tracking-tight">
-                  {showCreateSubModal ? t("createList") : t("title")}
-                </h2>
+        {isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+            <div className="relative rounded-2xl w-full max-w-[95vw] sm:w-[720px] h-[495px] max-h-[90vh] overflow-hidden bg-zinc-950/95 border border-zinc-800/90 text-zinc-100 shadow-2xl shadow-black/80 flex flex-col transition-all">
+              {/* Modal Top Header */}
+              <div className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-4 bg-zinc-900/60">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-bold text-white tracking-tight">
+                    {showCreateSubModal ? t("createList") : t("title")}
+                  </h2>
+                </div>
+                <button
+                  onClick={handleClose}
+                  className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+                  aria-label="Fechar"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                onClick={handleClose}
-                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
-                aria-label="Fechar"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
 
             {/* Action Bar Sub-Header: Left Action / Back, Right Counter */}
             <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-800/60 bg-zinc-900/30">

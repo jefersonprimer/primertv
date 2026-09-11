@@ -10,7 +10,7 @@ export default async function ChannelsPage() {
   });
 
   return (
-    <div className="pb-8">
+    <div className="w-full min-h-[calc(100vh-3.5rem)] 2xl:min-h-[calc(100vh-4rem)] bg-[#0E0E0E] pb-8">
       <ChannelsList initialChannels={channels} />
     </div>
   );

@@ -131,6 +131,7 @@
     "removeItemError": "Error removing item.",
     "removeItemTitle": "Remove from list",
     "tooltip": "Add to List",
+    "myList": "My List",
     "chooseList": "Choose a list",
     "noLists": "You don't have any custom lists yet.",
     "limitInfo": "You have reached the limit of 10 custom lists. Delete some to create new ones.",

@@ -154,6 +154,12 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
         placeholder: "2025 Anime Awards Nominee, 2024 Best Animation",
         helpText: "Separe por vírgula.",
       },
+      {
+        name: "duration",
+        label: "Duração",
+        type: "text",
+        placeholder: "Ex: 24 min",
+      },
       { name: "aired", label: "Exibição", type: "text" },
       { name: "rating", label: "Classificação", type: "text" },
       { name: "status", label: "Status", type: "text" },

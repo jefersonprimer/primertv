@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { Footer } from "@/components/Footer";
 
 interface GenerateMetadataProps {
   params: Promise<{ locale: string }>;
@@ -47,6 +48,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <Header />
           </Suspense>
           <main className="flex-1 pt-14 2xl:pt-16">{children}</main>
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>

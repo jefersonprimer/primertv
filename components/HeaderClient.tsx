@@ -63,7 +63,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
   const isExploreActive = EXPLORE_NAV_LINKS.some((link) => isActive(link.href));
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full px-4 bg-[#0E0E0E]">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full px-6 bg-[#0E0E0E]">
       <div className="mx-auto flex h-14 2xl:h-16 max-w-full items-center justify-between">
         <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-3">

@@ -47,6 +47,7 @@ export type AdminMediaDetail = {
   description: string | null;
   imageUrl: string | null;
   genres: string[];
+  duration?: string | null;
   awards?: string[];
   audio?: string[];
   subtitles?: string[];
@@ -246,6 +247,7 @@ export async function getCollectionDetail(
         description: anime.description,
         imageUrl: anime.imageUrl,
         genres: anime.genres,
+        duration: anime.duration,
         awards: anime.awards,
         audio: anime.audio,
         subtitles: anime.subtitles,

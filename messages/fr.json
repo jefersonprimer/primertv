@@ -131,6 +131,7 @@
     "removeItemError": "Erreur lors du retrait de l'élément.",
     "removeItemTitle": "Retirer de la liste",
     "tooltip": "Ajouter à la liste",
+    "myList": "Ma liste",
     "chooseList": "Choisir une liste",
     "noLists": "Vous n'avez pas encore de liste personnalisée.",
     "limitInfo": "Vous avez atteint la limite de 10 listes personnalisées. Supprimez-en une pour en créer de nouvelles.",

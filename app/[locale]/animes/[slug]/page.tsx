@@ -258,7 +258,7 @@ export default async function AnimeDetailsPage({
         </div>
 
         {/* Content Container */}
-        <div className="mx-auto max-w-[1223px] w-full relative z-10 md:py-12">
+        <div className="mx-auto max-w-[1223px] w-full relative z-10 md:py-12 px-0 md:px-8 lg:px-12 xl:px-0">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Image */}
             <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:hidden flex-shrink-0">
@@ -434,29 +434,35 @@ export default async function AnimeDetailsPage({
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                {firstEpisodeLink && (
-                  <StartWatchingButton
-                    href={firstEpisodeLink}
-                    className="flex-1 md:flex-initial"
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {firstEpisodeLink && (
+                    <StartWatchingButton
+                      href={firstEpisodeLink}
+                      className="flex-1 sm:flex-initial"
+                    />
+                  )}
+                  <WatchlistButton
+                    mediaType="ANIME"
+                    mediaId={anime.id}
+                    slug={anime.slug}
+                    initialInWatchlist={inWatchlist}
+                    isLoggedIn={Boolean(userId)}
+                    size={24}
+                    className="flex-shrink-0"
                   />
-                )}
-                <WatchlistButton
-                  mediaType="ANIME"
-                  mediaId={anime.id}
-                  slug={anime.slug}
-                  initialInWatchlist={inWatchlist}
-                  isLoggedIn={Boolean(userId)}
-                  size={24}
-                />
-                <AddToListButton
-                  animeId={anime.id}
-                  isLoggedIn={Boolean(userId)}
-                  size={24}
-                />
-                <ShareButton size={24} />
+                </div>
+                <div className="flex items-center justify-center sm:justify-start gap-6 sm:gap-3 w-full sm:w-auto">
+                  <AddToListButton
+                    animeId={anime.id}
+                    isLoggedIn={Boolean(userId)}
+                    size={24}
+                    showLabel={true}
+                  />
+                  <ShareButton size={24} showLabel={true} />
+                </div>
                 {isAdmin && (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
                     <EditMediaButton
                       collection="animes"
                       item={anime}
@@ -490,7 +496,7 @@ export default async function AnimeDetailsPage({
       </div>
 
       {/* Episodes Section */}
-      <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
+      <main className="mx-auto max-w-[1223px] pb-12 px-4 md:px-8 lg:px-12 xl:px-0">
         {mergedSeasons.length > 0 ? (
           <SeasonSelector
             seasons={mergedSeasons}
@@ -529,7 +535,7 @@ export default async function AnimeDetailsPage({
 
       {/* Similar Animes Carousel */}
       {similarAnimes.length > 0 && (
-        <div className="pl-2 lg:pl-0 pb-12">
+        <div className="pl-4 md:pl-8 lg:pl-0 pb-12">
           <MediaCarousel
             title={t("similarTitle")}
             subtitle={t("similarSubtitle")}
@@ -541,5 +547,3 @@ export default async function AnimeDetailsPage({
     </div>
   );
 }
-
-

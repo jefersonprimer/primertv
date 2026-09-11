@@ -125,11 +125,14 @@ export async function saveMedia(
   }
 
   const common = readCommonData(formData);
-  if (!common.title || !common.slug) {
-    return { error: "Título e slug são obrigatórios." };
+  if (!common.title) {
+    return { error: "Título é obrigatório." };
   }
 
-  const finalSlug = common.slug || slugify(common.title);
+  const finalSlug = common.slug ? slugify(common.slug) : slugify(common.title);
+  if (!finalSlug) {
+    return { error: "Não foi possível gerar um slug válido." };
+  }
   const oldSlug = existing?.slug;
   let savedId = id;
 
@@ -205,6 +208,7 @@ export async function saveMedia(
           logoUrl: readString(formData, "logoUrl") || null,
           bannerUrl: readString(formData, "bannerUrl") || null,
           compactImageUrl: readString(formData, "compactImageUrl") || null,
+          duration: readString(formData, "duration") || null,
           aired: readString(formData, "aired") || null,
           rating: readString(formData, "rating") || null,
           status: readString(formData, "status") || null,
@@ -424,6 +428,38 @@ export async function deleteMovie(formData: FormData): Promise<void> {
   }
 
   redirect("/movies");
+}
+
+export async function deleteChannel(formData: FormData): Promise<void> {
+  await requireAdminSession();
+
+  const id = readString(formData, "id");
+  const slug = readString(formData, "slug");
+  const redirectTo = readString(formData, "redirectTo");
+
+  if (!id || !slug) {
+    return;
+  }
+
+  try {
+    await prisma.channel.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+
+  revalidatePath("/");
+  revalidatePath("/search");
+  revalidatePath("/livetv");
+  revalidatePath(`/livetv/${slug}`);
+
+  if (redirectTo) {
+    redirect(redirectTo);
+  }
+
+  redirect("/livetv");
 }
 
 async function getExistingRecord(collection: AdminCollection, id: string) {

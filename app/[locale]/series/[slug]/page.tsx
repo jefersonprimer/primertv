@@ -267,7 +267,7 @@ export default async function SeriesDetailsPage({
         </div>
 
         {/* Content Container */}
-        <div className="mx-auto max-w-[1223px] w-full relative z-10 md:py-12">
+        <div className="mx-auto max-w-[1223px] w-full relative z-10 md:py-12 px-0 md:px-8 lg:px-12 xl:px-0">
           <div className="flex flex-col gap-6 md:flex-row md:items-end">
             {/* Poster Image */}
             <div className="relative aspect-[2/3] w-full self-center overflow-hidden shadow-2xl md:hidden flex-shrink-0">
@@ -301,7 +301,7 @@ export default async function SeriesDetailsPage({
               />
               <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:max-w-2xl">
                 {finalLogoUrl ? (
-                  <div className="relative w-full max-w-[280px] md:max-w-[400px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
+                  <div className="relative w-full max-w-[200px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[400px] aspect-[3/1] mb-2 flex items-center justify-center md:justify-start">
                     <Image
                       src={finalLogoUrl}
                       alt={series.title}
@@ -460,7 +460,7 @@ export default async function SeriesDetailsPage({
       </div>
 
       {/* Episodes Section */}
-      <main className="mx-auto max-w-[1240px] pb-12 px-4 md:px-0">
+      <main className="mx-auto max-w-[1223px] pb-12 px-4 md:px-8 lg:px-12 xl:px-0">
         {totalEpisodes === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center border-t border-zinc-200 dark:border-zinc-800">
             <p className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
@@ -480,7 +480,7 @@ export default async function SeriesDetailsPage({
 
       {/* Similar Series Carousel */}
       {similarSeries.length > 0 && (
-        <div className="pl-2 lg:pl-0 pb-12">
+        <div className="pl-4 md:pl-8 lg:pl-0 pb-12">
           <MediaCarousel
             title="Séries Semelhantes"
             subtitle="Baseado nos gêneros desta série"
