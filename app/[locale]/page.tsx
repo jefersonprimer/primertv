@@ -235,7 +235,7 @@ export default async function Home() {
       <Suspense fallback={<HeroCarouselSkeleton />}>
         <HeroCarousel />
       </Suspense>
-      <div className="pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-18 sm:translate-y-0 md:-translate-y-18 lg:-translate-y-22 xl:-translate-y-38">
+      <div className="pl-3 md:pl-8 lg:pl-12 xl:pl-0 -translate-y-18 sm:translate-y-0 md:-translate-y-28 lg:-translate-y-22 xl:-translate-y-38">
         <main className="space-y-8 lg:space-y-16">
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <TopAnimesCarousel />

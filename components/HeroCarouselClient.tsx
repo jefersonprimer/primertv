@@ -225,7 +225,7 @@ export function HeroCarouselClient({
       <div className="mobile-bottom-blur sm:hidden" />
 
       <div className="absolute inset-0 flex items-end pb-30 sm:pb-14 md:pb-[24px] md:items-center">
-        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-20 2xl:-translate-y-16">
+        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 md:-translate-y-20 lg:-translate-y-20 2xl:-translate-y-16">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl 2xl:max-w-2xl 2xl:space-y-6">
             {current.logoUrl ? (
               <Link
@@ -382,21 +382,21 @@ export function HeroCarouselClient({
 
       <button
         onClick={goPrev}
-        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:left-2 2xl:left-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
+        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 md:-translate-y-2/3 lg:-translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:left-2 2xl:left-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
         aria-label={
           current.type === "series" ? "Série anterior" : "Anime anterior"
         }
       >
-        <ChevronLeft className="w-10 h-10 2xl:w-14 2xl:h-14" />
+        <ChevronLeft className="w-8 h-8 lg:w-10 lg:h-10 2xl:w-14 2xl:h-14" />
       </button>
       <button
         onClick={goNext}
-        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 -translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:right-2 2xl:right-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
+        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 md:-translate-y-2/3 lg:-translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:right-2 2xl:right-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
         aria-label={
           current.type === "series" ? "Próxima série" : "Próximo anime"
         }
       >
-        <ChevronRight className="w-10 h-10 2xl:w-14 2xl:h-14" />
+        <ChevronRight className="w-8 h-8 lg:w-10 lg:h-10 2xl:w-14 2xl:h-14" />
       </button>
     </section>
   );

@@ -10,7 +10,7 @@ import {
   Heart,
   Layers,
   Calendar,
-  TrendingUp,
+  Flame,
   Clock,
 } from "lucide-react";
 import { MobileSidebar } from "./MobileSidebar";
@@ -46,7 +46,7 @@ const exploreIconMap: Record<
   "/novelas": Heart,
   "/seasons": Layers,
   "/calendar": Calendar,
-  "/popular": TrendingUp,
+  "/popular": Flame,
   "/new": Clock,
 };
 
@@ -67,7 +67,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
       <div className="mx-auto flex h-14 2xl:h-16 max-w-full items-center justify-between">
         <div className="flex h-full items-center gap-4">
           <div className="flex h-full items-center gap-3">
-            <MobileSidebar className="md:hidden" />
+            <MobileSidebar className="lg:hidden" />
             <Link
               href="/"
               className="flex items-center text-xl tracking-tight hover:scale-[1.03] transition-transform duration-300 group"
@@ -81,14 +81,17 @@ export function HeaderClient({ user }: HeaderClientProps) {
             </Link>
           </div>
 
-          <nav className="hidden h-full items-center md:flex">
+          <nav className="hidden h-full items-center sm:flex">
             {MAIN_NAV_LINKS.map((link) => {
               const active = isActive(link.href);
+              const isLiveTv = link.href === "/livetv";
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center px-3.5 py-2 rounded-md text-sm transition-colors ${
+                  className={`items-center px-3.5 py-2 rounded-md text-sm transition-colors ${
+                    isLiveTv ? "hidden md:flex" : "flex"
+                  } ${
                     active
                       ? "text-white font-semibold bg-white/10"
                       : "text-[#bbb] hover:text-white hover:bg-white/10 font-medium"
@@ -100,7 +103,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
             })}
 
             {/* Dropdown Explorar */}
-            <div className="relative flex items-center h-full">
+            <div className="relative hidden lg:flex items-center h-full">
               <button
                 type="button"
                 onClick={() => setIsExploreOpen((prev) => !prev)}

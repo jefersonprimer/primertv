@@ -74,12 +74,23 @@ export function MobileSidebar({ className = "" }: { className?: string }) {
         <nav className="flex flex-col gap-1 py-3 px-2">
           {NAV_LINKS.map((link) => {
             const Icon = linkIconMap[link.href];
+            const isMainMedia =
+              link.href === "/animes" ||
+              link.href === "/series" ||
+              link.href === "/movies";
+            const isLiveTv = link.href === "/livetv";
+            const visibilityClass = isMainMedia
+              ? "sm:hidden"
+              : isLiveTv
+                ? "md:hidden"
+                : "";
+
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="group flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium text-[#bbb] transition-colors hover:bg-[#1f1f1f] hover:text-white"
+                className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium text-[#bbb] transition-colors hover:bg-[#1f1f1f] hover:text-white ${visibilityClass}`}
               >
                 {Icon && (
                   <Icon
