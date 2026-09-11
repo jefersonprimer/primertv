@@ -177,7 +177,7 @@ export function HeroCarouselClient({
                 alt={item.title}
                 fill
                 sizes="100vw"
-                className="hidden object-contain opacity-100 md:block"
+                className="hidden object-cover object-top opacity-100 md:block"
                 priority={index === 0}
                 loading={index === 0 ? undefined : "lazy"}
               />
@@ -188,10 +188,36 @@ export function HeroCarouselClient({
 
       {/* Mobile gradient overlay for poster readability */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-transparent md:hidden" />
-      {/* Left Gradient (occupies 45% of the width, fading softer to transparent) */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[45%] bg-gradient-to-r from-zinc-50 via-zinc-50/75 to-transparent dark:from-black dark:via-black/75 hidden md:block" />
-      {/* Right Gradient */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[20%] bg-gradient-to-l from-zinc-50 via-zinc-50/75 to-transparent dark:from-black dark:via-black/75 hidden md:block" />
+      {/* Left Gradient (occupies 45% of the width, ultra-natural eased scrim gradient) */}
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 w-[45%] hidden md:block dark:hidden"
+        style={{
+          background:
+            "linear-gradient(to right, #fafafa 0%, rgba(250, 250, 250, 0.85) 25%, rgba(250, 250, 250, 0.6) 50%, rgba(250, 250, 250, 0.3) 75%, rgba(250, 250, 250, 0.1) 90%, rgba(250, 250, 250, 0) 100%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 w-[45%] hidden dark:md:block"
+        style={{
+          background:
+            "linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0.85) 25%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.1) 90%, rgba(0, 0, 0, 0) 100%)",
+        }}
+      />
+      {/* Right Gradient (occupies 20% of the width, ultra-natural eased scrim gradient) */}
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-[20%] hidden md:block dark:hidden"
+        style={{
+          background:
+            "linear-gradient(to left, #fafafa 0%, rgba(250, 250, 250, 0.7) 20%, rgba(250, 250, 250, 0.45) 40%, rgba(250, 250, 250, 0.25) 60%, rgba(250, 250, 250, 0.1) 80%, rgba(250, 250, 250, 0) 100%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-[20%] hidden dark:md:block"
+        style={{
+          background:
+            "linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0.7) 20%, rgba(0, 0, 0, 0.45) 40%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.1) 80%, rgba(0, 0, 0, 0) 100%)",
+        }}
+      />
       {/* Bottom Gradient for sm and larger */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-68 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black hidden sm:block" />
 
