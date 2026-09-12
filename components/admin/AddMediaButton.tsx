@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { AdminMediaModal } from "./AdminMediaModal";
+import dynamic from "next/dynamic";
+
+const AdminMediaModal = dynamic(
+  () => import("./AdminMediaModal").then((mod) => mod.AdminMediaModal),
+  { ssr: false }
+);
 
 export function AddMediaButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,11 +23,13 @@ export function AddMediaButton() {
         <span className="tracking-wide">Criar</span>
       </button>
 
-      <AdminMediaModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        redirectTo="public"
-      />
+      {isOpen && (
+        <AdminMediaModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          redirectTo="public"
+        />
+      )}
     </>
   );
 }

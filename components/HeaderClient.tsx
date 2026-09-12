@@ -13,30 +13,22 @@ import {
   Flame,
   Clock,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { MobileSidebar } from "./MobileSidebar";
 import { Link, usePathname } from "@/i18n/routing";
 import { UserMenu } from "./UserMenu";
-import { AddMediaButton } from "./admin/AddMediaButton";
 import { SessionUser } from "@/lib/auth";
 import { MAIN_NAV_LINKS, EXPLORE_NAV_LINKS } from "./nav-links";
 import { useTranslations } from "next-intl";
 
+const AddMediaButton = dynamic(
+  () => import("./admin/AddMediaButton").then((mod) => mod.AddMediaButton),
+  { ssr: false }
+);
+
 interface HeaderClientProps {
   user?: SessionUser | null;
 }
-
-const linkKeyMap: Record<string, string> = {
-  "/series": "series",
-  "/movies": "movies",
-  "/animes": "animes",
-  "/mangas": "mangas",
-  "/livetv": "livetv",
-  "/seasons": "seasons",
-  "/calendar": "calendar",
-  "/novelas": "novelas",
-  "/popular": "popular",
-  "/new": "new",
-};
 
 const exploreIconMap: Record<
   string,
@@ -97,7 +89,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                       : "text-[#bbb] hover:text-white hover:bg-white/10 font-medium"
                   }`}
                 >
-                  {t(linkKeyMap[link.href] || link.key)}
+                  {t(link.key)}
                 </Link>
               );
             })}
@@ -137,7 +129,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                           key={link.href}
                           href={link.href}
                           onClick={() => setIsExploreOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ${
                             active
                               ? "bg-zinc-800 text-white font-semibold"
                               : "text-zinc-300 hover:text-white hover:bg-zinc-800/60"
@@ -151,7 +143,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                               }`}
                             />
                           )}
-                          <span>{t(linkKeyMap[link.href] || link.key)}</span>
+                          <span>{t(link.key)}</span>
                         </Link>
                       );
                     })}

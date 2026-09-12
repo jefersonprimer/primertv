@@ -22,19 +22,6 @@ import { useTranslations } from "next-intl";
 
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
-const linkKeyMap: Record<string, string> = {
-  "/series": "series",
-  "/movies": "movies",
-  "/animes": "animes",
-  "/mangas": "mangas",
-  "/livetv": "livetv",
-  "/seasons": "seasons",
-  "/calendar": "calendar",
-  "/novelas": "novelas",
-  "/popular": "popular",
-  "/new": "new",
-};
-
 const linkIconMap: Record<
   string,
   React.ComponentType<{ size?: number; className?: string }>
@@ -98,7 +85,7 @@ export function MobileSidebar({ className = "" }: { className?: string }) {
                     className="shrink-0 text-[#999] group-hover:text-white transition-colors"
                   />
                 )}
-                <span>{t(linkKeyMap[link.href] || link.label)}</span>
+                <span>{t(link.key)}</span>
               </Link>
             );
           })}

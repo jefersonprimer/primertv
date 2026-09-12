@@ -24,6 +24,8 @@ export function LanguageSwitcher() {
   const currentLocale = locales.find((l) => l.code === locale) || locales[0];
 
   useEffect(() => {
+    if (!isOpen) return;
+
     function handleClickOutside(event: MouseEvent) {
       if (
         dropdownRef.current &&
@@ -37,7 +39,7 @@ export function LanguageSwitcher() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isOpen]);
 
   const handleSelect = (code: string) => {
     setIsOpen(false);

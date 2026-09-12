@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import {
@@ -65,9 +66,16 @@ export function UserMenu({ user }: UserMenuProps) {
         className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full transition-transform active:scale-95 cursor-pointer"
         title={user.name}
       >
-        <div className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base 2xl:text-lg font-normal text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all overflow-hidden">
+        <div className="relative flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base 2xl:text-lg font-normal text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all overflow-hidden">
           {user.image ? (
-            <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+            <Image
+              src={user.image}
+              alt={user.name}
+              fill
+              sizes="(max-width: 1536px) 36px, 40px"
+              className="object-cover"
+              priority
+            />
           ) : (
             user.name.charAt(0).toUpperCase()
           )}
@@ -82,9 +90,15 @@ export function UserMenu({ user }: UserMenuProps) {
               <>
                 <div className="px-3 py-2.5 pb-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/10 overflow-hidden">
+                    <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold shadow-md shadow-blue-500/10 overflow-hidden">
                       {user.image ? (
-                        <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                        <Image
+                          src={user.image}
+                          alt={user.name}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
                       ) : (
                         user.name.charAt(0).toUpperCase()
                       )}
