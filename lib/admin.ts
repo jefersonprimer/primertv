@@ -116,6 +116,10 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
       { name: "slug", label: "Slug", type: "text", required: true },
       { name: "anilistId", label: "AniList ID", type: "number", step: "1", helpText: "Opcional. Usado para resolver o player do MegaPlay com precisão." },
       { name: "malId", label: "MAL ID", type: "number", step: "1", helpText: "Opcional. Fallback se não houver AniList ID." },
+      { name: "sequelMalId", label: "MAL ID da Sequência (Sequel)", type: "number", step: "1", helpText: "Opcional. MAL ID do anime que continua este (ex: 1735 para Naruto Shippuuden). Se vazio, pode ser buscado automaticamente." },
+      { name: "prequelMalId", label: "MAL ID Anterior (Prequel)", type: "number", step: "1", helpText: "Opcional. MAL ID da obra anterior na franquia. Se vazio, pode ser buscado automaticamente." },
+      { name: "sequelAnilistId", label: "AniList ID da Sequência (Sequel)", type: "number", step: "1", helpText: "Opcional. AniList ID da sequência (ex: 1735 para Naruto Shippuuden). Usado pelo MegaPlay." },
+      { name: "prequelAnilistId", label: "AniList ID Anterior (Prequel)", type: "number", step: "1", helpText: "Opcional. AniList ID da obra anterior na franquia. Usado pelo MegaPlay." },
       {
         name: "description",
         label: "Descrição",

@@ -22,6 +22,8 @@ export type EpisodePreviewItem = {
 export type SeasonPreviewItem = {
   id: string;
   number: number;
+  title?: string | null;
+  name?: string | null;
   episodes: EpisodePreviewItem[];
 };
 
@@ -182,6 +184,8 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
     const seasonsFormatted: SeasonPreviewItem[] = mergedSeasons.map((s) => ({
       id: s.id,
       number: s.number,
+      title: s.title || null,
+      name: s.title || null,
       episodes: s.episodes.map((ep) => ({
         id: ep.id,
         number: ep.number,

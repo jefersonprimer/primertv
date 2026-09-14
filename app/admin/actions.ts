@@ -14,6 +14,7 @@ import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getMediaFormat } from "@/lib/media-format";
+import { fetchAniListRelations, fetchMalRelations } from "@/lib/anime-relations";
 
 type FormState = {
   error?: string;
@@ -199,11 +200,43 @@ export async function saveMedia(
         const isDubbed = format === "DUB" || format === "SUB_DUB";
         const isSubtitled = format === "SUB" || format === "SUB_DUB";
 
+        let sequelMalId = readNumber(formData, "sequelMalId");
+        let prequelMalId = readNumber(formData, "prequelMalId");
+        let sequelAnilistId = readNumber(formData, "sequelAnilistId");
+        let prequelAnilistId = readNumber(formData, "prequelAnilistId");
+        const malId = readNumber(formData, "malId");
+        const anilistId = readNumber(formData, "anilistId");
+
+        if (
+          (!sequelMalId || !prequelMalId || !sequelAnilistId || !prequelAnilistId) &&
+          (anilistId || malId)
+        ) {
+          try {
+            const relations = await fetchAniListRelations({ anilistId, malId });
+            if (!sequelMalId && relations.sequelMalId) {
+              sequelMalId = relations.sequelMalId;
+            }
+            if (!prequelMalId && relations.prequelMalId) {
+              prequelMalId = relations.prequelMalId;
+            }
+            if (!sequelAnilistId && relations.sequelAnilistId) {
+              sequelAnilistId = relations.sequelAnilistId;
+            }
+            if (!prequelAnilistId && relations.prequelAnilistId) {
+              prequelAnilistId = relations.prequelAnilistId;
+            }
+          } catch {}
+        }
+
         const payload = {
           ...common,
           slug: finalSlug,
-          anilistId: readNumber(formData, "anilistId"),
-          malId: readNumber(formData, "malId"),
+          anilistId,
+          malId,
+          sequelMalId,
+          prequelMalId,
+          sequelAnilistId,
+          prequelAnilistId,
           titleEnglish: readString(formData, "titleEnglish") || null,
           logoUrl: readString(formData, "logoUrl") || null,
           bannerUrl: readString(formData, "bannerUrl") || null,

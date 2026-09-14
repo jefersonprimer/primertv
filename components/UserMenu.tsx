@@ -11,6 +11,7 @@ import {
   Globe,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   Check,
   User as UserIcon,
 } from "lucide-react";
@@ -63,10 +64,11 @@ export function UserMenu({ user }: UserMenuProps) {
             setView("main");
           }
         }}
-        className="flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full transition-transform active:scale-95 cursor-pointer"
+        className="flex items-center gap-1.5 p-1 pr-2 rounded-full hover:bg-white/10 transition-colors group cursor-pointer"
         title={user.name}
+        aria-expanded={isOpen}
       >
-        <div className="relative flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base 2xl:text-lg font-normal text-white shadow-sm ring-2 ring-zinc-800/50 hover:ring-zinc-600 transition-all overflow-hidden">
+        <div className="relative flex h-9 w-9 2xl:h-10 2xl:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base 2xl:text-lg font-normal text-white shadow-sm ring-2 ring-zinc-800/50 group-hover:ring-zinc-600 transition-all overflow-hidden">
           {user.image ? (
             <Image
               src={user.image}
@@ -80,12 +82,19 @@ export function UserMenu({ user }: UserMenuProps) {
             user.name.charAt(0).toUpperCase()
           )}
         </div>
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-200 ${
+            isOpen
+              ? "rotate-180 text-white"
+              : "text-[#bbb] group-hover:text-white"
+          }`}
+        />
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={handleClose} />
-          <div className="absolute right-0 top-full z-50 w-72 bg-[#151515] p-2 shadow-2xl border border-zinc-800/80 rounded-2xl">
+          <div className="absolute right-0 top-full mt-2 lg:mt-3 2xl:mt-4 z-50 w-72 bg-[#151515] p-2 shadow-2xl border border-zinc-800/80 rounded-2xl">
             {view === "main" ? (
               <>
                 <div className="px-3 py-2.5 pb-2">

@@ -12,6 +12,7 @@ export type SearchTopResultItem = {
   title: string;
   imageUrl: string | null;
   bannerUrl?: string | null;
+  compactImageUrl?: string | null;
   isDubbed?: boolean;
   isSubtitled?: boolean;
 };
@@ -26,7 +27,7 @@ export function SearchTopResultCard({
   const t = useTranslations("MediaCard");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const bgImage = item.bannerUrl || item.imageUrl;
+  const bgImage = item.compactImageUrl || item.bannerUrl || item.imageUrl;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (type === "anime") {

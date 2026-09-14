@@ -225,7 +225,7 @@ export async function HeroCarousel({
 
 export function HeroCarouselSkeleton() {
   return (
-    <section className="relative h-[95vh] lg:h-screen 2xl:h-[calc(100vh-4rem)] w-full overflow-hidden bg-zinc-900">
+    <section className="relative aspect-[2/3] md:aspect-auto md:h-[95vh] lg:h-screen 2xl:h-[calc(100vh-4rem)] w-full overflow-hidden bg-zinc-900">
       <style>{`
         @media (max-width: 639px) {
           .mobile-bottom-blur {
@@ -233,7 +233,7 @@ export function HeroCarouselSkeleton() {
             bottom: 0;
             left: 0;
             right: 0;
-            height: 480px;
+            height: 320px;
             pointer-events: none;
             background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.8) 100%, rgba(0, 0, 0, 0.15) 75%, transparent 100%);
             backdrop-filter: blur(10px);
@@ -256,8 +256,8 @@ export function HeroCarouselSkeleton() {
       {/* Mobile bottom blur & gradient overlay for screens < sm */}
       <div className="mobile-bottom-blur sm:hidden" />
 
-      <div className="absolute inset-0 flex items-end pb-30 sm:pb-14 md:pb-[24px] md:items-center">
-        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 lg:-translate-y-6 2xl:-translate-y-16">
+      <div className="absolute inset-0 flex items-end pb-6 sm:pb-14 md:pb-[24px] md:items-center">
+        <div className="mx-auto w-full max-w-[1223px] 2xl:max-w-[1500px] md:px-10 lg:px-16 xl:px-0 2xl:px-12 md:-translate-y-20 lg:-translate-y-20 2xl:-translate-y-16">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left space-y-4 md:max-w-xl 2xl:max-w-2xl 2xl:space-y-6">
             <div className="aspect-[3/1] w-full max-w-[200px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[400px] 2xl:max-w-[480px] mx-auto md:mx-0 animate-pulse rounded-lg bg-zinc-800" />
 

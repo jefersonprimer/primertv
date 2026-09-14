@@ -27,6 +27,8 @@ import {
 import { AnimeStarRating } from "@/components/AnimeStarRating";
 import { getAnimeRatingStats } from "@/app/actions/animeRating";
 import { buildMergedSeasons } from "@/lib/seasons";
+import { resolveAnimeFranchise } from "@/lib/anime-relations";
+import { AnimeFranchiseSection } from "@/components/AnimeFranchiseSection";
 
 export const revalidate = 3600;
 
@@ -50,6 +52,9 @@ export async function generateMetadata({
   params,
 }: AnimeDetailsPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
+  try {
+    require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE generateMetadata locale=${locale} slug=${slug}\n`);
+  } catch {}
   const anime = await getAnimeDetailsBySlug(slug);
   const t = await getTranslations({ locale, namespace: "AnimeDetails" });
 
@@ -81,7 +86,13 @@ export default async function AnimeDetailsPage({
   const t = await getTranslations("AnimeDetails");
   const tMedia = await getTranslations("MediaCard");
   const { slug } = await params;
+  try {
+    require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE AnimeDetailsPage slug=${slug}\n`);
+  } catch {}
   const anime = await getAnimeDetailsBySlug(slug);
+  try {
+    require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE anime found: ${anime ? anime.id : "null"}\n`);
+  } catch {}
 
   const isStubAnime =
     anime &&
@@ -91,6 +102,9 @@ export default async function AnimeDetailsPage({
     (!anime.seasons || anime.seasons.length === 0);
 
   if (!anime || isStubAnime) {
+    try {
+      require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE CALLING notFound! anime=${!!anime} isStub=${isStubAnime}\n`);
+    } catch {}
     notFound();
   }
 
@@ -175,6 +189,16 @@ export default async function AnimeDetailsPage({
   if (!firstEpisodeLink && externalFirstEpisodeLink) {
     firstEpisodeLink = externalFirstEpisodeLink;
   }
+
+  const franchise = await resolveAnimeFranchise({
+    animeId: anime.id,
+    malId: anime.malId,
+    anilistId: anime.anilistId,
+    sequelMalId: anime.sequelMalId,
+    prequelMalId: anime.prequelMalId,
+    sequelAnilistId: anime.sequelAnilistId,
+    prequelAnilistId: anime.prequelAnilistId,
+  });
 
   return (
     <div className="min-h-screen bg-black">
@@ -532,6 +556,15 @@ export default async function AnimeDetailsPage({
           />
         )}
       </main>
+
+      {/* Franchise / Timeline Section */}
+      {(franchise.sequel || franchise.prequel) && (
+        <AnimeFranchiseSection
+          currentTitle={anime.title}
+          sequel={franchise.sequel}
+          prequel={franchise.prequel}
+        />
+      )}
 
       {/* Similar Animes Carousel */}
       {similarAnimes.length > 0 && (

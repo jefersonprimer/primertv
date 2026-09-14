@@ -260,20 +260,20 @@ export function QuickViewModal({
                 <Link
                   href={`/${basePath}/${data.slug}`}
                   onClick={onClose}
-                  className="block max-w-[75%] sm:max-w-[55%] hover:opacity-90 transition-opacity group cursor-pointer"
+                  className="block max-w-[75%] sm:max-w-[60%] lg:max-w-[65%] hover:opacity-90 transition-opacity group cursor-pointer"
                 >
                   {data.logoUrl ? (
-                    <div className="relative aspect-[3/1] w-full max-w-[160px] sm:max-w-[240px] md:max-w-[280px]">
+                    <div className="relative aspect-[3/1] w-full max-w-[160px] sm:max-w-[240px] md:max-w-[300px] lg:max-w-[360px] xl:max-w-[400px]">
                       <Image
                         src={data.logoUrl}
                         alt={data.title}
                         fill
                         priority
-                        className="object-contain object-left"
+                        className="object-contain object-left drop-shadow-md"
                       />
                     </div>
                   ) : (
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white drop-shadow-md line-clamp-2 group-hover:text-blue-400 transition-colors">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-white drop-shadow-md line-clamp-2 group-hover:text-blue-400 transition-colors">
                       {data.title}
                     </h2>
                   )}
@@ -386,14 +386,22 @@ export function QuickViewModal({
                         }
                         className="appearance-none bg-zinc-800/90 text-white text-sm font-semibold py-2 pl-4 pr-10 rounded border border-zinc-700/70 focus:outline-none focus:border-[#0077FD] cursor-pointer transition-all"
                       >
-                        {data.seasons.map((s) => (
-                          <option key={s.id} value={s.number}>
-                            {t("seasonOption", {
-                              number: s.number,
-                              count: s.episodes.length,
-                            })}
-                          </option>
-                        ))}
+                        {data.seasons.map((s) => {
+                          const seasonName = s.title?.trim() || s.name?.trim();
+                          return (
+                            <option key={s.id} value={s.number}>
+                              {seasonName
+                                ? t("seasonOptionWithName", {
+                                    name: seasonName,
+                                    count: s.episodes.length,
+                                  })
+                                : t("seasonOption", {
+                                    number: s.number,
+                                    count: s.episodes.length,
+                                  })}
+                            </option>
+                          );
+                        })}
                       </select>
                       <ChevronDown
                         size={16}

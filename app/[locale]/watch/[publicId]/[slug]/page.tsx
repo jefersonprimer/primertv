@@ -14,6 +14,7 @@ import { WatchlistButton } from "@/components/WatchlistButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import AnimeEpisodeSidebar from "./EpisodeSidebar";
 import SeriesEpisodeSidebar from "./SeriesEpisodeSidebar";
+import { resolveAnimeFranchise } from "@/lib/anime-relations";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ShareButton from "@/components/ShareButton";
 import {
@@ -504,26 +505,41 @@ export default async function WatchPage({
             {/* Sidebar: Episode List */}
             <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 md:px-0">
               <div className="sticky top-20">
-                <AnimeEpisodeSidebar
-                  seasons={await buildMergedSeasons({
-                    animeSlug: animeEpisode.season.anime.slug,
-                    animeTitle: animeEpisode.season.anime.title,
-                    animeAnilistId: animeEpisode.season.anime.anilistId,
-                    animeMalId: animeEpisode.season.anime.malId,
-                    animeTitleEnglish: animeEpisode.season.anime.titleEnglish,
-                    localSeasons: animeEpisode.season.anime.seasons,
-                  })}
-                  currentEpisodeId={animeEpisode.id}
-                  animeSlug={animeEpisode.season.anime.slug}
-                  animeRating={animeEpisode.season.anime.rating}
-                  animeDuration={animeEpisode.season.anime.duration}
-                  fallbackImageUrl={
-                    animeEpisode.season.anime.bannerUrl ||
-                    animeEpisode.season.anime.imageUrl
-                  }
-                  isDubbed={animeEpisode.season.anime.isDubbed}
-                  isSubtitled={animeEpisode.season.anime.isSubtitled}
-                />
+                {await (async () => {
+                  const franchise = await resolveAnimeFranchise({
+                    animeId: animeEpisode.season.anime.id,
+                    malId: animeEpisode.season.anime.malId,
+                    anilistId: animeEpisode.season.anime.anilistId,
+                    sequelMalId: animeEpisode.season.anime.sequelMalId,
+                    prequelMalId: animeEpisode.season.anime.prequelMalId,
+                    sequelAnilistId: animeEpisode.season.anime.sequelAnilistId,
+                    prequelAnilistId: animeEpisode.season.anime.prequelAnilistId,
+                  });
+                  return (
+                    <AnimeEpisodeSidebar
+                      seasons={await buildMergedSeasons({
+                        animeSlug: animeEpisode.season.anime.slug,
+                        animeTitle: animeEpisode.season.anime.title,
+                        animeAnilistId: animeEpisode.season.anime.anilistId,
+                        animeMalId: animeEpisode.season.anime.malId,
+                        animeTitleEnglish: animeEpisode.season.anime.titleEnglish,
+                        localSeasons: animeEpisode.season.anime.seasons,
+                      })}
+                      currentEpisodeId={animeEpisode.id}
+                      animeSlug={animeEpisode.season.anime.slug}
+                      animeRating={animeEpisode.season.anime.rating}
+                      animeDuration={animeEpisode.season.anime.duration}
+                      fallbackImageUrl={
+                        animeEpisode.season.anime.bannerUrl ||
+                        animeEpisode.season.anime.imageUrl
+                      }
+                      isDubbed={animeEpisode.season.anime.isDubbed}
+                      isSubtitled={animeEpisode.season.anime.isSubtitled}
+                      sequel={franchise.sequel}
+                      prequel={franchise.prequel}
+                    />
+                  );
+                })()}
               </div>
             </div>
 
@@ -724,17 +740,32 @@ export default async function WatchPage({
             <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-2 px-4 md:px-0">
               <div className="sticky top-20">
                 {mergedSeasons.length > 0 ? (
-                  <AnimeEpisodeSidebar
-                    seasons={mergedSeasons}
-                    currentEpisodeId={currentEpisodeId}
-                    animeSlug={anime.slug}
-                    animeRating={anime.rating}
-                    animeDuration={anime.duration}
-                    fallbackImageUrl={anime.imageUrl}
-                    isMegaplay={true}
-                    isDubbed={anime.isDubbed}
-                    isSubtitled={anime.isSubtitled}
-                  />
+                  await (async () => {
+                    const franchise = await resolveAnimeFranchise({
+                      animeId: anime.id,
+                      malId: anime.malId,
+                      anilistId: anime.anilistId,
+                      sequelMalId: anime.sequelMalId,
+                      prequelMalId: anime.prequelMalId,
+                      sequelAnilistId: anime.sequelAnilistId,
+                      prequelAnilistId: anime.prequelAnilistId,
+                    });
+                    return (
+                      <AnimeEpisodeSidebar
+                        seasons={mergedSeasons}
+                        currentEpisodeId={currentEpisodeId}
+                        animeSlug={anime.slug}
+                        animeRating={anime.rating}
+                        animeDuration={anime.duration}
+                        fallbackImageUrl={anime.imageUrl}
+                        isMegaplay={true}
+                        isDubbed={anime.isDubbed}
+                        isSubtitled={anime.isSubtitled}
+                        sequel={franchise.sequel}
+                        prequel={franchise.prequel}
+                      />
+                    );
+                  })()
                 ) : (
                   <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400">
                     {t("megaPlayNoCatalog")}

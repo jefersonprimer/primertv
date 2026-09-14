@@ -5,16 +5,27 @@ import { Suspense } from "react";
 import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 import { Metadata } from "next";
 import { connection } from "next/server";
-import { TrendingNowCarousel } from "@/components/TrendingNowCarousel";
-
-export const metadata: Metadata = {
-  title: "Séries - PrimerTv",
-  description: "Assista às suas séries favoritas online em HD no PrimerTv.",
-};
+import { getTranslations } from "next-intl/server";
 
 export const revalidate = 3600; // revalida a cada hora
 
-async function RecentSeriesCarousel() {
+interface SeriesPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: SeriesPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "SeriesPage" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
+
+async function RecentSeriesCarousel({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "SeriesPage" });
   const items = await prisma.series.findMany({
     select: {
       id: true,
@@ -27,15 +38,16 @@ async function RecentSeriesCarousel() {
   });
   return (
     <MediaCarousel
-      title="Recém Adicionadas"
-      subtitle="As séries mais recentes na plataforma"
+      title={t("recentTitle")}
+      subtitle={t("recentSubtitle")}
       items={items}
       type="series"
     />
   );
 }
 
-async function TopRatedSeriesCarousel() {
+async function TopRatedSeriesCarousel({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "SeriesPage" });
   const items = await prisma.series.findMany({
     where: {
       score: { not: null },
@@ -51,15 +63,16 @@ async function TopRatedSeriesCarousel() {
   });
   return (
     <MediaCarousel
-      title="Melhores Avaliadas"
-      subtitle="Sucessos de crítica e público"
+      title={t("topRatedTitle")}
+      subtitle={t("topRatedSubtitle")}
       items={items}
       type="series"
     />
   );
 }
 
-async function DramaSeriesCarousel() {
+async function DramaSeriesCarousel({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "SeriesPage" });
   const items = await prisma.series.findMany({
     where: {
       genres: { has: "Drama" },
@@ -75,15 +88,16 @@ async function DramaSeriesCarousel() {
   });
   return (
     <MediaCarousel
-      title="Séries de Drama"
-      subtitle="Histórias profundas e emocionantes"
+      title={t("dramaTitle")}
+      subtitle={t("dramaSubtitle")}
       items={items}
       type="series"
     />
   );
 }
 
-async function ActionSeriesCarousel() {
+async function ActionSeriesCarousel({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "SeriesPage" });
   const items = await prisma.series.findMany({
     where: {
       genres: {
@@ -101,15 +115,16 @@ async function ActionSeriesCarousel() {
   });
   return (
     <MediaCarousel
-      title="Ação & Aventura"
-      subtitle="Adrenalina pura e grandes jornadas"
+      title={t("actionTitle")}
+      subtitle={t("actionSubtitle")}
       items={items}
       type="series"
     />
   );
 }
 
-async function SciFiSeriesCarousel() {
+async function SciFiSeriesCarousel({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "SeriesPage" });
   const items = await prisma.series.findMany({
     where: {
       genres: {
@@ -127,16 +142,17 @@ async function SciFiSeriesCarousel() {
   });
   return (
     <MediaCarousel
-      title="Ficção Científica & Suspense"
-      subtitle="Mistério, tecnologia e realidades alternativas"
+      title={t("sciFiTitle")}
+      subtitle={t("sciFiSubtitle")}
       items={items}
       type="series"
     />
   );
 }
 
-export default async function SeriesPage() {
+export default async function SeriesPage({ params }: SeriesPageProps) {
   await connection();
+  const { locale } = await params;
 
   return (
     <>
@@ -146,23 +162,23 @@ export default async function SeriesPage() {
       <div className="pl-3 md:pl-8 lg:pl-12 xl:pl-0  md:-translate-y-48 lg:-translate-y-22 xl:-translate-y-38">
         <main className="space-y-8 lg:space-y-16">
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-            <RecentSeriesCarousel />
+            <RecentSeriesCarousel locale={locale} />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-            <TopRatedSeriesCarousel />
+            <TopRatedSeriesCarousel locale={locale} />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-            <DramaSeriesCarousel />
+            <DramaSeriesCarousel locale={locale} />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-            <ActionSeriesCarousel />
+            <ActionSeriesCarousel locale={locale} />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
-            <SciFiSeriesCarousel />
+            <SciFiSeriesCarousel locale={locale} />
           </Suspense>
         </main>
       </div>

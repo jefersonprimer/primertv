@@ -14,9 +14,15 @@ export async function getSeriesQuickPreview(slug: string): Promise<AnimeQuickPre
     const series = await getSeriesDetailsBySlug(slug);
     if (!series) return null;
 
+    const externalId = series.tmdbId || (series as any).imdbId;
+    const tmdbSeasons = externalId ? await getSeriesTmdbSeasons(externalId) : [];
+    const tmdbSeasonMap = new Map(tmdbSeasons.map((s) => [s.number, s.name]));
+
     let seasonsFormatted: SeasonPreviewItem[] = series.seasons.map((s) => ({
       id: s.id,
       number: s.number,
+      title: tmdbSeasonMap.get(s.number) || null,
+      name: tmdbSeasonMap.get(s.number) || null,
       episodes: s.episodes.map((ep) => ({
         id: ep.id,
         number: ep.number,
@@ -31,13 +37,13 @@ export async function getSeriesQuickPreview(slug: string): Promise<AnimeQuickPre
       })),
     }));
 
-    if (seasonsFormatted.length === 0 && (series.tmdbId || (series as any).imdbId)) {
-      const externalId = series.tmdbId || (series as any).imdbId;
-      const tmdbSeasons = await getSeriesTmdbSeasons(externalId!);
+    if (seasonsFormatted.length === 0 && externalId) {
       if (tmdbSeasons && tmdbSeasons.length > 0) {
         seasonsFormatted = tmdbSeasons.map((s) => ({
           id: s.id,
           number: s.number,
+          title: s.name || null,
+          name: s.name || null,
           episodes: s.episodes.map((ep) => ({
             id: ep.id,
             number: ep.number,
@@ -54,6 +60,8 @@ export async function getSeriesQuickPreview(slug: string): Promise<AnimeQuickPre
           {
             id: "default-season-1",
             number: 1,
+            title: null,
+            name: null,
             episodes: Array.from({ length: 8 }, (_, i) => ({
               id: `default-s1-e${i + 1}`,
               number: i + 1,

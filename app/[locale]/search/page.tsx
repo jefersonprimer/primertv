@@ -56,6 +56,7 @@ export default async function SearchPage({
         title: true,
         imageUrl: true,
         bannerUrl: true,
+        compactImageUrl: true,
         isDubbed: true,
         isSubtitled: true,
       },

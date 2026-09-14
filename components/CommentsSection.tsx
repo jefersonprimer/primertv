@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import { useTranslations, useFormatter } from "next-intl";
+import { Link } from "@/i18n/routing";
 import {
   Send,
   User,
@@ -48,6 +49,9 @@ export function CommentsSection({
   targetId,
   currentUser,
 }: CommentsSectionProps) {
+  const t = useTranslations("Comments");
+  const format = useFormatter();
+
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [newComment, setNewComment] = useState("");
   const [authorName, setAuthorName] = useState("");
@@ -111,7 +115,7 @@ export function CommentsSection({
       );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error || "Não foi possível carregar os comentários.");
+        setError(data.error || t("errorLoading"));
         return;
       }
       setComments(data.comments || []);
@@ -120,11 +124,11 @@ export function CommentsSection({
       }
     } catch (err: any) {
       console.error(err);
-      setError("Não foi possível carregar os comentários.");
+      setError(t("errorLoading"));
     } finally {
       setLoading(false);
     }
-  }, [targetId]);
+  }, [targetId, t]);
 
   useEffect(() => {
     if (!targetId) return;
@@ -174,7 +178,7 @@ export function CommentsSection({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setError(data.error || "Falha ao enviar comentário.");
+        setError(data.error || t("errorPosting"));
         return;
       }
 
@@ -183,7 +187,7 @@ export function CommentsSection({
       if (!currentUser) setAuthorName("");
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Ocorreu um erro ao publicar o comentário.");
+      setError(err.message || t("errorPostingGeneral"));
     } finally {
       setSubmitting(false);
     }
@@ -212,7 +216,7 @@ export function CommentsSection({
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.error || "Falha ao enviar resposta");
+        throw new Error(errData.error || t("errorReplying"));
       }
 
       const data = await res.json();
@@ -223,7 +227,7 @@ export function CommentsSection({
       if (!currentUser) setReplyAuthorName("");
     } catch (err: any) {
       console.error(err);
-      setReplyError(err.message || "Ocorreu um erro ao publicar a resposta.");
+      setReplyError(err.message || t("errorReplyingGeneral"));
     } finally {
       setSubmittingReply(false);
     }
@@ -251,7 +255,7 @@ export function CommentsSection({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setEditError(data.error || "Falha ao editar comentário.");
+        setEditError(data.error || t("errorEditing"));
         return;
       }
 
@@ -266,7 +270,7 @@ export function CommentsSection({
       setEditContent("");
     } catch (err: any) {
       console.error(err);
-      setEditError(err.message || "Ocorreu um erro ao editar o comentário.");
+      setEditError(err.message || t("errorEditingGeneral"));
     } finally {
       setSubmittingEdit(false);
     }
@@ -298,7 +302,7 @@ export function CommentsSection({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setError(data.error || "Falha ao excluir comentário.");
+        setError(data.error || t("errorDeleting"));
         return;
       }
 
@@ -310,7 +314,7 @@ export function CommentsSection({
       setConfirmDeleteId(null);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Ocorreu um erro ao excluir o comentário.");
+      setError(err.message || t("errorDeletingGeneral"));
     } finally {
       setDeletingId(null);
     }
@@ -402,13 +406,14 @@ export function CommentsSection({
   const formatDate = (dateInput: string | Date) => {
     try {
       const date = new Date(dateInput);
-      return new Intl.DateTimeFormat("pt-BR", {
+      if (isNaN(date.getTime())) return "";
+      return format.dateTime(date, {
         day: "2-digit",
         month: "short",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-      }).format(date);
+      });
     } catch {
       return "";
     }
@@ -504,7 +509,7 @@ export function CommentsSection({
               <div className="flex items-center gap-1.5 shrink-0">
                 {comment.isEdited && (
                   <span className="text-[10px] text-zinc-500 italic font-normal">
-                    (editado)
+                    {t("edited")}
                   </span>
                 )}
                 <span className="text-[11px] text-zinc-500">
@@ -537,7 +542,7 @@ export function CommentsSection({
                     className="px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors flex items-center gap-1"
                   >
                     <X className="h-3.5 w-3.5" />
-                    <span>Cancelar</span>
+                    <span>{t("cancel")}</span>
                   </button>
                   <button
                     type="button"
@@ -550,7 +555,7 @@ export function CommentsSection({
                     ) : (
                       <Check className="h-3.5 w-3.5" />
                     )}
-                    <span>Salvar</span>
+                    <span>{t("save")}</span>
                   </button>
                 </div>
               </div>
@@ -572,7 +577,7 @@ export function CommentsSection({
                     ? "text-blue-400 bg-blue-500/10 font-medium"
                     : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                 }`}
-                title="Curtir"
+                title={t("like")}
               >
                 <ThumbsUp
                   className={`h-3.5 w-3.5 ${isLiked ? "fill-current" : ""}`}
@@ -590,7 +595,7 @@ export function CommentsSection({
                     ? "text-rose-400 bg-rose-500/10 font-medium"
                     : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                 }`}
-                title="Descurtir"
+                title={t("dislike")}
               >
                 <ThumbsDown
                   className={`h-3.5 w-3.5 ${isDisliked ? "fill-current" : ""}`}
@@ -612,7 +617,7 @@ export function CommentsSection({
                 className="flex items-center gap-1.5 px-2 py-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors font-medium"
               >
                 <Reply className="h-3.5 w-3.5" />
-                <span>Responder</span>
+                <span>{t("reply")}</span>
               </button>
 
               {/* Owner actions: Edit & Delete */}
@@ -626,16 +631,16 @@ export function CommentsSection({
                       setEditError(null);
                     }}
                     className="flex items-center gap-1.5 px-2 py-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors font-medium"
-                    title="Editar comentário"
+                    title={t("edit")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
-                    <span>Editar</span>
+                    <span>{t("edit")}</span>
                   </button>
 
                   {confirmDeleteId === comment.id ? (
                     <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-md">
                       <span className="text-[11px] text-red-400 font-medium">
-                        Excluir?
+                        {t("deleteConfirm")}
                       </span>
                       <button
                         type="button"
@@ -646,7 +651,7 @@ export function CommentsSection({
                         {deletingId === comment.id ? (
                           <Loader2 className="h-3 w-3 animate-spin inline" />
                         ) : (
-                          "Sim"
+                          t("yes")
                         )}
                       </button>
                       <button
@@ -654,7 +659,7 @@ export function CommentsSection({
                         onClick={() => setConfirmDeleteId(null)}
                         className="text-xs text-zinc-400 hover:text-zinc-200"
                       >
-                        Não
+                        {t("no")}
                       </button>
                     </div>
                   ) : (
@@ -662,10 +667,10 @@ export function CommentsSection({
                       type="button"
                       onClick={() => setConfirmDeleteId(comment.id)}
                       className="flex items-center gap-1.5 px-2 py-1 rounded-md text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors font-medium"
-                      title="Excluir comentário"
+                      title={t("delete")}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
-                      <span>Excluir</span>
+                      <span>{t("delete")}</span>
                     </button>
                   )}
                 </>
@@ -677,15 +682,15 @@ export function CommentsSection({
               <div className="mt-3.5 pt-3 border-t border-zinc-800/80 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-blue-400 flex items-center gap-1">
-                    <Reply className="h-3 w-3" /> Respondendo a @
-                    {comment.userName}
+                    <Reply className="h-3 w-3" />{" "}
+                    {t("replyingTo", { userName: comment.userName })}
                   </span>
                   <button
                     type="button"
                     onClick={() => setReplyingToId(null)}
                     className="text-zinc-500 hover:text-zinc-300 text-xs flex items-center gap-1"
                   >
-                    <X className="h-3.5 w-3.5" /> Cancelar
+                    <X className="h-3.5 w-3.5" /> {t("cancel")}
                   </button>
                 </div>
 
@@ -693,7 +698,7 @@ export function CommentsSection({
                   <div>
                     <input
                       type="text"
-                      placeholder="Seu nome / apelido (opcional)"
+                      placeholder={t("replyAuthorPlaceholder")}
                       value={replyAuthorName}
                       onChange={(e) => setReplyAuthorName(e.target.value)}
                       className="w-full max-w-sm rounded-lg border border-zinc-800 bg-[#0E0E0E] px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
@@ -704,7 +709,9 @@ export function CommentsSection({
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder={`Responder a ${comment.userName}...`}
+                    placeholder={t("replyPlaceholder", {
+                      userName: comment.userName,
+                    })}
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
                     onKeyDown={(e) => {
@@ -726,7 +733,7 @@ export function CommentsSection({
                     ) : (
                       <Send className="h-3.5 w-3.5" />
                     )}
-                    <span>Responder</span>
+                    <span>{t("reply")}</span>
                   </button>
                 </div>
 
@@ -761,9 +768,10 @@ export function CommentsSection({
                   }`}
                 />
                 <span>
-                  {expandedReplies[comment.id] ? "Ocultar" : "Ver"}{" "}
-                  {replies.length}{" "}
-                  {replies.length === 1 ? "resposta" : "respostas"}
+                  {expandedReplies[comment.id]
+                    ? t("hideReplies")
+                    : t("showReplies")}{" "}
+                  {t("replyCount", { count: replies.length })}
                 </span>
               </button>
             </div>
@@ -794,8 +802,7 @@ export function CommentsSection({
         <div className="flex items-center gap-2.5">
           {!loading && (
             <span className="text-base lg:text-xl font-medium lg:font-bold text-white">
-              {comments.length}{" "}
-              {comments.length === 1 ? "comentário" : "comentários"}
+              {t("title", { count: comments.length })}
             </span>
           )}
         </div>
@@ -806,11 +813,11 @@ export function CommentsSection({
         {!currentUser && (
           <div>
             <label className="block text-xs font-medium text-zinc-400 mb-1">
-              Seu Nome / Apelido
+              {t("authorNameLabel")}
             </label>
             <input
               type="text"
-              placeholder="Digite seu nome (opcional se não estiver logado)"
+              placeholder={t("authorNamePlaceholder")}
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
               className="w-full max-w-md rounded-xl border border-zinc-800 bg-[#0E0E0E] px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
@@ -835,7 +842,7 @@ export function CommentsSection({
           <div className="flex-1 min-w-0 space-y-2">
             <textarea
               rows={3}
-              placeholder="O que você achou deste episódio/conteúdo? Deixe seu comentário..."
+              placeholder={t("inputPlaceholder")}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               className="w-full resize-none rounded-xl border border-zinc-800 bg-[#0E0E0E] p-4 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
@@ -854,11 +861,11 @@ export function CommentsSection({
                 {submitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Enviando...</span>
+                    <span>{t("submitting")}</span>
                   </>
                 ) : (
                   <>
-                    <span>Comentar</span>
+                    <span>{t("submit")}</span>
                   </>
                 )}
               </button>
@@ -896,7 +903,7 @@ export function CommentsSection({
         ) : comments.length === 0 ? (
           <div className="rounded-xl border border-dashed border-zinc-800 p-8 text-center text-zinc-500">
             <p className="text-sm">
-              Nenhum comentário ainda. Seja o primeiro a comentar!
+              {t("empty")}
             </p>
           </div>
         ) : (

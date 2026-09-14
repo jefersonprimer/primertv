@@ -193,16 +193,46 @@ export type MergedSeason = {
   episodes: MergedEpisode[];
 };
 
-async function fetchJikanEpisodeCount(malId: number): Promise<number | null> {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/anime/${malId}`);
-    if (!res.ok) return null;
-    const json = await res.json();
-    const count = json.data?.episodes;
-    return typeof count === "number" && count > 0 ? count : null;
-  } catch {
-    return null;
+async function fetchOfficialEpisodeCount({
+  anilistId,
+  malId,
+}: {
+  anilistId?: number | null;
+  malId?: number | null;
+}): Promise<number | null> {
+  if (anilistId) {
+    try {
+      const res = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `query ($id: Int) { Media(id: $id, type: ANIME) { episodes } }`,
+          variables: { id: anilistId },
+        }),
+        next: { revalidate: 86400 },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const eps = json?.data?.Media?.episodes;
+        if (typeof eps === "number" && eps > 0) return eps;
+      }
+    } catch {}
   }
+
+  if (malId) {
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/anime/${malId}`, {
+        next: { revalidate: 86400 },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const count = json.data?.episodes;
+        if (typeof count === "number" && count > 0) return count;
+      }
+    } catch {}
+  }
+
+  return null;
 }
 
 export async function buildMergedSeasons({
@@ -291,28 +321,48 @@ export async function buildMergedSeasons({
         });
       }
 
+      const effectiveMalId =
+        season.malId ?? (season.number === 1 ? animeMalId : null);
+      const effectiveAnilistId =
+        season.anilistId ?? (season.number === 1 ? animeAnilistId : null);
+
+      if (effectiveAnilistId || effectiveMalId) {
+        const officialCount = await fetchOfficialEpisodeCount({
+          anilistId: effectiveAnilistId,
+          malId: effectiveMalId,
+        });
+
+        if (officialCount && officialCount > 0) {
+          const existingNumbers = new Set(mergedEpisodes.map((e) => e.number));
+          for (let epNum = 1; epNum <= officialCount; epNum++) {
+            if (!existingNumbers.has(epNum)) {
+              mergedEpisodes.push({
+                id: `megaplay-s${season.number}-${epNum}`,
+                number: epNum,
+                title: `${animeTitle} - ${getEpText(epNum)}`,
+                href: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+                videoUrl: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+                imageUrl: null,
+                publicId: null,
+                slug: `episode-${epNum}`,
+              });
+            }
+          }
+        }
+      }
+
       if (mergedEpisodes.length === 0) {
-        const effectiveMalId = season.malId ?? (season.number === 1 ? animeMalId : null);
-        const effectiveAnilistId = season.anilistId ?? (season.number === 1 ? animeAnilistId : null);
-
-        if (effectiveMalId || effectiveAnilistId) {
-          let count = effectiveMalId ? await fetchJikanEpisodeCount(effectiveMalId) : null;
-          if (!count || count <= 0) {
-            count = 24;
-          }
-
-          for (let epNum = 1; epNum <= count; epNum++) {
-            mergedEpisodes.push({
-              id: `fallback-s${season.number}-${epNum}`,
-              number: epNum,
-              title: `${animeTitle} - ${getEpText(epNum)}`,
-              href: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
-              videoUrl: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
-              imageUrl: null,
-              publicId: null,
-              slug: `episode-${epNum}`,
-            });
-          }
+        for (let epNum = 1; epNum <= 12; epNum++) {
+          mergedEpisodes.push({
+            id: `fallback-s${season.number}-${epNum}`,
+            number: epNum,
+            title: `${animeTitle} - ${getEpText(epNum)}`,
+            href: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+            videoUrl: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+            imageUrl: null,
+            publicId: null,
+            slug: `episode-${epNum}`,
+          });
         }
       }
 

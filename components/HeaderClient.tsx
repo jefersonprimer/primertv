@@ -1,18 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  User,
-  Bookmark,
-  Search,
-  ChevronDown,
-  BookOpen,
-  Heart,
-  Layers,
-  Calendar,
-  Flame,
-  Clock,
-} from "lucide-react";
+import { User, Bookmark, Search, ChevronDown } from "lucide-react";
 import dynamic from "next/dynamic";
 import { MobileSidebar } from "./MobileSidebar";
 import { Link, usePathname } from "@/i18n/routing";
@@ -23,24 +12,12 @@ import { useTranslations } from "next-intl";
 
 const AddMediaButton = dynamic(
   () => import("./admin/AddMediaButton").then((mod) => mod.AddMediaButton),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface HeaderClientProps {
   user?: SessionUser | null;
 }
-
-const exploreIconMap: Record<
-  string,
-  React.ComponentType<{ size?: number; className?: string }>
-> = {
-  "/mangas": BookOpen,
-  "/novelas": Heart,
-  "/seasons": Layers,
-  "/calendar": Calendar,
-  "/popular": Flame,
-  "/new": Clock,
-};
 
 export function HeaderClient({ user }: HeaderClientProps) {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
@@ -55,10 +32,10 @@ export function HeaderClient({ user }: HeaderClientProps) {
   const isExploreActive = EXPLORE_NAV_LINKS.some((link) => isActive(link.href));
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full px-6 bg-[#0E0E0E]">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full px-2 md:px-4 lg:px-6 bg-[#0E0E0E]">
       <div className="mx-auto flex h-14 2xl:h-16 max-w-full items-center justify-between">
-        <div className="flex h-full items-center gap-4">
-          <div className="flex h-full items-center gap-3">
+        <div className="flex h-full items-center justify-center gap-4">
+          <div className="flex h-full items-center justify-center gap-2">
             <MobileSidebar className="lg:hidden" />
             <Link
               href="/"
@@ -108,7 +85,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
               >
                 <span>{t("explore")}</span>
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
+                  className={`w-4 h-4 2xl:w-5 2xl:h-5 transition-transform duration-200 ${
                     isExploreOpen ? "rotate-180 text-white" : "text-[#bbb]"
                   }`}
                 />
@@ -122,7 +99,6 @@ export function HeaderClient({ user }: HeaderClientProps) {
                   />
                   <div className="absolute left-0 top-full mt-1 z-50 w-52 bg-[#151515] p-2 shadow-2xl border border-zinc-800/80 rounded-2xl flex flex-col gap-1 backdrop-blur-md">
                     {EXPLORE_NAV_LINKS.map((link) => {
-                      const Icon = exploreIconMap[link.href];
                       const active = isActive(link.href);
                       return (
                         <Link
@@ -135,14 +111,6 @@ export function HeaderClient({ user }: HeaderClientProps) {
                               : "text-zinc-300 hover:text-white hover:bg-zinc-800/60"
                           }`}
                         >
-                          {Icon && (
-                            <Icon
-                              size={18}
-                              className={`shrink-0 ${
-                                active ? "text-white" : "text-zinc-400"
-                              }`}
-                            />
-                          )}
                           <span>{t(link.key)}</span>
                         </Link>
                       );
