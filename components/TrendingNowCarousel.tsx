@@ -71,7 +71,7 @@ export function TrendingNowCarousel({
         {showLeftArrow && (
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 top-0 z-10 flex h-full items-center text-zinc-200 hover:text-white transition-colors"
+            className="absolute left-0 top-0 z-10 hidden sm:flex h-full items-center text-zinc-200 hover:text-white transition-colors"
             aria-label="Scroll left"
           >
             <div className="bg-[#303030] px-0.5 py-12 flex items-center justify-center rounded-r-xl">
@@ -102,7 +102,7 @@ export function TrendingNowCarousel({
         {showRightArrow && (
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-0 z-10 flex h-full items-center text-zinc-200 hover:text-white transition-colors"
+            className="absolute right-0 top-0 z-10 hidden sm:flex h-full items-center text-zinc-200 hover:text-white transition-colors"
             aria-label="Scroll right"
           >
             <div className="bg-[#303030] px-0.5 py-12 flex items-center justify-center rounded-l-xl">

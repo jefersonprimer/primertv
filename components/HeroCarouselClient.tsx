@@ -382,7 +382,7 @@ export function HeroCarouselClient({
 
       <button
         onClick={goPrev}
-        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 md:-translate-y-2/3 lg:-translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:left-2 2xl:left-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
+        className="absolute left-0 top-1/3 z-20 hidden h-10 w-10 md:-translate-y-2/3 lg:-translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all sm:flex lg:left-2 2xl:left-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
         aria-label={
           current.type === "series" ? "Série anterior" : "Anime anterior"
         }
@@ -391,7 +391,7 @@ export function HeroCarouselClient({
       </button>
       <button
         onClick={goNext}
-        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 md:-translate-y-2/3 lg:-translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all md:flex lg:right-2 2xl:right-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
+        className="absolute right-0 top-1/3 z-20 hidden h-10 w-10 md:-translate-y-2/3 lg:-translate-y-1/3 items-center justify-center text-[#bbb] hover:text-white transition-all sm:flex lg:right-2 2xl:right-6 md:h-12 md:w-12 2xl:h-16 2xl:w-16"
         aria-label={
           current.type === "series" ? "Próxima série" : "Próximo anime"
         }
