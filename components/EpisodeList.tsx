@@ -231,7 +231,9 @@ export default function EpisodeList({
                   : "hover:bg-[#151515] text-[#bbb] hover:text-[#f2f2f2]"
               }`}
               title={sortBy === "oldest" ? tSort("oldest") : tSort("newest")}
-              aria-label={sortBy === "oldest" ? tSort("oldest") : tSort("newest")}
+              aria-label={
+                sortBy === "oldest" ? tSort("oldest") : tSort("newest")
+              }
             >
               <ListSortDescending className="h-5 w-5 shrink-0" />
               <span className="hidden sm:inline">
@@ -408,7 +410,7 @@ export default function EpisodeList({
 
               {/* Hover overlay covering the whole card container (only for episodes) */}
               {itemType === "episode" && item.videoUrl && (
-                <div className="hidden sm:flex absolute inset-0 bg-zinc-950 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex-col p-4 justify-between text-white z-20 pointer-events-none group-hover:pointer-events-auto">
+                <div className="hidden sm:flex rounded-md absolute inset-0 bg-zinc-950 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex-col p-4 justify-between text-white z-20 pointer-events-none group-hover:pointer-events-auto">
                   <div className="flex flex-col gap-1">
                     {displayAnimeTitle && (
                       <span className="text-[10px] font-bold text-[#8c8c8c] uppercase tracking-wider line-clamp-1">

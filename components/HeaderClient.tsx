@@ -16,6 +16,12 @@ const AddMediaButton = dynamic(
   { ssr: false },
 );
 
+const NAV_ACTIVE_CLASS =
+  "text-white font-semibold bg-linear-to-b from-white/[0.17] via-white/[0.06] to-white/[0.025] shadow-[inset_0_1px_0_rgba(255,255,255,0.40),inset_0_0_0_1px_rgba(255,255,255,0.08),0_1px_2px_rgba(0,0,0,0.35),0_0_12px_-4px_rgba(255,255,255,0.18)]";
+
+const NAV_IDLE_CLASS =
+  "text-[#bbb] hover:text-white font-medium hover:bg-linear-to-b hover:from-white/[0.10] hover:via-white/[0.05] hover:to-white/[0.03] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.20),inset_0_0_0_1px_rgba(255,255,255,0.06)]";
+
 interface HeaderClientProps {
   user?: SessionUser | null;
 }
@@ -64,7 +70,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
             </Link>
           </div>
 
-          <nav className="hidden h-full items-center sm:flex">
+          <nav className="hidden gap-0.5 h-full items-center sm:flex">
             {MAIN_NAV_LINKS.map((link) => {
               const active = isActive(link.href);
               const isLiveTv = link.href === "/livetv";
@@ -72,13 +78,9 @@ export function HeaderClient({ user }: HeaderClientProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`items-center px-3.5 py-2 rounded-md text-sm transition-colors ${
+                  className={`items-center px-3.5 py-3 rounded-lg text-sm transition-all duration-200 ${
                     isLiveTv ? "hidden md:flex" : "flex"
-                  } ${
-                    active
-                      ? "text-white font-semibold bg-white/10"
-                      : "text-[#bbb] hover:text-white hover:bg-white/10 font-medium"
-                  }`}
+                  } ${active ? NAV_ACTIVE_CLASS : NAV_IDLE_CLASS}`}
                 >
                   {t(link.key)}
                 </Link>
@@ -90,10 +92,10 @@ export function HeaderClient({ user }: HeaderClientProps) {
               <button
                 type="button"
                 onClick={() => setIsExploreOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-md text-sm transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3.5 py-3 rounded-md text-sm transition-all duration-200 cursor-pointer ${
                   isExploreActive || isExploreOpen
-                    ? "text-white font-semibold bg-white/10"
-                    : "text-[#bbb] hover:text-white hover:bg-white/10 font-medium"
+                    ? NAV_ACTIVE_CLASS
+                    : NAV_IDLE_CLASS
                 }`}
                 aria-expanded={isExploreOpen}
               >
@@ -121,8 +123,8 @@ export function HeaderClient({ user }: HeaderClientProps) {
                           onClick={() => setIsExploreOpen(false)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ${
                             active
-                              ? "bg-zinc-800 text-white font-semibold"
-                              : "text-zinc-300 hover:text-white hover:bg-zinc-800/60"
+                              ? "bg-linear-to-b from-white/[0.14] via-white/[0.05] to-white/[0.03] text-white font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.30),inset_0_0_0_1px_rgba(255,255,255,0.07)]"
+                              : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
                           }`}
                         >
                           <span>{t(link.key)}</span>

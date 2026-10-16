@@ -117,7 +117,7 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsOpen(false)}
               />
-              <div className="absolute left-0 top-full rounded-md z-50 mt-2 py-2 w-80 overflow-hidden bg-[#272727] shadow-xl">
+              <div className="absolute left-0 top-full rounded-xl z-50 mt-2 p-2 w-90 overflow-hidden bg-[#272727] shadow-xl">
                 {seasons.map((season, index) => (
                   <button
                     key={season.id}
@@ -125,7 +125,7 @@ export default function SeasonSelector({
                       setCurrentIndex(index);
                       setIsOpen(false);
                     }}
-                    className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-[#151515] flex items-center justify-between ${
+                    className={`w-full px-4 py-3 rounded-md text-left text-sm font-medium transition-colors hover:bg-[#151515] flex items-center justify-between ${
                       index === currentIndex
                         ? "bg-[#151515] text-white"
                         : "text-[#bbb]"
@@ -156,7 +156,7 @@ export default function SeasonSelector({
         <div className="relative inline-block shrink-0">
           <button
             onClick={() => setIsSortOpen(!isSortOpen)}
-            className={`flex items-center rounded p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
+            className={`flex items-center rounded-md p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
               isSortOpen
                 ? "bg-[#272727] text-[#f2f2f2]"
                 : "hover:bg-[#151515] text-[#bbb] hover:text-[#f2f2f2]"
@@ -176,13 +176,13 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsSortOpen(false)}
               />
-              <div className="absolute right-0 top-full rounded-md z-50 w-44 overflow-hidden bg-[#272727] py-2 shadow-xl">
+              <div className="absolute mt-1 right-0 top-full rounded-xl z-50 w-48 overflow-hidden bg-[#272727] p-2 shadow-xl">
                 <button
                   onClick={() => {
                     setSortBy("oldest");
                     setIsSortOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
+                  className={`w-full px-4 py-2 rounded-md text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
                     sortBy === "oldest"
                       ? "bg-[#151515] text-[#f2f2f2]"
                       : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
@@ -196,7 +196,7 @@ export default function SeasonSelector({
                     setSortBy("newest");
                     setIsSortOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
+                  className={`w-full px-4 py-2 rounded-md text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
                     sortBy === "newest"
                       ? "bg-[#151515] text-[#f2f2f2]"
                       : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"

@@ -77,7 +77,7 @@ export default function AddToListButton({
   } ${roundedClass} bg-zinc-900/90 ${borderClass} shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none text-white cursor-pointer ${className}`;
 
   const tooltipElement = (
-    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
+    <span className="absolute bottom-full left-1/2 -translate-x-1/2 rounded mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
       {t("tooltip")}
     </span>
   );
@@ -277,24 +277,24 @@ export default function AddToListButton({
       )}
 
       {/* Main Modal */}
-        {isOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
-            <div className="relative rounded-2xl w-full max-w-[95vw] sm:w-[720px] h-[495px] max-h-[90vh] overflow-hidden bg-zinc-950/95 border border-zinc-800/90 text-zinc-100 shadow-2xl shadow-black/80 flex flex-col transition-all">
-              {/* Modal Top Header */}
-              <div className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-4 bg-zinc-900/60">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-bold text-white tracking-tight">
-                    {showCreateSubModal ? t("createList") : t("title")}
-                  </h2>
-                </div>
-                <button
-                  onClick={handleClose}
-                  className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
-                  aria-label="Fechar"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="relative rounded-2xl w-full max-w-[95vw] sm:w-[720px] h-[495px] max-h-[90vh] overflow-hidden bg-zinc-950/95 border border-zinc-800/90 text-zinc-100 shadow-2xl shadow-black/80 flex flex-col transition-all">
+            {/* Modal Top Header */}
+            <div className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-4 bg-zinc-900/60">
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-bold text-white tracking-tight">
+                  {showCreateSubModal ? t("createList") : t("title")}
+                </h2>
               </div>
+              <button
+                onClick={handleClose}
+                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+                aria-label="Fechar"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
 
             {/* Action Bar Sub-Header: Left Action / Back, Right Counter */}
             <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-800/60 bg-zinc-900/30">
