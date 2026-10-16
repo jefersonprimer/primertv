@@ -3,7 +3,13 @@
 import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
-import { PlayIcon, BookOpen, ChevronDown, Calendar } from "lucide-react";
+import {
+  PlayIcon,
+  BookOpen,
+  ChevronDown,
+  Calendar,
+  SortDesc as ListSortDescending,
+} from "lucide-react";
 import RatingBadge from "./RatingBadge";
 import Link from "next/link";
 
@@ -216,7 +222,7 @@ export default function EpisodeList({
               {items.length}
             </span>
           </div>
-          <div className="relative inline-block">
+          <div className="relative inline-block shrink-0">
             <button
               onClick={() => setIsSortOpen(!isSortOpen)}
               className={`flex items-center p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase  ${
@@ -224,13 +230,13 @@ export default function EpisodeList({
                   ? "bg-[#272727] text-[#f2f2f2]"
                   : "hover:bg-[#151515] text-[#bbb] hover:text-[#f2f2f2]"
               }`}
+              title={sortBy === "oldest" ? tSort("oldest") : tSort("newest")}
+              aria-label={sortBy === "oldest" ? tSort("oldest") : tSort("newest")}
             >
-              <span>
+              <ListSortDescending className="h-5 w-5 shrink-0" />
+              <span className="hidden sm:inline">
                 {sortBy === "oldest" ? tSort("oldest") : tSort("newest")}
               </span>
-              <ChevronDown
-                className={`h-5 w-5 transition-transform duration-200 ${isSortOpen ? "rotate-180 text-[#f2f2f2]" : "text-[#bbb]"}`}
-              />
             </button>
 
             {isSortOpen && (
@@ -239,18 +245,19 @@ export default function EpisodeList({
                   className="fixed inset-0 z-40"
                   onClick={() => setIsSortOpen(false)}
                 />
-                <div className="absolute right-0 top-full z-50 w-40 overflow-hidden bg-[#272727] py-2 shadow-xl">
+                <div className="absolute right-0 top-full z-50 w-44 overflow-hidden bg-[#272727] py-2 shadow-xl rounded-md">
                   <button
                     onClick={() => {
                       setSortBy("oldest");
                       setIsSortOpen(false);
                     }}
-                    className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center justify-between uppercase cursor-pointer ${
+                    className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
                       sortBy === "oldest"
                         ? "bg-[#151515] text-[#f2f2f2]"
                         : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                     }`}
                   >
+                    <ListSortDescending className="h-4 w-4 shrink-0" />
                     <span>{tSort("sortByOldest")}</span>
                   </button>
                   <button
@@ -258,12 +265,13 @@ export default function EpisodeList({
                       setSortBy("newest");
                       setIsSortOpen(false);
                     }}
-                    className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center justify-between uppercase cursor-pointer ${
+                    className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
                       sortBy === "newest"
                         ? "bg-[#151515] text-[#f2f2f2]"
                         : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                     }`}
                   >
+                    <ListSortDescending className="h-4 w-4 shrink-0" />
                     <span>{tSort("sortByNewest")}</span>
                   </button>
                 </div>

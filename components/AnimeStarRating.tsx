@@ -78,7 +78,7 @@ export function AnimeStarRating({
                 className="p-0.5 focus:outline-none transition-transform hover:scale-125 disabled:opacity-50"
               >
                 <Star
-                  className={`h-5 w-5 sm:h-6 sm:w-6 transition-colors ${
+                  className={`h-6 w-6 transition-colors ${
                     isFilled
                       ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]"
                       : "text-zinc-600 hover:text-zinc-400"

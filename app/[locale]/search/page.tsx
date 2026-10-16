@@ -133,16 +133,16 @@ export default async function SearchPage({
 
   return (
     <div className="w-full">
-      <SearchBar />
+      <SearchBar defaultValue={query} />
 
-      <div className="mx-auto max-w-[1130px] px-8 py-12">
-        <main className="space-y-16">
+      <div className="mx-auto max-w-[1130px] px-4 sm:px-8 py-6 sm:py-12">
+        <main className="space-y-10 sm:space-y-16">
           {!hasResults && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className="text-xl text-zinc-500">
+              <p className="text-xl text-zinc-300 font-medium">
                 {t("noResults", { query })}
               </p>
-              <p className="text-zinc-400">
+              <p className="text-zinc-500 mt-2">
                 {t("checkSpelling")}
               </p>
             </div>
@@ -150,10 +150,10 @@ export default async function SearchPage({
 
           {animes.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-white">
                 {t("topResults")}
               </h2>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {animes.slice(0, 3).map((anime) => (
                   <SearchTopResultCard
                     key={anime.id}
@@ -167,10 +167,10 @@ export default async function SearchPage({
 
           {animes.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-white">
                 {t("animes")}
               </h2>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {animes.map((anime) => (
                   <MediaCard
                     key={anime.id}
@@ -185,10 +185,10 @@ export default async function SearchPage({
 
           {series.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-white">
                 {t("series")}
               </h2>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {series.map((item) => (
                   <MediaCard
                     key={item.id}
@@ -203,10 +203,10 @@ export default async function SearchPage({
 
           {movies.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-white">
                 {t("movies")}
               </h2>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {movies.map((item) => (
                   <MediaCard
                     key={item.id}
@@ -221,10 +221,10 @@ export default async function SearchPage({
 
           {mangas.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-white">
                 {t("mangas")}
               </h2>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {mangas.map((item) => (
                   <MediaCard
                     key={item.id}
@@ -239,10 +239,10 @@ export default async function SearchPage({
 
           {novelas.length > 0 && (
             <section>
-              <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h2 className="mb-4 sm:mb-6 text-xl sm:text-2xl font-bold text-white">
                 {t("novelas")}
               </h2>
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {novelas.map((item) => (
                   <MediaCard
                     key={item.id}

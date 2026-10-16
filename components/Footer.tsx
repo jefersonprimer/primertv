@@ -34,12 +34,11 @@ export async function Footer() {
               href="/"
               className="flex items-center transition-transform duration-300 group"
             >
-              <span className="text-2xl font-semibold text-zinc-100 group-hover:text-white transition-colors tracking-tight">
-                primer
-              </span>
-              <span className="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent ml-1 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)] tracking-tight">
-                tv
-              </span>
+              <img
+                src="/logo-name.png"
+                alt="primer tv"
+                className="h-8 w-auto object-contain group-hover:opacity-90 transition-opacity"
+              />
             </Link>
             <p className="max-w-md text-sm text-[#bbb] leading-relaxed">
               {t("description")}

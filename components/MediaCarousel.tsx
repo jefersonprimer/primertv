@@ -76,7 +76,7 @@ export function MediaCarousel({
               {title}
             </h2>
             {subtitle && (
-              <p className="text-sm md:text-base font-normal text-[#bbb]">
+              <p className="hidden sm:flex text-sm md:text-base font-normal text-[#bbb]">
                 {subtitle}
               </p>
             )}

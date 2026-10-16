@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { User, Bookmark, Search, ChevronDown } from "lucide-react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { MobileSidebar } from "./MobileSidebar";
 import { Link, usePathname } from "@/i18n/routing";
@@ -33,20 +34,33 @@ export function HeaderClient({ user }: HeaderClientProps) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full px-2 md:px-4 lg:px-6 bg-[#0E0E0E]">
-      <div className="mx-auto flex h-14 2xl:h-16 max-w-full items-center justify-between">
+      <div className="mx-auto flex h-15 2xl:h-16 max-w-full items-center justify-between">
         <div className="flex h-full items-center justify-center gap-4">
           <div className="flex h-full items-center justify-center gap-2">
             <MobileSidebar className="lg:hidden" />
             <Link
               href="/"
-              className="flex items-center text-xl tracking-tight hover:scale-[1.03] transition-transform duration-300 group"
+              className="flex md:hidden items-center hover:scale-[1.03] transition-transform duration-300"
             >
-              <span className="font-semibold text-zinc-100 group-hover:text-white transition-colors">
-                primer
-              </span>
-              <span className="font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent ml-1 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]">
-                tv
-              </span>
+              <Image
+                src="/logo.png"
+                alt="PrimerTV"
+                width={26}
+                height={26}
+                className="w-6.5 h-6.5"
+              />
+            </Link>
+            <Link
+              href="/"
+              className="hidden md:flex items-center hover:scale-[1.03] transition-transform duration-300"
+            >
+              <Image
+                src="/logo-name.png"
+                alt="PrimerTV"
+                width={100}
+                height={26}
+                className="h-6.5 w-auto"
+              />
             </Link>
           </div>
 

@@ -2,7 +2,12 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  SortDesc as ListSortDescending,
+} from "lucide-react";
 import EpisodeList from "./EpisodeList";
 
 interface Episode {
@@ -79,22 +84,29 @@ export default function SeasonSelector({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="relative inline-block">
+      <div className="flex items-center justify-between gap-4">
+        <div className="relative inline-block min-w-0 flex-1">
           <button
             onClick={() => seasons.length > 1 && setIsOpen(!isOpen)}
-            className={`flex items-center gap-2 text-lg font-bold text-[#f2f2f2] ${
+            className={`flex items-center gap-2 text-lg font-bold text-[#f2f2f2] text-left max-w-full ${
               seasons.length > 1
                 ? "cursor-pointer hover:text-[#0077FD] transition-colors"
                 : ""
             }`}
+            title={
+              currentSeason.title
+                ? currentSeason.title
+                : t("season", { number: currentSeason.number })
+            }
           >
-            {currentSeason.title
-              ? currentSeason.title
-              : t("season", { number: currentSeason.number })}
+            <span className="line-clamp-1">
+              {currentSeason.title
+                ? currentSeason.title
+                : t("season", { number: currentSeason.number })}
+            </span>
             {seasons.length > 1 && (
               <ChevronDown
-                className={`h-6 w-6 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                className={`h-6 w-6 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
               />
             )}
           </button>
@@ -119,7 +131,14 @@ export default function SeasonSelector({
                         : "text-[#bbb]"
                     }`}
                   >
-                    <span className="truncate max-w-[210px]">
+                    <span
+                      className="truncate max-w-[210px]"
+                      title={
+                        season.title
+                          ? season.title
+                          : t("season", { number: season.number })
+                      }
+                    >
                       {season.title
                         ? season.title
                         : t("season", { number: season.number })}
@@ -134,7 +153,7 @@ export default function SeasonSelector({
           )}
         </div>
 
-        <div className="relative inline-block">
+        <div className="relative inline-block shrink-0">
           <button
             onClick={() => setIsSortOpen(!isSortOpen)}
             className={`flex items-center rounded p-2 gap-2 text-sm font-bold transition-colors cursor-pointer uppercase ${
@@ -142,11 +161,13 @@ export default function SeasonSelector({
                 ? "bg-[#272727] text-[#f2f2f2]"
                 : "hover:bg-[#151515] text-[#bbb] hover:text-[#f2f2f2]"
             }`}
+            title={sortBy === "oldest" ? t("oldest") : t("newest")}
+            aria-label={sortBy === "oldest" ? t("oldest") : t("newest")}
           >
-            <span>{sortBy === "oldest" ? t("oldest") : t("newest")}</span>
-            <ChevronDown
-              className={`h-5 w-5 transition-transform duration-200 ${isSortOpen ? "rotate-180 text-[#f2f2f2]" : "text-[#bbb]"}`}
-            />
+            <ListSortDescending className="h-6 w-6 shrink-0" />
+            <span className="hidden sm:inline">
+              {sortBy === "oldest" ? t("oldest") : t("newest")}
+            </span>
           </button>
 
           {isSortOpen && (
@@ -155,18 +176,19 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsSortOpen(false)}
               />
-              <div className="absolute right-0 top-full rounded-md z-50 w-40 overflow-hidden bg-[#272727] py-2 shadow-xl">
+              <div className="absolute right-0 top-full rounded-md z-50 w-44 overflow-hidden bg-[#272727] py-2 shadow-xl">
                 <button
                   onClick={() => {
                     setSortBy("oldest");
                     setIsSortOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center justify-between uppercase cursor-pointer ${
+                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
                     sortBy === "oldest"
                       ? "bg-[#151515] text-[#f2f2f2]"
                       : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                   }`}
                 >
+                  <ListSortDescending className="h-5 w-5 shrink-0" />
                   <span>{t("sortByOldest")}</span>
                 </button>
                 <button
@@ -174,12 +196,13 @@ export default function SeasonSelector({
                     setSortBy("newest");
                     setIsSortOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center justify-between uppercase cursor-pointer ${
+                  className={`w-full px-4 py-2 text-left text-sm font-semibold transition-colors flex items-center gap-2 uppercase cursor-pointer ${
                     sortBy === "newest"
                       ? "bg-[#151515] text-[#f2f2f2]"
                       : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                   }`}
                 >
+                  <ListSortDescending className="h-5 w-5 shrink-0" />
                   <span>{t("sortByNewest")}</span>
                 </button>
               </div>

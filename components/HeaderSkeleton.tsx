@@ -1,4 +1,5 @@
 import { Menu } from "lucide-react";
+import Image from "next/image";
 
 export function HeaderSkeleton() {
   return (
@@ -9,11 +10,23 @@ export function HeaderSkeleton() {
             <div className="flex p-2 2xl:p-2.5 items-center justify-center rounded-full text-[#bbb] lg:hidden">
               <Menu className="w-6 h-6" />
             </div>
-            <div className="flex items-center text-xl tracking-tight text-zinc-500 select-none">
-              <span className="font-semibold text-zinc-400">primer</span>
-              <span className="font-black text-zinc-400 ml-1">
-                tv
-              </span>
+            <div className="flex md:hidden items-center">
+              <Image
+                src="/logo.png"
+                alt="PrimerTV"
+                width={26}
+                height={26}
+                className="w-6.5 h-6.5"
+              />
+            </div>
+            <div className="hidden md:flex items-center">
+              <Image
+                src="/logo-name.png"
+                alt="PrimerTV"
+                width={100}
+                height={26}
+                className="h-6.5 w-auto"
+              />
             </div>
           </div>
 
