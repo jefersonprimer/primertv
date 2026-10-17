@@ -99,6 +99,7 @@
     "emptyTitle": "Votre liste de suivi est vide.",
     "emptySubtitle": "Explorez des <animesLink>animes</animesLink>, des <seriesLink>séries</seriesLink> ou des <mangasLink>mangas</mangasLink> et ajoutez-les à votre liste.",
     "tooltip": "Ma liste",
+    "save": "Enregistrer",
     "myList": "Votre liste",
     "viewQueue": "Voir la file"
   },
@@ -146,7 +147,9 @@
     "share": "Partager",
     "copied": "Copié !",
     "linkCopied": "Lien copié !",
-    "viewDetails": "Voir les détails"
+    "viewDetails": "Voir les détails",
+    "trailer": "Bande-annonce",
+    "close": "Fermer"
   },
   "AnimeDetails": {
     "notFound": "Anime non trouvé",

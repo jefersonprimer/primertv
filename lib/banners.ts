@@ -69,8 +69,8 @@ export const getAnimeBanner = cache(async (animeId: string, title: string): Prom
   let resolvedBanner: string | null = null;
 
 // 1. Tentar TMDB primeiro (para garantir backdrops na proporção 16:9 de alta resolução)
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
 
   if (tmdbKey || tmdbToken) {
     try {
@@ -185,8 +185,8 @@ export const getAnimeLogo = cache(async (animeId: string, title: string): Promis
   }
 
   let resolvedLogo: string | null = null;
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
 
   if (tmdbKey || tmdbToken) {
     try {
@@ -260,8 +260,8 @@ export const getSeriesBanner = cache(async (seriesId: string, title: string): Pr
   if (!title || !seriesId) return null;
 
   let resolvedBanner: string | null = null;
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
 
   if (tmdbKey || tmdbToken) {
     try {
@@ -331,8 +331,8 @@ export const getSeriesLogo = cache(async (seriesId: string, title: string): Prom
   if (!title || !seriesId) return null;
 
   let resolvedLogo: string | null = null;
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
 
   if (tmdbKey || tmdbToken) {
     try {
@@ -404,8 +404,8 @@ export const getMovieBanner = cache(async (movieId: string, title: string): Prom
   if (!title || !movieId) return null;
 
   let resolvedBanner: string | null = null;
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
 
   if (tmdbKey || tmdbToken) {
     try {

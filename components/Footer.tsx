@@ -157,57 +157,13 @@ export async function Footer() {
             <ul className="space-y-2.5 text-sm text-[#bbb] hover:text-white">
               <li>
                 <Link
-                  href="/faq"
-                  className="group flex items-center text-[#bbb] hover:text-white transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
-                    ›
-                  </span>
-                  {t("helpCenter")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contato"
+                  href="/contact"
                   className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
                 >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-blue-white">
+                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
                     ›
                   </span>
                   {t("contact")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/status"
-                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
-                    ›
-                  </span>
-                  {t("serverStatus")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/termos"
-                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
-                    ›
-                  </span>
-                  {t("terms")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacidade"
-                  className="group flex items-center text-sm text-[#bbb] hover:text-white transition-colors duration-150"
-                >
-                  <span className="mr-0 opacity-0 transition-all duration-150 group-hover:mr-1.5 group-hover:opacity-100 text-white">
-                    ›
-                  </span>
-                  {t("privacy")}
                 </Link>
               </li>
               <li>

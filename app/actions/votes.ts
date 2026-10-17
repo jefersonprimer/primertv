@@ -73,7 +73,8 @@ export async function voteEpisode(
       ])
     }
 
-    revalidatePath('/[locale]/(home)/anime/[slug]', 'layout')
+    revalidatePath('/[locale]/watch/[publicId]/[slug]', 'page')
+    revalidatePath('/[locale]/animes/[slug]', 'page')
     return { success: true, weight }
   } catch (error) {
     console.error('Failed to vote on episode:', error)

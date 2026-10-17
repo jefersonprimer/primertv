@@ -18,6 +18,7 @@ type WatchlistButtonProps = {
   roundedFull?: boolean;
   size?: number;
   className?: string;
+  showLabel?: boolean;
 };
 
 export function WatchlistButton({
@@ -31,6 +32,7 @@ export function WatchlistButton({
   roundedFull = true,
   size,
   className = "",
+  showLabel = false,
 }: WatchlistButtonProps) {
   const t = useTranslations("Watchlist");
   const [state, formAction, isPending] = useActionState(toggleWatchlist, {
@@ -40,7 +42,13 @@ export function WatchlistButton({
   const inWatchlist = state.inWatchlist ?? initialInWatchlist;
 
   const iconSize = size ?? (compact ? 14 : 16);
-  const sizeClass = compact ? "p-1.5" : "p-2";
+  const sizeClass = showLabel
+    ? compact
+      ? "p-1.5 md:px-3 md:py-1.5"
+      : "p-2 md:px-4 md:py-2"
+    : compact
+      ? "p-1.5"
+      : "p-2";
 
   const borderClass = hasBorder ? "border border-zinc-800" : "";
   const roundedClass = roundedFull ? "rounded-full" : "rounded-md";
@@ -48,10 +56,20 @@ export function WatchlistButton({
   const basePillClass = `group relative inline-flex items-center justify-center ${roundedClass} bg-[#2A2A2A] ${borderClass} ${sizeClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none ${className}`;
 
   const tooltipElement = (
-    <span className="absolute bottom-full left-1/2 -translate-x-1/2 rounded mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
+    <span
+      className={`absolute bottom-full left-1/2 -translate-x-1/2 rounded mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50 ${
+        showLabel ? "md:hidden" : ""
+      }`}
+    >
       {t("tooltip")}
     </span>
   );
+
+  const labelElement = showLabel ? (
+    <span className="hidden md:inline ms-2 text-sm font-medium">
+      {t("save")}
+    </span>
+  ) : null;
 
   if (!isLoggedIn) {
     return (
@@ -65,6 +83,7 @@ export function WatchlistButton({
           size={iconSize}
           className="text-white transition-transform duration-200 group-hover:scale-110"
         />
+        {labelElement}
         {tooltipElement}
       </Link>
     );
@@ -87,6 +106,7 @@ export function WatchlistButton({
             inWatchlist ? "fill-white text-white" : "text-white"
           }`}
         />
+        {labelElement}
         {tooltipElement}
       </button>
     </form>

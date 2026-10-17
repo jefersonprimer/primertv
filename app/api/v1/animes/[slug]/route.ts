@@ -182,6 +182,7 @@ export async function GET(
         bannerUrl: finalBannerUrl,
         logoUrl: finalLogoUrl,
         compactImageUrl: anime.compactImageUrl,
+        trailerUrl: anime.trailerUrl,
         genres: anime.genres || [],
         awards: anime.awards || [],
         audio: anime.audio || [],

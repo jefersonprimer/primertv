@@ -5,13 +5,20 @@ import pg from "pg";
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 const getPrismaClient = () => {
-  const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
+  const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL;
+  const isProduction = process.env.NODE_ENV === "production";
+
   const pool = new pg.Pool({ 
     connectionString,
-    max: 10,
-    idleTimeoutMillis: 30000,
+    max: isProduction ? 3 : 10,
+    idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 10000,
   });
+
+  pool.on("error", (err) => {
+    console.error("Unexpected error on idle database client", err);
+  });
+
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 };

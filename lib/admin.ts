@@ -131,6 +131,13 @@ export const adminCollections: Record<AdminCollection, AdminCollectionConfig> = 
       { name: "bannerUrl", label: "Banner URL", type: "text" },
       { name: "compactImageUrl", label: "Imagem Compacta URL", type: "text" },
       {
+        name: "trailerUrl",
+        label: "URL do Trailer",
+        type: "text",
+        placeholder: "https://www.youtube.com/watch?v=...",
+        helpText: "Opcional. Link do trailer (YouTube). Exibido como botão na página do anime.",
+      },
+      {
         name: "genres",
         label: "Gêneros",
         type: "text",

@@ -62,6 +62,7 @@ model Anime {
   bannerUrl         String?
   logoUrl           String?
   compactImageUrl   String?
+  trailerUrl        String?
   genres            String[]         @default([])
   audio             String[]         @default([])
   subtitles         String[]         @default([])

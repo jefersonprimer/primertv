@@ -417,6 +417,7 @@ export default async function WatchPage({
                       initialUpvotes={animeEpisode.upvotes}
                       initialDownvotes={animeEpisode.downvotes}
                       initialUserVote={initialUserVote as "UP" | "DOWN" | null}
+                      size={24}
                     />
                     <WatchlistButton
                       mediaType="ANIME"
@@ -424,9 +425,10 @@ export default async function WatchPage({
                       slug={anime.slug}
                       initialInWatchlist={inWatchlist}
                       isLoggedIn={Boolean(userId)}
-                      size={20}
+                      size={24}
+                      showLabel
                     />
-                    <ShareButton size={20} />
+                    <ShareButton size={24} showLabel />
                   </div>
                 </div>
 
@@ -513,7 +515,8 @@ export default async function WatchPage({
                     sequelMalId: animeEpisode.season.anime.sequelMalId,
                     prequelMalId: animeEpisode.season.anime.prequelMalId,
                     sequelAnilistId: animeEpisode.season.anime.sequelAnilistId,
-                    prequelAnilistId: animeEpisode.season.anime.prequelAnilistId,
+                    prequelAnilistId:
+                      animeEpisode.season.anime.prequelAnilistId,
                   });
                   return (
                     <AnimeEpisodeSidebar
@@ -522,7 +525,8 @@ export default async function WatchPage({
                         animeTitle: animeEpisode.season.anime.title,
                         animeAnilistId: animeEpisode.season.anime.anilistId,
                         animeMalId: animeEpisode.season.anime.malId,
-                        animeTitleEnglish: animeEpisode.season.anime.titleEnglish,
+                        animeTitleEnglish:
+                          animeEpisode.season.anime.titleEnglish,
                         localSeasons: animeEpisode.season.anime.seasons,
                       })}
                       currentEpisodeId={animeEpisode.id}
@@ -666,15 +670,17 @@ export default async function WatchPage({
                   )}
 
                   <div className="flex items-center gap-2.5">
-                    <VoteButtons />
+                    <VoteButtons size={24} />
                     <WatchlistButton
                       mediaType="ANIME"
                       mediaId={anime.id}
                       slug={anime.slug}
                       initialInWatchlist={inWatchlist}
                       isLoggedIn={Boolean(userId)}
+                      size={24}
+                      showLabel
                     />
-                    <ShareButton />
+                    <ShareButton size={24} showLabel />
                   </div>
                 </div>
 
@@ -982,15 +988,17 @@ export default async function WatchPage({
                   )}
 
                   <div className="flex items-center gap-2.5">
-                    <VoteButtons episodeId={seriesEpisode.id} userId={userId} />
+                    <VoteButtons episodeId={seriesEpisode.id} userId={userId} size={24} />
                     <WatchlistButton
                       mediaType="SERIES"
                       mediaId={seriesEpisode.season.series.id}
                       slug={seriesEpisode.season.series.slug}
                       initialInWatchlist={inWatchlist}
                       isLoggedIn={Boolean(userId)}
+                      size={24}
+                      showLabel
                     />
-                    <ShareButton />
+                    <ShareButton size={24} showLabel />
                   </div>
                 </div>
 
@@ -1187,8 +1195,10 @@ export default async function WatchPage({
                         slug={extSeries.slug}
                         initialInWatchlist={false}
                         isLoggedIn={!!session?.user}
+                        size={24}
+                        showLabel
                       />
-                      <ShareButton />
+                      <ShareButton size={24} showLabel />
                     </div>
                   </div>
 
@@ -1417,15 +1427,17 @@ export default async function WatchPage({
               )}
 
               <div className="flex items-center gap-2.5">
-                <VoteButtons />
+                <VoteButtons size={24} />
                 <WatchlistButton
                   mediaType="SERIES"
                   mediaId={movie.id}
                   slug={movie.slug}
                   initialInWatchlist={inWatchlist}
                   isLoggedIn={Boolean(userId)}
+                  size={24}
+                  showLabel
                 />
-                <ShareButton />
+                <ShareButton size={24} showLabel />
               </div>
             </div>
 

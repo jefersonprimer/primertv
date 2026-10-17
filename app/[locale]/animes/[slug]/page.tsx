@@ -10,6 +10,7 @@ import MediaDescription from "@/components/MediaDescription";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import ShareButton from "@/components/ShareButton";
+import TrailerButton from "@/components/TrailerButton";
 import AddToListButton from "@/components/AddToListButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
@@ -53,7 +54,10 @@ export async function generateMetadata({
 }: AnimeDetailsPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   try {
-    require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE generateMetadata locale=${locale} slug=${slug}\n`);
+    require("fs").appendFileSync(
+      "/tmp/anime_debug.log",
+      `PAGE generateMetadata locale=${locale} slug=${slug}\n`,
+    );
   } catch {}
   const anime = await getAnimeDetailsBySlug(slug);
   const t = await getTranslations({ locale, namespace: "AnimeDetails" });
@@ -87,11 +91,17 @@ export default async function AnimeDetailsPage({
   const tMedia = await getTranslations("MediaCard");
   const { slug } = await params;
   try {
-    require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE AnimeDetailsPage slug=${slug}\n`);
+    require("fs").appendFileSync(
+      "/tmp/anime_debug.log",
+      `PAGE AnimeDetailsPage slug=${slug}\n`,
+    );
   } catch {}
   const anime = await getAnimeDetailsBySlug(slug);
   try {
-    require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE anime found: ${anime ? anime.id : "null"}\n`);
+    require("fs").appendFileSync(
+      "/tmp/anime_debug.log",
+      `PAGE anime found: ${anime ? anime.id : "null"}\n`,
+    );
   } catch {}
 
   const isStubAnime =
@@ -103,7 +113,10 @@ export default async function AnimeDetailsPage({
 
   if (!anime || isStubAnime) {
     try {
-      require("fs").appendFileSync("/tmp/anime_debug.log", `PAGE CALLING notFound! anime=${!!anime} isStub=${isStubAnime}\n`);
+      require("fs").appendFileSync(
+        "/tmp/anime_debug.log",
+        `PAGE CALLING notFound! anime=${!!anime} isStub=${isStubAnime}\n`,
+      );
     } catch {}
     notFound();
   }
@@ -483,7 +496,12 @@ export default async function AnimeDetailsPage({
                     size={24}
                     showLabel={true}
                   />
-                  <ShareButton size={24} showLabel={true} />
+                  <TrailerButton
+                    url={anime.trailerUrl}
+                    size={24}
+                    showLabel={true}
+                  />
+                  <ShareButton size={24} />
                 </div>
                 {isAdmin && (
                   <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">

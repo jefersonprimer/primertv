@@ -62,8 +62,8 @@ const TMDB_GENRE_MAP: Record<number, string> = {
 };
 
 function tmdbFetch(url: string) {
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
 
   const headers: Record<string, string> = {};
   if (tmdbToken) {
@@ -116,8 +116,8 @@ export const getMovieDetails = cache(async (
     };
   }
 
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
   if (!tmdbKey && !tmdbToken) {
     return {
       runtime: existing?.runtime ?? null,
@@ -231,8 +231,8 @@ export const getMovieLogo = cache(async (movieId: string, title: string): Promis
 
   let resolvedLogo: string | null = null;
 
-  const tmdbKey = process.env.TMDB_API_KEY;
-  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN;
+  const tmdbKey = process.env.TMDB_API_KEY?.trim();
+  const tmdbToken = process.env.TMDB_API_READ_ACCESS_TOKEN?.trim();
 
   if (tmdbKey || tmdbToken) {
     try {

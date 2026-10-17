@@ -241,6 +241,7 @@ export async function saveMedia(
           logoUrl: readString(formData, "logoUrl") || null,
           bannerUrl: readString(formData, "bannerUrl") || null,
           compactImageUrl: readString(formData, "compactImageUrl") || null,
+          trailerUrl: readString(formData, "trailerUrl") || null,
           duration: readString(formData, "duration") || null,
           aired: readString(formData, "aired") || null,
           rating: readString(formData, "rating") || null,

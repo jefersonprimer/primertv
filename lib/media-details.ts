@@ -19,6 +19,7 @@ const animeDetailsSelect = {
   bannerUrl: true,
   logoUrl: true,
   compactImageUrl: true,
+  trailerUrl: true,
   genres: true,
   awards: true,
   audio: true,

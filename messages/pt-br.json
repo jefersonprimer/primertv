@@ -99,6 +99,7 @@
     "emptyTitle": "Sua watchlist está vazia.",
     "emptySubtitle": "Explore <animesLink>animes</animesLink> ou <seriesLink>séries</seriesLink> ou <mangasLink>mangás</mangasLink> e adicione à sua lista.",
     "tooltip": "Minha Lista",
+    "save": "Salvar",
     "myList": "Sua Lista",
     "viewQueue": "Ver Fila"
   },
@@ -146,7 +147,9 @@
     "share": "Compartilhar",
     "copied": "Copiado!",
     "linkCopied": "Link copiado!",
-    "viewDetails": "Ver Detalhes"
+    "viewDetails": "Ver Detalhes",
+    "trailer": "Trailer",
+    "close": "Fechar"
   },
   "AnimeDetails": {
     "notFound": "Anime não encontrado",

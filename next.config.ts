@@ -16,6 +16,56 @@ const nextConfig: NextConfig = {
         destination: "/livetv/:slug*",
         permanent: true,
       },
+      {
+        source: "/contato",
+        destination: "/contact",
+        permanent: true,
+      },
+      {
+        source: "/:locale/contato",
+        destination: "/:locale/contact",
+        permanent: true,
+      },
+      {
+        source: "/faq",
+        destination: "/contact",
+        permanent: false,
+      },
+      {
+        source: "/:locale/faq",
+        destination: "/:locale/contact",
+        permanent: false,
+      },
+      {
+        source: "/status",
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/:locale/status",
+        destination: "/:locale",
+        permanent: false,
+      },
+      {
+        source: "/termos",
+        destination: "/dmca",
+        permanent: false,
+      },
+      {
+        source: "/:locale/termos",
+        destination: "/:locale/dmca",
+        permanent: false,
+      },
+      {
+        source: "/privacidade",
+        destination: "/dmca",
+        permanent: false,
+      },
+      {
+        source: "/:locale/privacidade",
+        destination: "/:locale/dmca",
+        permanent: false,
+      },
     ];
   },
   images: {

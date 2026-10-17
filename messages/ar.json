@@ -99,6 +99,7 @@
     "emptyTitle": "قائمة المتابعة فارغة.",
     "emptySubtitle": "استكشف <animesLink>الأنمي</animesLink> أو <seriesLink>المسلسلات</seriesLink> أو <mangasLink>المانغا</mangasLink> وأضفها إلى قائمتك.",
     "tooltip": "قائمتي",
+    "save": "حفظ",
     "myList": "قائمتك",
     "viewQueue": "عرض قائمة الانتظار"
   },
@@ -146,7 +147,9 @@
     "share": "مشاركة",
     "copied": "تم النسخ!",
     "linkCopied": "تم نسخ الرابط!",
-    "viewDetails": "عرض التفاصيل"
+    "viewDetails": "عرض التفاصيل",
+    "trailer": "الإعلان",
+    "close": "إغلاق"
   },
   "AnimeDetails": {
     "notFound": "لم يتم العثور على الأنمي",

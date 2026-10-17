@@ -23,8 +23,8 @@ export function HeaderSkeleton() {
               <Image
                 src="/logo-name.png"
                 alt="PrimerTV"
-                width={100}
-                height={26}
+                width={440}
+                height={104}
                 className="h-6.5 w-auto"
               />
             </div>

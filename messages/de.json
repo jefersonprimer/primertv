@@ -99,6 +99,7 @@
     "emptyTitle": "Deine Merkliste ist leer.",
     "emptySubtitle": "Entdecke <animesLink>Animes</animesLink>, <seriesLink>Serien</seriesLink> oder <mangasLink>Mangas</mangasLink> und füge sie deiner Liste hinzu.",
     "tooltip": "Meine Liste",
+    "save": "Speichern",
     "myList": "Deine Liste",
     "viewQueue": "Warteschlange anzeigen"
   },
@@ -146,7 +147,9 @@
     "share": "Teilen",
     "copied": "Kopiert!",
     "linkCopied": "Link kopiert!",
-    "viewDetails": "Details anzeigen"
+    "viewDetails": "Details anzeigen",
+    "trailer": "Trailer",
+    "close": "Schließen"
   },
   "AnimeDetails": {
     "notFound": "Anime nicht gefunden",
