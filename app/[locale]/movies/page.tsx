@@ -6,6 +6,7 @@ import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 import { Metadata } from "next";
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
+import { buildAlternates } from "@/lib/seo";
 
 export const revalidate = 3600; // revalida a cada hora
 
@@ -21,6 +22,7 @@ export async function generateMetadata({
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
+    alternates: buildAlternates(locale, "/movies"),
   };
 }
 

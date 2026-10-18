@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import { Star } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
@@ -24,13 +25,13 @@ import { getSeriesTmdbSeasons } from "@/lib/tmdb";
 export const revalidate = 3600;
 
 interface SeriesDetailsPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: SeriesDetailsPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const serie = await getSeriesDetailsBySlug(slug);
 
   if (!serie) return { title: "Série não encontrada" };
@@ -48,6 +49,7 @@ export async function generateMetadata({
   return {
     title: `Assistir ${serie.title} Online em HD - Primerflix`,
     description: `Assista à série ${serie.title} online grátis em HD no PrimerTv.`,
+    alternates: buildAlternates(locale, `/series/${serie.slug}`),
     openGraph: {
       title: serie.title,
       images: ogImages,

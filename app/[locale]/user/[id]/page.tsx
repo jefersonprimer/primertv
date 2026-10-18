@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { generateUniqueUsername } from "@/lib/username";
 import { notFound, redirect } from "next/navigation";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import { UserProfileClient } from "./UserProfileClient";
 
 interface UserProfilePageProps {
@@ -15,7 +16,7 @@ interface UserProfilePageProps {
 export async function generateMetadata({
   params,
 }: UserProfilePageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { locale, id } = await params;
   const user =
     (await prisma.user.findUnique({
       where: { username: id },
@@ -35,6 +36,10 @@ export async function generateMetadata({
   return {
     title: `Perfil de ${user.name} (${displayName}) - PrimerTv`,
     description: `Confira o perfil público, watchlist, histórico e conquistas de ${user.name} no PrimerTv.`,
+    alternates: buildAlternates(
+      locale,
+      `/user/${user.username ?? id}`,
+    ),
   };
 }
 

@@ -16,8 +16,23 @@ import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 import { getCurrentSeasonSlug } from "@/lib/seasons";
 import { connection } from "next/server";
 import { TrendingNowCarousel } from "@/components/TrendingNowCarousel";
+import { buildAlternates } from "@/lib/seo";
+import { Metadata } from "next";
 
 export const revalidate = 3600; // revalida a cada hora
+
+interface HomePageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: HomePageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    alternates: buildAlternates(locale, "/"),
+  };
+}
 
 const seasonTranslations: Record<string, string> = {
   winter: "Inverno",

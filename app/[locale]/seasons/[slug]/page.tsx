@@ -7,6 +7,7 @@ import { SeasonDropdown } from "@/components/SeasonDropdown";
 import { getUniqueSeasons } from "@/lib/seasons";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { buildAlternates } from "@/lib/seo";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -30,6 +31,7 @@ export async function generateMetadata({
   return {
     title: t("metaTitle", { season: seasonName, year }),
     description: t("metaDescription", { season: seasonName, year }),
+    alternates: buildAlternates(locale, `/seasons/${slug}`),
   };
 }
 

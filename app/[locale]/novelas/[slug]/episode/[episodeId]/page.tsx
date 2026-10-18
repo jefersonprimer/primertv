@@ -2,13 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import { connection } from "next/server";
 import { resolvePlayableUrl } from "@/lib/playable-url";
 import EpisodeSidebar from "./EpisodeSidebar";
 import ExpandableDescription from "@/components/ExpandableDescription";
 
 interface WatchPageProps {
-  params: Promise<{ slug: string; episodeId: string }>;
+  params: Promise<{ locale: string; slug: string; episodeId: string }>;
 }
 
 export async function generateMetadata({
@@ -16,7 +17,7 @@ export async function generateMetadata({
 }: WatchPageProps): Promise<Metadata> {
   await connection();
 
-  const { episodeId } = await params;
+  const { locale, slug, episodeId } = await params;
   const episode = await prisma.novelaEpisode.findFirst({
     where: { id: episodeId },
     include: {
@@ -36,6 +37,10 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: buildAlternates(
+      locale,
+      `/novelas/${slug}/episode/${episodeId}`,
+    ),
     openGraph: {
       title,
       description,

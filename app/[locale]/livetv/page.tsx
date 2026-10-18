@@ -1,6 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { connection } from "next/server";
 import { ChannelsList } from "./ChannelsList";
+import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    alternates: buildAlternates(locale, "/livetv"),
+  };
+}
 
 export default async function ChannelsPage() {
   await connection();

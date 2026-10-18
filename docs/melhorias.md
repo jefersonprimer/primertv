@@ -214,7 +214,7 @@ duplicados entre si):
 | # | Item | Esforço | Impacto |
 |---|------|---------|---------|
 | 1 | `robots.ts` + `sitemap.ts` | Baixo | 🔴 ✅ feito |
-| 2 | `metadataBase` + canonical + hreflang (helper único) | Médio | 🔴 |
+| 2 | `metadataBase` + canonical + hreflang (helper único) | Médio | 🔴 ✅ feito |
 | 3 | `noindex` nas páginas pessoais e variantes de player | Baixo | 🔴 |
 | 4 | JSON-LD (WebSite, TVSeries/Movie, VideoObject, Breadcrumb) | Médio | 🟠 |
 | 5 | Title template + títulos curtos (6 idiomas) | Baixo | 🟠 |

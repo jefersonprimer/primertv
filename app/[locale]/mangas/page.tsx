@@ -5,6 +5,7 @@ import { PosterGridSkeleton } from "@/components/PosterGridSkeleton";
 import { connection } from "next/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { buildAlternates } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
+    alternates: buildAlternates(locale, "/mangas"),
   };
 }
 

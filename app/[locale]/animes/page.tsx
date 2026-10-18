@@ -15,8 +15,21 @@ import { TodayReleasesSkeleton } from "@/components/TodayReleasesSkeleton";
 import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 import { getCurrentSeasonSlug } from "@/lib/seasons";
 import { connection } from "next/server";
+import { buildAlternates } from "@/lib/seo";
+import { Metadata } from "next";
 
 export const revalidate = 3600; // revalida a cada hora
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    alternates: buildAlternates(locale, "/animes"),
+  };
+}
 
 const seasonTranslations: Record<string, string> = {
   winter: "Inverno",

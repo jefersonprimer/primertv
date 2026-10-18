@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Shield, Scale, AlertTriangle, ArrowRight, Mail } from "lucide-react";
+import { buildAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "DMCA - PrimerTv",
-  description:
-    "Legal Disclaimer and DMCA Notice of Copyright Infringement for PrimerTv.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "DMCA - PrimerTv",
+    description:
+      "Legal Disclaimer and DMCA Notice of Copyright Infringement for PrimerTv.",
+    alternates: buildAlternates(locale, "/dmca"),
+  };
+}
 
 export default function DmcaPage() {
   const steps = [

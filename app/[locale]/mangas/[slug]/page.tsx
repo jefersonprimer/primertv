@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import { BookOpen } from "lucide-react";
 
 import EpisodeList from "@/components/EpisodeList";
@@ -21,13 +22,13 @@ import { getMangaDetailsBySlug } from "@/lib/media-details";
 export const revalidate = 3600;
 
 interface MangaDetailsPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: MangaDetailsPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const manga = await getMangaDetailsBySlug(slug);
 
   if (!manga) return { title: "Mangá não encontrado" };
@@ -45,6 +46,7 @@ export async function generateMetadata({
   return {
     title: `Leia ${manga.title} Online - PrimerTv`,
     description: `Leia o mangá ${manga.title} online grátis no PrimerTv.`,
+    alternates: buildAlternates(locale, `/mangas/${manga.slug}`),
     openGraph: {
       title: manga.title,
       images: ogImages,

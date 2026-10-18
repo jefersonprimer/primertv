@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import { Star } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -78,6 +79,7 @@ export async function generateMetadata({
   return {
     title: t("metaTitle", { title: anime.title }),
     description: t("metaDescription", { title: anime.title }),
+    alternates: buildAlternates(locale, `/animes/${anime.slug}`),
     openGraph: {
       title: anime.title,
       images: ogImages,

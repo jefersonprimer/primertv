@@ -2,10 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { connection } from "next/server";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import MangaReader from "@/components/MangaReader";
 
 interface ChapterPageProps {
-  params: Promise<{ publicId: string; slug: string }>;
+  params: Promise<{ locale: string; publicId: string; slug: string }>;
 }
 
 export async function generateMetadata({
@@ -13,7 +14,7 @@ export async function generateMetadata({
 }: ChapterPageProps): Promise<Metadata> {
   await connection();
 
-  const { publicId } = await params;
+  const { locale, publicId } = await params;
 
   const chapter = await prisma.chapter.findUnique({
     where: { publicId },
@@ -32,6 +33,10 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: buildAlternates(
+      locale,
+      `/read/${chapter.publicId}/${chapter.slug}`,
+    ),
     openGraph: {
       title,
       description,

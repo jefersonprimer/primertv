@@ -3,8 +3,21 @@ import { getNovelas } from "@/app/actions/novelas";
 import { NovelasList } from "@/components/NovelasList";
 import { PosterGridSkeleton } from "@/components/PosterGridSkeleton";
 import { connection } from "next/server";
+import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    alternates: buildAlternates(locale, "/novelas"),
+  };
+}
 
 async function NovelasGridContent() {
   await connection();

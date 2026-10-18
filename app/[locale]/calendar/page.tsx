@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getAnimeScheduleRows } from "@/lib/anime-schedule";
 import { getTranslations } from "next-intl/server";
 import { getCurrentSeasonSlug } from "@/lib/seasons";
+import { buildAlternates } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -19,6 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
+    alternates: buildAlternates(locale, "/calendar"),
   };
 }
 

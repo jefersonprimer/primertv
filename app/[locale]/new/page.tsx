@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { getNewReleases } from "@/app/actions/newReleases";
 import { NewReleasesList } from "@/components/NewReleasesList";
 import { getTranslations } from "next-intl/server";
+import { buildAlternates } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export async function generateMetadata({
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
+    alternates: buildAlternates(locale, "/new"),
   };
 }
 

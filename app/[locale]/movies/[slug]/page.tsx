@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
 import Link from "next/link";
 import { PlayIcon } from "lucide-react";
@@ -21,13 +22,13 @@ import { StartWatchingButton } from "@/components/StartWatchingButton";
 export const revalidate = 3600;
 
 interface MovieDetailsPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: MovieDetailsPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const decoded = decodeURIComponent(slug);
   const normalizedNFC = decoded.normalize("NFC");
   const normalizedNFD = decoded.normalize("NFD");
@@ -66,6 +67,7 @@ export async function generateMetadata({
   return {
     title: `Assistir ${movie.title} Online em HD - PrimerTv`,
     description: `Assista ao filme ${movie.title} online grátis em HD no PrimerTv.`,
+    alternates: buildAlternates(locale, `/movies/${movie.slug}`),
     openGraph: {
       title: movie.title,
       images: ogImages,

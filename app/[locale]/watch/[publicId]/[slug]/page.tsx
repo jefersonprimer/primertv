@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Link, redirect } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import { connection } from "next/server";
 import { resolvePlayableUrl } from "@/lib/playable-url";
 import {
@@ -187,6 +188,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: buildAlternates(locale, `/watch/${publicId}/${slug}`),
     openGraph: {
       title,
       description,

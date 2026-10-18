@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 
 
 import EpisodeList from "@/components/EpisodeList";
@@ -18,13 +19,13 @@ import { StartWatchingButton } from "@/components/StartWatchingButton";
 export const revalidate = 3600;
 
 interface NovelaDetailsPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: NovelaDetailsPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const novela = await getNovelaDetailsBySlug(slug);
 
   if (!novela) return { title: "Novela não encontrada" };
@@ -32,6 +33,7 @@ export async function generateMetadata({
   return {
     title: `Assistir ${novela.title} Online em HD - PrimerTv`,
     description: `Assista a novela ${novela.title} online grátis em HD no PrimerTv.`,
+    alternates: buildAlternates(locale, `/novelas/${novela.slug}`),
     openGraph: {
       title: novela.title,
       images: novela.imageUrl ? [novela.imageUrl] : [],

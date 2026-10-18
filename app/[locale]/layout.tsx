@@ -8,6 +8,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Footer } from "@/components/Footer";
+import { metadataBase } from "@/lib/seo";
 
 interface GenerateMetadataProps {
   params: Promise<{ locale: string }>;
@@ -19,6 +20,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Layout" });
   return {
+    metadataBase,
     title: t("metaTitle"),
     description: t("metaDescription"),
   };

@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { getPopularAnimes } from "@/app/actions/popular";
 import { PopularAnimesList } from "@/components/PopularAnimesList";
 import { getTranslations } from "next-intl/server";
+import { buildAlternates } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
+    alternates: buildAlternates(locale, "/popular"),
   };
 }
 

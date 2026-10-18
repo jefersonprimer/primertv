@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { buildAlternates } from "@/lib/seo";
 import { connection } from "next/server";
 import { ChannelPlayer } from "./ChannelPlayer";
 import { getSession } from "@/lib/auth";
@@ -8,13 +9,13 @@ import { getSession } from "@/lib/auth";
 export const revalidate = 3600;
 
 interface ChannelPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: ChannelPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const decoded = decodeURIComponent(slug);
   const normalizedNFC = decoded.normalize("NFC");
   const normalizedNFD = decoded.normalize("NFD");
@@ -36,6 +37,7 @@ export async function generateMetadata({
   return {
     title: `Assistir ${channel.title} Ao Vivo Online - Primerflix`,
     description: `Assista ao canal ${channel.title} ao vivo online grátis no Primerflix.`,
+    alternates: buildAlternates(locale, `/livetv/${channel.slug}`),
     openGraph: {
       title: channel.title,
       images: channel.imageUrl ? [channel.imageUrl] : [],
