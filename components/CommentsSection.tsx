@@ -572,7 +572,7 @@ export function CommentsSection({
                 type="button"
                 onClick={() => handleReaction(comment.id, "like")}
                 disabled={reactingIds[comment.id]}
-                className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
+                className={`flex items-center gap-1.5 p-2 rounded-full transition-colors ${
                   isLiked
                     ? "text-blue-400 bg-blue-500/10 font-medium"
                     : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
@@ -580,7 +580,7 @@ export function CommentsSection({
                 title={t("like")}
               >
                 <ThumbsUp
-                  className={`h-3.5 w-3.5 ${isLiked ? "fill-current" : ""}`}
+                  className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`}
                 />
                 <span>{comment.likes > 0 ? comment.likes : ""}</span>
               </button>
@@ -590,7 +590,7 @@ export function CommentsSection({
                 type="button"
                 onClick={() => handleReaction(comment.id, "dislike")}
                 disabled={reactingIds[comment.id]}
-                className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
+                className={`flex items-center gap-1.5 p-2 rounded-full transition-colors ${
                   isDisliked
                     ? "text-rose-400 bg-rose-500/10 font-medium"
                     : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
@@ -598,7 +598,7 @@ export function CommentsSection({
                 title={t("dislike")}
               >
                 <ThumbsDown
-                  className={`h-3.5 w-3.5 ${isDisliked ? "fill-current" : ""}`}
+                  className={`h-4 w-4 ${isDisliked ? "fill-current" : ""}`}
                 />
                 <span>{comment.dislikes > 0 ? comment.dislikes : ""}</span>
               </button>
@@ -614,9 +614,9 @@ export function CommentsSection({
                     setReplyError(null);
                   }
                 }}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors font-medium"
+                className="flex items-center gap-1.5 p-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors font-medium"
               >
-                <Reply className="h-3.5 w-3.5" />
+                <Reply className="h-4 w-4" />
                 <span>{t("reply")}</span>
               </button>
 
@@ -630,15 +630,15 @@ export function CommentsSection({
                       setEditContent(comment.content);
                       setEditError(null);
                     }}
-                    className="flex items-center gap-1.5 px-2 py-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors font-medium"
+                    className="flex items-center gap-1.5 p-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors font-medium"
                     title={t("edit")}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Pencil className="h-4 w-4" />
                     <span>{t("edit")}</span>
                   </button>
 
                   {confirmDeleteId === comment.id ? (
-                    <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-md">
+                    <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 p-2 rounded-full">
                       <span className="text-[11px] text-red-400 font-medium">
                         {t("deleteConfirm")}
                       </span>
@@ -666,10 +666,10 @@ export function CommentsSection({
                     <button
                       type="button"
                       onClick={() => setConfirmDeleteId(comment.id)}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-md text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors font-medium"
+                      className="flex items-center gap-1.5 p-2 rounded-full text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors font-medium"
                       title={t("delete")}
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                       <span>{t("delete")}</span>
                     </button>
                   )}
@@ -682,7 +682,7 @@ export function CommentsSection({
               <div className="mt-3.5 pt-3 border-t border-zinc-800/80 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-blue-400 flex items-center gap-1">
-                    <Reply className="h-3 w-3" />{" "}
+                    <Reply className="h-4 w-4" />{" "}
                     {t("replyingTo", { userName: comment.userName })}
                   </span>
                   <button
@@ -690,7 +690,7 @@ export function CommentsSection({
                     onClick={() => setReplyingToId(null)}
                     className="text-zinc-500 hover:text-zinc-300 text-xs flex items-center gap-1"
                   >
-                    <X className="h-3.5 w-3.5" /> {t("cancel")}
+                    <X className="h-4 w-4" /> {t("cancel")}
                   </button>
                 </div>
 
@@ -763,7 +763,7 @@ export function CommentsSection({
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1 px-1 rounded-md"
               >
                 <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                  className={`h-4 w-4 transition-transform duration-200 ${
                     expandedReplies[comment.id] ? "rotate-180" : ""
                   }`}
                 />
@@ -902,9 +902,7 @@ export function CommentsSection({
           </div>
         ) : comments.length === 0 ? (
           <div className="rounded-xl border border-dashed border-zinc-800 p-8 text-center text-zinc-500">
-            <p className="text-sm">
-              {t("empty")}
-            </p>
+            <p className="text-sm">{t("empty")}</p>
           </div>
         ) : (
           rootComments.map((comment) => renderCommentCard(comment))

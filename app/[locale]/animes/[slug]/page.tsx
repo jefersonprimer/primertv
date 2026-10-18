@@ -11,6 +11,7 @@ import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import ShareButton from "@/components/ShareButton";
 import TrailerButton from "@/components/TrailerButton";
+import TrailerHeroBackground from "@/components/TrailerHeroBackground";
 import AddToListButton from "@/components/AddToListButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
@@ -219,47 +220,12 @@ export default async function AnimeDetailsPage({
       <div className="relative md:min-h-[95vh] lg:min-h-[calc(100vh-4rem)] w-full md:flex md:flex-col md:justify-end">
         {/* Banner Section */}
         <div className="absolute top-0 left-0 right-0 h-[95vh] lg:h-screen hidden md:block bg-zinc-900 overflow-hidden">
-          {finalBannerUrl ? (
-            <>
-              <Image
-                src={finalBannerUrl}
-                alt=""
-                fill
-                sizes="100vw"
-                className="object-cover blur-xl opacity-40 scale-105"
-                priority
-              />
-              <Image
-                src={finalBannerUrl}
-                alt={anime.title}
-                fill
-                sizes="100vw"
-                className="object-cover object-top opacity-100"
-                priority
-              />
-            </>
-          ) : (
-            anime.imageUrl && (
-              <>
-                <Image
-                  src={anime.imageUrl}
-                  alt=""
-                  fill
-                  sizes="100vw"
-                  className="object-cover blur-xl opacity-40 scale-105"
-                  priority
-                />
-                <Image
-                  src={anime.imageUrl}
-                  alt={anime.title}
-                  fill
-                  sizes="100vw"
-                  className="object-cover object-top opacity-100"
-                  priority
-                />
-              </>
-            )
-          )}
+          <TrailerHeroBackground
+            bannerUrl={finalBannerUrl}
+            imageUrl={anime.imageUrl}
+            title={anime.title}
+            trailerUrl={anime.trailerUrl}
+          />
           {/* Bottom Gradient (fades to page bg) */}
           <div className="absolute bottom-0 left-0 right-0 h-68 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
           {/* Left Gradient (occupies 45% of the width, ultra-natural eased scrim gradient) */}
@@ -501,7 +467,7 @@ export default async function AnimeDetailsPage({
                     size={24}
                     showLabel={true}
                   />
-                  <ShareButton size={24} />
+                  <ShareButton size={24} showLabelBelow />
                 </div>
                 {isAdmin && (
                   <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">

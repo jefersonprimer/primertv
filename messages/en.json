@@ -149,7 +149,9 @@
     "linkCopied": "Link copied!",
     "viewDetails": "View Details",
     "trailer": "Trailer",
-    "close": "Close"
+    "close": "Close",
+    "mute": "Mute",
+    "unmute": "Unmute"
   },
   "AnimeDetails": {
     "notFound": "Anime not found",
@@ -370,7 +372,7 @@
     }
   },
   "Layout": {
-    "metaTitle": "Primer TV - Watch Anime Online, Watch TV Shows Online, Watch Movies Online, Read Manga Online",
+    "metaTitle": "primertv - Watch Anime Online, Watch TV Shows Online, Watch Movies Online, Read Manga Online",
     "metaDescription": "Watch the best anime online, as well as series, films and much more. Discover new releases, classics and streaming in high quality"
   },
   "Auth": {

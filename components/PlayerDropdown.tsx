@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Link } from "@/i18n/routing";
-import { ChevronDown, Play, Check } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 
 export interface PlayerOption {
   id: string;
@@ -50,7 +50,6 @@ export function PlayerDropdown({
         aria-haspopup="true"
       >
         <span className="flex items-center gap-2">
-          <Play className="h-4 w-4 text-zinc-300 fill-zinc-300/20" />
           <span>{activePlayer?.label || "Select Player"}</span>
         </span>
         <ChevronDown
@@ -62,13 +61,10 @@ export function PlayerDropdown({
 
       {isOpen && (
         <div
-          className="absolute left-0 z-50 mt-2 min-w-[15rem] w-max max-w-xs origin-top-left rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl py-1.5 ring-1 ring-black/10 focus:outline-none backdrop-blur-md"
+          className="absolute left-0 z-50 bottom-full mb-2 min-w-[15rem] w-max max-w-xs origin-bottom-left rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl py-1.5 ring-1 ring-black/10 focus:outline-none backdrop-blur-md"
           role="menu"
           aria-orientation="vertical"
         >
-          <div className="px-3 py-1.5 text-xs font-semibold text-zinc-400 uppercase tracking-wider border-b border-zinc-800/80 mb-1">
-            Players
-          </div>
           <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700">
             {players.map((p) => {
               const isActive = p.id === activePlayer?.id;
@@ -84,14 +80,7 @@ export function PlayerDropdown({
                   }`}
                   role="menuitem"
                 >
-                  <span className="flex items-center gap-2">
-                    <Play
-                      className={`h-3.5 w-3.5 ${
-                        isActive ? "text-white fill-white" : "text-zinc-500"
-                      }`}
-                    />
-                    {p.label}
-                  </span>
+                  <span className="flex items-center gap-2">{p.label}</span>
                   {isActive && <Check className="h-4 w-4 text-white" />}
                 </Link>
               );

@@ -10,7 +10,8 @@ interface ShareButtonProps {
   className?: string;
   hasBorder?: boolean;
   roundedFull?: boolean;
-  showLabel?: boolean;
+  showLabelBelow?: boolean;
+  showLabelInline?: boolean;
   size?: number;
 }
 
@@ -19,7 +20,8 @@ export default function ShareButton({
   compact = false,
   hasBorder = true,
   roundedFull = true,
-  showLabel = false,
+  showLabelBelow = false,
+  showLabelInline = false,
   size,
   className = "",
 }: ShareButtonProps) {
@@ -27,13 +29,7 @@ export default function ShareButton({
   const [copied, setCopied] = useState(false);
 
   const iconSize = size ?? (compact ? 14 : 16);
-  const sizeClass = showLabel
-    ? compact
-      ? "p-1.5 md:px-3 md:py-1.5"
-      : "p-2 md:px-4 md:py-2"
-    : compact
-      ? "p-1.5"
-      : "p-2";
+  const sizeClass = compact ? "p-1.5" : "p-2";
 
   const borderClass = hasBorder ? "border border-zinc-800" : "";
   const roundedClass = roundedFull ? "rounded-full" : "rounded-md";
@@ -61,15 +57,52 @@ export default function ShareButton({
     />
   );
 
+  const labelContent = copied ? t("linkCopied") : t("share");
+
+  const tooltipVisibilityClass = showLabelBelow
+    ? showLabelInline
+      ? "hidden sm:inline-block md:hidden"
+      : "hidden sm:inline-block"
+    : showLabelInline
+      ? "md:hidden"
+      : "";
+
   const tooltipElement = (
     <span
-      className={`absolute bottom-full left-1/2 -translate-x-1/2 rounded mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50 ${
-        showLabel ? "md:hidden" : ""
-      }`}
+      className={`absolute bottom-full left-1/2 -translate-x-1/2 rounded mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50 ${tooltipVisibilityClass}`}
     >
-      {copied ? t("linkCopied") : t("share")}
+      {labelContent}
     </span>
   );
+
+  if (showLabelBelow || showLabelInline) {
+    const inlineLabelClass = showLabelInline ? "md:px-3 md:gap-2" : "";
+
+    return (
+      <button
+        onClick={handleShare}
+        className="group relative inline-flex flex-col sm:flex-row items-center justify-center gap-1.5 focus:outline-none cursor-pointer"
+        aria-label={labelContent}
+      >
+        <div
+          className={`inline-flex items-center justify-center ${roundedClass} bg-zinc-900/90 ${borderClass} ${sizeClass} ${inlineLabelClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700 group-active:scale-95`}
+        >
+          {iconContent}
+          {showLabelInline && (
+            <span className="hidden md:inline text-xs font-medium text-zinc-300 group-hover:text-white transition-colors whitespace-nowrap">
+              {labelContent}
+            </span>
+          )}
+        </div>
+        {showLabelBelow && (
+          <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors sm:hidden whitespace-nowrap">
+            {labelContent}
+          </span>
+        )}
+        {tooltipElement}
+      </button>
+    );
+  }
 
   return (
     <button
@@ -78,11 +111,6 @@ export default function ShareButton({
       aria-label={copied ? t("linkCopied") : t("share")}
     >
       {iconContent}
-      {showLabel && (
-        <span className="hidden md:inline ms-2 text-sm font-medium">
-          {copied ? t("linkCopied") : t("share")}
-        </span>
-      )}
       {tooltipElement}
     </button>
   );

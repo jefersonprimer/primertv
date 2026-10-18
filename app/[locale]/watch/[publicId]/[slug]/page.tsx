@@ -428,7 +428,7 @@ export default async function WatchPage({
                       size={24}
                       showLabel
                     />
-                    <ShareButton size={24} showLabel />
+                    <ShareButton size={24} showLabelInline />
                   </div>
                 </div>
 
@@ -680,7 +680,7 @@ export default async function WatchPage({
                       size={24}
                       showLabel
                     />
-                    <ShareButton size={24} showLabel />
+                    <ShareButton size={24} showLabelInline />
                   </div>
                 </div>
 
@@ -988,7 +988,11 @@ export default async function WatchPage({
                   )}
 
                   <div className="flex items-center gap-2.5">
-                    <VoteButtons episodeId={seriesEpisode.id} userId={userId} size={24} />
+                    <VoteButtons
+                      episodeId={seriesEpisode.id}
+                      userId={userId}
+                      size={24}
+                    />
                     <WatchlistButton
                       mediaType="SERIES"
                       mediaId={seriesEpisode.season.series.id}
@@ -998,7 +1002,7 @@ export default async function WatchPage({
                       size={24}
                       showLabel
                     />
-                    <ShareButton size={24} showLabel />
+                    <ShareButton size={24} showLabelInline />
                   </div>
                 </div>
 
@@ -1198,7 +1202,7 @@ export default async function WatchPage({
                         size={24}
                         showLabel
                       />
-                      <ShareButton size={24} showLabel />
+                      <ShareButton size={24} showLabelInline />
                     </div>
                   </div>
 
@@ -1437,7 +1441,7 @@ export default async function WatchPage({
                   size={24}
                   showLabel
                 />
-                <ShareButton size={24} showLabel />
+                <ShareButton size={24} showLabelInline />
               </div>
             </div>
 

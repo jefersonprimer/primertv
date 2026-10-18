@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  X,
-  Play,
-  Info,
-  Star,
-  ChevronDown,
-} from "lucide-react";
+import { X, Play, Info, Star, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StartWatchingButton } from "./StartWatchingButton";
 import { WatchlistButton } from "./WatchlistButton";
@@ -221,9 +215,7 @@ export function QuickViewModal({
           </div>
         ) : error || !data ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4 text-center px-4">
-            <p className="text-zinc-400">
-              {t("failedToLoad")}
-            </p>
+            <p className="text-zinc-400">{t("failedToLoad")}</p>
             <Link
               href={`/${basePath}/${slug}`}
               onClick={onClose}
@@ -431,21 +423,26 @@ export function QuickViewModal({
                             }
                             onClick={onClose}
                             className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl transition-colors ${
-                              isNextTarget ? "bg-[#151515]" : "hover:bg-[#151515]"
+                              isNextTarget
+                                ? "bg-[#151515]"
+                                : "hover:bg-[#151515]"
                             }`}
                           >
                             {/* Thumb do Episódio */}
                             <div className="relative aspect-16/9 w-full sm:w-44 overflow-hidden rounded-lg bg-zinc-950 flex-shrink-0">
                               {isNextTarget ? (
                                 <div className="absolute top-1.5 left-1.5 z-10">
-                                  <span className="px-2 py-0.5 text-[11px] font-bold text-blue-400 bg-blue-950/80 backdrop-blur-sm rounded border border-blue-500/40 whitespace-nowrap shadow-md">
+                                  <span className="px-2 py-0.5 text-xs font-normal text-white bg-[#2A2A2A] backdrop-blur-sm rounded border border-zinc-800 whitespace-nowrap shadow-md">
                                     {t("next")}
                                   </span>
                                 </div>
                               ) : (
                                 data.rating && (
                                   <div className="absolute top-1.5 left-1.5 z-10 drop-shadow-md">
-                                    <RatingBadge rating={data.rating} size={18} />
+                                    <RatingBadge
+                                      rating={data.rating}
+                                      size={18}
+                                    />
                                   </div>
                                 )
                               )}
@@ -453,7 +450,10 @@ export function QuickViewModal({
                               {ep.imageUrl ? (
                                 <Image
                                   src={ep.imageUrl}
-                                  alt={ep.title || t("episodeNumber", { number: ep.number })}
+                                  alt={
+                                    ep.title ||
+                                    t("episodeNumber", { number: ep.number })
+                                  }
                                   fill
                                   sizes="(max-width: 640px) 100vw, 176px"
                                   className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -484,7 +484,8 @@ export function QuickViewModal({
                               <div className="flex items-center justify-between gap-2">
                                 <h4 className="text-sm sm:text-base font-bold text-zinc-100 group-hover:text-[#0077FD] transition-colors line-clamp-1">
                                   {ep.number}.{" "}
-                                  {ep.title || t("episodeNumber", { number: ep.number })}
+                                  {ep.title ||
+                                    t("episodeNumber", { number: ep.number })}
                                 </h4>
                               </div>
 

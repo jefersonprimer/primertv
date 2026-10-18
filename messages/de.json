@@ -149,7 +149,9 @@
     "linkCopied": "Link kopiert!",
     "viewDetails": "Details anzeigen",
     "trailer": "Trailer",
-    "close": "Schließen"
+    "close": "Schließen",
+    "mute": "Ton ausschalten",
+    "unmute": "Ton einschalten"
   },
   "AnimeDetails": {
     "notFound": "Anime nicht gefunden",
@@ -370,7 +372,7 @@
     }
   },
   "Layout": {
-    "metaTitle": "Primer TV - Animes online schauen, Serien online schauen, Filme online schauen, Mangas lesen",
+    "metaTitle": "primertv - Animes online schauen, Serien online schauen, Filme online schauen, Mangas lesen",
     "metaDescription": "Schaue die besten Animes online sowie Serien, Filme und vieles mehr. Entdecke Neuerscheinungen, Klassiker und Streaming in hoher Qualität."
   },
   "Auth": {

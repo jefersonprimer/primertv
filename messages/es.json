@@ -149,7 +149,9 @@
     "linkCopied": "¡Enlace copiado!",
     "viewDetails": "Ver detalles",
     "trailer": "Tráiler",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido"
   },
   "AnimeDetails": {
     "notFound": "Anime no encontrado",
@@ -370,7 +372,7 @@
     }
   },
   "Layout": {
-    "metaTitle": "Primer TV - Ver anime online, ver series online, ver películas online, leer manga online",
+    "metaTitle": "primertv - Ver anime online, ver series online, ver películas online, leer manga online",
     "metaDescription": "Mira los mejores animes online, así como series, películas y mucho más. Descubre lanzamientos, clásicos y streaming de alta calidad"
   },
   "Auth": {
