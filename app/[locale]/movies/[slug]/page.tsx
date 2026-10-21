@@ -2,7 +2,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 
 import Link from "next/link";
 import { PlayIcon } from "lucide-react";
@@ -64,14 +65,28 @@ export async function generateMetadata({
   if (ogBannerUrl) ogImages.push(ogBannerUrl);
   if (movie.imageUrl) ogImages.push(movie.imageUrl);
 
+  const title = `Assistir ${movie.title} Online em HD - PrimerTv`;
+  const description = `Assista ao filme ${movie.title} online grátis em HD no PrimerTv.`;
+  const canonicalPath = `/movies/${movie.slug}`;
+
   return {
-    title: `Assistir ${movie.title} Online em HD - PrimerTv`,
-    description: `Assista ao filme ${movie.title} online grátis em HD no PrimerTv.`,
-    alternates: buildAlternates(locale, `/movies/${movie.slug}`),
-    openGraph: {
+    title,
+    description,
+    alternates: buildAlternates(locale, canonicalPath),
+    openGraph: buildOpenGraph({
       title: movie.title,
+      description,
+      locale,
+      type: "video.movie",
       images: ogImages,
-    },
+      url: `${SITE_URL}/${locale}${canonicalPath}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
+      title: movie.title,
+      description,
+      images: ogImages,
+    }),
   };
 }
 

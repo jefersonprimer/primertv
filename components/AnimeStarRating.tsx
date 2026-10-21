@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Star, BarChart2, ChevronDown } from "lucide-react";
-import {
-  rateAnime,
-  AnimeRatingStats,
-  RatingBreakdown,
-} from "@/app/actions/animeRating";
+import { Star, ChevronDown } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
+import { rateAnime, AnimeRatingStats } from "@/app/actions/animeRating";
 import { StarRatingModal } from "./StarRatingModal";
 
 interface AnimeStarRatingProps {
@@ -22,6 +19,9 @@ export function AnimeStarRating({
   initialStats,
   isLoggedIn,
 }: AnimeStarRatingProps) {
+  const t = useTranslations("StarRating");
+  const format = useFormatter();
+
   const [stats, setStats] = useState<AnimeRatingStats>(initialStats);
   const [hoverScore, setHoverScore] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,6 +49,8 @@ export function AnimeStarRating({
   const activeDisplayScore =
     hoverScore ?? stats.userScore ?? Math.round(stats.averageScore);
 
+  const hasCommunityScore = stats.totalVotes > 0 && stats.averageScore > 0;
+
   return (
     <>
       <div className="mt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
@@ -57,7 +59,9 @@ export function AnimeStarRating({
           className="flex items-center gap-1 cursor-pointer group"
           onMouseLeave={() => setHoverScore(null)}
           onClick={() => setIsModalOpen(true)}
-          title="Clique para ver estatísticas de votos"
+          title={t("clickForStats", {
+            defaultValue: "Clique para ver estatísticas de votos",
+          })}
         >
           {Array.from({ length: 10 }).map((_, i) => {
             const score = i + 1;
@@ -94,14 +98,21 @@ export function AnimeStarRating({
           type="button"
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-1.5 text-zinc-200 transition-all hover:scale-105 active:scale-95 shadow-sm text-xs font-semibold"
-          title="Ver gráfico de avaliações"
+          title={t("viewStats", {
+            defaultValue: "Ver gráfico de avaliações",
+          })}
         >
-          <span className="text-white font-medium text-sm">
-            {stats.averageScore > 0 ? stats.averageScore.toFixed(1) : "N/A"}
+          <span className="text-white font-medium text-sm tabular-nums">
+            {hasCommunityScore
+              ? format.number(stats.averageScore, {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                })
+              : t("noScore", { defaultValue: "N/A" })}
           </span>
           {stats.totalVotes > 0 && (
-            <span className="text-white font-normal">
-              ({stats.totalVotes.toLocaleString()} )
+            <span className="text-white font-normal tabular-nums">
+              ({format.number(stats.totalVotes)})
             </span>
           )}
           <ChevronDown size={16} />
@@ -113,11 +124,7 @@ export function AnimeStarRating({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         animeTitle={animeTitle}
-        averageScore={stats.averageScore}
-        totalVotes={stats.totalVotes}
-        userScore={stats.userScore}
-        breakdown={stats.breakdown}
-        onRate={handleRate}
+        stats={stats}
         isLoggedIn={isLoggedIn}
       />
     </>

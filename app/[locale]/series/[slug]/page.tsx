@@ -2,7 +2,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import { Star } from "lucide-react";
 
 import SeasonSelector from "@/components/SeasonSelector";
@@ -46,14 +47,28 @@ export async function generateMetadata({
   if (ogBannerUrl) ogImages.push(ogBannerUrl);
   if (serie.imageUrl) ogImages.push(serie.imageUrl);
 
+  const title = `Assistir ${serie.title} Online em HD - Primerflix`;
+  const description = `Assista à série ${serie.title} online grátis em HD no PrimerTv.`;
+  const canonicalPath = `/series/${serie.slug}`;
+
   return {
-    title: `Assistir ${serie.title} Online em HD - Primerflix`,
-    description: `Assista à série ${serie.title} online grátis em HD no PrimerTv.`,
-    alternates: buildAlternates(locale, `/series/${serie.slug}`),
-    openGraph: {
+    title,
+    description,
+    alternates: buildAlternates(locale, canonicalPath),
+    openGraph: buildOpenGraph({
       title: serie.title,
+      description,
+      locale,
+      type: "video.tv_show",
       images: ogImages,
-    },
+      url: `${SITE_URL}/${locale}${canonicalPath}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
+      title: serie.title,
+      description,
+      images: ogImages,
+    }),
   };
 }
 

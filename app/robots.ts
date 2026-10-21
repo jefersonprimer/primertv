@@ -10,6 +10,7 @@ const LOCALE_ROUTES = [
   "login",
   "signup",
   "forgot-password",
+  "user",
 ];
 
 export default function robots(): MetadataRoute.Robots {

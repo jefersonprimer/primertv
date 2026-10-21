@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
 
+export type UserTrustTier = "NEW" | "MATURING" | "ESTABLISHED" | "TRUSTED";
+
 export interface UserTrustDetails {
   accountAgeDays: number;
   weight: number;
-  tier: "NEW" | "MATURING" | "ESTABLISHED" | "TRUSTED";
+  tier: UserTrustTier;
 }
 
 /**

@@ -38,6 +38,10 @@ interface YTPlayerLike {
   mute: () => void;
   unMute: () => void;
   playVideo: () => void;
+  seekTo: (seconds: number, allowSeekAhead: boolean) => void;
+  loadVideoById: (videoId: string) => void;
+  getDuration: () => number;
+  getCurrentTime: () => number;
 }
 
 interface YTApiLike {
@@ -117,6 +121,13 @@ export default function TrailerHeroBackground({
   useEffect(() => {
     if (!isLargeScreen || !youtubeId || !playerHostRef.current) return;
     let cancelled = false;
+    let restartTimer: ReturnType<typeof setTimeout> | null = null;
+    const clearRestart = () => {
+      if (restartTimer) {
+        clearTimeout(restartTimer);
+        restartTimer = null;
+      }
+    };
 
     loadYouTubeAPI().then((YT) => {
       if (cancelled || !YT || !playerHostRef.current) return;
@@ -136,14 +147,37 @@ export default function TrailerHeroBackground({
           disablekb: 1,
           fs: 0,
           iv_load_policy: 3,
+          origin: window.location.origin,
         },
         events: {
           onReady: (event: { target: YTPlayerLike }) => {
             event.target.mute();
             event.target.playVideo();
           },
-          onStateChange: (event: { data: number }) => {
-            if (event.data === 1) setVideoReady(true);
+          onStateChange: (event: { data: number; target: YTPlayerLike }) => {
+            if (event.data === 1) {
+              setVideoReady(true);
+              clearRestart();
+              try {
+                const remaining =
+                  event.target.getDuration() - event.target.getCurrentTime();
+                if (remaining > 0.6) {
+                  restartTimer = setTimeout(() => {
+                    try {
+                      event.target.loadVideoById(youtubeId);
+                    } catch {}
+                  }, (remaining - 0.4) * 1000);
+                }
+              } catch {}
+              return;
+            }
+            clearRestart();
+            if (event.data === 0) {
+              try {
+                event.target.seekTo(0, true);
+                event.target.playVideo();
+              } catch {}
+            }
           },
         },
       });
@@ -151,6 +185,7 @@ export default function TrailerHeroBackground({
 
     return () => {
       cancelled = true;
+      clearRestart();
       try {
         playerRef.current?.destroy();
       } catch {}

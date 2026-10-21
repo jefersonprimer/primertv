@@ -5,21 +5,25 @@ import { Link } from "@/i18n/routing";
 import { Play, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FranchiseItem } from "@/lib/anime-relations";
+import { WatchlistButton } from "@/components/WatchlistButton";
 
 interface AnimeFranchiseSectionProps {
   currentTitle?: string;
   sequel: FranchiseItem | null;
   prequel: FranchiseItem | null;
+  isLoggedIn?: boolean;
 }
 
 function FranchiseCard({
   item,
   badgeText,
   isSequel = false,
+  isLoggedIn = false,
 }: {
   item: FranchiseItem;
   badgeText: string;
   isSequel?: boolean;
+  isLoggedIn?: boolean;
 }) {
   const t = useTranslations("AnimeDetails");
   const tMedia = useTranslations("MediaCard");
@@ -83,6 +87,13 @@ function FranchiseCard({
             </p>
           )}
 
+          {/* Description */}
+          {item.description && (
+            <p className="mt-1.5 text-xs sm:text-sm text-zinc-400 line-clamp-2 leading-relaxed">
+              {item.description.replace(/\s+/g, " ").trim()}
+            </p>
+          )}
+
           {/* Metadata badges (Episodes / Dubbed / Subtitled) */}
           <div className="flex flex-wrap items-center gap-2 mt-2">
             {item.totalEpisodes ? (
@@ -113,12 +124,18 @@ function FranchiseCard({
             <span>{t("watchNow")}</span>
           </Link>
 
-          <Link
-            href={`/animes/${item.slug}`}
-            className="inline-flex items-center justify-center px-3 py-2 rounded text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
-          >
-            <span>{t("viewDetails")}</span>
-          </Link>
+          <WatchlistButton
+            mediaType="ANIME"
+            mediaId={item.id}
+            slug={item.slug}
+            initialInWatchlist={Boolean(item.inWatchlist)}
+            isLoggedIn={isLoggedIn}
+            size={14}
+            compact
+            showLabel
+            roundedFull={false}
+            hasBorder={false}
+          />
         </div>
       </div>
     </div>
@@ -128,6 +145,7 @@ function FranchiseCard({
 export function AnimeFranchiseSection({
   sequel,
   prequel,
+  isLoggedIn = false,
 }: AnimeFranchiseSectionProps) {
   const t = useTranslations("AnimeDetails");
 
@@ -156,6 +174,7 @@ export function AnimeFranchiseSection({
             item={prequel}
             badgeText={t("prequelTitle")}
             isSequel={false}
+            isLoggedIn={isLoggedIn}
           />
         )}
 
@@ -164,6 +183,7 @@ export function AnimeFranchiseSection({
             item={sequel}
             badgeText={t("sequelTitle")}
             isSequel={true}
+            isLoggedIn={isLoggedIn}
           />
         )}
       </div>

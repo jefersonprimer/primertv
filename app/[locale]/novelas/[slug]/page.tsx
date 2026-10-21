@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 
 
 import EpisodeList from "@/components/EpisodeList";
@@ -30,14 +31,29 @@ export async function generateMetadata({
 
   if (!novela) return { title: "Novela não encontrada" };
 
+  const title = `Assistir ${novela.title} Online em HD - PrimerTv`;
+  const description = `Assista a novela ${novela.title} online grátis em HD no PrimerTv.`;
+  const canonicalPath = `/novelas/${novela.slug}`;
+  const images = novela.imageUrl ? [novela.imageUrl] : [];
+
   return {
-    title: `Assistir ${novela.title} Online em HD - PrimerTv`,
-    description: `Assista a novela ${novela.title} online grátis em HD no PrimerTv.`,
-    alternates: buildAlternates(locale, `/novelas/${novela.slug}`),
-    openGraph: {
+    title,
+    description,
+    alternates: buildAlternates(locale, canonicalPath),
+    openGraph: buildOpenGraph({
       title: novela.title,
-      images: novela.imageUrl ? [novela.imageUrl] : [],
-    },
+      description,
+      locale,
+      type: "video.tv_show",
+      images,
+      url: `${SITE_URL}/${locale}${canonicalPath}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
+      title: novela.title,
+      description,
+      images,
+    }),
   };
 }
 

@@ -3,8 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getAnimeDetailsBySlug } from "@/lib/media-details";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
-import { getAnimeWatchHistory } from "@/lib/history";
-
+import { getLastWatchedForAnime } from "@/lib/history";
 import { buildMergedSeasons } from "@/lib/seasons";
 import { getAnimeLogo } from "@/lib/banners";
 
@@ -73,21 +72,35 @@ export type AnimeQuickPreviewData = {
   members: number | null;
 };
 
-export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPreviewData | null> {
+export async function getAnimeQuickPreview(
+  slug: string,
+  initialSeasonNumber?: number,
+): Promise<AnimeQuickPreviewData | null> {
   try {
     if (!slug) return null;
 
     const anime = await getAnimeDetailsBySlug(slug);
     if (!anime) return null;
 
-    const mergedSeasons = await buildMergedSeasons({
-      animeSlug: anime.slug,
-      animeTitle: anime.title,
-      animeAnilistId: anime.anilistId,
-      animeMalId: anime.malId,
-      animeTitleEnglish: anime.titleEnglish,
-      localSeasons: anime.seasons,
-    });
+    // Determina a temporada inicial prioritária (padrão 1 se não informada)
+    const targetSeason = initialSeasonNumber || 1;
+
+    // Executa em paralelo a montagem das temporadas e a autenticação do usuário
+    const [mergedSeasons, userId, logoResult] = await Promise.all([
+      buildMergedSeasons({
+        animeSlug: anime.slug,
+        animeTitle: anime.title,
+        animeAnilistId: anime.anilistId,
+        animeMalId: anime.malId,
+        animeTitleEnglish: anime.titleEnglish,
+        localSeasons: anime.seasons,
+        targetSeasonNumber: targetSeason,
+      }),
+      getAuthenticatedUserId(),
+      anime.logoUrl
+        ? Promise.resolve(anime.logoUrl)
+        : getAnimeLogo(anime.id, anime.title),
+    ]);
 
     let firstEpisode = null;
     if (mergedSeasons.length > 0 && mergedSeasons[0].episodes.length > 0) {
@@ -108,30 +121,30 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
     let nextEpisode = firstEpisode;
     let hasHistory = false;
     let inWatchlist = false;
-
-    const userId = await getAuthenticatedUserId();
     const isLoggedIn = Boolean(userId);
 
     if (userId && anime.id) {
-      inWatchlist = await isInWatchlist("ANIME", anime.id);
+      // Busca status da watchlist e último episódio assistido em paralelo
+      const [watchlistStatus, lastWatched] = await Promise.all([
+        isInWatchlist("ANIME", anime.id),
+        getLastWatchedForAnime(userId, anime.id),
+      ]);
 
-      const history = await getAnimeWatchHistory(userId);
-      const animeHistory = history.filter(
-        (h) => h.episode.season.anime.id === anime.id
-      );
+      inWatchlist = watchlistStatus;
 
-      if (animeHistory.length > 0) {
+      if (lastWatched) {
         hasHistory = true;
-        const lastWatched = animeHistory[0];
         const currentEpNumber = lastWatched.episode.number;
         const currentSeasonNumber = lastWatched.episode.season.number;
 
         let foundNext = null;
 
-        const currentSeasonObj = mergedSeasons.find((s) => s.number === currentSeasonNumber);
+        const currentSeasonObj = mergedSeasons.find(
+          (s) => s.number === currentSeasonNumber,
+        );
         if (currentSeasonObj) {
           const nextInSeason = currentSeasonObj.episodes.find(
-            (e) => e.number === currentEpNumber + 1
+            (e) => e.number === currentEpNumber + 1,
           );
           if (nextInSeason) {
             foundNext = {
@@ -148,7 +161,9 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
         }
 
         if (!foundNext) {
-          const nextSeasonObj = mergedSeasons.find((s) => s.number === currentSeasonNumber + 1);
+          const nextSeasonObj = mergedSeasons.find(
+            (s) => s.number === currentSeasonNumber + 1,
+          );
           if (nextSeasonObj && nextSeasonObj.episodes.length > 0) {
             const firstOfNextSeason = nextSeasonObj.episodes[0];
             foundNext = {
@@ -157,7 +172,9 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
               seasonNumber: nextSeasonObj.number,
               title: firstOfNextSeason.title,
               publicId: firstOfNextSeason.publicId || firstOfNextSeason.id,
-              slug: firstOfNextSeason.slug || `episode-${firstOfNextSeason.number}`,
+              slug:
+                firstOfNextSeason.slug ||
+                `episode-${firstOfNextSeason.number}`,
               href: firstOfNextSeason.href,
               imageUrl: firstOfNextSeason.imageUrl || null,
             };
@@ -172,8 +189,11 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
             number: lastWatched.episode.number,
             seasonNumber: lastWatched.episode.season.number,
             title: lastWatched.episode.title,
-            publicId: lastWatched.episode.publicId || lastWatched.episode.id,
-            slug: lastWatched.episode.slug || `episode-${lastWatched.episode.number}`,
+            publicId:
+              lastWatched.episode.publicId || lastWatched.episode.id,
+            slug:
+              lastWatched.episode.slug ||
+              `episode-${lastWatched.episode.number}`,
             href: `/watch/${lastWatched.episode.publicId || lastWatched.episode.id}/${lastWatched.episode.slug || "episode-" + lastWatched.episode.number}`,
             imageUrl: lastWatched.episode.imageUrl || null,
           };
@@ -198,11 +218,7 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
       })),
     }));
 
-    let logoUrl = anime.logoUrl;
-    if (!logoUrl) {
-      logoUrl = await getAnimeLogo(anime.id, anime.title);
-    }
-    const finalLogoUrl = logoUrl === "none" ? null : logoUrl;
+    const finalLogoUrl = logoResult === "none" ? null : logoResult;
 
     return {
       id: anime.id,
@@ -234,5 +250,48 @@ export async function getAnimeQuickPreview(slug: string): Promise<AnimeQuickPrev
   } catch (error) {
     console.error("Erro em getAnimeQuickPreview Server Action:", error);
     return null;
+  }
+}
+
+/**
+ * Server Action dedicada para buscar episódios de uma temporada sob demanda
+ * chamada apenas quando o usuário troca o dropdown no modal.
+ */
+export async function getAnimeSeasonEpisodesAction(
+  slug: string,
+  seasonNumber: number,
+): Promise<EpisodePreviewItem[]> {
+  try {
+    if (!slug) return [];
+
+    const anime = await getAnimeDetailsBySlug(slug);
+    if (!anime) return [];
+
+    const mergedSeasons = await buildMergedSeasons({
+      animeSlug: anime.slug,
+      animeTitle: anime.title,
+      animeAnilistId: anime.anilistId,
+      animeMalId: anime.malId,
+      animeTitleEnglish: anime.titleEnglish,
+      localSeasons: anime.seasons,
+      targetSeasonNumber: seasonNumber,
+    });
+
+    const targetSeason = mergedSeasons.find((s) => s.number === seasonNumber);
+    if (!targetSeason) return [];
+
+    return targetSeason.episodes.map((ep) => ({
+      id: ep.id,
+      number: ep.number,
+      title: ep.title,
+      imageUrl: ep.imageUrl || anime.imageUrl,
+      publicId: ep.publicId || ep.id,
+      slug: ep.slug || `episode-${ep.number}`,
+      href: ep.href,
+      createdAt: ep.createdAt || new Date(),
+    }));
+  } catch (err) {
+    console.error("Erro ao buscar episódios da temporada sob demanda:", err);
+    return [];
   }
 }

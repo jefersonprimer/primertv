@@ -2,7 +2,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import { Star } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -76,14 +77,28 @@ export async function generateMetadata({
   if (ogBannerUrl) ogImages.push(ogBannerUrl);
   if (anime.imageUrl) ogImages.push(anime.imageUrl);
 
+  const title = t("metaTitle", { title: anime.title });
+  const description = t("metaDescription", { title: anime.title });
+  const canonicalPath = `/animes/${anime.slug}`;
+
   return {
-    title: t("metaTitle", { title: anime.title }),
-    description: t("metaDescription", { title: anime.title }),
-    alternates: buildAlternates(locale, `/animes/${anime.slug}`),
-    openGraph: {
+    title,
+    description,
+    alternates: buildAlternates(locale, canonicalPath),
+    openGraph: buildOpenGraph({
       title: anime.title,
+      description,
+      locale,
+      type: "video.tv_show",
       images: ogImages,
-    },
+      url: `${SITE_URL}/${locale}${canonicalPath}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
+      title: anime.title,
+      description,
+      images: ogImages,
+    }),
   };
 }
 
@@ -215,6 +230,39 @@ export default async function AnimeDetailsPage({
     sequelAnilistId: anime.sequelAnilistId,
     prequelAnilistId: anime.prequelAnilistId,
   });
+
+  const franchiseAnimeIds = [franchise.sequel?.id, franchise.prequel?.id].filter(
+    (id): id is string => Boolean(id),
+  );
+
+  const franchiseWatchlistIds = new Set<string>();
+  if (userId && franchiseAnimeIds.length > 0) {
+    const savedItems = await prisma.watchlistItem.findMany({
+      where: {
+        userId,
+        mediaType: "ANIME",
+        animeId: { in: franchiseAnimeIds },
+      },
+      select: { animeId: true },
+    });
+    for (const saved of savedItems) {
+      if (saved.animeId) franchiseWatchlistIds.add(saved.animeId);
+    }
+  }
+
+  const franchiseSequel = franchise.sequel
+    ? {
+        ...franchise.sequel,
+        inWatchlist: franchiseWatchlistIds.has(franchise.sequel.id),
+      }
+    : null;
+
+  const franchisePrequel = franchise.prequel
+    ? {
+        ...franchise.prequel,
+        inWatchlist: franchiseWatchlistIds.has(franchise.prequel.id),
+      }
+    : null;
 
   return (
     <div className="min-h-screen bg-black">
@@ -464,12 +512,13 @@ export default async function AnimeDetailsPage({
                     size={24}
                     showLabel={true}
                   />
+
+                  <ShareButton size={24} showLabelBelow />
                   <TrailerButton
                     url={anime.trailerUrl}
                     size={24}
                     showLabel={true}
                   />
-                  <ShareButton size={24} showLabelBelow />
                 </div>
                 {isAdmin && (
                   <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
@@ -544,11 +593,12 @@ export default async function AnimeDetailsPage({
       </main>
 
       {/* Franchise / Timeline Section */}
-      {(franchise.sequel || franchise.prequel) && (
+      {(franchiseSequel || franchisePrequel) && (
         <AnimeFranchiseSection
           currentTitle={anime.title}
-          sequel={franchise.sequel}
-          prequel={franchise.prequel}
+          sequel={franchiseSequel}
+          prequel={franchisePrequel}
+          isLoggedIn={Boolean(userId)}
         />
       )}
 

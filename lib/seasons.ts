@@ -243,6 +243,7 @@ export async function buildMergedSeasons({
   animeTitleEnglish,
   localSeasons,
   translateEpisode,
+  targetSeasonNumber,
 }: {
   animeSlug: string;
   animeTitle: string;
@@ -251,6 +252,7 @@ export async function buildMergedSeasons({
   animeTitleEnglish?: string | null;
   localSeasons: LocalSeasonForMerge[];
   translateEpisode?: (num: number) => string;
+  targetSeasonNumber?: number | null;
 }): Promise<MergedSeason[]> {
   const seasonsToProcess =
     localSeasons.length > 0
@@ -271,6 +273,38 @@ export async function buildMergedSeasons({
 
   const mergedSeasons: MergedSeason[] = await Promise.all(
     seasonsToProcess.map(async (season) => {
+      // Se um targetSeasonNumber específico foi solicitado, outras temporadas usam apenas episódios locais (ou fallback temporário se vazio)
+      // garantindo que a temporada apareça no dropdown e não seja filtrada fora pelo .filter(episodes.length > 0)
+      if (
+        targetSeasonNumber !== undefined &&
+        targetSeasonNumber !== null &&
+        season.number !== targetSeasonNumber
+      ) {
+        const localEpisodes: MergedEpisode[] = [...season.episodes]
+          .sort((a, b) => a.number - b.number)
+          .map((episode) => ({
+            id: episode.id,
+            number: episode.number,
+            title: episode.title,
+            href: episode.publicId
+              ? `/watch/${episode.publicId}/${episode.slug || "episode-" + episode.number}`
+              : `/watch/${episode.id}/${episode.slug || "episode-" + episode.number}`,
+            videoUrl: episode.videoUrl,
+            imageUrl: episode.imageUrl,
+            publicId: episode.publicId,
+            slug: episode.slug,
+            createdAt: episode.createdAt,
+          }));
+
+        return {
+          id: season.id,
+          number: season.number,
+          title: season.title,
+          episodes: localEpisodes,
+          totalEpisodesCount: season.episodes.length,
+        };
+      }
+
       const seasonSourceKey = JSON.stringify({
         anilistId: animeAnilistId,
         malId: animeMalId,
@@ -378,6 +412,10 @@ export async function buildMergedSeasons({
   );
 
   return mergedSeasons
-    .filter((season) => season.episodes.length > 0)
+    .filter((season) =>
+      targetSeasonNumber !== undefined && targetSeasonNumber !== null
+        ? true
+        : season.episodes.length > 0,
+    )
     .sort((a, b) => a.number - b.number);
 }

@@ -290,7 +290,7 @@ export default function EpisodeSidebar({
             </button>
 
             {seasonDropdownOpen && (
-              <div className="absolute left-2 right-0 z-50 mt-1 py-2 max-h-60 overflow-y-auto custom-scrollbar bg-[#272727] rounded-md">
+              <div className="absolute left-2 right-0 z-50 mt-1 p-2 max-h-60 overflow-y-auto custom-scrollbar bg-[#272727] rounded-md">
                 {seasons.map((season) => (
                   <button
                     key={season.id}
@@ -299,7 +299,7 @@ export default function EpisodeSidebar({
                       setSeasonDropdownOpen(false);
                       setVisibleCount(12);
                     }}
-                    className={`w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#151515] flex items-center justify-between ${
+                    className={`w-full rounded-md px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#151515] flex items-center justify-between ${
                       season.id === selectedSeasonId
                         ? "text-white bg-[#151515]"
                         : "text-[#bbb] hover:text-white"

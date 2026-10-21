@@ -3,7 +3,13 @@ import { notFound } from "next/navigation";
 import { Link, redirect } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import {
+  buildAlternates,
+  buildOpenGraph,
+  buildTwitter,
+  NOINDEX_ROBOTS,
+} from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import { connection } from "next/server";
 import { resolvePlayableUrl } from "@/lib/playable-url";
 import {
@@ -48,7 +54,11 @@ export async function generateMetadata({
   await connection();
 
   const { locale, publicId, slug } = await params;
-  const { source, episode } = (await searchParams) || {};
+  const sp = (await searchParams) || {};
+  const { source, episode } = sp;
+  const hasQueryParams = Boolean(
+    sp.player || sp.source || sp.episode || sp.season || Object.keys(sp).length > 0
+  );
   const t = await getTranslations({ locale, namespace: "Watch" });
 
   let title = t("notFound");
@@ -188,19 +198,22 @@ export async function generateMetadata({
   return {
     title,
     description,
+    ...(hasQueryParams ? { robots: NOINDEX_ROBOTS } : {}),
     alternates: buildAlternates(locale, `/watch/${publicId}/${slug}`),
-    openGraph: {
+    openGraph: buildOpenGraph({
       title,
       description,
-      images: imageUrl ? [imageUrl] : [],
+      locale,
       type: "video.episode",
-    },
-    twitter: {
+      images: imageUrl ? [imageUrl] : [],
+      url: `${SITE_URL}/${locale}/watch/${publicId}/${slug}`,
+    }),
+    twitter: buildTwitter({
       card: "summary_large_image",
       title,
       description,
       images: imageUrl ? [imageUrl] : [],
-    },
+    }),
   };
 }
 

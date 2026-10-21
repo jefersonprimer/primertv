@@ -215,7 +215,7 @@ duplicados entre si):
 |---|------|---------|---------|
 | 1 | `robots.ts` + `sitemap.ts` | Baixo | 🔴 ✅ feito |
 | 2 | `metadataBase` + canonical + hreflang (helper único) | Médio | 🔴 ✅ feito |
-| 3 | `noindex` nas páginas pessoais e variantes de player | Baixo | 🔴 |
+| 3 | `noindex` nas páginas pessoais e variantes de player | Baixo | 🔴 ✅ feito |
 | 4 | JSON-LD (WebSite, TVSeries/Movie, VideoObject, Breadcrumb) | Médio | 🟠 |
 | 5 | Title template + títulos curtos (6 idiomas) | Baixo | 🟠 |
 | 6 | Metadata para as 17 páginas sem título próprio | Baixo | 🟠 |

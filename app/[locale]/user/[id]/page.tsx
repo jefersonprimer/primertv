@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth";
 import { generateUniqueUsername } from "@/lib/username";
 import { notFound, redirect } from "next/navigation";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
 import { UserProfileClient } from "./UserProfileClient";
 
 interface UserProfilePageProps {
@@ -28,7 +28,10 @@ export async function generateMetadata({
     }));
 
   if (!user) {
-    return { title: "Usuário não encontrado - PrimerTv" };
+    return {
+      title: "Usuário não encontrado - PrimerTv",
+      robots: NOINDEX_ROBOTS,
+    };
   }
 
   const displayName = user.username ? `@${user.username}` : user.name;
@@ -36,6 +39,7 @@ export async function generateMetadata({
   return {
     title: `Perfil de ${user.name} (${displayName}) - PrimerTv`,
     description: `Confira o perfil público, watchlist, histórico e conquistas de ${user.name} no PrimerTv.`,
+    robots: NOINDEX_ROBOTS,
     alternates: buildAlternates(
       locale,
       `/user/${user.username ?? id}`,

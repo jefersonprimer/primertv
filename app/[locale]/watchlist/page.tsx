@@ -1,5 +1,4 @@
-"use server";
-
+import type { Metadata } from "next";
 import { MediaCard } from "@/components/MediaCard";
 import FavoriteCard from "@/components/FavoriteCard";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
@@ -10,6 +9,22 @@ import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { getFirstAnimeEpisodes } from "@/lib/media-performance";
 import { ProfileTabs } from "@/components/ProfileTabs";
+import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Watchlist" });
+
+  return {
+    title: `${t("title")} - PrimerTv`,
+    robots: NOINDEX_ROBOTS,
+    alternates: buildAlternates(locale, "/watchlist"),
+  };
+}
 
 type WatchlistRow = {
   id: string;

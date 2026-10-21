@@ -8,7 +8,8 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Footer } from "@/components/Footer";
-import { metadataBase } from "@/lib/seo";
+import { metadataBase, buildOpenGraph, buildTwitter } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 
 interface GenerateMetadataProps {
   params: Promise<{ locale: string }>;
@@ -19,10 +20,25 @@ export async function generateMetadata({
 }: GenerateMetadataProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Layout" });
+  const title = t("metaTitle");
+  const description = t("metaDescription");
+
   return {
     metadataBase,
-    title: t("metaTitle"),
-    description: t("metaDescription"),
+    title,
+    description,
+    openGraph: buildOpenGraph({
+      title,
+      description,
+      locale,
+      type: "website",
+      url: `${SITE_URL}/${locale}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
+      title,
+      description,
+    }),
   };
 }
 

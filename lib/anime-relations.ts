@@ -5,6 +5,7 @@ export type FranchiseItem = {
   slug: string;
   title: string;
   titleEnglish?: string | null;
+  description?: string | null;
   imageUrl?: string | null;
   bannerUrl?: string | null;
   rating?: string | null;
@@ -12,6 +13,7 @@ export type FranchiseItem = {
   score?: number | null;
   isDubbed?: boolean;
   isSubtitled?: boolean;
+  inWatchlist?: boolean;
   firstEpisodeHref: string;
   firstEpisodeNumber?: number;
   totalEpisodes?: number;
@@ -208,6 +210,7 @@ async function findFranchiseAnime({
       slug: true,
       title: true,
       titleEnglish: true,
+      description: true,
       imageUrl: true,
       bannerUrl: true,
       rating: true,
@@ -259,6 +262,7 @@ async function findFranchiseAnime({
     slug: anime.slug,
     title: anime.title,
     titleEnglish: anime.titleEnglish,
+    description: anime.description,
     imageUrl: anime.imageUrl,
     bannerUrl: anime.bannerUrl,
     rating: anime.rating,

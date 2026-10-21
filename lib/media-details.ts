@@ -162,6 +162,14 @@ const mangaDetailsSelect = {
 } satisfies Prisma.MangaSelect;
 
 export const getAnimeDetailsBySlug = cache(async (slug: string) => {
+  // Fast path: try exact match first (uses @unique index directly)
+  const direct = await prisma.anime.findUnique({
+    where: { slug },
+    select: animeDetailsSelect,
+  });
+  if (direct) return direct;
+
+  // Slow path: encoding variations fallback
   const decoded = decodeURIComponent(slug);
   const normalizedNFC = decoded.normalize("NFC");
   const normalizedNFD = decoded.normalize("NFD");
@@ -173,7 +181,6 @@ export const getAnimeDetailsBySlug = cache(async (slug: string) => {
         { slug: normalizedNFD },
         { slug: decoded },
         { slug: slugified },
-        { slug: slug },
       ],
     },
     select: animeDetailsSelect,
@@ -181,6 +188,20 @@ export const getAnimeDetailsBySlug = cache(async (slug: string) => {
 });
 
 export const getSeriesDetailsBySlug = cache(async (slug: string) => {
+  // Fast path: try exact match first
+  const direct = await prisma.series.findUnique({
+    where: { slug },
+    select: seriesDetailsSelect,
+  });
+  if (direct) return direct;
+
+  // Fast path: try id if valid cuid or id
+  const directById = await prisma.series.findUnique({
+    where: { id: slug },
+    select: seriesDetailsSelect,
+  }).catch(() => null);
+  if (directById) return directById;
+
   const decoded = decodeURIComponent(slug);
   const normalizedNFC = decoded.normalize("NFC");
   const normalizedNFD = decoded.normalize("NFD");
@@ -193,7 +214,6 @@ export const getSeriesDetailsBySlug = cache(async (slug: string) => {
         { slug: normalizedNFD },
         { slug: decoded },
         { slug: slugified },
-        { slug: slug },
       ],
     },
     select: seriesDetailsSelect,

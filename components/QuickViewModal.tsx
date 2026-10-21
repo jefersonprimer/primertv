@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +14,7 @@ import RatingBadge from "./RatingBadge";
 import MediaDescription from "./MediaDescription";
 import {
   getAnimeQuickPreview,
+  getAnimeSeasonEpisodesAction,
   type AnimeQuickPreviewData,
 } from "@/app/actions/getAnimeQuickPreview";
 import { getSeriesQuickPreview } from "@/app/actions/getSeriesQuickPreview";
@@ -23,6 +24,52 @@ interface QuickViewModalProps {
   type?: "anime" | "series" | "movie" | "manga" | "novela";
   isOpen: boolean;
   onClose: () => void;
+}
+
+// Cache compartilhado globalmente por toda a aplicação (gratuito, em memória no navegador)
+const globalQuickPreviewCache = new Map<string, AnimeQuickPreviewData>();
+const pendingPrefetches = new Map<
+  string,
+  Promise<AnimeQuickPreviewData | null>
+>();
+
+/**
+ * Faz o prefetch em background (ex: ao passar o mouse por cima do card).
+ * Gratuito, sem custos de servidor extras, roda direto no navegador.
+ */
+export function prefetchQuickPreview(
+  slug: string,
+  type: "anime" | "series" | "movie" | "manga" | "novela" = "anime",
+) {
+  if (!slug || (type !== "anime" && type !== "series")) return;
+
+  const cacheKey = `${type}:${slug}`;
+  if (
+    globalQuickPreviewCache.has(cacheKey) ||
+    pendingPrefetches.has(cacheKey)
+  ) {
+    return;
+  }
+
+  const fetcher =
+    type === "series" ? getSeriesQuickPreview : getAnimeQuickPreview;
+
+  const promise = fetcher(slug)
+    .then((resData) => {
+      if (resData) {
+        globalQuickPreviewCache.set(cacheKey, resData);
+      }
+      return resData;
+    })
+    .catch((err) => {
+      console.warn("Erro ao fazer prefetch de preview:", err);
+      return null;
+    })
+    .finally(() => {
+      pendingPrefetches.delete(cacheKey);
+    });
+
+  pendingPrefetches.set(cacheKey, promise);
 }
 
 export function QuickViewModal({
@@ -53,17 +100,40 @@ export function QuickViewModal({
       return;
     }
 
+    let isSubscribed = true;
+    const cacheKey = `${type}:${slug}`;
+    const cachedData = globalQuickPreviewCache.get(cacheKey);
+
+    if (cachedData) {
+      setData(cachedData);
+      const initialSeason =
+        cachedData.nextEpisode?.seasonNumber ||
+        cachedData.seasons?.[0]?.number ||
+        1;
+      setSelectedSeasonNumber(initialSeason);
+      setVisibleCount(12);
+      setLoading(false);
+      setError(false);
+      return;
+    }
+
     setLoading(true);
     setError(false);
 
-    const fetcher =
-      type === "series" ? getSeriesQuickPreview : getAnimeQuickPreview;
+    // Se já havia um prefetch em andamento, aproveita a mesma Promise
+    const inFlightPromise =
+      pendingPrefetches.get(cacheKey) ||
+      (type === "series"
+        ? getSeriesQuickPreview(slug)
+        : getAnimeQuickPreview(slug));
 
-    fetcher(slug)
+    inFlightPromise
       .then((resData) => {
+        if (!isSubscribed) return;
         if (!resData) {
           setError(true);
         } else {
+          globalQuickPreviewCache.set(cacheKey, resData);
           setData(resData);
           const initialSeason =
             resData.nextEpisode?.seasonNumber ||
@@ -74,23 +144,66 @@ export function QuickViewModal({
         }
       })
       .catch((err) => {
+        if (!isSubscribed) return;
         console.error("Erro QuickViewModal:", err);
         setError(true);
       })
       .finally(() => {
-        setLoading(false);
+        if (isSubscribed) {
+          setLoading(false);
+        }
       });
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [isOpen, slug, type]);
 
-  const handleSeasonChange = (seasonNum: number) => {
-    setSelectedSeasonNumber(seasonNum);
-    setVisibleCount(12);
-  };
+  const [loadingSeason, setLoadingSeason] = useState(false);
+
+  const handleSeasonChange = useCallback(
+    async (seasonNum: number) => {
+      setSelectedSeasonNumber(seasonNum);
+      setVisibleCount(12);
+
+      if (!slug || type !== "anime" || !data) return;
+
+      const seasonObj = data.seasons?.find((s) => s.number === seasonNum);
+      // Se a temporada ainda não tem episódios carregados ou tem apenas fallbacks
+      if (seasonObj && seasonObj.episodes.length === 0) {
+        setLoadingSeason(true);
+        try {
+          const freshEpisodes = await getAnimeSeasonEpisodesAction(
+            slug,
+            seasonNum,
+          );
+          if (freshEpisodes && freshEpisodes.length > 0) {
+            setData((prev) => {
+              if (!prev) return prev;
+              const updatedSeasons = prev.seasons.map((s) =>
+                s.number === seasonNum ? { ...s, episodes: freshEpisodes } : s,
+              );
+              const updatedData = { ...prev, seasons: updatedSeasons };
+              // Atualiza o cache global em memória também
+              globalQuickPreviewCache.set(`${type}:${slug}`, updatedData);
+              return updatedData;
+            });
+          }
+        } catch (err) {
+          console.error("Erro ao carregar episódios da temporada:", err);
+        } finally {
+          setLoadingSeason(false);
+        }
+      }
+    },
+    [slug, type, data],
+  );
 
   // Tecla ESC para fechar
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape") {
         onClose();
       }
     };
@@ -110,36 +223,51 @@ export function QuickViewModal({
     };
   }, [isOpen]);
 
-  if (!isOpen || !mounted) return null;
+  const targetEpisode = useMemo(
+    () => data?.nextEpisode || data?.firstEpisode,
+    [data],
+  );
 
-  const targetEpisode = data?.nextEpisode || data?.firstEpisode;
-  const watchUrl = targetEpisode?.href
-    ? targetEpisode.href
-    : targetEpisode
-      ? `/watch/${targetEpisode.publicId || targetEpisode.id}/${targetEpisode.slug || "episode-" + targetEpisode.number}`
-      : `/animes/${slug}`;
+  const watchUrl = useMemo(() => {
+    if (targetEpisode?.href) return targetEpisode.href;
+    if (targetEpisode) {
+      return `/watch/${targetEpisode.publicId || targetEpisode.id}/${targetEpisode.slug || "episode-" + targetEpisode.number}`;
+    }
+    return `/${basePath}/${slug}`;
+  }, [targetEpisode, basePath, slug]);
 
-  const headerBanner = data?.bannerUrl || data?.imageUrl;
+  const headerBanner = useMemo(() => data?.bannerUrl || data?.imageUrl, [data]);
 
-  const buttonText = data?.hasHistory
-    ? t("continueWatching", { number: targetEpisode?.number ?? 1 })
-    : targetEpisode?.number
-      ? t("watchEpisode", { number: targetEpisode.number })
-      : t("startWatching");
+  const buttonText = useMemo(() => {
+    if (data?.hasHistory) {
+      return t("continueWatching", { number: targetEpisode?.number ?? 1 });
+    }
+    if (targetEpisode?.number) {
+      return t("watchEpisode", { number: targetEpisode.number });
+    }
+    return t("startWatching");
+  }, [data?.hasHistory, targetEpisode?.number, t]);
 
-  const formatDuration = (duration?: string | null): string => {
+  const formatDuration = useCallback((duration?: string | null): string => {
     if (!duration || duration.toLowerCase() === "unknown") return "";
     const matches = duration.match(/\d+/);
     if (matches) {
       return `${matches[0]}m`;
     }
     return "";
-  };
+  }, []);
 
-  const currentSeason = data?.seasons?.find(
-    (s) => s.number === selectedSeasonNumber,
+  const currentSeason = useMemo(
+    () => data?.seasons?.find((s) => s.number === selectedSeasonNumber),
+    [data?.seasons, selectedSeasonNumber],
   );
-  const episodesList = currentSeason?.episodes || [];
+
+  const episodesList = useMemo(
+    () => currentSeason?.episodes || [],
+    [currentSeason],
+  );
+
+  if (!isOpen || !mounted) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/80 backdrop-blur-sm animate-fadeIn">
@@ -156,12 +284,12 @@ export function QuickViewModal({
           <X size={24} />
         </button>
 
-        {loading ? (
+        {loading || (!data && !error) ? (
           <div className="overflow-y-auto custom-scrollbar flex flex-col animate-pulse">
             {/* Banner Skeleton */}
             <div className="relative aspect-16/9 w-full max-h-[340px] sm:max-h-[420px] md:max-h-[480px] bg-zinc-800/60 flex-shrink-0 flex items-end p-4 sm:p-6">
               <div className="flex flex-wrap items-center gap-3 w-full">
-                <div className="h-11 w-36 bg-zinc-700/80 rounded-xl" />
+                <div className="h-11 w-36 bg-zinc-700/80 rounded-full" />
                 <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
                 <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
                 <div className="h-10 w-10 bg-zinc-700/80 rounded-full" />
@@ -380,17 +508,22 @@ export function QuickViewModal({
                       >
                         {data.seasons.map((s) => {
                           const seasonName = s.title?.trim() || s.name?.trim();
+                          const count = s.episodes.length;
                           return (
                             <option key={s.id} value={s.number}>
                               {seasonName
-                                ? t("seasonOptionWithName", {
-                                    name: seasonName,
-                                    count: s.episodes.length,
-                                  })
-                                : t("seasonOption", {
-                                    number: s.number,
-                                    count: s.episodes.length,
-                                  })}
+                                ? count > 0
+                                  ? t("seasonOptionWithName", {
+                                      name: seasonName,
+                                      count,
+                                    })
+                                  : seasonName
+                                : count > 0
+                                  ? t("seasonOption", {
+                                      number: s.number,
+                                      count,
+                                    })
+                                  : `Temporada ${s.number}`}
                             </option>
                           );
                         })}
@@ -405,7 +538,22 @@ export function QuickViewModal({
 
                 {/* Lista de Episódios em Linha (Rows) */}
                 <div className="flex flex-col">
-                  {episodesList.length === 0 ? (
+                  {loadingSeason ? (
+                    <div className="flex flex-col gap-3 py-2 animate-pulse">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/70"
+                        >
+                          <div className="aspect-16/9 w-full sm:w-44 bg-zinc-800 rounded-lg flex-shrink-0" />
+                          <div className="flex flex-col justify-center flex-1 gap-2">
+                            <div className="h-5 w-3/4 bg-zinc-800 rounded" />
+                            <div className="h-4 w-1/4 bg-zinc-800/60 rounded" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : episodesList.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic py-4">
                       {t("noEpisodes")}
                     </p>

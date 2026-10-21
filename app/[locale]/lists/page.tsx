@@ -1,5 +1,4 @@
-"use server";
-
+import type { Metadata } from "next";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { prisma } from "@/lib/prisma";
 import { Link, redirect } from "@/i18n/routing";
@@ -10,6 +9,22 @@ import CreateListModal from "@/components/CreateListModal";
 import EditListModal from "@/components/EditListModal";
 import DeleteListButton from "@/components/DeleteListButton";
 import { ProfileTabs } from "@/components/ProfileTabs";
+import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Lists" });
+
+  return {
+    title: `${t("title")} - PrimerTv`,
+    robots: NOINDEX_ROBOTS,
+    alternates: buildAlternates(locale, "/lists"),
+  };
+}
 
 export default async function ListasPage({
   params,

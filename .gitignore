@@ -42,6 +42,9 @@ next-env.d.ts
 
 /app/generated/prisma
 
+# backup of the original anime scores, created by `prisma/seed.ts`
+/prisma/seed-score-backup.json
+
 
 # workers
 /worker/target/

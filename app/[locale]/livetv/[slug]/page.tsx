@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import {
+  buildAlternates,
+  buildOpenGraph,
+  buildTwitter,
+} from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import { connection } from "next/server";
 import { ChannelPlayer } from "./ChannelPlayer";
 import { getSession } from "@/lib/auth";
@@ -34,14 +39,27 @@ export async function generateMetadata({
 
   if (!channel) return { title: "Canal não encontrado" };
 
+  const title = `Assistir ${channel.title} Ao Vivo Online - Primerflix`;
+  const description = `Assista ao canal ${channel.title} ao vivo online grátis no Primerflix.`;
+
   return {
-    title: `Assistir ${channel.title} Ao Vivo Online - Primerflix`,
-    description: `Assista ao canal ${channel.title} ao vivo online grátis no Primerflix.`,
+    title,
+    description,
     alternates: buildAlternates(locale, `/livetv/${channel.slug}`),
-    openGraph: {
+    openGraph: buildOpenGraph({
       title: channel.title,
+      description,
+      locale,
+      type: "website",
       images: channel.imageUrl ? [channel.imageUrl] : [],
-    },
+      url: `${SITE_URL}/${locale}/livetv/${channel.slug}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
+      title: channel.title,
+      description,
+      images: channel.imageUrl ? [channel.imageUrl] : [],
+    }),
   };
 }
 

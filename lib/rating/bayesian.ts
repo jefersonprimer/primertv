@@ -5,6 +5,8 @@ export interface BayesianRatingResult {
   weightedAverage: number;
   totalVotes: number;
   weightedVotes: number;
+  globalAverage: number;
+  globalVotes: number;
 }
 
 const MINIMUM_WEIGHTED_VOTES = 10;
@@ -39,12 +41,21 @@ export async function calculateAnimeBayesianScore(
 
   const totalVotes = ratings.length;
 
+  // Global average C — fallback to the community baseline when there is no data yet
+  const globalVotes = globalStats._count.id;
+  const globalAverage =
+    globalVotes > 0 && globalStats._sum.score !== null
+      ? globalStats._sum.score / globalVotes
+      : DEFAULT_GLOBAL_AVERAGE;
+
   if (totalVotes === 0) {
     return {
       bayesianScore: 0,
       weightedAverage: 0,
       totalVotes: 0,
       weightedVotes: 0,
+      globalAverage,
+      globalVotes,
     };
   }
 
@@ -60,12 +71,6 @@ export async function calculateAnimeBayesianScore(
 
   const realWeightedAverage = weightedVotes > 0 ? sumWeightedScores / weightedVotes : 0;
 
-  // Calculate Global Average C
-  let globalAverage = DEFAULT_GLOBAL_AVERAGE;
-  if (globalStats._count.id > 0 && globalStats._sum.score !== null) {
-    globalAverage = globalStats._sum.score / globalStats._count.id;
-  }
-
   const M = MINIMUM_WEIGHTED_VOTES;
   const C = globalAverage;
   const V = weightedVotes;
@@ -80,5 +85,7 @@ export async function calculateAnimeBayesianScore(
     weightedAverage: Math.round(realWeightedAverage * 10) / 10,
     totalVotes,
     weightedVotes: Math.round(weightedVotes * 10) / 10,
+    globalAverage: Math.round(globalAverage * 10) / 10,
+    globalVotes,
   };
 }

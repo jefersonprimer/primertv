@@ -2,7 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import { connection } from "next/server";
 import { resolvePlayableUrl } from "@/lib/playable-url";
 import EpisodeSidebar from "./EpisodeSidebar";
@@ -33,30 +34,29 @@ export async function generateMetadata({
 
   const title = `Assistir ${episode.season.novela.title} - Capítulo ${episode.number} Online`;
   const description = `Assista agora ao capítulo ${episode.number} de ${episode.season.novela.title} em HD. Assista novelas online grátis no Primerflix.`;
+  const canonicalPath = `/novelas/${slug}/episode/${episodeId}`;
+  const images = episode.season.novela.imageUrl
+    ? [episode.season.novela.imageUrl]
+    : [];
 
   return {
     title,
     description,
-    alternates: buildAlternates(
-      locale,
-      `/novelas/${slug}/episode/${episodeId}`,
-    ),
-    openGraph: {
+    alternates: buildAlternates(locale, canonicalPath),
+    openGraph: buildOpenGraph({
       title,
       description,
-      images: episode.season.novela.imageUrl
-        ? [episode.season.novela.imageUrl]
-        : [],
+      locale,
       type: "video.episode",
-    },
-    twitter: {
+      images,
+      url: `${SITE_URL}/${locale}${canonicalPath}`,
+    }),
+    twitter: buildTwitter({
       card: "summary_large_image",
       title,
       description,
-      images: episode.season.novela.imageUrl
-        ? [episode.season.novela.imageUrl]
-        : [],
-    },
+      images,
+    }),
   };
 }
 

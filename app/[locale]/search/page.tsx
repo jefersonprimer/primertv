@@ -1,10 +1,34 @@
-"use server";
-
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { MediaCard } from "@/components/MediaCard";
 import { SearchTopResultCard } from "@/components/SearchTopResultCard";
 import { SearchBar } from "@/components/SearchBar";
 import { getTranslations } from "next-intl/server";
+import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
+
+interface SearchPageProps {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ q?: string }>;
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: SearchPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const { q } = (await searchParams) || {};
+  const t = await getTranslations({ locale, namespace: "Search" });
+
+  const title = q
+    ? `${q} - ${t("placeholder")}`
+    : `${t("placeholder")} - PrimerTv`;
+
+  return {
+    title,
+    robots: NOINDEX_ROBOTS,
+    alternates: buildAlternates(locale, "/search"),
+  };
+}
 
 export default async function SearchPage({
   searchParams,

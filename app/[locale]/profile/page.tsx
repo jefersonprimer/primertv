@@ -1,7 +1,24 @@
+import type { Metadata } from "next";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ProfileForm } from "@/components/ProfileForm";
+import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Profile" });
+
+  return {
+    title: `${t("title")} - PrimerTv`,
+    robots: NOINDEX_ROBOTS,
+    alternates: buildAlternates(locale, "/profile"),
+  };
+}
 
 export default async function ProfilePage() {
   const session = await getSession();

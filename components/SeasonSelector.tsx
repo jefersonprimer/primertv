@@ -117,7 +117,7 @@ export default function SeasonSelector({
                 className="fixed inset-0 z-40"
                 onClick={() => setIsOpen(false)}
               />
-              <div className="absolute left-0 top-full rounded-xl z-50 mt-2 p-2 w-90 overflow-hidden bg-[#272727] shadow-xl">
+              <div className="absolute left-0 top-full rounded-xl z-50 mt-2 p-2 w-auto max-w-200 overflow-hidden bg-[#272727] shadow-xl">
                 {seasons.map((season, index) => (
                   <button
                     key={season.id}
@@ -125,14 +125,14 @@ export default function SeasonSelector({
                       setCurrentIndex(index);
                       setIsOpen(false);
                     }}
-                    className={`w-full px-4 py-3 rounded-md text-left text-sm font-medium transition-colors hover:bg-[#151515] flex items-center justify-between ${
+                    className={`w-full gap-8 px-4 py-3 rounded-md text-left text-sm font-medium transition-colors hover:bg-[#151515] flex items-center justify-between ${
                       index === currentIndex
                         ? "bg-[#151515] text-white"
                         : "text-[#bbb]"
                     }`}
                   >
                     <span
-                      className="truncate max-w-[210px]"
+                      className="truncate max-w-[460px]"
                       title={
                         season.title
                           ? season.title

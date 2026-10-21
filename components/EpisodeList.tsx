@@ -79,10 +79,19 @@ function formatItemNumber(num: number): string {
 function isGenericTitle(
   title: string | null | undefined,
   num: number,
+  animeTitle?: string | null,
 ): boolean {
   if (!title) return true;
-  const cleanTitle = title.trim().toLowerCase();
+  let cleanTitle = title.trim().toLowerCase();
   if (!cleanTitle) return true;
+
+  if (animeTitle && animeTitle.trim()) {
+    const normAnime = animeTitle.trim().toLowerCase();
+    if (cleanTitle.startsWith(normAnime)) {
+      cleanTitle = cleanTitle.substring(normAnime.length).trim();
+      cleanTitle = cleanTitle.replace(/^[\s.:\-–—|/]+/, "").trim();
+    }
+  }
 
   const roundedNum = Number(num.toFixed(4));
   const rawNumStr = num.toString();
@@ -104,29 +113,59 @@ function isGenericTitle(
     "episódio",
     "episodio",
     "ep",
+    "e",
   ];
+
   let stripped = cleanTitle;
   for (const word of wordsToRemove) {
     if (stripped.startsWith(word)) {
-      stripped = stripped.substring(word.length).trim();
+      const remainder = stripped.substring(word.length);
+      if (remainder === "" || /^[\s.:\-–—|/0-9]/.test(remainder)) {
+        stripped = remainder.trim();
+        break;
+      }
     }
   }
 
   // Strip leading and trailing symbols (dots, colons, hyphens, spaces)
   stripped = stripped
-    .replace(/^[.:\-\s]+/, "")
-    .replace(/[.:\-\s]+$/, "")
+    .replace(/^[\s.:\-–—|/]+/, "")
+    .replace(/[\s.:\-–—|/]+$/, "")
     .trim();
 
-  // If nothing is left, or if the remaining part parses to the same chapter number
+  // If nothing is left, or if the remaining part parses to the same chapter/episode number
   if (stripped === "") return true;
 
   const parsedStripped = Number(stripped);
-  if (!isNaN(parsedStripped)) {
+  if (!isNaN(parsedStripped) && (parsedStripped === roundedNum || parsedStripped === num)) {
     return true;
   }
 
   return false;
+}
+
+function cleanEpisodeTitle(
+  title: string | null | undefined,
+  num: number,
+  animeTitle?: string | null,
+): string | null {
+  if (!title) return null;
+  let clean = title.trim();
+  if (!clean) return null;
+
+  if (animeTitle && animeTitle.trim()) {
+    const normAnime = animeTitle.trim().toLowerCase();
+    if (clean.toLowerCase().startsWith(normAnime)) {
+      clean = clean.substring(normAnime.length).trim();
+      clean = clean.replace(/^[\s.:\-–—|/]+/, "").trim();
+    }
+  }
+
+  if (isGenericTitle(clean, num)) {
+    return null;
+  }
+
+  return clean || null;
 }
 
 function formatReleaseDate(
@@ -298,6 +337,15 @@ export default function EpisodeList({
               ? String(item.releaseDay)
               : null;
 
+          const realEpisodeTitle =
+            itemType === "episode"
+              ? cleanEpisodeTitle(item.title, item.number, displayAnimeTitle)
+              : null;
+
+          const episodeTitle = realEpisodeTitle
+            ? `E${item.number} - ${realEpisodeTitle}`
+            : `${displayLabel} ${formattedNum}`;
+
           return (
             <Link
               key={item.id}
@@ -313,7 +361,11 @@ export default function EpisodeList({
                   {item.imageUrl || fallbackImageUrl ? (
                     <Image
                       src={item.imageUrl || fallbackImageUrl || ""}
-                      alt={item.title || `${displayLabel} ${formattedNum}`}
+                      alt={
+                        itemType === "episode"
+                          ? episodeTitle
+                          : item.title || `${displayLabel} ${formattedNum}`
+                      }
                       fill
                       sizes="(max-width: 768px) 100vw, 240px"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -349,11 +401,7 @@ export default function EpisodeList({
                     </span>
                   )}
                   <h3 className="line-clamp-2 text-base font-bold text-white">
-                    {item.title &&
-                    item.title.trim() &&
-                    !isGenericTitle(item.title, item.number)
-                      ? item.title
-                      : `${displayLabel} ${formattedNum}`}
+                    {episodeTitle}
                   </h3>
                   {(isDubbed || isSubtitled) && (
                     <div className="flex gap-1.5 items-center mt-2">
@@ -387,7 +435,7 @@ export default function EpisodeList({
                   </div>
                   {item.title &&
                     item.title.trim() &&
-                    !isGenericTitle(item.title, item.number) && (
+                    !isGenericTitle(item.title, item.number, displayAnimeTitle) && (
                       <h4 className="line-clamp-1 text-xs text-zinc-400">
                         {item.title}
                       </h4>
@@ -418,7 +466,7 @@ export default function EpisodeList({
                       </span>
                     )}
                     <h4 className="line-clamp-2 text-base font-normal text-white">
-                      {item.title || `${displayLabel} ${formattedNum}`}
+                      {episodeTitle}
                     </h4>
                     {(displayAnimeRating || releaseDateDisplay) && (
                       <div className="flex items-center gap-2 mt-1">

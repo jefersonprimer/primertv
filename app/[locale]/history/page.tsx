@@ -1,5 +1,4 @@
-"use server";
-
+import type { Metadata } from "next";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { getAnimeWatchHistory } from "@/lib/history";
 import { Link, redirect } from "@/i18n/routing";
@@ -8,6 +7,22 @@ import { getTranslations } from "next-intl/server";
 import { Clock } from "lucide-react";
 import { HistoryCard } from "@/components/HistoryCard";
 import { ProfileTabs } from "@/components/ProfileTabs";
+import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "History" });
+
+  return {
+    title: `${t("title")} - PrimerTv`,
+    robots: NOINDEX_ROBOTS,
+    alternates: buildAlternates(locale, "/history"),
+  };
+}
 
 export default async function HistoricoPage({
   params,

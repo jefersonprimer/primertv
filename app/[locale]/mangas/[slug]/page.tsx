@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import { BookOpen } from "lucide-react";
 
 import EpisodeList from "@/components/EpisodeList";
@@ -43,14 +44,28 @@ export async function generateMetadata({
   if (ogBannerUrl) ogImages.push(ogBannerUrl);
   if (manga.imageUrl) ogImages.push(manga.imageUrl);
 
+  const title = `Leia ${manga.title} Online - PrimerTv`;
+  const description = `Leia o mangá ${manga.title} online grátis no PrimerTv.`;
+  const canonicalPath = `/mangas/${manga.slug}`;
+
   return {
-    title: `Leia ${manga.title} Online - PrimerTv`,
-    description: `Leia o mangá ${manga.title} online grátis no PrimerTv.`,
-    alternates: buildAlternates(locale, `/mangas/${manga.slug}`),
-    openGraph: {
+    title,
+    description,
+    alternates: buildAlternates(locale, canonicalPath),
+    openGraph: buildOpenGraph({
       title: manga.title,
+      description,
+      locale,
+      type: "book",
       images: ogImages,
-    },
+      url: `${SITE_URL}/${locale}${canonicalPath}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
+      title: manga.title,
+      description,
+      images: ogImages,
+    }),
   };
 }
 

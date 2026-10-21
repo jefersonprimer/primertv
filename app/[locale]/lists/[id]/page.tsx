@@ -1,5 +1,4 @@
-"use server";
-
+import type { Metadata } from "next";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
@@ -10,9 +9,23 @@ import { ChevronLeft, FolderOpen } from "lucide-react";
 import { MediaCard } from "@/components/MediaCard";
 import RemoveFromListButton from "@/components/RemoveFromListButton";
 import EditListModal from "@/components/EditListModal";
+import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
 
 interface ListDetailsPageProps {
   params: Promise<{ locale: string; id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ListDetailsPageProps): Promise<Metadata> {
+  const { locale, id } = await params;
+  const t = await getTranslations({ locale, namespace: "Lists" });
+
+  return {
+    title: `${t("title")} - PrimerTv`,
+    robots: NOINDEX_ROBOTS,
+    alternates: buildAlternates(locale, `/lists/${id}`),
+  };
 }
 
 export default async function ListDetailsPage({

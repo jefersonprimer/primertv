@@ -1,360 +1,331 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useId, useMemo, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { Star, X, Check, Award, Users, ShieldCheck, ChevronDown, ChevronUp, Calculator, Info } from "lucide-react";
-import { RatingBreakdown } from "@/app/actions/animeRating";
-import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { Star, X } from "lucide-react";
+import type {
+  AnimeRatingStats,
+  RatingBreakdown,
+} from "@/app/actions/animeRating";
+import { useFormatter, useTranslations } from "next-intl";
 
 interface StarRatingModalProps {
   isOpen: boolean;
   onClose: () => void;
   animeTitle: string;
-  averageScore: number;
-  totalVotes: number;
-  userScore: number | null;
-  breakdown: RatingBreakdown[];
-  onRate: (score: number) => Promise<void>;
+  stats: AnimeRatingStats;
   isLoggedIn: boolean;
+}
+
+const MAX_STARS = 10;
+
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function StarRow({ ratio, size = 18 }: { ratio: number; size?: number }) {
+  const width = clamp(ratio * 100, 0, 100);
+
+  return (
+    <span className="relative inline-flex" aria-hidden="true">
+      <span className="flex gap-1">
+        {Array.from({ length: MAX_STARS }).map((_, i) => (
+          <Star
+            key={i}
+            style={{ width: size, height: size }}
+            className="shrink-0 text-zinc-700"
+          />
+        ))}
+      </span>
+      <span
+        className="absolute inset-y-0 left-0 overflow-hidden"
+        style={{ width: `${width}%` }}
+      >
+        <span className="flex gap-1">
+          {Array.from({ length: MAX_STARS }).map((_, i) => (
+            <Star
+              key={i}
+              style={{ width: size, height: size }}
+              className="shrink-0 fill-amber-400 text-amber-400"
+            />
+          ))}
+        </span>
+      </span>
+    </span>
+  );
 }
 
 export function StarRatingModal({
   isOpen,
   onClose,
   animeTitle,
-  averageScore,
-  totalVotes,
-  userScore,
-  breakdown,
-  onRate,
+  stats,
   isLoggedIn,
 }: StarRatingModalProps) {
   const t = useTranslations("StarRating");
-  const [hoverScore, setHoverScore] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const format = useFormatter();
+  const titleId = useId();
 
-  const [showTrustDetails, setShowTrustDetails] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const mounted = useSyncExternalStore(
+    subscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!isOpen) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (e.key !== "Tab") return;
+
+      const focusables = panelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      );
+
+      if (!focusables || focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+    panelRef.current?.focus();
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus?.();
+    };
+  }, [isOpen, onClose]);
+
+  const { averageScore, totalVotes, breakdown, userScore, mostVotedScore } =
+    stats;
+
+  const hasVotes = totalVotes > 0;
+
+  const distribution = useMemo(
+    () => [...breakdown].sort((a, b) => b.score - a.score),
+    [breakdown],
+  );
 
   if (!isOpen || !mounted) return null;
 
-  const handleStarClick = async (score: number) => {
-    if (!isLoggedIn || isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      await onRate(score);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const getScoreLabel = (score: number) => {
-    switch (score) {
-      case 10:
-        return t("masterpiece", { defaultValue: "Obra-prima" });
-      case 9:
-        return t("excellent", { defaultValue: "Excelente" });
-      case 8:
-        return t("veryGood", { defaultValue: "Muito Bom" });
-      case 7:
-        return t("good", { defaultValue: "Bom" });
-      case 6:
-        return t("fine", { defaultValue: "Legal" });
-      case 5:
-        return t("average", { defaultValue: "Mediano" });
-      case 4:
-        return t("bad", { defaultValue: "Ruim" });
-      case 3:
-        return t("veryBad", { defaultValue: "Muito Ruim" });
-      case 2:
-        return t("horrible", { defaultValue: "Péssimo" });
-      case 1:
-        return t("appalling", { defaultValue: "Insuportável" });
-      default:
-        return "";
-    }
-  };
-
-  const activeStarRating = hoverScore ?? userScore ?? 0;
-
   const modalContent = (
     <div
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[99999] flex items-end justify-center bg-black/85 backdrop-blur-sm animate-fade-in sm:items-center sm:p-6"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg overflow-hidden bg-zinc-900/95 border border-zinc-800/80 rounded-3xl shadow-2xl shadow-black/60 text-zinc-100 animate-in zoom-in-95 duration-200"
+        ref={panelRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         onClick={(e) => e.stopPropagation()}
+        className="relative flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl bg-zinc-950 ring-1 ring-zinc-800/80 shadow-2xl shadow-black/70 outline-none animate-zoom-in-95 motion-reduce:animate-none sm:rounded-2xl"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-7 py-4 border-b border-zinc-800/80 bg-zinc-950/60 backdrop-blur-sm">
-          <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
-              <Award size={16} />
-            </div>
-            <h3 className="text-sm font-bold text-white tracking-wide uppercase">
+        <div className="flex items-start justify-between gap-4 px-5 pt-5 pb-4 sm:px-6">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold tracking-[0.18em] text-amber-400/80 uppercase">
               {t("evaluationStats", {
                 defaultValue: "Estatísticas de Avaliações",
               })}
-            </h3>
+            </p>
           </div>
+
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800/80 transition-colors"
-            aria-label="Close modal"
+            aria-label={t("close", { defaultValue: "Fechar" })}
+            className="-mt-1 -mr-1 shrink-0 rounded-full p-1.5 text-zinc-500 transition-colors hover:bg-zinc-800/80 hover:text-zinc-100 focus-visible:ring-2 focus-visible:ring-amber-400/60 focus-visible:outline-none"
           >
-            <X size={18} />
+            <X size={24} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-7 space-y-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
-          {/* Hero Score Banner */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-850 via-zinc-900 to-zinc-950 p-5 border border-zinc-800/80 shadow-inner">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="flex items-center justify-between relative z-10">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-400">
-                  <Award size={28} />
-                </div>
-                <div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-4xl font-extrabold tracking-tight text-white">
-                      {averageScore.toFixed(1)}
-                    </span>
-                    <span className="text-sm font-semibold text-zinc-400">
-                      / 10
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-400 font-medium">
-                    {t("communityAverage", {
-                      defaultValue: "Média da comunidade",
-                    })}
-                  </p>
-                </div>
-              </div>
+        {!hasVotes ? (
+          /* Empty state */
+          <div className="border-t border-zinc-800/70 px-5 py-12 text-center sm:px-6">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/60">
+              <Star size={22} className="text-zinc-600" />
+            </div>
+            <p className="mt-4 text-sm font-semibold text-zinc-200">
+              {t("noVotesTitle", {
+                defaultValue: "Nenhuma avaliação ainda",
+              })}
+            </p>
+            <p className="mx-auto mt-1.5 max-w-xs text-xs leading-relaxed text-zinc-500">
+              {t("noVotesDescription", {
+                defaultValue:
+                  "Seja a primeira pessoa a avaliar este anime e ajudar a comunidade a encontrar as melhores obras.",
+              })}
+            </p>
+          </div>
+        ) : (
+          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            {/* Average */}
+            <div className="border-t border-zinc-800/70 px-5 py-6 text-center sm:px-6">
+              <p className="text-[10px] font-semibold tracking-[0.16em] text-zinc-500 uppercase">
+                {t("communityAverage", {
+                  defaultValue: "Média da comunidade",
+                })}
+              </p>
 
-              <div className="text-right flex flex-col items-end gap-1">
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-800/60 rounded-full border border-zinc-700/50 text-xs font-semibold text-zinc-200">
-                  <Users size={14} className="text-zinc-400" />
-                  <span>{totalVotes.toLocaleString()}</span>
-                </div>
-                <span className="text-[11px] text-zinc-500 font-medium">
-                  {t("votes", { defaultValue: "votos computados" })}
+              <div
+                className="mt-2 flex items-end justify-center gap-1.5"
+                aria-label={`${averageScore.toFixed(1)} ${t("outOfStars", { max: MAX_STARS })}`}
+              >
+                <span className="text-5xl leading-none font-bold tabular-nums text-white">
+                  {format.number(averageScore, {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  })}
+                </span>
+                <span className="pb-1 text-sm font-medium text-zinc-500">
+                  / {MAX_STARS}
                 </span>
               </div>
+
+              <div className="mt-3 flex justify-center">
+                <StarRow ratio={averageScore / MAX_STARS} />
+              </div>
+
+              <p className="mt-3 text-sm text-zinc-400">
+                {t("ratings", { count: totalVotes })}
+              </p>
             </div>
-          </div>
 
-          {/* Breakdown Bars (IMDb Style) */}
-          <div className="py-2 space-y-2">
-            <div className="flex items-center justify-between px-1 mb-1">
-              <h4 className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                {t("distribution", { defaultValue: "Distribuição das notas" })}
-              </h4>
-            </div>
-
-            {breakdown.map((item) => {
-              const hasVotes = item.count > 0;
-              return (
-                <div
-                  key={item.score}
-                  className="flex items-center gap-3 text-sm py-1.5 px-1 rounded-md hover:bg-zinc-800/30 transition-colors"
-                >
-                  {/* Score Number (Larger & Bold) */}
-                  <span className="w-6 font-bold text-zinc-100 text-right text-sm shrink-0">
-                    {item.score}
-                  </span>
-
-                  {/* Progress Bar (Increased height: h-3.5) */}
-                  <div className="flex-1 h-3.5 bg-zinc-800/90 rounded-sm overflow-hidden relative">
-                    <div
-                      className={`h-full transition-all duration-500 ease-out ${
-                        hasVotes ? "bg-white" : "bg-transparent"
-                      }`}
-                      style={{ width: `${item.percentage}%` }}
+            {/* Your rating */}
+            {userScore !== null && (
+              <div className="border-t border-zinc-800/70 px-5 py-3 sm:px-6">
+                <div className="flex items-center justify-between gap-3 rounded-lg bg-amber-400/[0.06] px-3 py-2">
+                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
+                    <Star
+                      size={12}
+                      className="shrink-0 fill-amber-400 text-amber-400"
                     />
-                  </div>
-
-                  {/* Percentage & Vote Count (Matching size & white color) */}
-                  <div className="w-24 text-right shrink-0 flex items-center justify-end gap-1.5 font-mono">
-                    <span
-                      className={`font-normal text-sm ${hasVotes ? "text-white" : "text-zinc-500"}`}
-                    >
-                      {item.percentage}%
+                    {t("yourVote", { defaultValue: "Sua avaliação" })}
+                  </span>
+                  <span className="text-xs font-semibold tabular-nums text-white">
+                    {userScore}
+                    <span className="font-medium text-zinc-500">
+                      {" "}
+                      / {MAX_STARS}
                     </span>
-                    <span
-                      className={`font-normal text-sm ${hasVotes ? "text-white" : "text-zinc-500"}`}
-                    >
-                      ({item.count.toLocaleString()})
-                    </span>
-                  </div>
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            )}
 
-          {/* User Voting Section */}
-          <div className="pt-5 border-t border-zinc-800/80">
-            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">
-              {userScore
-                ? t("yourVote", { defaultValue: "Sua avaliação" })
-                : t("rateThisAnime", { defaultValue: "Avalie este anime" })}
-            </h4>
+            {/* Distribution */}
+            <div className="border-t border-zinc-800/70 px-5 py-5 sm:px-6">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-[10px] font-semibold tracking-[0.16em] text-zinc-500 uppercase">
+                  {t("distribution", {
+                    defaultValue: "Distribuição das notas",
+                  })}
+                </h3>
+                <span className="text-[10px] text-zinc-600">
+                  {t("distributionHint", {
+                    defaultValue: "notas e % dos votos",
+                  })}
+                </span>
+              </div>
 
-            {isLoggedIn ? (
-              <div className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-zinc-950/70 border border-zinc-800/80 backdrop-blur-sm relative overflow-hidden">
-                {/* Subtle Amber Glow when interacting */}
-                {activeStarRating > 0 && (
-                  <div className="absolute inset-0 bg-amber-500/5 blur-xl pointer-events-none transition-opacity duration-300" />
-                )}
+              <ul className="mt-3 space-y-0.5">
+                {distribution.map((item: RatingBreakdown) => {
+                  const hasItemVotes = item.count > 0;
+                  const isMostVoted =
+                    mostVotedScore !== null && item.score === mostVotedScore;
 
-                {/* 10 Stars */}
-                <div
-                  className="flex items-center justify-center gap-1 sm:gap-1.5 relative z-10"
-                  onMouseLeave={() => setHoverScore(null)}
-                >
-                  {Array.from({ length: 10 }).map((_, i) => {
-                    const score = i + 1;
-                    const isFilled = score <= activeStarRating;
-                    return (
-                      <button
-                        key={score}
-                        type="button"
-                        disabled={isSubmitting}
-                        onMouseEnter={() => setHoverScore(score)}
-                        onClick={() => handleStarClick(score)}
-                        className="p-1 focus:outline-none transition-all duration-150 transform hover:scale-125 active:scale-95 disabled:opacity-50"
-                        title={`${score}/10 - ${getScoreLabel(score)}`}
+                  return (
+                    <li
+                      key={item.score}
+                      className={`flex items-center gap-3 rounded-md px-1.5 py-1.5 ${
+                        isMostVoted ? "bg-zinc-900/70" : ""
+                      }`}
+                    >
+                      <span
+                        className={`flex w-7 shrink-0 items-center gap-1 text-xs font-semibold tabular-nums ${
+                          hasItemVotes ? "text-zinc-300" : "text-zinc-600"
+                        }`}
                       >
                         <Star
-                          size={24}
-                          className={`transition-colors duration-150 ${
-                            isFilled
-                              ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.6)]"
-                              : "text-zinc-700 hover:text-zinc-500"
-                          }`}
+                          size={11}
+                          className={
+                            hasItemVotes
+                              ? "fill-amber-400 text-amber-400"
+                              : "fill-zinc-800 text-zinc-800"
+                          }
                         />
-                      </button>
-                    );
-                  })}
-                </div>
+                        {item.score}
+                      </span>
 
-                {/* Rating description */}
-                <div className="h-6 text-sm font-semibold text-amber-400 flex items-center gap-2 relative z-10">
-                  {activeStarRating > 0 ? (
-                    <div className="flex items-center gap-2 animate-in fade-in zoom-in-95 duration-150">
-                      <span className="bg-amber-400/10 text-amber-300 border border-amber-500/20 px-2.5 py-0.5 rounded-full text-xs font-bold">
-                        {activeStarRating} / 10
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-800/70">
+                        <div
+                          className={`h-full rounded-full transition-[width] duration-500 ease-out ${
+                            hasItemVotes ? "bg-amber-400" : "bg-transparent"
+                          }`}
+                          style={{ width: `${item.percentage}%` }}
+                        />
+                      </div>
+
+                      <span
+                        className={`w-10 shrink-0 text-right text-xs font-medium tabular-nums ${
+                          hasItemVotes ? "text-zinc-300" : "text-zinc-600"
+                        }`}
+                      >
+                        {item.percentage}%
                       </span>
-                      <span className="text-zinc-200 font-medium text-xs">
-                        {getScoreLabel(activeStarRating)}
+
+                      <span className="w-14 shrink-0 text-right text-xs tabular-nums text-zinc-500">
+                        {format.number(item.count)}
                       </span>
-                    </div>
-                  ) : (
-                    <span className="text-xs text-zinc-500 font-medium">
-                      {t("clickToRate", {
-                        defaultValue: "Clique em uma estrela para votar",
-                      })}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 text-center space-y-2">
-                <p className="text-xs text-zinc-400">
-                  {t("loginRequired", {
-                    defaultValue:
-                      "Faça login para registrar sua nota e contribuir para a média da comunidade.",
-                  })}
-                </p>
-              </div>
-            )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
+        )}
 
-          {/* Voting Trust & Reputation System Explanation */}
-          <div className="rounded-2xl bg-zinc-950/60 border border-zinc-800/80 overflow-hidden transition-all duration-200">
-            <button
-              type="button"
-              onClick={() => setShowTrustDetails(!showTrustDetails)}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-zinc-800/30 transition-colors"
+        {/* CTA */}
+        {!isLoggedIn && (
+          <div className="border-t border-zinc-800/70 bg-zinc-900/30 px-5 py-4 sm:px-6">
+            <Link
+              href="/login"
+              className="flex w-full items-center justify-center rounded-xl bg-amber-400 px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-colors hover:bg-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300/70 focus-visible:outline-none"
             >
-              <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                  <ShieldCheck size={16} />
-                </div>
-                <div>
-                  <h5 className="text-xs font-bold text-zinc-200">
-                    {t("trustSystemTitle", { defaultValue: "Sistema de Votação Justo & Anti-Review Bomb" })}
-                  </h5>
-                  <p className="text-[11px] text-zinc-400">
-                    Entenda como seu voto é computado e como calculamos a nota final.
-                  </p>
-                </div>
-              </div>
-              <div className="text-zinc-400 p-1">
-                {showTrustDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </div>
-            </button>
-
-            {showTrustDetails && (
-              <div className="px-4 pb-4 pt-1 border-t border-zinc-800/60 space-y-3 animate-in fade-in duration-150 text-[11px] text-zinc-300">
-                {/* Rule 1: Account Trust Weights */}
-                <div className="space-y-1.5 bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/50">
-                  <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                    <Info size={13} />
-                    <span>1. Peso do Voto por Maturidade da Conta</span>
-                  </div>
-                  <p className="text-zinc-400 leading-relaxed">
-                    Você pode votar e editar sua nota a qualquer momento. Para impedir bots e ataques em massa sem bloquear novos usuários:
-                  </p>
-                  <ul className="grid grid-cols-2 gap-1.5 pt-1 text-[10px]">
-                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
-                      <span className="font-semibold text-zinc-300">Criada &lt; 24h:</span> Peso 0.0 (Salvo no perfil)
-                    </li>
-                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
-                      <span className="font-semibold text-zinc-300">1 a 7 dias:</span> Peso 0.25 na média
-                    </li>
-                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
-                      <span className="font-semibold text-zinc-300">7 a 30 dias:</span> Peso 0.50 na média
-                    </li>
-                    <li className="bg-zinc-950 p-2 rounded-lg border border-zinc-800/60">
-                      <span className="font-semibold text-zinc-300">30+ dias:</span> Peso 1.0 (Com bônus por atividade)
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Rule 2: Bayesian Formula */}
-                <div className="space-y-1.5 bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/50">
-                  <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                    <Calculator size={13} />
-                    <span>2. Fórmula da Média Bayesiana Ponderada</span>
-                  </div>
-                  <p className="text-zinc-400 leading-relaxed">
-                    Evitamos notas distorcidas em obras com poucas avaliações usando a fórmula:
-                  </p>
-                  <div className="my-2 p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-center font-mono text-[11px] text-amber-200">
-                    Score = (V · R + M · C) / (V + M)
-                  </div>
-                  <div className="space-y-1 text-[10px] text-zinc-400">
-                    <p><strong className="text-zinc-200">R:</strong> Média ponderada real dos votos dos usuários.</p>
-                    <p><strong className="text-zinc-200">V:</strong> Soma dos pesos de confiança acumulados.</p>
-                    <p><strong className="text-zinc-200">C:</strong> Média global de referência do site (~7.0).</p>
-                    <p><strong className="text-zinc-200">M:</strong> Mínimo de 10 votos ponderados de confiança para estabilizar a nota.</p>
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-zinc-400 italic text-center pt-1">
-                  💡 Conforme sua conta ganha idade, o peso do seu voto é recalculado automaticamente!
-                </p>
-              </div>
-            )}
+              {t("loginToRate", {
+                defaultValue: "Faça login para avaliar este anime",
+              })}
+            </Link>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

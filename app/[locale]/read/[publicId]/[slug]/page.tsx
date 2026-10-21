@@ -2,7 +2,12 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { connection } from "next/server";
 import { Metadata } from "next";
-import { buildAlternates } from "@/lib/seo";
+import {
+  buildAlternates,
+  buildOpenGraph,
+  buildTwitter,
+} from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 import MangaReader from "@/components/MangaReader";
 
 interface ChapterPageProps {
@@ -37,11 +42,20 @@ export async function generateMetadata({
       locale,
       `/read/${chapter.publicId}/${chapter.slug}`,
     ),
-    openGraph: {
+    openGraph: buildOpenGraph({
+      title,
+      description,
+      locale,
+      type: "book",
+      images: chapter.manga.imageUrl ? [chapter.manga.imageUrl] : [],
+      url: `${SITE_URL}/${locale}/read/${chapter.publicId}/${chapter.slug}`,
+    }),
+    twitter: buildTwitter({
+      card: "summary_large_image",
       title,
       description,
       images: chapter.manga.imageUrl ? [chapter.manga.imageUrl] : [],
-    },
+    }),
   };
 }
 
