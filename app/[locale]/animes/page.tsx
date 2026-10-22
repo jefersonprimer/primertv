@@ -2,16 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { MediaCarousel } from "@/components/MediaCarousel";
 import { MediaCarouselSkeleton } from "@/components/MediaCarouselSkeleton";
 import { Suspense } from "react";
-import {
-  FavoritesCarousel,
-  FavoritesCarouselSkeleton,
-} from "@/components/FavoritesCarousel";
-import {
-  HistoryCarousel,
-  HistoryCarouselSkeleton,
-} from "@/components/HistoryCarousel";
-import { TodayReleases } from "@/components/TodayReleases";
-import { TodayReleasesSkeleton } from "@/components/TodayReleasesSkeleton";
 import { HeroCarousel, HeroCarouselSkeleton } from "@/components/HeroCarousel";
 import { getCurrentSeasonSlug } from "@/lib/seasons";
 import { connection } from "next/server";
@@ -60,6 +50,34 @@ async function TopAnimesCarousel() {
   );
 }
 
+async function SubDubCarousel() {
+  const items = await prisma.anime.findMany({
+    where: {
+      isDubbed: true,
+      isSubtitled: true,
+    },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      imageUrl: true,
+      isDubbed: true,
+      isSubtitled: true,
+    },
+    orderBy: [{ popularity: "asc" }, { createdAt: "desc" }],
+    take: 15,
+  });
+
+  return (
+    <MediaCarousel
+      title="Legendado e Dublado"
+      subtitle="Animes disponíveis em sub e dub"
+      items={items}
+      type="anime"
+    />
+  );
+}
+
 async function TopAiringCarousel() {
   const items = await prisma.anime.findMany({
     where: {
@@ -85,7 +103,7 @@ async function TopAiringCarousel() {
 
   return (
     <MediaCarousel
-      title="Top Airing (Em Exibição)"
+      title="Top Airing"
       subtitle="Os animes em exibição mais bem avaliados"
       items={items}
       type="anime"
@@ -194,69 +212,6 @@ async function AnimeCarousel() {
   );
 }
 
-async function SeriesCarousel() {
-  const items = await prisma.series.findMany({
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      imageUrl: true,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 15,
-  });
-  return (
-    <MediaCarousel
-      title="Séries Populares"
-      subtitle="Maratone agora"
-      items={items}
-      type="series"
-    />
-  );
-}
-
-async function MovieCarousel() {
-  const items = await prisma.movie.findMany({
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      imageUrl: true,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 15,
-  });
-  return (
-    <MediaCarousel
-      title="Filmes Recentes"
-      subtitle="Lançamentos do cinema"
-      items={items}
-      type="movie"
-    />
-  );
-}
-
-async function MangaCarousel() {
-  const items = await prisma.manga.findMany({
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      imageUrl: true,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 15,
-  });
-  return (
-    <MediaCarousel
-      title="Mangás Recentes"
-      subtitle="Leia os capítulos mais novos"
-      items={items}
-      type="manga"
-    />
-  );
-}
-
 export default async function Home() {
   await connection();
 
@@ -272,6 +227,10 @@ export default async function Home() {
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
+            <SubDubCarousel />
+          </Suspense>
+
+          <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <TopAiringCarousel />
           </Suspense>
 
@@ -281,10 +240,6 @@ export default async function Home() {
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>
             <CurrentSeasonCarousel />
-          </Suspense>
-
-          <Suspense fallback={<TodayReleasesSkeleton />}>
-            <TodayReleases />
           </Suspense>
 
           <Suspense fallback={<MediaCarouselSkeleton hasSubtitle />}>

@@ -93,11 +93,13 @@ export function AnimeStarRating({
           })}
         </div>
 
+       
+
         {/* Right side: Average score & total votes (clickable for modal) */}
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-1.5 text-zinc-200 transition-all hover:scale-105 active:scale-95 shadow-sm text-xs font-semibold"
+          className="flex items-center gap-1.5 text-zinc-200 transition-all hover:scale-105 active:scale-95 text-xs font-semibold"
           title={t("viewStats", {
             defaultValue: "Ver gráfico de avaliações",
           })}

@@ -60,7 +60,13 @@ export function TodayReleasesClient({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openQuickView = (slug: string, e: React.MouseEvent) => {
-    if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+    if (
+      e.button === 0 &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.altKey
+    ) {
       e.preventDefault();
       setSelectedSlug(slug);
       setIsModalOpen(true);
@@ -148,7 +154,7 @@ export function TodayReleasesClient({
     return (
       <div
         key={`${anime.id}-${anime.releaseDay}`}
-        className="group flex gap-4 p-0 sm:p-2 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:bg-[#272727] hover:cursor-pointer"
+        className="group flex rounded-md gap-4 p-0 sm:p-2 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 hover:bg-[#272727] hover:cursor-pointer"
       >
         {/* Left: Image Banner */}
         <div className="relative flex-shrink-0 w-38 sm:w-36 aspect-[16/9]">
@@ -157,7 +163,7 @@ export function TodayReleasesClient({
               <div
                 key={depth}
                 aria-hidden
-                className="pointer-events-none absolute bottom-0 left-0 overflow-hidden border  shadow-sm border-zinc-700/60 bg-zinc-950"
+                className="pointer-events-none absolute bottom-0 left-0 overflow-hidden border shadow-sm border-zinc-700/60 bg-zinc-950"
                 style={{
                   width: "calc(100% - 9px)",
                   height: "calc(100% - 7.5px)",
@@ -424,14 +430,14 @@ export function TodayReleasesClient({
         {!showMore ? (
           <button
             onClick={() => setShowMore(true)}
-            className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
+            className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700  rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
           >
             {t("showMore")}
           </button>
         ) : (
           <Link
             href="/calendar"
-            className="flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
+            className="flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700  rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
           >
             {t("viewCalendar")}
           </Link>

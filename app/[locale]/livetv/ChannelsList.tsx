@@ -48,9 +48,7 @@ export function ChannelsList({ initialChannels }: ChannelsListProps) {
         {filteredChannels.length === 0 ? (
           <div className="flex h-64 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 text-center p-6 transition-all duration-300 animate-fade-in">
             <Tv className="h-12 w-12 text-zinc-400 mb-3" />
-            <p className="text-zinc-500 font-medium">
-              {t("noChannels")}
-            </p>
+            <p className="text-zinc-500 font-medium">{t("noChannels")}</p>
             <p className="text-zinc-400 text-sm mt-1">
               {t("tryDifferentTerms")}
             </p>

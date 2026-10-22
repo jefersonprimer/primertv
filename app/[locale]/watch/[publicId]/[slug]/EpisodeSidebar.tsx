@@ -16,6 +16,7 @@ interface Episode {
   videoUrl: string | null;
   publicId: string | null;
   slug: string | null;
+  href?: string | null;
 }
 
 interface Season {
@@ -406,11 +407,14 @@ function EpisodeCard({
 }: EpisodeCardProps) {
   const tLabels = useTranslations("Labels");
   const tMedia = useTranslations("MediaCard");
-  const watchHref = isMegaplay
-    ? `/watch/${animeSlug}/episode-${ep.number}?source=megaplay&episode=${ep.number}${seasonNumber ? `&season=${seasonNumber}` : ""}`
-    : ep.publicId
-      ? `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`
-      : `/watch/${ep.id}/${ep.slug || "episode-" + ep.number}`;
+  const watchHref =
+    !ep.publicId && ep.href
+      ? ep.href
+      : isMegaplay
+        ? `/watch/${animeSlug}/episode-${ep.number}?source=megaplay&episode=${ep.number}${seasonNumber ? `&season=${seasonNumber}` : ""}`
+        : ep.publicId
+          ? `/watch/${ep.publicId}/${ep.slug || "episode-" + ep.number}`
+          : `/watch/${ep.id}/${ep.slug || "episode-" + ep.number}`;
 
   return (
     <Link
@@ -444,7 +448,7 @@ function EpisodeCard({
         )}
         {/* Duration bottom-right */}
         {formatDuration(animeDuration) && (
-          <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-sm font-bold text-white backdrop-blur-sm">
+          <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-sm font-semibold text-white backdrop-blur-sm">
             {formatDuration(animeDuration)}
           </div>
         )}

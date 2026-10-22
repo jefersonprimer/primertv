@@ -7,6 +7,10 @@ import Image from "next/image";
 import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import { StartWatchingButton } from "@/components/StartWatchingButton";
+import {
+  QuickViewModal,
+  prefetchQuickPreview,
+} from "@/components/QuickViewModal";
 import Link from "next/link";
 
 export interface HeroCarouselItem {
@@ -47,6 +51,8 @@ export function HeroCarouselClient({
   const tMedia = useTranslations("MediaCard");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [quickViewItem, setQuickViewItem] =
+    useState<HeroCarouselItem | null>(null);
 
   const goTo = useCallback(
     (index: number) => {
@@ -64,10 +70,10 @@ export function HeroCarouselClient({
   }, [currentIndex, goTo]);
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || quickViewItem) return;
     const id = setInterval(goNext, 10000);
     return () => clearInterval(id);
-  }, [isPaused, goNext]);
+  }, [isPaused, quickViewItem, goNext]);
 
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -96,6 +102,8 @@ export function HeroCarouselClient({
   };
 
   const current = items[currentIndex];
+  const isQuickViewable =
+    current?.type === "anime" || current?.type === "series";
   const detailUrl = current
     ? current.type === "series"
       ? `/series/${current.slug}`
@@ -103,6 +111,40 @@ export function HeroCarouselClient({
         ? `/movies/${current.slug}`
         : `/animes/${current.slug}`
     : "";
+
+  const currentSlug = current?.slug;
+  const currentType = current?.type;
+
+  useEffect(() => {
+    if (currentSlug && (currentType === "anime" || currentType === "series")) {
+      prefetchQuickPreview(currentSlug, currentType);
+    }
+  }, [currentSlug, currentType]);
+
+  const openQuickView = useCallback(() => {
+    if (current && (current.type === "anime" || current.type === "series")) {
+      setQuickViewItem(current);
+    }
+  }, [current]);
+
+  const handleLogoClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (!isQuickViewable) return;
+      if (window.matchMedia("(max-width: 640px)").matches) return;
+      if (
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.shiftKey &&
+        !e.altKey &&
+        e.button === 0
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        openQuickView();
+      }
+    },
+    [isQuickViewable, openQuickView],
+  );
 
   return (
     <section
@@ -230,6 +272,7 @@ export function HeroCarouselClient({
             {current.logoUrl ? (
               <Link
                 href={detailUrl}
+                onClick={handleLogoClick}
                 className="relative block aspect-[3/1] w-full max-w-[200px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[400px] 2xl:max-w-[480px] mx-auto md:mx-0 hover:opacity-90 transition-opacity"
               >
                 <Image
@@ -243,7 +286,9 @@ export function HeroCarouselClient({
               </Link>
             ) : (
               <h1 className="text-2xl font-bold text-white md:text-zinc-900 dark:text-zinc-50 md:text-[34px] 2xl:text-[44px] line-clamp-2 w-full max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] 2xl:max-w-[520px] mx-auto md:mx-0 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                <Link href={detailUrl}>{current.title}</Link>
+                <Link href={detailUrl} onClick={handleLogoClick}>
+                  {current.title}
+                </Link>
               </h1>
             )}
 
@@ -398,6 +443,17 @@ export function HeroCarouselClient({
       >
         <ChevronRight className="w-8 h-8 lg:w-10 lg:h-10 2xl:w-14 2xl:h-14" />
       </button>
+
+      {quickViewItem &&
+        (quickViewItem.type === "anime" ||
+          quickViewItem.type === "series") && (
+          <QuickViewModal
+            slug={quickViewItem.slug}
+            type={quickViewItem.type}
+            isOpen={!!quickViewItem}
+            onClose={() => setQuickViewItem(null)}
+          />
+        )}
     </section>
   );
 }

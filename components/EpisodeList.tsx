@@ -137,7 +137,10 @@ function isGenericTitle(
   if (stripped === "") return true;
 
   const parsedStripped = Number(stripped);
-  if (!isNaN(parsedStripped) && (parsedStripped === roundedNum || parsedStripped === num)) {
+  if (
+    !isNaN(parsedStripped) &&
+    (parsedStripped === roundedNum || parsedStripped === num)
+  ) {
     return true;
   }
 
@@ -435,7 +438,11 @@ export default function EpisodeList({
                   </div>
                   {item.title &&
                     item.title.trim() &&
-                    !isGenericTitle(item.title, item.number, displayAnimeTitle) && (
+                    !isGenericTitle(
+                      item.title,
+                      item.number,
+                      displayAnimeTitle,
+                    ) && (
                       <h4 className="line-clamp-1 text-xs text-zinc-400">
                         {item.title}
                       </h4>
@@ -497,10 +504,10 @@ export default function EpisodeList({
       </div>
 
       {hasMore && (
-        <div className="w-full max-w-[1018px] mx-auto">
+        <div className="w-full mx-auto">
           <button
             onClick={showMore}
-            className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
+            className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700  rounded-md w-full py-3 text-sm font-bold transition-all uppercase active:scale-95"
           >
             {t("showMore")}
           </button>

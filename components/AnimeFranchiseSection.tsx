@@ -29,11 +29,11 @@ function FranchiseCard({
   const tMedia = useTranslations("MediaCard");
 
   return (
-    <div className="group relative flex flex-col sm:flex-row gap-4 p-3.5 sm:p-4 rounded-xl border border-zinc-800/80 bg-zinc-900/40 hover:bg-zinc-900/70 hover:border-zinc-700/80 transition-all duration-300">
+    <div className="group relative flex gap-4 p-2 lg:p-4 rounded-md bg-zinc-900/40 hover:bg-zinc-900/70 hover:border-zinc-700/80 transition-all duration-300">
       {/* Poster */}
       <Link
         href={`/animes/${item.slug}`}
-        className="relative aspect-[2/3] w-24 sm:w-28 shrink-0 overflow-hidden rounded-md bg-zinc-950 ring-1 ring-white/5 block"
+        className="relative aspect-[2/3] w-24 lg:w-38 shrink-0 overflow-hidden rounded bg-zinc-950 ring-1 ring-white/5 block"
       >
         {item.imageUrl || item.bannerUrl ? (
           <Image
@@ -58,19 +58,12 @@ function FranchiseCard({
             <span
               className={`text-[11px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full ${
                 isSequel
-                  ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                  : "bg-zinc-800/80 text-zinc-300 border border-zinc-700/50"
+                  ? "bg-blue-500/10 text-blue-400 "
+                  : "bg-zinc-800/80 text-zinc-300 "
               }`}
             >
               {badgeText}
             </span>
-
-            {item.score && item.score > 0 && (
-              <div className="flex items-center gap-1 text-xs font-semibold text-amber-400">
-                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                <span>{item.score.toFixed(1)}</span>
-              </div>
-            )}
           </div>
 
           {/* Title */}
@@ -89,7 +82,7 @@ function FranchiseCard({
 
           {/* Description */}
           {item.description && (
-            <p className="mt-1.5 text-xs sm:text-sm text-zinc-400 line-clamp-2 leading-relaxed">
+            <p className="mt-1.5 text-xs sm:text-sm text-zinc-400 line-clamp-4 leading-relaxed">
               {item.description.replace(/\s+/g, " ").trim()}
             </p>
           )}
@@ -102,14 +95,21 @@ function FranchiseCard({
               </span>
             ) : null}
             {item.isDubbed && (
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/40">
+              <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">
                 {tMedia("dubbed")}
               </span>
             )}
             {item.isSubtitled && (
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/40">
+              <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">
                 {tMedia("subtitled")}
               </span>
+            )}
+
+            {item.score && item.score > 0 && (
+              <div className="flex items-center gap-1 text-xs font-semibold text-zinc-300 px-1.5 py-0.5 rounded bg-zinc-800">
+                <Star className="w-3 h-3 fill-zinc-300 text-zinc-300" />
+                <span>{item.score.toFixed(1)}</span>
+              </div>
             )}
           </div>
         </div>
@@ -118,9 +118,9 @@ function FranchiseCard({
         <div className="flex items-center gap-2.5 mt-4 pt-3 border-t border-zinc-800/50">
           <Link
             href={item.firstEpisodeHref}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-200 active:scale-95 transition-all shadow-sm"
+            className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-semibold text-zinc-950 bg-white hover:bg-zinc-200 active:scale-95 transition-all shadow-sm"
           >
-            <Play className="w-3 h-3 fill-current" />
+            <Play className="w-4 h-4 fill-current" />
             <span>{t("watchNow")}</span>
           </Link>
 
@@ -130,7 +130,7 @@ function FranchiseCard({
             slug={item.slug}
             initialInWatchlist={Boolean(item.inWatchlist)}
             isLoggedIn={isLoggedIn}
-            size={14}
+            size={20}
             compact
             showLabel
             roundedFull={false}

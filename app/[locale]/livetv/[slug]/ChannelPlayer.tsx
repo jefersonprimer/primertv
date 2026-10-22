@@ -149,7 +149,10 @@ export function ChannelPlayer({
             <ShareButton size={18} hasBorder={true} roundedFull={true} />
             {isAdmin && (
               <>
-                <EditMediaButton collection="channels" item={channel as unknown as Record<string, unknown>} />
+                <EditMediaButton
+                  collection="channels"
+                  item={channel as unknown as Record<string, unknown>}
+                />
                 <DeleteChannelButton
                   channelId={channel.id}
                   channelSlug={channel.slug}
@@ -225,11 +228,11 @@ export function ChannelPlayer({
 
       {/* Sidebar: Lista de Canais */}
       {allChannels.length > 0 && (
-        <div className="mx-4 md:mx-0 flex flex-col rounded-2xl border border-[#1F1F1F] bg-[#0E0E0E] p-4 shadow-sm max-h-[85vh] lg:sticky lg:top-24">
+        <div className="mx-4 md:mx-0 flex flex-col rounded-2xl border border-[#1F1F1F] bg-[#0E0E0E] p-4 shadow-sm max-h-[85vh] lg:sticky lg:top-20">
           <div className="space-y-3 pb-3 border-b border-[#1F1F1F]">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                <Tv className="h-4 w-4 text-blue-500" /> Canais Ao Vivo
+                Canais Ao Vivo
               </h2>
               <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-bold text-blue-500 dark:text-blue-400">
                 {allChannels.length} canais
@@ -244,7 +247,7 @@ export function ChannelPlayer({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar canal..."
-                className="w-full rounded-xl border border-[#262626] bg-[#161616] pl-9 pr-8 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none transition"
+                className="w-full rounded-md border border-[#262626] bg-[#161616] pl-9 pr-8 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none transition"
               />
               {search && (
                 <button
