@@ -222,6 +222,7 @@ export default function SeasonSelector({
         fallbackImageUrl={fallbackImageUrl}
         isDubbed={isDubbed}
         isSubtitled={isSubtitled}
+        preserveOrder
       />
 
       {seasons.length > 1 && (

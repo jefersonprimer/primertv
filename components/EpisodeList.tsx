@@ -41,6 +41,7 @@ interface EpisodeListProps {
   fallbackImageUrl?: string | null;
   isDubbed?: boolean;
   isSubtitled?: boolean;
+  preserveOrder?: boolean;
 }
 
 function formatDuration(duration: string | null | undefined): string {
@@ -206,6 +207,7 @@ export default function EpisodeList({
   fallbackImageUrl,
   isDubbed = false,
   isSubtitled = false,
+  preserveOrder = false,
 }: EpisodeListProps) {
   const t = useTranslations("Labels");
   const locale = useLocale();
@@ -241,13 +243,15 @@ export default function EpisodeList({
     return <EpisodeListSkeleton itemType={itemType} count={visibleCount} />;
   }
 
-  const sortedItems = [...items].sort((a, b) => {
-    if (sortBy === "oldest") {
-      return a.number - b.number;
-    } else {
-      return b.number - a.number;
-    }
-  });
+  const sortedItems = preserveOrder
+    ? items
+    : [...items].sort((a, b) => {
+        if (sortBy === "oldest") {
+          return a.number - b.number;
+        } else {
+          return b.number - a.number;
+        }
+      });
 
   const visibleItems = sortedItems.slice(0, visibleCount);
   const hasMore = items.length > visibleCount;
