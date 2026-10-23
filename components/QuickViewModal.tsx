@@ -250,11 +250,23 @@ export function QuickViewModal({
 
   const formatDuration = useCallback((duration?: string | null): string => {
     if (!duration || duration.toLowerCase() === "unknown") return "";
-    const matches = duration.match(/\d+/);
-    if (matches) {
-      return `${matches[0]}m`;
+    const normalized = duration.trim().toLowerCase();
+    const hours = normalized.match(/(\d+)\s*(?:h|hr|hrs|hour|hours)\b/);
+    const minutes = normalized.match(/(\d+)\s*(?:m|min|mins|minute|minutes)\b/);
+
+    if (hours || minutes) {
+      const totalHours = hours ? Number(hours[1]) : 0;
+      const totalMinutes = minutes ? Number(minutes[1]) : 0;
+      return [
+        totalHours > 0 ? `${totalHours}h` : "",
+        totalMinutes > 0 ? `${totalMinutes}m` : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
     }
-    return "";
+
+    const numericDuration = normalized.match(/^\s*(\d+)\s*$/);
+    return numericDuration ? `${numericDuration[1]}m` : "";
   }, []);
 
   const currentSeason = useMemo(
@@ -570,7 +582,7 @@ export function QuickViewModal({
                               `/watch/${ep.publicId || ep.id}/${ep.slug || `episode-${ep.number}`}`
                             }
                             onClick={onClose}
-                            className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl transition-colors ${
+                            className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-0 space-y-3 rounded-xl transition-colors ${
                               isNextTarget
                                 ? "bg-[#151515]"
                                 : "hover:bg-[#151515]"
@@ -630,7 +642,7 @@ export function QuickViewModal({
                             {/* Infos do Episódio */}
                             <div className="flex flex-col justify-center min-w-0 flex-1 gap-1">
                               <div className="flex items-center justify-between gap-2">
-                                <h4 className="text-sm sm:text-base font-bold text-zinc-100 group-hover:text-[#0077FD] transition-colors line-clamp-1">
+                                <h4 className="text-sm sm:text-base font-bold text-zinc-100 line-clamp-2">
                                   {ep.number}.{" "}
                                   {ep.title ||
                                     t("episodeNumber", { number: ep.number })}
@@ -657,7 +669,7 @@ export function QuickViewModal({
                       {visibleCount < episodesList.length && (
                         <button
                           onClick={() => setVisibleCount((prev) => prev + 12)}
-                          className="mt-2 w-full py-3 rounded-md bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 hover:text-white text-sm font-bold border border-zinc-700/60 transition-all active:scale-[0.99]"
+                          className="mt-2 w-full py-3 rounded-md bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 hover:text-white text-sm font-bold transition-all active:scale-[0.99]"
                         >
                           {t("loadMoreEpisodes", {
                             remaining: episodesList.length - visibleCount,

@@ -46,11 +46,23 @@ interface EpisodeListProps {
 
 function formatDuration(duration: string | null | undefined): string {
   if (!duration || duration.toLowerCase() === "unknown") return "";
-  const matches = duration.match(/\d+/);
-  if (matches) {
-    return `${matches[0]}m`;
+  const normalized = duration.trim().toLowerCase();
+  const hours = normalized.match(/(\d+)\s*(?:h|hr|hrs|hour|hours)\b/);
+  const minutes = normalized.match(/(\d+)\s*(?:m|min|mins|minute|minutes)\b/);
+
+  if (hours || minutes) {
+    const totalHours = hours ? Number(hours[1]) : 0;
+    const totalMinutes = minutes ? Number(minutes[1]) : 0;
+    return [
+      totalHours > 0 ? `${totalHours}h` : "",
+      totalMinutes > 0 ? `${totalMinutes}m` : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
   }
-  return "";
+
+  const numericDuration = normalized.match(/^(\d+)$/);
+  return numericDuration ? `${numericDuration[1]}m` : "";
 }
 
 function formatItemNumber(num: number): string {

@@ -12,7 +12,7 @@ export default function SignupPage() {
   const [state, action, isPending] = useActionState(signup, undefined);
 
   return (
-    <div className="flex flex-col items-center justify-center h-[80vh] md:h-auto md:min-h-[calc(100vh-4rem)] bg-zinc-900 md:bg-black text-white">
+    <div className="flex flex-col items-center justify-center h-[80vh] md:h-auto md:min-h-[calc(100vh-4rem)] bg-black text-white">
       <div className="w-full h-full md:h-auto md:max-w-md p-6 sm:p-8 space-y-8  flex flex-col justify-center">
         <h2 className="text-3xl font-bold text-center">{t("signupTitle")}</h2>
         <form action={action} className="space-y-6">
