@@ -463,4 +463,23 @@ model PasswordResetCode {
   @@index([email])
 }
 
+model AnikotoSeries {
+  id          String   @id @default(cuid())
+  anikotoId   Int      @unique
+  aniId       Int?
+  malId       Int?
+  title       String
+  slug        String?
+  year        Int?
+  subEpisodes Int?
+  dubEpisodes Int?
+  syncedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([aniId])
+  @@index([malId])
+  @@index([syncedAt])
+}
+
 

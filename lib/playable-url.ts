@@ -82,6 +82,7 @@ function isKnownEmbedUrl(url: string): boolean {
     "myembed.biz",
     "2embed.cc",
     "vidnest.fun",
+    "aniembed.se",
   ];
   return embedPatterns.some((pattern) => url.includes(pattern));
 }

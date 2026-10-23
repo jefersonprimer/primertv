@@ -231,9 +231,10 @@ export default async function AnimeDetailsPage({
     prequelAnilistId: anime.prequelAnilistId,
   });
 
-  const franchiseAnimeIds = [franchise.sequel?.id, franchise.prequel?.id].filter(
-    (id): id is string => Boolean(id),
-  );
+  const franchiseAnimeIds = [
+    franchise.sequel?.id,
+    franchise.prequel?.id,
+  ].filter((id): id is string => Boolean(id));
 
   const franchiseWatchlistIds = new Set<string>();
   if (userId && franchiseAnimeIds.length > 0) {
@@ -360,11 +361,6 @@ export default async function AnimeDetailsPage({
                     <h1 className="text-2xl font-bold text-zinc-50 md:text-zinc-900 md:dark:text-zinc-50 md:text-[34px] line-clamp-2 max-w-[380px]">
                       {anime.title}
                     </h1>
-                    {anime.titleEnglish && (
-                      <h2 className="text-sm font-medium text-zinc-400 md:text-zinc-500 md:dark:text-zinc-400 line-clamp-1 max-w-[380px]">
-                        {anime.titleEnglish}
-                      </h2>
-                    )}
                   </div>
                 )}
 

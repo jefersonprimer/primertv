@@ -206,15 +206,21 @@ async function fetchOfficialEpisodeCount({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query: `query ($id: Int) { Media(id: $id, type: ANIME) { episodes } }`,
+          query: `query ($id: Int) { Media(id: $id, type: ANIME) { episodes nextAiringEpisode { episode } } }`,
           variables: { id: anilistId },
         }),
         next: { revalidate: 86400 },
       });
       if (res.ok) {
         const json = await res.json();
-        const eps = json?.data?.Media?.episodes;
+        const media = json?.data?.Media;
+        const eps = media?.episodes;
         if (typeof eps === "number" && eps > 0) return eps;
+
+        const nextEpisode = media?.nextAiringEpisode?.episode;
+        if (typeof nextEpisode === "number" && nextEpisode > 1) {
+          return nextEpisode - 1;
+        }
       }
     } catch {}
   }
@@ -360,27 +366,31 @@ export async function buildMergedSeasons({
       const effectiveAnilistId =
         season.anilistId ?? (season.number === 1 ? animeAnilistId : null);
 
-      if (effectiveAnilistId || effectiveMalId) {
-        const officialCount = await fetchOfficialEpisodeCount({
-          anilistId: effectiveAnilistId,
-          malId: effectiveMalId,
-        });
+      const officialCount = await fetchOfficialEpisodeCount({
+        anilistId: effectiveAnilistId,
+        malId: effectiveMalId,
+      });
 
-        if (officialCount && officialCount > 0) {
-          const existingNumbers = new Set(mergedEpisodes.map((e) => e.number));
-          for (let epNum = 1; epNum <= officialCount; epNum++) {
-            if (!existingNumbers.has(epNum)) {
-              mergedEpisodes.push({
-                id: `megaplay-s${season.number}-${epNum}`,
-                number: epNum,
-                title: `${animeTitle} - ${getEpText(epNum)}`,
-                href: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
-                videoUrl: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
-                imageUrl: null,
-                publicId: null,
-                slug: `episode-${epNum}`,
-              });
-            }
+      const expectedEpisodeCount = Math.max(
+        mergedEpisodes.length,
+        officialCount ?? 0,
+        externalCatalog?.totalEpisodes ?? 0,
+      );
+
+      if (expectedEpisodeCount > mergedEpisodes.length) {
+        const existingNumbers = new Set(mergedEpisodes.map((e) => e.number));
+        for (let epNum = 1; epNum <= expectedEpisodeCount; epNum++) {
+          if (!existingNumbers.has(epNum)) {
+            mergedEpisodes.push({
+              id: `megaplay-s${season.number}-${epNum}`,
+              number: epNum,
+              title: `${animeTitle} - ${getEpText(epNum)}`,
+              href: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+              videoUrl: `/watch/${animeSlug}/episode-${epNum}?source=megaplay&episode=${epNum}&season=${season.number}`,
+              imageUrl: null,
+              publicId: null,
+              slug: `episode-${epNum}`,
+            });
           }
         }
       }

@@ -73,13 +73,6 @@ function FranchiseCard({
             </h3>
           </Link>
 
-          {/* Subtitle / English Title */}
-          {item.titleEnglish && item.titleEnglish !== item.title && (
-            <p className="text-xs text-zinc-400 line-clamp-1 mt-0.5">
-              {item.titleEnglish}
-            </p>
-          )}
-
           {/* Description */}
           {item.description && (
             <p className="mt-1.5 text-xs sm:text-sm text-zinc-400 line-clamp-4 leading-relaxed">

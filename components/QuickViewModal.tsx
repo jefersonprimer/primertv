@@ -278,10 +278,10 @@ export function QuickViewModal({
         {/* Botão Fechar */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white/80 hover:text-white hover:bg-black/90 transition-all border border-white/10"
+          className="absolute top-3 right-3 z-20 flex p-1 items-center justify-center rounded-full bg-black/60 text-white/80 hover:text-white hover:bg-black/90 transition-all "
           aria-label={t("close")}
         >
-          <X size={24} />
+          <X size={28} />
         </button>
 
         {loading || (!data && !error) ? (
