@@ -11,7 +11,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Auth" });
 
   return {
-    title: `${t("loginTitle")} - PrimerTv`,
+    title: `${t("loginTitle")} - primertv`,
     robots: NOINDEX_ROBOTS,
     alternates: buildAlternates(locale, "/login"),
   };
