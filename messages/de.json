@@ -183,6 +183,7 @@
     "noImage": "Kein Bild"
   },
   "SeasonSelector": {
+    "seasonsTitle": "Staffeln",
     "season": "Staffel {number}",
     "episodesCount": "{count} Episoden",
     "oldest": "älteste",

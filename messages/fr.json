@@ -183,6 +183,7 @@
     "noImage": "Pas d'image"
   },
   "SeasonSelector": {
+    "seasonsTitle": "Saisons",
     "season": "Saison {number}",
     "episodesCount": "{count} épisodes",
     "oldest": "plus anciens",

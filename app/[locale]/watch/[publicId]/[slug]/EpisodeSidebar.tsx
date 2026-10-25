@@ -164,7 +164,7 @@ export default function EpisodeSidebar({
                       alt={sequel.title}
                       fill
                       sizes="128px"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300 rounded-md"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-xs text-zinc-500">
@@ -228,14 +228,14 @@ export default function EpisodeSidebar({
                 href={prequel.firstEpisodeHref}
                 className="group relative flex items-center gap-3 p-2 transition-all rounded-lg border border-zinc-800 bg-[#151515] hover:border-zinc-700"
               >
-                <div className="relative aspect-video w-32 shrink-0 overflow-hidden rounded bg-zinc-800">
+                <div className="relative aspect-video w-32 shrink-0 overflow-hidden rounded-md bg-zinc-800">
                   {prequel.imageUrl || prequel.bannerUrl ? (
                     <Image
                       src={prequel.imageUrl || prequel.bannerUrl || ""}
                       alt={prequel.title}
                       fill
                       sizes="128px"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300 rounded-md"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-xs text-zinc-500">
@@ -419,7 +419,7 @@ function EpisodeCard({
   return (
     <Link
       href={watchHref}
-      className={`flex items-center gap-3 sm:p-2 transition-colors rounded-md ${
+      className={`flex items-center gap-3 sm:p-2 transition-colors rounded-xl ${
         isCurrent
           ? "border-blue-500 bg-[#151515] dark:border-blue-500"
           : "border-zinc-200 dark:border-zinc-800 hover:bg-[#151515]"

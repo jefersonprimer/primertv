@@ -130,7 +130,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     <Link
                       href="/profile"
                       onClick={handleClose}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                     >
                       <UserIcon size={20} />
                       <span>{t("profile")}</span>
@@ -141,7 +141,7 @@ export function UserMenu({ user }: UserMenuProps) {
                         <Link
                           href="/history"
                           onClick={handleClose}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                         >
                           <History size={20} />
                           <span>{t("history")}</span>
@@ -149,7 +149,7 @@ export function UserMenu({ user }: UserMenuProps) {
                         <Link
                           href="/watchlist"
                           onClick={handleClose}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                         >
                           <Bookmark size={20} />
                           <span>{t("watchlist")}</span>
@@ -157,7 +157,7 @@ export function UserMenu({ user }: UserMenuProps) {
                         <Link
                           href="/lists"
                           onClick={handleClose}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                         >
                           <List size={20} />
                           <span>{t("myLists")}</span>
@@ -170,7 +170,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   <div className="py-1 border-t border-zinc-700/60">
                     <button
                       onClick={() => setView("language")}
-                      className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200 cursor-pointer group rounded-md"
+                      className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200 cursor-pointer group rounded-lg"
                     >
                       <div className="flex items-center gap-3 min-w-0 pr-2">
                         <Globe size={20} className="shrink-0" />
@@ -195,7 +195,7 @@ export function UserMenu({ user }: UserMenuProps) {
                       await logout();
                       handleClose();
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 w-full text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-red-500 transition-all duration-200 cursor-pointer rounded-md"
+                    className="flex items-center gap-3 px-3 py-2.5 w-full text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-red-500 transition-all duration-200 cursor-pointer rounded-lg"
                   >
                     <LogOut size={20} />
                     <span>{t("logout")}</span>
@@ -225,7 +225,7 @@ export function UserMenu({ user }: UserMenuProps) {
                       <button
                         key={lang.code}
                         onClick={() => handleLanguageChange(lang.code)}
-                        className={`flex items-center justify-between rounded-md w-full px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
+                        className={`flex items-center justify-between rounded-lg w-full px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
                           isSelected
                             ? "text-white bg-zinc-800/60"
                             : "text-zinc-400 hover:text-white hover:bg-zinc-700/40"

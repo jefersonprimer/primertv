@@ -31,6 +31,9 @@ export function SearchTopResultCard({
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (type === "anime") {
+      // Details below Tailwind's lg breakpoint; quick view at 1024px and up.
+      if (window.matchMedia("(max-width: 1023px)").matches) return;
+
       if (
         !e.ctrlKey &&
         !e.metaKey &&

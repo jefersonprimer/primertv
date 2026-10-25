@@ -42,6 +42,10 @@ export function MediaCard({
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (type === "anime" || type === "series") {
+      // Match the hero behavior: details below Tailwind's lg breakpoint,
+      // quick view starting at 1024px.
+      if (window.matchMedia("(max-width: 1023px)").matches) return;
+
       // Se não for clique com botão direito ou Ctrl/Cmd (para abrir nova aba)
       if (
         !e.ctrlKey &&

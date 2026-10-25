@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Film, X } from "lucide-react";
 
 interface TrailerButtonProps {
@@ -24,11 +25,17 @@ function extractYouTubeId(url: string): string | null {
       return id || null;
     }
 
-    if (host === "youtube.com" || host === "m.youtube.com" || host === "music.youtube.com") {
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com"
+    ) {
       if (parsed.pathname === "/watch") {
         return parsed.searchParams.get("v");
       }
-      const match = parsed.pathname.match(/^\/(?:embed|shorts|v|live)\/([^/?]+)/);
+      const match = parsed.pathname.match(
+        /^\/(?:embed|shorts|v|live)\/([^/?]+)/,
+      );
       if (match) {
         return match[1];
       }
@@ -69,7 +76,9 @@ export default function TrailerButton({
   if (!url) return null;
 
   const youtubeId = extractYouTubeId(url);
-  const embedUrl = youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : null;
+  const embedUrl = youtubeId
+    ? `https://www.youtube.com/embed/${youtubeId}`
+    : null;
 
   const iconSize = size ?? (compact ? 14 : 16);
   const sizeClass = compact ? "p-1.5" : "p-2";
@@ -130,35 +139,39 @@ export default function TrailerButton({
   return (
     <>
       {trigger}
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
-        onClick={() => setIsOpen(false)}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t("trailer")}
-      >
-        <div
-          className="relative w-full max-w-4xl"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <button
+      {typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[100] flex h-screen w-screen items-center justify-center bg-black/80 backdrop-blur-md"
             onClick={() => setIsOpen(false)}
-            className="absolute -top-11 right-0 inline-flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/90 border border-zinc-800 text-white transition hover:bg-zinc-800"
-            aria-label={t("close")}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("trailer")}
           >
-            <X size={18} />
-          </button>
-          <div className="aspect-video w-full overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-2xl">
-            <iframe
-              src={`${embedUrl}?autoplay=1&rel=0`}
-              title={t("trailer")}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full"
-            />
-          </div>
-        </div>
-      </div>
+            <div
+              className="relative h-full w-full"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute right-44 top-1 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900/90 text-white transition hover:bg-zinc-800"
+                aria-label={t("close")}
+              >
+                <X size={24} />
+              </button>
+              <div className="h-full w-full overflow-hidden bg-black">
+                <iframe
+                  src={`${embedUrl}?autoplay=1&rel=0`}
+                  title={t("trailer")}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="h-full w-full"
+                />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

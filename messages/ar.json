@@ -183,6 +183,7 @@
     "noImage": "لا توجد صورة"
   },
   "SeasonSelector": {
+    "seasonsTitle": "المواسم",
     "season": "الموسم {number}",
     "episodesCount": "{count} حلقة",
     "oldest": "الأقدم",

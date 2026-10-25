@@ -6,7 +6,6 @@ import Image from "next/image";
 import {
   PlayIcon,
   BookOpen,
-  ChevronDown,
   Calendar,
   SortDesc as ListSortDescending,
 } from "lucide-react";
@@ -341,7 +340,7 @@ export default function EpisodeList({
         </div>
       )}
 
-      <div className="grid md:gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 md:gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {visibleItems.map((item) => {
           const displayAnimeTitle = item.animeTitle || animeTitle;
           const displayAnimeRating = item.animeRating || animeRating;
@@ -371,7 +370,7 @@ export default function EpisodeList({
               href={item.href || (baseUrl ? `${baseUrl}/${item.id}` : "#")}
               className={
                 itemType === "episode"
-                  ? "group rounded-md relative flex gap-3 p-2 md:p-0 hover:bg-[#151515] transition-all duration-300 overflow-hidden flex-row sm:flex-col"
+                  ? "group min-w-0 rounded-md relative flex gap-3 p-2 md:p-0 hover:bg-[#151515] transition-all duration-300 overflow-hidden flex-row sm:flex-col"
                   : "group relative flex items-center justify-between p-4 bg-zinc-900/10 hover:bg-zinc-900/40 border border-zinc-800/80 hover:border-blue-500/50 transition-all duration-300 rounded-md"
               }
             >
@@ -413,17 +412,17 @@ export default function EpisodeList({
 
               {/* Text under the image / info */}
               {itemType === "episode" ? (
-                <div className="flex flex-col gap-1 flex-1 justify-center sm:justify-start">
+                <div className="flex min-w-0 flex-col gap-1 flex-1 justify-center sm:justify-start">
                   {displayAnimeTitle && (
-                    <span className="text-[10px] font-normal sm:font-bold text-[#8c8c8c] uppercase tracking-wider line-clamp-1">
+                    <span className="hidden text-[10px] font-bold text-[#8c8c8c] uppercase tracking-wider line-clamp-1 md:block">
                       {displayAnimeTitle}
                     </span>
                   )}
-                  <h3 className="line-clamp-2 text-base font-bold text-white">
+                  <h3 className="line-clamp-3 text-base font-bold text-white">
                     {episodeTitle}
                   </h3>
                   {(isDubbed || isSubtitled) && (
-                    <div className="flex gap-1.5 items-center mt-2">
+                    <div className="hidden sm:flex gap-1.5 items-center mt-2">
                       {isDubbed && isSubtitled ? (
                         <span className="text-sm text-[#8c8c8c]">
                           {tMedia("subDub")}
@@ -543,7 +542,7 @@ export function EpisodeListSkeleton({
   const defaultCount = count ?? (itemType === "chapter" ? 24 : 12);
   return (
     <div className="flex flex-col gap-8 w-full">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
         {Array.from({ length: defaultCount }).map((_, idx) => (
           <div key={idx} className="w-full">
             {itemType === "episode" ? (

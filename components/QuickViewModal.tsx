@@ -503,26 +503,31 @@ export function QuickViewModal({
 
               {/* Seção de Episódios & Dropdown de Temporadas */}
               <div className="flex flex-col gap-4 pt-2">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 px-2">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     {t("episodes")}
                   </h3>
 
                   {/* Dropdown de Temporadas */}
                   {data.seasons && data.seasons.length > 0 && (
-                    <div className="relative inline-block">
+                    <div className="relative inline-flex">
                       <select
                         value={selectedSeasonNumber}
                         onChange={(e) =>
                           handleSeasonChange(Number(e.target.value))
                         }
-                        className="appearance-none bg-zinc-800/90 text-white text-sm font-semibold py-2 pl-4 pr-10 rounded border border-zinc-700/70 focus:outline-none focus:border-[#0077FD] cursor-pointer transition-all"
+                        aria-label={`Temporada ${selectedSeasonNumber}`}
+                        className="min-w-36 appearance-none rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-3.5 pr-10 text-sm font-medium text-zinc-100 shadow-sm outline-none transition-colors hover:border-white/20 hover:bg-white/[0.07] focus-visible:border-white/30 focus-visible:ring-2 focus-visible:ring-white/15 cursor-pointer"
                       >
                         {data.seasons.map((s) => {
                           const seasonName = s.title?.trim() || s.name?.trim();
                           const count = s.episodes.length;
                           return (
-                            <option key={s.id} value={s.number}>
+                            <option
+                              key={s.id}
+                              value={s.number}
+                              className="bg-[#141414] text-zinc-100"
+                            >
                               {seasonName
                                 ? count > 0
                                   ? t("seasonOptionWithName", {
@@ -541,8 +546,9 @@ export function QuickViewModal({
                         })}
                       </select>
                       <ChevronDown
-                        size={16}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
+                        size={20}
+                        strokeWidth={1.8}
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400"
                       />
                     </div>
                   )}
@@ -582,14 +588,14 @@ export function QuickViewModal({
                               `/watch/${ep.publicId || ep.id}/${ep.slug || `episode-${ep.number}`}`
                             }
                             onClick={onClose}
-                            className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2.5 sm:p-0 space-y-3 rounded-xl transition-colors ${
+                            className={`group flex flex-col sm:flex-row gap-3 sm:gap-4 p-2 rounded-xl transition-colors ${
                               isNextTarget
-                                ? "bg-[#151515]"
-                                : "hover:bg-[#151515]"
+                                ? "bg-[#2A2A2A]"
+                                : "hover:bg-[#2A2A2A]"
                             }`}
                           >
                             {/* Thumb do Episódio */}
-                            <div className="relative aspect-16/9 w-full sm:w-44 overflow-hidden rounded-lg bg-zinc-950 flex-shrink-0">
+                            <div className="relative aspect-16/9 w-full sm:w-44 overflow-hidden rounded-md bg-zinc-950 flex-shrink-0">
                               {isNextTarget ? (
                                 <div className="absolute top-1.5 left-1.5 z-10">
                                   <span className="px-2 py-0.5 text-xs font-normal text-white bg-[#2A2A2A] backdrop-blur-sm rounded border border-zinc-800 whitespace-nowrap shadow-md">
@@ -601,7 +607,7 @@ export function QuickViewModal({
                                   <div className="absolute top-1.5 left-1.5 z-10 drop-shadow-md">
                                     <RatingBadge
                                       rating={data.rating}
-                                      size={18}
+                                      size={16}
                                     />
                                   </div>
                                 )
@@ -626,7 +632,7 @@ export function QuickViewModal({
 
                               {/* Badge de Duração na Thumbnail (Estilo EpisodeSidebar) */}
                               {formatDuration(data?.duration) && (
-                                <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-xs font-bold text-white backdrop-blur-sm z-10">
+                                <div className="absolute rounded bottom-1 right-1 bg-[#0009] px-1 py-0.5 text-sm font-semibold text-white backdrop-blur-sm z-10">
                                   {formatDuration(data?.duration)}
                                 </div>
                               )}

@@ -47,7 +47,7 @@ export function MobileSidebar({ className = "" }: { className?: string }) {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className={`group flex items-center px-3.5 py-2.5 rounded-md text-sm font-medium text-[#bbb] transition-colors hover:bg-[#1f1f1f] hover:text-white ${visibilityClass}`}
+                className={`group flex items-center px-3.5 py-2.5 rounded-lg text-sm font-medium text-[#bbb] transition-colors hover:bg-[#1f1f1f] hover:text-white ${visibilityClass}`}
               >
                 <span>{t(link.key)}</span>
               </Link>

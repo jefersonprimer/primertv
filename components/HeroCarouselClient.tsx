@@ -130,7 +130,9 @@ export function HeroCarouselClient({
   const handleLogoClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
       if (!isQuickViewable) return;
-      if (window.matchMedia("(max-width: 640px)").matches) return;
+      // Tailwind's `lg` breakpoint starts at 1024px. Keep quick view on
+      // smaller layouts and let the logo link navigate on lg screens upward.
+      if (window.matchMedia("(max-width: 1023px)").matches) return;
       if (
         !e.ctrlKey &&
         !e.metaKey &&

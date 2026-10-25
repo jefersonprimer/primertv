@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
-import { Star } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import SeasonSelector from "@/components/SeasonSelector";
@@ -13,7 +12,6 @@ import RatingBadge from "@/components/RatingBadge";
 import { WatchlistButton } from "@/components/WatchlistButton";
 import ShareButton from "@/components/ShareButton";
 import TrailerButton from "@/components/TrailerButton";
-import TrailerHeroBackground from "@/components/TrailerHeroBackground";
 import AddToListButton from "@/components/AddToListButton";
 import { getAuthenticatedUserId, isInWatchlist } from "@/lib/watchlist";
 import { MediaCarousel } from "@/components/MediaCarousel";
@@ -271,12 +269,26 @@ export default async function AnimeDetailsPage({
       <div className="relative md:min-h-[95vh] lg:min-h-[calc(100vh-4rem)] w-full md:flex md:flex-col md:justify-end">
         {/* Banner Section */}
         <div className="absolute top-0 left-0 right-0 h-[95vh] lg:h-screen hidden md:block bg-zinc-900 overflow-hidden">
-          <TrailerHeroBackground
-            bannerUrl={finalBannerUrl}
-            imageUrl={anime.imageUrl}
-            title={anime.title}
-            trailerUrl={anime.trailerUrl}
-          />
+          {(finalBannerUrl || anime.imageUrl) && (
+            <>
+              <Image
+                src={finalBannerUrl || anime.imageUrl!}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover blur-xl opacity-40 scale-105"
+                priority
+              />
+              <Image
+                src={finalBannerUrl || anime.imageUrl!}
+                alt={anime.title}
+                fill
+                sizes="100vw"
+                className="object-cover object-top"
+                priority
+              />
+            </>
+          )}
           {/* Bottom Gradient (fades to page bg) */}
           <div className="absolute bottom-0 left-0 right-0 h-68 bg-gradient-to-t from-zinc-50 to-transparent dark:from-black" />
           {/* Left Gradient (occupies 45% of the width, ultra-natural eased scrim gradient) */}
@@ -374,7 +386,7 @@ export default async function AnimeDetailsPage({
                           score: anime.score ?? 0,
                           members: formatMembers(anime.members),
                         })}
-                        className="inline-flex items-center rounded overflow-hidden text-xs font-bold shadow-sm cursor-help"
+                        className="hidden lg:inline-flex items-center rounded overflow-hidden text-xs font-bold shadow-sm cursor-help"
                       >
                         <span className="bg-[#2E51A2] px-2 py-1.5 text-white uppercase tracking-wider text-[10px] leading-none">
                           MAL
@@ -393,7 +405,7 @@ export default async function AnimeDetailsPage({
                       );
                       if (winningAwards.length === 0) return null;
                       return (
-                        <div className="inline-flex items-center gap-1.5 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-1.5 rounded border border-amber-500/30 text-xs font-bold shadow-sm transition hover:scale-105 duration-200">
+                        <div className="hidden lg:inline-flex items-center gap-1.5 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-1.5 rounded border border-amber-500/30 text-xs font-bold shadow-sm transition hover:scale-105 duration-200">
                           <Image
                             src="/anime_award_icon.png"
                             alt="Award Icon"
