@@ -543,6 +543,7 @@ export default async function WatchPage({
                         animeTitleEnglish:
                           animeEpisode.season.anime.titleEnglish,
                         localSeasons: animeEpisode.season.anime.seasons,
+                        targetSeasonNumber: animeEpisode.season.number,
                       })}
                       currentEpisodeId={animeEpisode.id}
                       animeSlug={animeEpisode.season.anime.slug}
@@ -610,6 +611,7 @@ export default async function WatchPage({
       animeMalId: anime.malId,
       animeTitleEnglish: anime.titleEnglish,
       localSeasons: anime.seasons,
+      targetSeasonNumber: parsedSeason,
     });
 
     const currentSeasonObj = mergedSeasons.find(

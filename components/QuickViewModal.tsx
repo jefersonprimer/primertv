@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Play, Info, Star, ChevronDown } from "lucide-react";
+import { X, Play, Info, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StartWatchingButton } from "./StartWatchingButton";
 import { WatchlistButton } from "./WatchlistButton";
@@ -18,6 +18,7 @@ import {
   type AnimeQuickPreviewData,
 } from "@/app/actions/getAnimeQuickPreview";
 import { getSeriesQuickPreview } from "@/app/actions/getSeriesQuickPreview";
+import SeasonDropdown from "./SeasonDropdown";
 
 interface QuickViewModalProps {
   slug: string | null;
@@ -85,6 +86,7 @@ export function QuickViewModal({
   const [visibleCount, setVisibleCount] = useState<number>(12);
   const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number>(1);
   const [mounted, setMounted] = useState(false);
+  const loadedSeasonNumbers = useRef(new Set<number>());
 
   const basePath = type === "series" ? "series" : "animes";
 
@@ -101,6 +103,7 @@ export function QuickViewModal({
     }
 
     let isSubscribed = true;
+    loadedSeasonNumbers.current = new Set<number>();
     const cacheKey = `${type}:${slug}`;
     const cachedData = globalQuickPreviewCache.get(cacheKey);
 
@@ -111,6 +114,7 @@ export function QuickViewModal({
         cachedData.seasons?.[0]?.number ||
         1;
       setSelectedSeasonNumber(initialSeason);
+      loadedSeasonNumbers.current.add(initialSeason);
       setVisibleCount(12);
       setLoading(false);
       setError(false);
@@ -140,6 +144,7 @@ export function QuickViewModal({
             resData.seasons?.[0]?.number ||
             1;
           setSelectedSeasonNumber(initialSeason);
+          loadedSeasonNumbers.current.add(initialSeason);
           setVisibleCount(12);
         }
       })
@@ -168,27 +173,23 @@ export function QuickViewModal({
 
       if (!slug || type !== "anime" || !data) return;
 
-      const seasonObj = data.seasons?.find((s) => s.number === seasonNum);
-      // Se a temporada ainda não tem episódios carregados ou tem apenas fallbacks
-      if (seasonObj && seasonObj.episodes.length === 0) {
+      if (!loadedSeasonNumbers.current.has(seasonNum)) {
         setLoadingSeason(true);
         try {
           const freshEpisodes = await getAnimeSeasonEpisodesAction(
             slug,
             seasonNum,
           );
-          if (freshEpisodes && freshEpisodes.length > 0) {
-            setData((prev) => {
-              if (!prev) return prev;
-              const updatedSeasons = prev.seasons.map((s) =>
-                s.number === seasonNum ? { ...s, episodes: freshEpisodes } : s,
-              );
-              const updatedData = { ...prev, seasons: updatedSeasons };
-              // Atualiza o cache global em memória também
-              globalQuickPreviewCache.set(`${type}:${slug}`, updatedData);
-              return updatedData;
-            });
-          }
+          loadedSeasonNumbers.current.add(seasonNum);
+          setData((prev) => {
+            if (!prev) return prev;
+            const updatedSeasons = prev.seasons.map((s) =>
+              s.number === seasonNum ? { ...s, episodes: freshEpisodes } : s,
+            );
+            const updatedData = { ...prev, seasons: updatedSeasons };
+            globalQuickPreviewCache.set(`${type}:${slug}`, updatedData);
+            return updatedData;
+          });
         } catch (err) {
           console.error("Erro ao carregar episódios da temporada:", err);
         } finally {
@@ -510,47 +511,33 @@ export function QuickViewModal({
 
                   {/* Dropdown de Temporadas */}
                   {data.seasons && data.seasons.length > 0 && (
-                    <div className="relative inline-flex">
-                      <select
-                        value={selectedSeasonNumber}
-                        onChange={(e) =>
-                          handleSeasonChange(Number(e.target.value))
-                        }
-                        aria-label={`Temporada ${selectedSeasonNumber}`}
-                        className="min-w-36 appearance-none rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-3.5 pr-10 text-sm font-medium text-zinc-100 shadow-sm outline-none transition-colors hover:border-white/20 hover:bg-white/[0.07] focus-visible:border-white/30 focus-visible:ring-2 focus-visible:ring-white/15 cursor-pointer"
-                      >
-                        {data.seasons.map((s) => {
-                          const seasonName = s.title?.trim() || s.name?.trim();
-                          const count = s.episodes.length;
-                          return (
-                            <option
-                              key={s.id}
-                              value={s.number}
-                              className="bg-[#141414] text-zinc-100"
-                            >
-                              {seasonName
-                                ? count > 0
-                                  ? t("seasonOptionWithName", {
-                                      name: seasonName,
-                                      count,
-                                    })
-                                  : seasonName
-                                : count > 0
-                                  ? t("seasonOption", {
-                                      number: s.number,
-                                      count,
-                                    })
-                                  : `Temporada ${s.number}`}
-                            </option>
-                          );
-                        })}
-                      </select>
-                      <ChevronDown
-                        size={20}
-                        strokeWidth={1.8}
-                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400"
-                      />
-                    </div>
+                    <SeasonDropdown
+                      options={data.seasons.map((season) => {
+                        const seasonName =
+                          season.title?.trim() || season.name?.trim();
+                        return {
+                          value: season.number,
+                          label: seasonName
+                            ? season.episodes.length > 0
+                              ? t("seasonOptionWithName", {
+                                  name: seasonName,
+                                  count: season.episodes.length,
+                                })
+                              : seasonName
+                            : season.episodes.length > 0
+                              ? t("seasonOption", {
+                                  number: season.number,
+                                  count: season.episodes.length,
+                                })
+                              : `${t("season")} ${season.number}`,
+                        };
+                      })}
+                      value={selectedSeasonNumber}
+                      onChange={(value) => handleSeasonChange(Number(value))}
+                      ariaLabel={`Temporada ${selectedSeasonNumber}`}
+                      className="ml-auto"
+                      triggerClassName="text-sm"
+                    />
                   )}
                 </div>
 

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, ListVideo, ArrowRight, ArrowLeft } from "lucide-react";
+import { ListVideo, ArrowRight, ChevronLeft } from "lucide-react";
 import RatingBadge from "@/components/RatingBadge";
 import { useTranslations } from "next-intl";
 import type { FranchiseItem } from "@/lib/anime-relations";
+import SeasonDropdown from "@/components/SeasonDropdown";
+import { getAnimeSeasonEpisodesAction } from "@/app/actions/getAnimeQuickPreview";
 
 interface Episode {
   id: string;
@@ -64,9 +66,18 @@ export default function EpisodeSidebar({
 }: EpisodeSidebarProps) {
   const t = useTranslations("EpisodeSidebar");
   const tLabels = useTranslations("Labels");
+  const tMedia = useTranslations("MediaCard");
   const tSelector = useTranslations("SeasonSelector");
   // Find current episode and flatten list of episodes across all seasons
-  const allEpisodes = seasons.flatMap((s) =>
+  const [seasonData, setSeasonData] = useState(seasons);
+  const [loadingSeason, setLoadingSeason] = useState(false);
+  const [loadedSeasons, setLoadedSeasons] = useState<Set<number>>(() => {
+    const current = seasons.find((season) =>
+      season.episodes.some((episode) => episode.id === currentEpisodeId),
+    );
+    return new Set(current ? [current.number] : []);
+  });
+  const allEpisodes = seasonData.flatMap((s) =>
     s.episodes.map((ep) => ({
       ...ep,
       seasonNumber: s.number,
@@ -91,27 +102,41 @@ export default function EpisodeSidebar({
   const [selectedSeasonId, setSelectedSeasonId] = useState(
     currentEp?.seasonId || seasons[0]?.id,
   );
-  const [seasonDropdownOpen, setSeasonDropdownOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
 
-  const seasonRef = useRef<HTMLDivElement>(null);
-
-  // Click outside handlers
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        seasonRef.current &&
-        !seasonRef.current.contains(event.target as Node)
-      ) {
-        setSeasonDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const selectedSeason = seasons.find((s) => s.id === selectedSeasonId);
+  const selectedSeason = seasonData.find((s) => s.id === selectedSeasonId);
   const episodesOfSelectedSeason = selectedSeason?.episodes || [];
+
+  const selectSeason = async (seasonId: string) => {
+    setSelectedSeasonId(seasonId);
+    setVisibleCount(12);
+    const season = seasonData.find((item) => item.id === seasonId);
+    if (!season || loadedSeasons.has(season.number)) return;
+
+    setLoadingSeason(true);
+    try {
+      const episodes = await getAnimeSeasonEpisodesAction(
+        animeSlug,
+        season.number,
+      );
+      setSeasonData((current) =>
+        current.map((item) =>
+          item.id === seasonId
+            ? {
+                ...item,
+                episodes: episodes.map((episode) => ({
+                  ...episode,
+                  videoUrl: null,
+                })),
+              }
+            : item,
+        ),
+      );
+      setLoadedSeasons((current) => new Set(current).add(season.number));
+    } finally {
+      setLoadingSeason(false);
+    }
+  };
 
   const handleToggleShowAll = () => {
     setShowAllEpisodes(!showAllEpisodes);
@@ -146,48 +171,54 @@ export default function EpisodeSidebar({
           {!nextEpisode && sequel && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 md:px-2">
-                <span className="inline-flex items-center rounded-full bg-blue-500/20 px-2.5 py-0.5 text-[11px] font-bold text-blue-400 border border-blue-500/30">
+                <h4 className="inline-flex items-center rounded-full bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-400">
                   {t("nextSeasonBadge")}
-                </span>
-                <h3 className="font-bold text-sm text-white uppercase tracking-wider">
-                  {t("continueInSequel")}
-                </h3>
+                </h4>
               </div>
               <Link
                 href={sequel.firstEpisodeHref}
-                className="group relative flex items-center gap-3 p-2.5 transition-all rounded-xl border border-blue-500/40 bg-gradient-to-r from-blue-950/40 via-[#151515] to-[#151515] hover:border-blue-400 hover:from-blue-950/60 shadow-lg hover:shadow-blue-500/10"
+                className="group relative flex items-center gap-3 p-2 transition-all rounded-xl hover:bg-[#2A2A2A]"
               >
-                <div className="relative aspect-video w-38 shrink-0 overflow-hidden rounded-md bg-zinc-800 border border-blue-500/20">
+                <div className="relative aspect-video w-38 shrink-0 overflow-hidden rounded-md">
                   {sequel.imageUrl || sequel.bannerUrl ? (
                     <Image
                       src={sequel.imageUrl || sequel.bannerUrl || ""}
                       alt={sequel.title}
                       fill
                       sizes="128px"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300 rounded-md"
+                      className="object-cover rounded-md"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-xs text-zinc-500">
                       {tLabels("noImage")}
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-1">
-                    <span className="text-[10px] font-bold text-white bg-blue-600 px-1.5 py-0.5 rounded shadow">
-                      EP {sequel.firstEpisodeNumber || 1}
-                    </span>
+                  {sequel.rating && (
+                    <div className="absolute top-1 left-1 z-10 scale-90 origin-top-left">
+                      <RatingBadge rating={sequel.rating} size={16} />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end justify-end p-1">
+                    {formatDuration(sequel.duration) && (
+                      <span className="rounded bg-[#0009] px-1 py-0.5 text-sm font-semibold text-white backdrop-blur-sm">
+                        {formatDuration(sequel.duration)}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[11px] font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1">
-                    <span>{t("nextSeriesEp")}</span>
-                    <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                  <h4 className="text-sm font-bold text-white line-clamp-1 group-hover:text-blue-300 transition-colors">
+                  <h4 className="text-sm font-bold text-white line-clamp-3">
                     {sequel.title}
                   </h4>
-                  <p className="text-xs text-zinc-400 line-clamp-1 mt-0.5">
-                    {t("watchEpisodeOne")}
-                  </p>
+                  {(sequel.isDubbed || sequel.isSubtitled) && (
+                    <span className="mt-1 text-sm font-normal text-[#8c8c8c]">
+                      {sequel.isDubbed && sequel.isSubtitled
+                        ? tMedia("subDub")
+                        : sequel.isDubbed
+                          ? tMedia("dubbed")
+                          : tMedia("subtitled")}
+                    </span>
+                  )}
                 </div>
               </Link>
             </div>
@@ -217,18 +248,15 @@ export default function EpisodeSidebar({
           {isFirstEpisode && prequel && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 md:px-2">
-                <span className="inline-flex items-center rounded-full bg-zinc-800 px-2 py-0.5 text-[11px] font-medium text-zinc-400 border border-zinc-700">
+                <h4 className="inline-flex items-center rounded-full bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-400">
                   {t("prevSeasonBadge")}
-                </span>
-                <h3 className="font-semibold text-xs text-zinc-400 uppercase tracking-wider">
-                  {t("goToPrequel")}
-                </h3>
+                </h4>
               </div>
               <Link
                 href={prequel.firstEpisodeHref}
-                className="group relative flex items-center gap-3 p-2 transition-all rounded-lg border border-zinc-800 bg-[#151515] hover:border-zinc-700"
+                className="group relative flex items-center gap-3 p-2 transition-all rounded-xl hover:bg-[#2A2A2A]"
               >
-                <div className="relative aspect-video w-32 shrink-0 overflow-hidden rounded-md bg-zinc-800">
+                <div className="relative aspect-video w-38 shrink-0 overflow-hidden rounded-md bg-zinc-800">
                   {prequel.imageUrl || prequel.bannerUrl ? (
                     <Image
                       src={prequel.imageUrl || prequel.bannerUrl || ""}
@@ -242,13 +270,32 @@ export default function EpisodeSidebar({
                       {tLabels("noImage")}
                     </div>
                   )}
+                  {prequel.rating && (
+                    <div className="absolute top-1 left-1 z-10 scale-90 origin-top-left">
+                      <RatingBadge rating={prequel.rating} size={16} />
+                    </div>
+                  )}
+                  {formatDuration(prequel.duration) && (
+                    <div className="absolute bottom-1 right-1 rounded bg-[#0009] px-1 py-0.5 text-sm font-semibold text-white backdrop-blur-sm">
+                      {formatDuration(prequel.duration)}
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[11px] text-zinc-400 line-clamp-1">
+                  <span className="text-sm text-zinc-400 line-clamp-1">
                     {prequel.title}
                   </span>
-                  <h4 className="text-xs font-semibold text-zinc-200 line-clamp-1 group-hover:text-blue-400 transition-colors flex items-center gap-1">
-                    <ArrowLeft className="w-3 h-3" />
+                  {(prequel.isDubbed || prequel.isSubtitled) && (
+                    <span className="text-sm font-normal text-[#8c8c8c]">
+                      {prequel.isDubbed && prequel.isSubtitled
+                        ? tMedia("subDub")
+                        : prequel.isDubbed
+                          ? tMedia("dubbed")
+                          : tMedia("subtitled")}
+                    </span>
+                  )}
+                  <h4 className="text-sm font-semibold text-zinc-200 line-clamp-1 group-hover:text-white transition-colors flex items-center gap-1">
+                    <ChevronLeft className="w-4 h-4" />
                     <span>{t("goToPrequel")}</span>
                   </h4>
                 </div>
@@ -269,93 +316,79 @@ export default function EpisodeSidebar({
 
       {/* 3. Season Selector & Episode List (shown if showAllEpisodes is true) */}
       {showAllEpisodes && (
-        <div className="flex flex-col gap-4 shadow-sm ">
+        <div className="flex flex-col gap-4 ">
           {/* Season Dropdown */}
-          <div className="relative w-full max-w-[378px]" ref={seasonRef}>
-            <button
-              onClick={() => setSeasonDropdownOpen(!seasonDropdownOpen)}
-              className="flex w-full items-center gap-2 px-2 text-lg font-bold text-white hover:text-[#0077FD] transition-colors"
-            >
-              <span>
-                {selectedSeason?.title
-                  ? selectedSeason.title
-                  : tSelector("season", {
-                      number: selectedSeason ? selectedSeason.number : 1,
-                    })}
-              </span>
-              <ChevronDown
-                className={`h-4 w-4 transition-transform duration-200 ${
-                  seasonDropdownOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            {seasonDropdownOpen && (
-              <div className="absolute left-2 right-0 z-50 mt-1 p-2 max-h-60 overflow-y-auto custom-scrollbar bg-[#272727] rounded-md">
-                {seasons.map((season) => (
-                  <button
-                    key={season.id}
-                    onClick={() => {
-                      setSelectedSeasonId(season.id);
-                      setSeasonDropdownOpen(false);
-                      setVisibleCount(12);
-                    }}
-                    className={`w-full rounded-md px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#151515] flex items-center justify-between ${
-                      season.id === selectedSeasonId
-                        ? "text-white bg-[#151515]"
-                        : "text-[#bbb] hover:text-white"
-                    }`}
-                  >
-                    <span>
-                      {season.title
-                        ? season.title
-                        : tSelector("season", { number: season.number })}
-                    </span>
-                    <span className="text-xs text-[#bbb] font-normal">
-                      {tSelector("episodesCount", {
-                        count: season.episodes.length,
-                      })}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <SeasonDropdown
+            options={seasonData.map((season) => ({
+              value: season.id,
+              label:
+                season.title || tSelector("season", { number: season.number }),
+              detail:
+                season.episodes.length > 0
+                  ? tSelector("episodesCount", {
+                      count: season.episodes.length,
+                    })
+                  : undefined,
+            }))}
+            value={selectedSeasonId || seasons[0]?.id || ""}
+            onChange={(value) => void selectSeason(String(value))}
+            ariaLabel={tSelector("season", {
+              number: selectedSeason?.number || 1,
+            })}
+            className="w-full max-w-[378px] px-2"
+          />
 
           {/* Episode List */}
           <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-1 py-2">
+            {loadingSeason && (
+              <div className="flex flex-col gap-2" aria-hidden="true">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 sm:p-2 animate-pulse"
+                  >
+                    <div className="aspect-video w-38 shrink-0 rounded-md bg-zinc-800" />
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <div className="h-4 w-3/4 rounded bg-zinc-800" />
+                      <div className="h-3 w-1/2 rounded bg-zinc-800" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex flex-col">
-              {episodesOfSelectedSeason.slice(0, visibleCount).map((ep) => {
-                const isCurrent = ep.id === currentEpisodeId;
-                return (
-                  <EpisodeCard
-                    key={ep.id}
-                    ep={ep}
-                    animeSlug={animeSlug}
-                    animeRating={animeRating}
-                    animeDuration={animeDuration}
-                    fallbackImageUrl={fallbackImageUrl}
-                    isCurrent={isCurrent}
-                    isMegaplay={isMegaplay}
-                    isDubbed={isDubbed}
-                    isSubtitled={isSubtitled}
-                    seasonNumber={selectedSeason?.number}
-                  />
-                );
-              })}
+              {!loadingSeason &&
+                episodesOfSelectedSeason.slice(0, visibleCount).map((ep) => {
+                  const isCurrent = ep.id === currentEpisodeId;
+                  return (
+                    <EpisodeCard
+                      key={ep.id}
+                      ep={ep}
+                      animeSlug={animeSlug}
+                      animeRating={animeRating}
+                      animeDuration={animeDuration}
+                      fallbackImageUrl={fallbackImageUrl}
+                      isCurrent={isCurrent}
+                      isMegaplay={isMegaplay}
+                      isDubbed={isDubbed}
+                      isSubtitled={isSubtitled}
+                      seasonNumber={selectedSeason?.number}
+                    />
+                  );
+                })}
             </div>
 
             {episodesOfSelectedSeason.length > visibleCount && (
               <button
                 onClick={() => setVisibleCount((prev) => prev + 12)}
-                className="w-full rounded-md mt-2 py-3 px-4  bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide border border-zinc-200 dark:border-zinc-700"
+                className="w-full rounded-md mt-2 py-3 px-4  bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-900 dark:text-zinc-50 transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 text-center uppercase tracking-wide"
               >
                 {tLabels("showMore")}
               </button>
             )}
 
             {sequel && (
-              <div className="mt-3 p-3 rounded-xl border border-blue-500/30 bg-blue-950/20 flex items-center justify-between gap-3">
+              <div className="mt-3 p-3 rounded-md bg-zinc-800 flex items-center justify-between gap-3">
                 <div className="flex flex-col min-w-0">
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
                     {t("nextSeasonBadge")}
@@ -419,14 +452,14 @@ function EpisodeCard({
   return (
     <Link
       href={watchHref}
-      className={`flex items-center gap-3 sm:p-2 transition-colors rounded-xl ${
+      className={`flex items-center gap-3 p-2 transition-colors rounded-xl ${
         isCurrent
-          ? "border-blue-500 bg-[#151515] dark:border-blue-500"
-          : "border-zinc-200 dark:border-zinc-800 hover:bg-[#151515]"
+          ? "border-blue-500 bg-[#2A2A2A]"
+          : "border-zinc-200 hover:bg-[#2A2A2A]"
       }`}
     >
       {/* Left: Image Container */}
-      <div className="relative aspect-video w-38 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+      <div className="relative aspect-video w-38 shrink-0 overflow-hidden bg-zinc-100 rounded-md">
         {ep.imageUrl || fallbackImageUrl ? (
           <Image
             src={ep.imageUrl || fallbackImageUrl || ""}
@@ -456,7 +489,7 @@ function EpisodeCard({
 
       {/* Right: Info */}
       <div className="flex flex-col min-w-0">
-        <h3 className="text-sm font-bold text-white line-clamp-2">
+        <h3 className="text-sm font-bold text-white line-clamp-3">
           E{ep.number} - {ep.title || `${tLabels("episode")} ${ep.number}`}
         </h3>
         {(isDubbed || isSubtitled) && (

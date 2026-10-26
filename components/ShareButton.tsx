@@ -89,7 +89,7 @@ export default function ShareButton({
         >
           {iconContent}
           {showLabelInline && (
-            <span className="hidden md:inline text-xs font-medium text-zinc-300 group-hover:text-white transition-colors whitespace-nowrap">
+            <span className="hidden md:inline text-sm font-medium text-white group-hover:text-white transition-colors whitespace-nowrap">
               {labelContent}
             </span>
           )}

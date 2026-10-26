@@ -215,7 +215,8 @@
     "nextSeriesEp": "Fortsetzung starten",
     "watchEpisodeOne": "Episode 1 verfügbar",
     "prevSeasonBadge": "Vorherige Staffel",
-    "goToPrequel": "Prequel ansehen"
+    "goToPrequel": "Prequel ansehen",
+    "loadingSeason": "Staffel wird geladen..."
   },
   "Watch": {
     "notFound": "Episode nicht gefunden",

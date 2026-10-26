@@ -73,7 +73,7 @@ export function PlayerDropdown({
                   key={p.id}
                   href={p.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2 text-sm transition-colors rounded-md mx-1 my-0.5 ${
+                  className={`flex items-center justify-between px-3.5 py-2 text-sm transition-colors rounded-lg mx-1 ${
                     isActive
                       ? "bg-zinc-800 text-white font-semibold"
                       : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white"

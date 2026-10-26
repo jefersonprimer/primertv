@@ -215,7 +215,8 @@
     "nextSeriesEp": "بدء التكملة",
     "watchEpisodeOne": "الحلقة 1 متاحة",
     "prevSeasonBadge": "الموسم السابق",
-    "goToPrequel": "عرض الموسم السابق"
+    "goToPrequel": "عرض الموسم السابق",
+    "loadingSeason": "جارٍ تحميل الموسم..."
   },
   "Watch": {
     "notFound": "لم يتم العثور على الحلقة",

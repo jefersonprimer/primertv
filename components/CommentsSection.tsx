@@ -796,7 +796,7 @@ export function CommentsSection({
   };
 
   return (
-    <section className="mt-8 p-5 lg:p-6 shadow-xl">
+    <section className="mt-8 p-5 lg:p-6">
       {/* Header */}
       <div className="flex items-center gap-3  pb-4 mb-4">
         <div className="flex items-center gap-2.5">

@@ -1,7 +1,8 @@
 export type MediaFormat = "SUB" | "DUB" | "SUB_DUB" | "NONE";
 
 /**
- * Determina se a mídia é Legendada, Dublada, Ambos ou Nenhum com base em seus arrays de áudio e legendas.
+ * Considera dublado quando existe uma faixa de áudio em qualquer idioma além do japonês.
+ * A presença de legendas define se também está disponível legendado.
  */
 export function getMediaFormat(
   audio: string[] = [],
@@ -11,14 +12,15 @@ export function getMediaFormat(
     return subtitles && subtitles.length > 0 ? "SUB" : "NONE";
   }
 
-  // Regex para identificar Português no áudio (ex: "Portugues", "Portugues(Brasil)", "pt-BR", "Português")
-  const ptAudioRegex = /portugues|português|pt[-_]br|dub/i;
-  const hasPtAudio = audio.some((lang) => ptAudioRegex.test(lang));
+  // Japonês é a faixa original; qualquer outro idioma conta como dublagem.
+  // Suporta nomes em inglês/português e códigos comuns como ja, ja-JP e ja_JP.
+  const japaneseAudioRegex = /(^|[^a-z])(ja|japanese|japon[eê]s)([^a-z]|$)/i;
+  const hasDubbedAudio = audio.some((lang) => !japaneseAudioRegex.test(lang));
 
   // Qualquer presença de legendas indica que é legendado (sub)
   const hasSubtitles = subtitles && subtitles.length > 0;
 
-  const isDubbed = hasPtAudio;
+  const isDubbed = hasDubbedAudio;
   const isSubtitled = hasSubtitles;
 
   if (isDubbed && isSubtitled) {

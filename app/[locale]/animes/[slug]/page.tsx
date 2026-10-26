@@ -201,6 +201,7 @@ export default async function AnimeDetailsPage({
     animeMalId: anime.malId,
     animeTitleEnglish: anime.titleEnglish,
     localSeasons: anime.seasons,
+    targetSeasonNumber: anime.seasons[0]?.number ?? 1,
     translateEpisode: (num: number) => t("episodeNumber", { number: num }),
   });
 

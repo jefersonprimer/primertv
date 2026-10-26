@@ -1,103 +1,160 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "@/i18n/routing";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 
-interface SeasonOption {
-  slug: string;
+export interface SeasonDropdownOption {
+  value: string | number;
   label: string;
+  detail?: string;
 }
 
-interface SeasonDropdownProps {
-  seasons: SeasonOption[];
+interface SharedSeasonDropdownProps {
+  options: SeasonDropdownOption[];
+  value: string | number;
+  onChange: (value: string | number) => void;
+  ariaLabel: string;
+  className?: string;
+  triggerClassName?: string;
+}
+
+interface RouteSeasonDropdownProps {
+  seasons: { slug: string; label: string }[];
   currentSlug: string;
 }
 
-export function SeasonDropdown({ seasons, currentSlug }: SeasonDropdownProps) {
-  const router = useRouter();
-  const t = useTranslations("SeasonsPage");
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const getLocalizedSeasonLabel = (slug: string) => {
-    const parts = slug.split("-");
-    if (parts.length < 2) return slug;
-    const season = parts[0].toLowerCase();
-    const year = parts[1];
-    return t("seasonLabelFormat", {
-      season: t(`seasons.${season}`),
-      year,
-    });
-  };
-
-  const selectedSeasonLabel = getLocalizedSeasonLabel(currentSlug);
+function SharedSeasonDropdown({
+  options,
+  value,
+  onChange,
+  ariaLabel,
+  className = "",
+  triggerClassName = "",
+}: SharedSeasonDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const [alignRight, setAlignRight] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const selected = options.find((option) => option.value === value);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
+    if (!open) return;
+    // Keep wide menus inside the viewport when the trigger sits near its right edge.
+    const triggerRect = triggerRef.current?.getBoundingClientRect();
+    if (triggerRect) {
+      const preferredWidth = Math.min(480, window.innerWidth * 0.9);
+      const rightSpace = window.innerWidth - triggerRect.left;
+      const leftSpace = triggerRect.right;
+      setAlignRight(rightSpace < preferredWidth && leftSpace > rightSpace);
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    const onPointerDown = (event: MouseEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
 
-  const handleSelect = (slug: string) => {
-    setIsOpen(false);
-    router.push(`/seasons/${slug}`);
-  };
+  if (!selected) return null;
 
   return (
-    <div className="relative inline-block" ref={containerRef}>
-      <div>
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className={`inline-flex rounded w-full items-center justify-between gap-x-2 px-4 py-2 text-sm font-semibold text-[#bbb] transition-colors focus:outline-none hover:text-white hover:bg-[#272727] uppercase ${isOpen ? "text-white bg-[#272727]" : ""}`}
-          id="menu-button"
-          aria-expanded={isOpen}
-          aria-haspopup="true"
-        >
-          <span>{selectedSeasonLabel}</span>
-          <ChevronDown
-            className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+    <div ref={rootRef} className={`relative min-w-0 ${className}`}>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label={ariaLabel}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        className={`flex max-w-full min-w-0 items-center gap-2 text-left text-lg font-bold text-[#f2f2f2] transition-colors hover:text-[#0077FD] ${triggerClassName}`}
+      >
+        <span className="line-clamp-1 min-w-0">{selected.label}</span>
+        <ChevronDown
+          className={`h-5 w-5 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <>
+          <button
+            type="button"
+            aria-label="Fechar seletor de temporadas"
+            className="fixed inset-0 z-40 cursor-default"
+            onClick={() => setOpen(false)}
           />
-        </button>
-      </div>
-
-      {isOpen && (
-        <div
-          className="absolute rounded-xl right-0 z-50 w-54 py-2 origin-top-right bg-[#272727] shadow-lg ring-1 ring-black/5 focus:outline-none"
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="menu-button"
-        >
           <div
-            className="max-h-84 overflow-y-auto scrollbar-thin scrollbar-thumb-[#151515]"
-            role="none"
+            role="listbox"
+            aria-label={ariaLabel}
+            className={`absolute ${alignRight ? "right-0 left-auto" : "left-0 right-auto"} top-full z-50 mt-2 max-h-60 w-max min-w-full max-w-[min(90vw,30rem,100%)] overflow-y-auto rounded-xl bg-[#272727] p-2 shadow-xl custom-scrollbar`}
           >
-            {seasons.map((season) => (
-              <button
-                key={season.slug}
-                onClick={() => handleSelect(season.slug)}
-                className={`flex w-full items-center px-4 py-2 text-sm transition-colors ${
-                  season.slug === currentSlug
-                    ? "text-white font-semibold bg-[#151515]"
-                    : "text-[#bbb] hover:bg-[#151515] hover:text-white"
-                }`}
-                role="menuitem"
-              >
-                {getLocalizedSeasonLabel(season.slug)}
-              </button>
-            ))}
+            {options.map((option) => {
+              const isSelected = option.value === value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => {
+                    onChange(option.value);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full items-center justify-between gap-8 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-[#151515] ${
+                    isSelected ? "bg-[#151515] text-white" : "text-[#bbb]"
+                  }`}
+                >
+                  <span className="min-w-0 truncate">{option.label}</span>
+                  {option.detail && (
+                    <span className="shrink-0 text-xs font-normal text-[#bbb]">
+                      {option.detail}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
 }
+
+export function SeasonDropdown({
+  seasons,
+  currentSlug,
+}: RouteSeasonDropdownProps) {
+  const router = useRouter();
+  const t = useTranslations("SeasonsPage");
+  const options = seasons.map((season) => {
+    const [seasonName, year] = season.slug.split("-");
+    return {
+      value: season.slug,
+      label:
+        year && seasonName
+          ? t("seasonLabelFormat", {
+              season: t(`seasons.${seasonName.toLowerCase()}`),
+              year,
+            })
+          : season.label,
+    };
+  });
+
+  return (
+    <SharedSeasonDropdown
+      options={options}
+      value={currentSlug}
+      ariaLabel={t("seasonLabel")}
+      onChange={(value) => router.push(`/seasons/${value}`)}
+      triggerClassName="rounded px-4 py-2 text-sm uppercase"
+    />
+  );
+}
+
+export default SharedSeasonDropdown;
