@@ -28,7 +28,7 @@ export function StartWatchingButton({
     displayText = t("watch");
   }
 
-  const baseClass = `group relative inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 px-4 shadow-lg backdrop-blur-md transition-all duration-200 focus:outline-none text-white text-sm font-medium ${
+  const baseClass = `group relative inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-[#2A2A2A] border border-zinc-800 px-4 shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none text-white text-sm font-medium ${
     uppercase ? "uppercase" : ""
   } ${className}`;
 

@@ -85,7 +85,7 @@ export default function ShareButton({
         aria-label={labelContent}
       >
         <div
-          className={`inline-flex items-center justify-center ${roundedClass} bg-zinc-900/90 ${borderClass} ${sizeClass} ${inlineLabelClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700 group-active:scale-95`}
+          className={`inline-flex items-center justify-center ${roundedClass} bg-[#2A2A2A] ${borderClass} ${sizeClass} ${inlineLabelClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700 group-active:scale-95`}
         >
           {iconContent}
           {showLabelInline && (
@@ -107,7 +107,7 @@ export default function ShareButton({
   return (
     <button
       onClick={handleShare}
-      className={`group relative inline-flex items-center justify-center ${roundedClass} bg-zinc-900/90 ${borderClass} ${sizeClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none ${className}`}
+      className={`group relative inline-flex items-center justify-center ${roundedClass} bg-[#2A2A2A] ${borderClass} ${sizeClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none ${className}`}
       aria-label={copied ? t("linkCopied") : t("share")}
     >
       {iconContent}

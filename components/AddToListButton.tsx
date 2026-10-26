@@ -74,7 +74,7 @@ export default function AddToListButton({
     mobileVertical
       ? "flex-col md:flex-row gap-1 md:gap-2 text-xs md:text-sm p-2"
       : sizeClass
-  } ${roundedClass} bg-zinc-900/90 ${borderClass} shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none text-white cursor-pointer ${className}`;
+  } ${roundedClass} bg-[#2A2A2A] ${borderClass} shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-zinc-800 hover:border-zinc-700 hover:shadow-white/5 active:scale-95 focus:outline-none text-white cursor-pointer ${className}`;
 
   const tooltipElement = (
     <span className="absolute bottom-full left-1/2 -translate-x-1/2 rounded mb-2 px-2.5 py-2 text-xs font-normal text-white bg-[#272727] shadow-xl opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out whitespace-nowrap z-50">
@@ -204,7 +204,7 @@ export default function AddToListButton({
           title={t("tooltip")}
         >
           <div
-            className={`inline-flex items-center justify-center ${roundedClass} bg-zinc-900/90 ${borderClass} ${sizeClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700 group-active:scale-95`}
+            className={`inline-flex items-center justify-center ${roundedClass} bg-[#2A2A2A] ${borderClass} ${sizeClass} text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700 group-active:scale-95`}
           >
             <Plus
               size={iconSize}

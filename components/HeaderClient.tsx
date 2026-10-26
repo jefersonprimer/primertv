@@ -16,11 +16,10 @@ const AddMediaButton = dynamic(
   { ssr: false },
 );
 
-const NAV_ACTIVE_CLASS =
-  "text-white font-semibold bg-linear-to-b from-white/[0.17] via-white/[0.06] to-white/[0.025] shadow-[inset_0_1px_0_rgba(255,255,255,0.40),inset_0_0_0_1px_rgba(255,255,255,0.08),0_1px_2px_rgba(0,0,0,0.35),0_0_12px_-4px_rgba(255,255,255,0.18)]";
+const NAV_ACTIVE_CLASS = "text-white bg-white/10 font-semibold";
 
 const NAV_IDLE_CLASS =
-  "text-[#bbb] hover:text-white font-medium hover:bg-linear-to-b hover:from-white/[0.10] hover:via-white/[0.05] hover:to-white/[0.03] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.20),inset_0_0_0_1px_rgba(255,255,255,0.06)]";
+  "text-[#bbb] hover:text-white hover:bg-white/10 font-medium";
 
 interface HeaderClientProps {
   user?: SessionUser | null;
@@ -78,7 +77,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`items-center px-3.5 py-3 rounded-lg text-sm transition-all duration-200 ${
+                  className={`items-center px-3.5 py-3 rounded-lg text-sm transition-colors duration-200 ${
                     isLiveTv ? "hidden md:flex" : "flex"
                   } ${active ? NAV_ACTIVE_CLASS : NAV_IDLE_CLASS}`}
                 >
@@ -92,7 +91,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
               <button
                 type="button"
                 onClick={() => setIsExploreOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-3.5 py-3 rounded-lg text-sm transition-all duration-200 cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3.5 py-3 rounded-lg text-sm transition-colors duration-200 cursor-pointer ${
                   isExploreActive || isExploreOpen
                     ? NAV_ACTIVE_CLASS
                     : NAV_IDLE_CLASS
