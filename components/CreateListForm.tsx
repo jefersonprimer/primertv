@@ -58,7 +58,9 @@ export default function CreateListForm({
           <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
             <FolderPlus className="h-4 w-4" />
           </div>
-          <h3 className="text-base font-bold text-white tracking-tight">{t("createList")}</h3>
+          <h3 className="text-base font-bold text-white tracking-tight">
+            {t("createList")}
+          </h3>
         </div>
 
         {error && (
@@ -77,7 +79,7 @@ export default function CreateListForm({
               placeholder={t("listNamePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white transition-all"
+              className="w-full text-sm px-3.5 py-2.5 rounded-md border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white transition-all"
               maxLength={50}
               required
             />
@@ -91,7 +93,7 @@ export default function CreateListForm({
               placeholder={t("descriptionPlaceholder")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white resize-none transition-all"
+              className="w-full text-sm px-3.5 py-2.5 rounded-md border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white resize-none transition-all"
               maxLength={150}
               rows={3}
             />
@@ -102,7 +104,7 @@ export default function CreateListForm({
       <button
         type="submit"
         disabled={loading || !name.trim()}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-4 py-2.5 text-xs font-semibold text-white transition-all shadow-md shadow-blue-600/25 disabled:opacity-50 cursor-pointer active:scale-95"
+        className="flex items-center justify-center gap-2 mt-4 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />

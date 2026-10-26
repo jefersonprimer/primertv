@@ -60,7 +60,7 @@ export default function EditListModal({
       {triggerType === "button" ? (
         <button
           onClick={openModal}
-          className="flex items-center gap-2 border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 px-4 py-2 text-sm font-semibold text-white transition-all cursor-pointer rounded-xl"
+          className="flex items-center gap-2 border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 px-4 py-2 text-sm font-semibold text-white transition-all cursor-pointer rounded-lg"
         >
           {t("editList")}
         </button>
@@ -90,7 +90,7 @@ export default function EditListModal({
               className="absolute right-4 top-4 p-1.5 text-zinc-400 hover:bg-zinc-800/80 hover:text-white rounded-full transition-all cursor-pointer z-20"
               aria-label={t("close")}
             >
-              <X className="h-4 w-4" />
+              <X size={24} />
             </button>
 
             {/* Form */}
@@ -117,7 +117,7 @@ export default function EditListModal({
                     placeholder={t("listNamePlaceholder")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white transition-all"
+                    className="w-full text-sm px-3.5 py-2.5 rounded-md border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white transition-all"
                     maxLength={50}
                     required
                   />
@@ -131,7 +131,7 @@ export default function EditListModal({
                     placeholder={t("descriptionPlaceholder")}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white resize-none transition-all"
+                    className="w-full text-sm px-3.5 py-2.5 rounded-md border border-zinc-800 bg-zinc-900/80 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 placeholder-zinc-500 text-white resize-none transition-all"
                     maxLength={150}
                     rows={3}
                   />
@@ -142,14 +142,14 @@ export default function EditListModal({
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+                  className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={loading || !name.trim()}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition-all shadow-md shadow-blue-600/25 disabled:opacity-50 cursor-pointer active:scale-95"
+                  className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
                 >
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   {t("save")}

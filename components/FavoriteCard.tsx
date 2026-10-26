@@ -11,6 +11,7 @@ export interface FavoriteItem {
   bannerUrl: string | null;
   animeImageUrl?: string | null;
   firstEpisodeId: string | null;
+  firstEpisodeHref?: string | null;
   firstEpisodeImageUrl: string | null;
   firstEpisodePublicId?: string | null;
   firstEpisodeSlug?: string | null;
@@ -44,7 +45,11 @@ export default function FavoriteCard({
   const tMedia = useTranslations("MediaCard");
   const cardHref = item.firstEpisodePublicId
     ? `/watch/${item.firstEpisodePublicId}/${item.firstEpisodeSlug || "episode-1"}`
-    : `/animes/${item.slug}`;
+    : item.firstEpisodeHref ||
+      (item.firstEpisodeId
+        ? `/watch/${item.firstEpisodeId}`
+        : `/animes/${item.slug}`);
+  const hasEpisode = Boolean(item.firstEpisodeId || item.firstEpisodeHref);
 
   if (isMobileRow) {
     const posterImageUrl =
@@ -92,7 +97,7 @@ export default function FavoriteCard({
                 </h3>
               </Link>
 
-              {item.firstEpisodeId ? (
+              {hasEpisode ? (
                 <Link
                   href={cardHref}
                   className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors line-clamp-1 mt-2"
@@ -205,7 +210,7 @@ export default function FavoriteCard({
           </h3>
         </Link>
 
-        {item.firstEpisodeId ? (
+        {hasEpisode ? (
           <Link
             href={cardHref}
             className="text-sm text-[#bbb] font-medium hover:text-[#f2f2f2] transition-colors flex items-center gap-1"

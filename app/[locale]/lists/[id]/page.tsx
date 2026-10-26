@@ -6,7 +6,7 @@ import { Link, redirect } from "@/i18n/routing";
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { ChevronLeft, FolderOpen } from "lucide-react";
-import { MediaCard } from "@/components/MediaCard";
+import { ListMediaCard } from "@/components/ListMediaCard";
 import RemoveFromListButton from "@/components/RemoveFromListButton";
 import EditListModal from "@/components/EditListModal";
 import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
@@ -22,7 +22,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Lists" });
 
   return {
-    title: `${t("title")} - PrimerTv`,
+    title: `${t("title")} - primertv`,
     robots: NOINDEX_ROBOTS,
     alternates: buildAlternates(locale, `/lists/${id}`),
   };
@@ -60,6 +60,11 @@ export default async function ListDetailsPage({
           slug: true,
           title: true,
           imageUrl: true,
+          bannerUrl: true,
+          description: true,
+          rating: true,
+          isDubbed: true,
+          isSubtitled: true,
         },
       },
       series: {
@@ -68,6 +73,9 @@ export default async function ListDetailsPage({
           slug: true,
           title: true,
           imageUrl: true,
+          bannerUrl: true,
+          description: true,
+          rating: true,
         },
       },
     },
@@ -76,7 +84,7 @@ export default async function ListDetailsPage({
   const isEmpty = items.length === 0;
 
   return (
-    <div className="mx-auto max-w-[1130px] py-6">
+    <div className="mx-auto max-w-[1130px] py-6 px-2 md:px-0">
       <div className="mx-auto max-w-[1050px]">
         {/* Back navigation */}
         <Link
@@ -138,7 +146,7 @@ export default async function ListDetailsPage({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            <div className="divide-y divide-zinc-800">
               {items.map((item) => {
                 const mediaItem = item.anime || item.series;
                 const mediaType = item.anime ? "anime" : "series";
@@ -146,14 +154,14 @@ export default async function ListDetailsPage({
                 return (
                   <div
                     key={item.id}
-                    className="relative group animate-in fade-in zoom-in-95 duration-200"
+                    className="relative group animate-in fade-in zoom-in-95 duration-200 py-2 first:pt-0 last:pb-0"
                   >
                     <RemoveFromListButton
                       listId={list.id}
                       animeId={item.anime?.id}
                       seriesId={item.series?.id}
                     />
-                    <MediaCard item={mediaItem} type={mediaType} />
+                    <ListMediaCard item={mediaItem} type={mediaType} />
                   </div>
                 );
               })}

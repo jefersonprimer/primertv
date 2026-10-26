@@ -20,7 +20,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Watchlist" });
 
   return {
-    title: `${t("title")} - PrimerTv`,
+    title: `${t("title")} - primertv`,
     robots: NOINDEX_ROBOTS,
     alternates: buildAlternates(locale, "/watchlist"),
   };
@@ -45,6 +45,8 @@ type WatchlistAnime = {
   duration: string | null;
   isDubbed?: boolean;
   isSubtitled?: boolean;
+  anilistId?: number | null;
+  malId?: number | null;
 };
 
 type WatchlistSeries = {
@@ -127,6 +129,8 @@ export default async function WatchlistPage({
             duration: true,
             isDubbed: true,
             isSubtitled: true,
+            anilistId: true,
+            malId: true,
           },
         })
       : Promise.resolve([] as WatchlistAnime[]),
@@ -185,6 +189,13 @@ export default async function WatchlistPage({
       const firstEpisode = firstEpisodeByAnimeId.get(anime.id);
       const firstEpisodeId = firstEpisode?.firstEpisodeId || null;
       const firstEpisodeImageUrl = firstEpisode?.firstEpisodeImageUrl || null;
+      // Anime detail pages expose MegaPlay episodes even when no Episode row
+      // has been persisted locally. Keep the watchlist card action in sync.
+      const firstEpisodeHref = firstEpisodeId
+        ? `/watch/${firstEpisodeId}`
+        : anime.anilistId || anime.malId
+          ? `/watch/${anime.slug}/episode-1?source=megaplay&episode=1&season=1`
+          : null;
 
       return {
         id: anime.id,
@@ -193,6 +204,7 @@ export default async function WatchlistPage({
         bannerUrl: finalBannerUrl || anime.imageUrl,
         animeImageUrl: anime.imageUrl,
         firstEpisodeId,
+        firstEpisodeHref,
         firstEpisodeImageUrl,
         rating: anime.rating,
         duration: anime.duration,

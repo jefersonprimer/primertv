@@ -57,7 +57,11 @@ export async function generateMetadata({
   const sp = (await searchParams) || {};
   const { source, episode } = sp;
   const hasQueryParams = Boolean(
-    sp.player || sp.source || sp.episode || sp.season || Object.keys(sp).length > 0
+    sp.player ||
+    sp.source ||
+    sp.episode ||
+    sp.season ||
+    Object.keys(sp).length > 0,
   );
   const t = await getTranslations({ locale, namespace: "Watch" });
 

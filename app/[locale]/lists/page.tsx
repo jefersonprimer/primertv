@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Link, redirect } from "@/i18n/routing";
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import CreateListModal from "@/components/CreateListModal";
 import EditListModal from "@/components/EditListModal";
 import DeleteListButton from "@/components/DeleteListButton";
@@ -20,7 +20,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Lists" });
 
   return {
-    title: `${t("title")} - PrimerTv`,
+    title: `${t("title")} - primertv`,
     robots: NOINDEX_ROBOTS,
     alternates: buildAlternates(locale, "/lists"),
   };

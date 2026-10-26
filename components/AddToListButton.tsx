@@ -292,7 +292,7 @@ export default function AddToListButton({
                 className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
                 aria-label="Fechar"
               >
-                <X className="h-4 w-4" />
+                <X size={24} />
               </button>
             </div>
 
@@ -307,7 +307,7 @@ export default function AddToListButton({
                   }}
                   className="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer"
                 >
-                  <ArrowLeft className="h-4 w-4 text-blue-400" />
+                  <ArrowLeft className="h-4 w-4 text-zinc-400" />
                   <span>Voltar para minhas listas</span>
                 </button>
               ) : (
@@ -318,7 +318,7 @@ export default function AddToListButton({
                     setError(null);
                     setShowCreateSubModal(true);
                   }}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-zinc-800 hover:bg-zinc-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all shadow-md shadow-black/20 cursor-pointer"
                 >
                   <Plus className="h-4 w-4 stroke-[2.5]" />
                   <span>{t("createList")}</span>
@@ -326,7 +326,7 @@ export default function AddToListButton({
               )}
 
               <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold text-zinc-400">
-                <span className="text-blue-400 font-bold">{lists.length}</span>
+                <span className="text-zinc-200 font-bold">{lists.length}</span>
                 <span className="text-zinc-600">/</span>
                 <span>10</span>
               </div>
@@ -358,7 +358,7 @@ export default function AddToListButton({
                         value={newListName}
                         onChange={(e) => setNewListName(e.target.value)}
                         maxLength={50}
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 focus:ring-2 focus:ring-zinc-500/20 transition-all"
                         required
                       />
                     </div>
@@ -373,7 +373,7 @@ export default function AddToListButton({
                         value={newListDesc}
                         onChange={(e) => setNewListDesc(e.target.value)}
                         maxLength={150}
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 focus:ring-2 focus:ring-zinc-500/20 transition-all"
                       />
                     </div>
                   </div>
@@ -392,7 +392,7 @@ export default function AddToListButton({
                     <button
                       type="submit"
                       disabled={isCreating || !newListName.trim()}
-                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-xs font-semibold text-white transition-all shadow-md shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-95"
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-white transition-all shadow-md shadow-black/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-95"
                     >
                       {isCreating && (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -403,11 +403,11 @@ export default function AddToListButton({
                 </form>
               ) : loading ? (
                 <div className="flex justify-center items-center py-16">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                  <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
                 </div>
               ) : lists.length === 0 ? (
                 <div className="text-center py-12 px-4 text-zinc-400 text-sm flex flex-col items-center justify-center gap-2">
-                  <div className="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-1">
+                  <div className="p-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-300 mb-1">
                     <FolderPlus className="h-8 w-8" />
                   </div>
                   <p className="font-semibold text-zinc-200 text-sm">
@@ -422,7 +422,7 @@ export default function AddToListButton({
                       setError(null);
                       setShowCreateSubModal(true);
                     }}
-                    className="mt-3 flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:from-blue-500 hover:to-indigo-500 transition-all cursor-pointer shadow-md shadow-blue-600/20"
+                    className="mt-3 flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-white bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-all cursor-pointer shadow-md shadow-black/20"
                   >
                     <Plus className="h-4 w-4" />
                     <span>{t("createList")}</span>
@@ -437,7 +437,7 @@ export default function AddToListButton({
                       onClick={() => handleToggle(list.id)}
                       className={`group relative flex rounded-xl w-full items-center justify-between border p-3.5 transition-all text-left cursor-pointer ${
                         list.isChecked
-                          ? "border-blue-500/60 bg-blue-950/20 hover:bg-blue-950/30"
+                          ? "border-zinc-500/70 bg-zinc-800/80 hover:bg-zinc-800"
                           : "border-zinc-800/80 bg-zinc-900/40 hover:bg-zinc-800/60 hover:border-zinc-700/80"
                       }`}
                     >
@@ -466,7 +466,7 @@ export default function AddToListButton({
                       <div
                         className={`flex h-5 w-5 items-center justify-center rounded-lg border transition-all shrink-0 ${
                           list.isChecked
-                            ? "border-blue-500 bg-blue-600 text-white shadow-sm shadow-blue-500/30 scale-105"
+                            ? "border-zinc-400 bg-zinc-200 text-zinc-950 shadow-sm shadow-black/30 scale-105"
                             : "border-zinc-700 bg-zinc-900 group-hover:border-zinc-500"
                         }`}
                       >
