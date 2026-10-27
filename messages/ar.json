@@ -131,6 +131,7 @@
     "errorCreate": "خطأ أثناء إنشاء القائمة.",
     "backToLists": "العودة إلى قوائمي",
     "itemsAdded": "تم إضافة {count} / 100 عنصر",
+    "loadingMoreItems": "جارٍ تحميل المزيد من عناصر القائمة",
     "emptyListTitle": "هذه القائمة فارغة.",
     "emptyListSubtitle": "استكشف <animesLink>الأنمي</animesLink> أو <seriesLink>المسلسلات</seriesLink> وأضفها إلى قائمتك.",
     "confirmDelete": "هل أنت تأكد من أنك تريد حذف القائمة \"{listName}\"؟",

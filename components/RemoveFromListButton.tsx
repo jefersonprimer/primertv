@@ -9,12 +9,14 @@ interface RemoveFromListButtonProps {
   listId: string;
   animeId?: string;
   seriesId?: string;
+  onRemoved?: () => void;
 }
 
 export default function RemoveFromListButton({
   listId,
   animeId,
   seriesId,
+  onRemoved,
 }: RemoveFromListButtonProps) {
   const t = useTranslations("Lists");
   const [isPending, setIsPending] = useState(false);
@@ -29,6 +31,8 @@ export default function RemoveFromListButton({
         const res = await toggleAnimeInList(listId, animeId, seriesId);
         if (!res.success) {
           alert(res.error || t("removeItemError"));
+        } else {
+          onRemoved?.();
         }
       } catch (err) {
         console.error(err);

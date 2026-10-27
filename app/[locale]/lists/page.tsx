@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { Link, redirect } from "@/i18n/routing";
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
-import { ChevronRight } from "lucide-react";
 import CreateListModal from "@/components/CreateListModal";
 import EditListModal from "@/components/EditListModal";
 import DeleteListButton from "@/components/DeleteListButton";
@@ -82,9 +81,16 @@ export default async function ListasPage({
               return (
                 <div
                   key={list.id}
-                  className="flex flex-col justify-between overflow-hidden bg-[#272727] px-6 py-4 shadow-sm hover:shadow-md transition-shadow rounded-xl"
+                  className="relative flex flex-col justify-between overflow-hidden bg-[#272727] px-6 py-4 shadow-sm hover:shadow-md transition-shadow rounded-xl"
                 >
-                  <div>
+                  <Link
+                    href={`/lists/${list.id}`}
+                    aria-label={`${t("viewList")}: ${list.name}`}
+                    className="absolute inset-0 z-0 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+                  >
+                    <span className="sr-only">{t("viewList")}</span>
+                  </Link>
+                  <div className="pointer-events-none relative z-10">
                     {/* Card Header */}
                     <div className="flex items-start justify-between gap-4 mb-6">
                       <div className="min-w-0 flex-1">
@@ -97,7 +103,7 @@ export default async function ListasPage({
                           </p>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="pointer-events-auto flex items-center gap-1 shrink-0">
                         <EditListModal
                           listId={list.id}
                           initialName={list.name}
@@ -113,18 +119,10 @@ export default async function ListasPage({
                   </div>
 
                   {/* Card Footer */}
-                  <div className="flex items-center justify-between pt-4">
+                  <div className="pointer-events-none relative z-10 flex items-center justify-between pt-4">
                     <span className="text-xs text-[#bbb]">
                       {t("cardAnimeCount", { count })}
                     </span>
-
-                    <Link
-                      href={`/lists/${list.id}`}
-                      className="flex items-center gap-1.5 text-sm font-semibold text-[#bbb] hover:text-white  transition-colors"
-                    >
-                      {t("viewList")}
-                      <ChevronRight className="h-4 w-4" />
-                    </Link>
                   </div>
                 </div>
               );

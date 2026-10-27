@@ -4,6 +4,34 @@ import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import { revalidatePath } from "next/cache";
 
+const LIST_ITEMS_PAGE_SIZE = 20;
+
+export async function loadCustomListItems(listId: string, offset: number) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { items: [], hasMore: false, total: 0 };
+  const list = await prisma.customList.findFirst({
+    where: { id: listId, userId },
+    select: { id: true },
+  });
+  if (!list) return { items: [], hasMore: false, total: 0 };
+  const safeOffset = Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
+  const [items, total] = await Promise.all([
+    prisma.customListItem.findMany({
+      where: { listId },
+      orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+      skip: safeOffset,
+      take: LIST_ITEMS_PAGE_SIZE + 1,
+      include: {
+        anime: { select: { id: true, slug: true, title: true, imageUrl: true, bannerUrl: true, description: true, rating: true, isDubbed: true, isSubtitled: true } },
+        series: { select: { id: true, slug: true, title: true, imageUrl: true, bannerUrl: true, description: true, rating: true } },
+      },
+    }),
+    prisma.customListItem.count({ where: { listId } }),
+  ]);
+  const hasMore = items.length > LIST_ITEMS_PAGE_SIZE;
+  return { items: items.slice(0, LIST_ITEMS_PAGE_SIZE), hasMore, total };
+}
+
 export async function createList(name: string, description?: string) {
   const userId = await getAuthenticatedUserId();
   if (!userId) {

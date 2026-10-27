@@ -6,10 +6,10 @@ import { Link, redirect } from "@/i18n/routing";
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { ChevronLeft, FolderOpen } from "lucide-react";
-import { ListMediaCard } from "@/components/ListMediaCard";
-import RemoveFromListButton from "@/components/RemoveFromListButton";
+import CustomListItems from "@/components/CustomListItems";
 import EditListModal from "@/components/EditListModal";
 import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
+import { loadCustomListItems } from "@/app/actions/lists";
 
 interface ListDetailsPageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -49,39 +49,8 @@ export default async function ListDetailsPage({
     notFound();
   }
 
-  // Fetch all items in the list
-  const items = await prisma.customListItem.findMany({
-    where: { listId: id },
-    orderBy: { createdAt: "desc" },
-    include: {
-      anime: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          imageUrl: true,
-          bannerUrl: true,
-          description: true,
-          rating: true,
-          isDubbed: true,
-          isSubtitled: true,
-        },
-      },
-      series: {
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          imageUrl: true,
-          bannerUrl: true,
-          description: true,
-          rating: true,
-        },
-      },
-    },
-  });
-
-  const isEmpty = items.length === 0;
+  const initialPage = await loadCustomListItems(id, 0);
+  const isEmpty = initialPage.total === 0;
 
   return (
     <div className="mx-auto max-w-[1130px] py-6 px-2 md:px-0">
@@ -105,9 +74,6 @@ export default async function ListDetailsPage({
                 {list.description}
               </p>
             )}
-            <div className="text-xs font-medium text-[#bbb] mt-2">
-              {t("itemsAdded", { count: items.length })}
-            </div>
           </div>
           <div className="flex shrink-0">
             <EditListModal
@@ -146,26 +112,12 @@ export default async function ListDetailsPage({
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-zinc-800">
-              {items.map((item) => {
-                const mediaItem = item.anime || item.series;
-                const mediaType = item.anime ? "anime" : "series";
-                if (!mediaItem) return null;
-                return (
-                  <div
-                    key={item.id}
-                    className="relative group animate-in fade-in zoom-in-95 duration-200 py-2 first:pt-0 last:pb-0"
-                  >
-                    <RemoveFromListButton
-                      listId={list.id}
-                      animeId={item.anime?.id}
-                      seriesId={item.series?.id}
-                    />
-                    <ListMediaCard item={mediaItem} type={mediaType} />
-                  </div>
-                );
-              })}
-            </div>
+            <CustomListItems
+              listId={list.id}
+              initialItems={initialPage.items}
+              initialHasMore={initialPage.hasMore}
+              initialTotal={initialPage.total}
+            />
           )}
         </main>
       </div>

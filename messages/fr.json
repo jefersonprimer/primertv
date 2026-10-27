@@ -131,6 +131,7 @@
     "errorCreate": "Erreur lors de la création de la liste.",
     "backToLists": "Retour à mes listes",
     "itemsAdded": "{count} / 100 éléments ajoutés",
+    "loadingMoreItems": "Chargement d'autres éléments de la liste",
     "emptyListTitle": "Cette liste est vide.",
     "emptyListSubtitle": "Explorez des <animesLink>animes</animesLink> ou des <seriesLink>séries</seriesLink> et ajoutez-les à votre liste.",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer la liste \"{listName}\" ?",
