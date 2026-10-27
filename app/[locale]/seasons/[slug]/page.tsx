@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { SeasonDropdown } from "@/components/SeasonDropdown";
-import { getUniqueSeasons } from "@/lib/seasons";
+import { MediaCard } from "@/components/MediaCard";
+import { getUniqueSeasons, parseSeasonAndYear } from "@/lib/seasons";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { buildAlternates } from "@/lib/seo";
@@ -81,10 +81,14 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
     },
   });
 
-  const filteredAnimes = await prisma.anime.findMany({
+  const seasonCandidates = await prisma.anime.findMany({
     where: {
-      season: selectedSeason,
-      year: selectedYear,
+      OR: [
+        { season: selectedSeason, year: selectedYear },
+        // Admin records often have only the human-readable airing date.
+        // Include those rows and resolve their season/year below.
+        { aired: { contains: String(selectedYear) } },
+      ],
     },
     select: {
       id: true,
@@ -93,10 +97,22 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
       imageUrl: true,
       isDubbed: true,
       isSubtitled: true,
+      season: true,
+      year: true,
+      aired: true,
     },
     orderBy: {
       title: "asc",
     },
+  });
+
+  const filteredAnimes = seasonCandidates.filter((anime) => {
+    const parsed = parseSeasonAndYear(anime.season, anime.year, anime.aired);
+    return (
+      parsed !== null &&
+      parsed.season === selectedSeason &&
+      parsed.year === selectedYear
+    );
   });
 
   // Calculate unique seasons for the dropdown list
@@ -148,46 +164,12 @@ export default async function SeasonsPage({ params }: SeasonsPageProps) {
       ) : (
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredAnimes.map((anime) => (
-            <Link
+            <MediaCard
               key={anime.id}
-              href={`/animes/${anime.slug}`}
-              className="group flex flex-col gap-3"
-            >
-              <div className="relative aspect-[2/3] rounded-md w-full overflow-hidden bg-zinc-900 shadow-md ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/15">
-                {anime.imageUrl ? (
-                  <Image
-                    src={anime.imageUrl}
-                    alt={anime.title}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 200px"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    priority={false}
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-sm text-zinc-500">
-                    {t("noImage")}
-                  </div>
-                )}
-
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  <div className="flex h-12 w-12 scale-90 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-transform duration-300 group-hover:scale-100">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <h3 className="line-clamp-2 text-sm font-semibold text-zinc-100 transition-colors group-hover:text-blue-500">
-                {anime.title}
-              </h3>
-            </Link>
+              item={anime}
+              type="anime"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 200px"
+            />
           ))}
         </div>
       )}

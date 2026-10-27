@@ -92,7 +92,7 @@ function SharedSeasonDropdown({
           <div
             role="listbox"
             aria-label={ariaLabel}
-            className={`absolute ${alignRight ? "right-0 left-auto" : "left-0 right-auto"} top-full z-50 mt-2 max-h-60 w-max min-w-full max-w-[min(90vw,30rem,100%)] overflow-y-auto rounded-xl bg-[#272727] p-2 shadow-xl custom-scrollbar`}
+            className={`absolute ${alignRight ? "right-0 left-auto" : "left-0 right-auto"} top-full z-50 mt-2 max-h-60 w-max min-w-full max-w-[min(90vw,36rem)] overflow-y-auto rounded-md bg-[#272727] p-2 shadow-xl custom-scrollbar`}
           >
             {options.map((option) => {
               const isSelected = option.value === value;
@@ -106,11 +106,11 @@ function SharedSeasonDropdown({
                     onChange(option.value);
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between gap-8 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-[#151515] ${
+                  className={`flex w-full items-center justify-between gap-8 rounded-md px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-[#151515] ${
                     isSelected ? "bg-[#151515] text-white" : "text-[#bbb]"
                   }`}
                 >
-                  <span className="min-w-0 truncate">{option.label}</span>
+                  <span className="shrink-0 whitespace-nowrap">{option.label}</span>
                   {option.detail && (
                     <span className="shrink-0 text-xs font-normal text-[#bbb]">
                       {option.detail}

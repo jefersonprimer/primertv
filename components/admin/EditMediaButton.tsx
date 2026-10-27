@@ -22,7 +22,10 @@ export function EditMediaButton({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={className || "flex h-10 md:h-12 items-center justify-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-6 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-900 shadow-sm active:scale-95 flex-shrink-0"}
+        className={
+          className ||
+          "flex h-10 md:h-12 items-center justify-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-6 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-900 shadow-sm active:scale-95 flex-shrink-0"
+        }
         title="Editar Mídia"
       >
         <Edit size={16} />

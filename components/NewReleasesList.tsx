@@ -21,13 +21,25 @@ export function NewReleasesList({
   const [items, setItems] = useState<ReleaseItem[]>(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<{
+    slug: string;
+    type: "anime" | "series";
+  } | null>(null);
 
   const handleItemClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     item: ReleaseItem,
   ) => {
-    if (activeTab === "animes" || item.href.includes("/animes/")) {
+    const type = item.href.startsWith("/animes/")
+      ? "anime"
+      : item.href.startsWith("/series/")
+        ? "series"
+        : null;
+
+    if (type) {
+      // Match other media cards: open quick view from the lg breakpoint up.
+      if (window.matchMedia("(max-width: 1023px)").matches) return;
+
       if (
         !e.ctrlKey &&
         !e.metaKey &&
@@ -37,7 +49,7 @@ export function NewReleasesList({
       ) {
         e.preventDefault();
         e.stopPropagation();
-        setSelectedSlug(item.slug);
+        setSelectedItem({ slug: item.slug, type });
       }
     }
   };
@@ -195,11 +207,12 @@ export function NewReleasesList({
 
       {hasMore && <div ref={observerRef} className="h-px w-full" aria-hidden />}
 
-      {selectedSlug && (
+      {selectedItem && (
         <QuickViewModal
-          slug={selectedSlug}
-          isOpen={!!selectedSlug}
-          onClose={() => setSelectedSlug(null)}
+          slug={selectedItem.slug}
+          type={selectedItem.type}
+          isOpen={!!selectedItem}
+          onClose={() => setSelectedItem(null)}
         />
       )}
     </div>

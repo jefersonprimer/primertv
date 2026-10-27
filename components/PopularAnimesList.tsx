@@ -58,6 +58,9 @@ export function PopularAnimesList({
     e: React.MouseEvent<HTMLAnchorElement>,
     slug: string,
   ) => {
+    // Match other media cards: details below lg, quick view from 1024px up.
+    if (window.matchMedia("(max-width: 1023px)").matches) return;
+
     if (
       !e.ctrlKey &&
       !e.metaKey &&

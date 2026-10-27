@@ -19,7 +19,7 @@ export default async function WatchlistPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   const userId = await getAuthenticatedUserId();
   if (!userId) redirect({ href: "/login", locale });
-  const initialPage = await getWatchlistPageData(userId, 0, "newest", "all");
+  const initialPage = await getWatchlistPageData(userId!, 0, "newest", "all");
   return <div className="mx-auto max-w-[1130px] py-6 px-4 md:px-0">
     <ProfileTabs />
     <main className="space-y-6">
