@@ -4,6 +4,20 @@ import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 import type { WatchlistMediaType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { getWatchlistPageData, type WatchlistAudio, type WatchlistSort } from "@/lib/watchlist-page-data";
+
+export async function loadWatchlistPage(
+  offset: number,
+  sort: WatchlistSort,
+  audio: WatchlistAudio,
+) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return { items: [], hasMore: false };
+  const safeOffset = Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
+  const safeSort = sort === "oldest" ? "oldest" : "newest";
+  const safeAudio = audio === "subtitle" || audio === "dubbed" ? audio : "all";
+  return getWatchlistPageData(userId, safeOffset, safeSort, safeAudio);
+}
 
 type WatchlistActionState = {
   error?: string;
