@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 
@@ -15,6 +16,7 @@ import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
 import { getFirstNovelaEpisodes } from "@/lib/media-performance";
 import { getNovelaDetailsBySlug } from "@/lib/media-details";
+import { translateGenre } from "@/lib/genre-translations";
 import { StartWatchingButton } from "@/components/StartWatchingButton";
 
 export const revalidate = 3600;
@@ -60,7 +62,8 @@ export async function generateMetadata({
 export default async function NovelaDetailsPage({
   params,
 }: NovelaDetailsPageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  const tGenre = await getTranslations({ locale, namespace: "GenreNames" });
   const novela = await getNovelaDetailsBySlug(slug);
 
   if (!novela) {
@@ -164,7 +167,7 @@ export default async function NovelaDetailsPage({
                     <span className="text-xs font-medium text-zinc-300 md:text-zinc-700 md:dark:text-zinc-300">
                       {novela.genres.map((genre, index) => (
                         <span key={genre}>
-                          <span className="underline">{genre}</span>
+                          <span className="underline">{translateGenre(genre, (key) => tGenre(key as never))}</span>
                           {index < novela.genres.length - 1 && ", "}
                         </span>
                       ))}

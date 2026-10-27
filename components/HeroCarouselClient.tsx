@@ -12,6 +12,7 @@ import {
   prefetchQuickPreview,
 } from "@/components/QuickViewModal";
 import Link from "next/link";
+import { translateGenre } from "@/lib/genre-translations";
 
 export interface HeroCarouselItem {
   id: string;
@@ -49,6 +50,7 @@ export function HeroCarouselClient({
 }: HeroCarouselClientProps) {
   const t = useTranslations("Buttons");
   const tMedia = useTranslations("MediaCard");
+  const tGenre = useTranslations("GenreNames");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [quickViewItem, setQuickViewItem] =
@@ -329,7 +331,7 @@ export function HeroCarouselClient({
                     </svg>
                   </span>
                   <span className="text-sm 2xl:text-base text-[#8c8c8c]">
-                    {current.genres.join(", ")}
+                    {current.genres.map((genre) => translateGenre(genre, (key) => tGenre(key as never))).join(", ")}
                   </span>
                 </>
               )}

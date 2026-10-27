@@ -31,6 +31,7 @@ import { getAnimeRatingStats } from "@/app/actions/animeRating";
 import { buildMergedSeasons } from "@/lib/seasons";
 import { resolveAnimeFranchise } from "@/lib/anime-relations";
 import { AnimeFranchiseSection } from "@/components/AnimeFranchiseSection";
+import { translateGenre } from "@/lib/genre-translations";
 
 export const revalidate = 3600;
 
@@ -103,9 +104,10 @@ export async function generateMetadata({
 export default async function AnimeDetailsPage({
   params,
 }: AnimeDetailsPageProps) {
-  const t = await getTranslations("AnimeDetails");
+  const { slug, locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AnimeDetails" });
+  const tGenre = await getTranslations({ locale, namespace: "GenreNames" });
   const tMedia = await getTranslations("MediaCard");
-  const { slug } = await params;
   try {
     require("fs").appendFileSync(
       "/tmp/anime_debug.log",
@@ -480,7 +482,7 @@ export default async function AnimeDetailsPage({
                     <span className="text-xs font-medium text-zinc-300 md:text-zinc-700 md:dark:text-zinc-300">
                       {anime.genres?.map((genre, index) => (
                         <span key={genre}>
-                          <span className="underline">{genre}</span>
+                          <span className="underline">{translateGenre(genre, (key) => tGenre(key as never))}</span>
                           {index < anime.genres.length - 1 && ", "}
                         </span>
                       ))}

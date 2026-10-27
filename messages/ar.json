@@ -1,4 +1,21 @@
 {
+  "GenreNames": {
+    "action": "أكشن",
+    "adventure": "مغامرة",
+    "comedy": "كوميديا",
+    "drama": "دراما",
+    "fantasy": "فانتازيا",
+    "music": "موسيقى",
+    "romance": "رومانسي",
+    "sciFi": "خيال علمي",
+    "seinen": "سينين",
+    "shojo": "شوجو",
+    "shonen": "شونين",
+    "sliceOfLife": "شريحة من الحياة",
+    "sports": "رياضة",
+    "supernatural": "خارق للطبيعة",
+    "thriller": "تشويق"
+  },
   "Header": {
     "series": "مسلسلات",
     "movies": "أفلام",

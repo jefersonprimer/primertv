@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import { BookOpen } from "lucide-react";
@@ -19,6 +20,7 @@ import { getSession } from "@/lib/auth";
 import { EditMediaButton } from "@/components/admin/EditMediaButton";
 import { getFirstMangaChapter } from "@/lib/media-performance";
 import { getMangaDetailsBySlug } from "@/lib/media-details";
+import { translateGenre } from "@/lib/genre-translations";
 
 export const revalidate = 3600;
 
@@ -72,7 +74,8 @@ export async function generateMetadata({
 export default async function MangaDetailsPage({
   params,
 }: MangaDetailsPageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  const tGenre = await getTranslations({ locale, namespace: "GenreNames" });
   const manga = await getMangaDetailsBySlug(slug);
 
   if (!manga) {
@@ -211,7 +214,7 @@ export default async function MangaDetailsPage({
                     <span className="text-xs font-medium text-zinc-300 md:text-zinc-700 md:dark:text-zinc-300">
                       {manga.genres?.map((genre, index) => (
                         <span key={genre}>
-                          <span className="underline">{genre}</span>
+                          <span className="underline">{translateGenre(genre, (key) => tGenre(key as never))}</span>
                           {index < manga.genres.length - 1 && ", "}
                         </span>
                       ))}

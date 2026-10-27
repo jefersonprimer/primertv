@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import RatingBadge from "./RatingBadge";
 import { Trophy } from "lucide-react";
+import { translateGenre } from "@/lib/genre-translations";
 
 interface MediaDescriptionProps {
   description: string;
@@ -29,6 +30,7 @@ export default function MediaDescription({
   showBorder = true,
 }: MediaDescriptionProps) {
   const t = useTranslations("MediaDescription");
+  const tGenre = useTranslations("GenreNames");
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 300;
 
@@ -89,7 +91,7 @@ export default function MediaDescription({
               {t("genres")}:{" "}
               {genres.map((genre, index) => (
                 <span key={genre} className="text-[#f2f2f2]">
-                  <span className="underline">{genre}</span>
+                  <span className="underline">{translateGenre(genre, (key) => tGenre(key as never))}</span>
                   {index < genres.length - 1 && ", "}
                 </span>
               ))}

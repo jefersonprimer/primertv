@@ -1,4 +1,21 @@
 {
+  "GenreNames": {
+    "action": "Action",
+    "adventure": "Adventure",
+    "comedy": "Comedy",
+    "drama": "Drama",
+    "fantasy": "Fantasy",
+    "music": "Music",
+    "romance": "Romance",
+    "sciFi": "Sci-Fi",
+    "seinen": "Seinen",
+    "shojo": "Shojo",
+    "shonen": "Shonen",
+    "sliceOfLife": "Slice of life",
+    "sports": "Sports",
+    "supernatural": "Supernatural",
+    "thriller": "Thriller"
+  },
   "Header": {
     "series": "TV shows",
     "movies": "Movies",

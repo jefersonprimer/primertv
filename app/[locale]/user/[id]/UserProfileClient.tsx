@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
+import { translateGenre } from "@/lib/genre-translations";
 import Link from "next/link";
 import {
   User as UserIcon,
@@ -135,6 +137,7 @@ export function UserProfileClient({
   isAdmin,
   memberSince,
 }: UserProfileClientProps) {
+  const tGenre = useTranslations("GenreNames");
   const [activeTab, setActiveTab] = useState<"overview" | "watchlist" | "history" | "lists" | "ratings">("overview");
   const [watchlistFilter, setWatchlistFilter] = useState<"ALL" | "ANIME" | "SERIES" | "MANGA">("ALL");
   const [copied, setCopied] = useState(false);
@@ -544,7 +547,7 @@ export function UserProfileClient({
                       return (
                         <div key={genre} className="space-y-1">
                           <div className="flex justify-between text-xs font-semibold">
-                            <span className="text-zinc-200">{genre}</span>
+                            <span className="text-zinc-200">{translateGenre(genre, (key) => tGenre(key as never))}</span>
                             <span className="text-zinc-400">{count} {count === 1 ? "título" : "títulos"} ({percent}%)</span>
                           </div>
                           <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">

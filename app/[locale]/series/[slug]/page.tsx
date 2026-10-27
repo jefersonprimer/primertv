@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { buildAlternates, buildOpenGraph, buildTwitter } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import { Star } from "lucide-react";
@@ -20,6 +21,7 @@ import { EditMediaButton } from "@/components/admin/EditMediaButton";
 import { DeleteSeriesButton } from "@/components/admin/DeleteSeriesButton";
 import { getFirstSeriesEpisodes } from "@/lib/media-performance";
 import { getSeriesDetailsBySlug } from "@/lib/media-details";
+import { translateGenre } from "@/lib/genre-translations";
 import { StartWatchingButton } from "@/components/StartWatchingButton";
 import { getSeriesTmdbSeasons } from "@/lib/tmdb";
 
@@ -75,7 +77,8 @@ export async function generateMetadata({
 export default async function SeriesDetailsPage({
   params,
 }: SeriesDetailsPageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  const tGenre = await getTranslations({ locale, namespace: "GenreNames" });
   const series = await getSeriesDetailsBySlug(slug);
 
   if (!series) {
@@ -374,7 +377,7 @@ export default async function SeriesDetailsPage({
                     <span className="text-xs font-medium text-zinc-300 md:text-zinc-700 md:dark:text-zinc-300">
                       {series.genres?.map((genre, index) => (
                         <span key={genre}>
-                          <span className="underline">{genre}</span>
+                          <span className="underline">{translateGenre(genre, (key) => tGenre(key as never))}</span>
                           {index < series.genres.length - 1 && ", "}
                         </span>
                       ))}
