@@ -86,6 +86,7 @@
   },
   "History": {
     "title": "Verlauf",
+    "loadingMore": "Weitere Verlaufseinträge werden geladen",
     "emptyTitle": "Dein Verlauf ist leer.",
     "emptySubtitle": "Schaue Episoden in <animesLink>Animes</animesLink>, um sie hier zu sehen.",
     "continueWatching": "Weiterschauen",

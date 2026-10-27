@@ -6,7 +6,7 @@ export async function HistoryCarousel() {
   const userId = await getAuthenticatedUserId();
   if (!userId) return null;
 
-  const items = await getAnimeWatchHistory(userId);
+  const items = await getAnimeWatchHistory(userId, 4);
 
   if (items.length === 0) return null;
 

@@ -86,6 +86,7 @@
   },
   "History": {
     "title": "Historial",
+    "loadingMore": "Cargando más historial",
     "emptyTitle": "Tu historial está vacío.",
     "emptySubtitle": "Mira episodios en <animesLink>anime</animesLink> para verlos aquí.",
     "continueWatching": "Continuar viendo",

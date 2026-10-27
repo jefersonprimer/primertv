@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
 
-export const MAX_HISTORY_ITEMS = 24;
+export const MAX_HISTORY_ITEMS = 100;
+export const HISTORY_PAGE_SIZE = 20;
 
 type AnimeWatchHistoryRow = {
   id: string;
@@ -37,7 +38,7 @@ export async function recordAnimeWatchHistory(episodeId: string) {
 
     const overflow = await tx.watchHistory.findMany({
       where: { userId },
-      orderBy: { watchedAt: "desc" },
+      orderBy: [{ watchedAt: "desc" }, { id: "desc" }],
       skip: MAX_HISTORY_ITEMS,
       select: { id: true },
     });
@@ -50,7 +51,11 @@ export async function recordAnimeWatchHistory(episodeId: string) {
   });
 }
 
-export async function getAnimeWatchHistory(userId: string) {
+export async function getAnimeWatchHistory(
+  userId: string,
+  limit = MAX_HISTORY_ITEMS,
+  offset = 0,
+) {
   const rows = await prisma.$queryRaw<AnimeWatchHistoryRow[]>`
     SELECT
       wh.id,
@@ -73,8 +78,8 @@ export async function getAnimeWatchHistory(userId: string) {
     JOIN "Season" s ON s.id = e."seasonId"
     JOIN "Anime" a ON a.id = s."animeId"
     WHERE wh."userId" = ${userId}
-    ORDER BY wh."watchedAt" DESC
-    LIMIT ${MAX_HISTORY_ITEMS}
+    ORDER BY wh."watchedAt" DESC, wh.id DESC
+    LIMIT ${limit} OFFSET ${offset}
   `;
 
   return rows.map((row) => ({

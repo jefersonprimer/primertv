@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { getAuthenticatedUserId } from "@/lib/watchlist";
-import { getAnimeWatchHistory } from "@/lib/history";
+import { getAnimeWatchHistory, HISTORY_PAGE_SIZE } from "@/lib/history";
 import { Link, redirect } from "@/i18n/routing";
 import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { Clock } from "lucide-react";
-import { HistoryCard } from "@/components/HistoryCard";
+import HistoryPageContent from "@/components/HistoryPageContent";
 import { ProfileTabs } from "@/components/ProfileTabs";
 import { buildAlternates, NOINDEX_ROBOTS } from "@/lib/seo";
 
@@ -38,7 +38,9 @@ export default async function HistoricoPage({
     redirect({ href: "/login", locale });
   }
 
-  const items = await getAnimeWatchHistory(userId!);
+  const fetchedItems = await getAnimeWatchHistory(userId!, HISTORY_PAGE_SIZE + 1);
+  const hasMore = fetchedItems.length > HISTORY_PAGE_SIZE;
+  const items = fetchedItems.slice(0, HISTORY_PAGE_SIZE);
 
   const resolvedItems = items.map((item) => {
     const episode = item.episode;
@@ -95,26 +97,7 @@ export default async function HistoricoPage({
             </p>
           </div>
         ) : (
-          <div>
-            {/* Desktop/Tablet History Grid */}
-            <div className="hidden sm:grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {resolvedItems.map((item) => (
-                <HistoryCard key={item.id} item={item} className="w-full" />
-              ))}
-            </div>
-
-            {/* Mobile History List */}
-            <div className="flex sm:hidden flex-col gap-3 px-2">
-              {resolvedItems.map((item) => (
-                <HistoryCard
-                  key={item.id}
-                  item={item}
-                  isMobileRow
-                  className="w-full"
-                />
-              ))}
-            </div>
-          </div>
+          <HistoryPageContent initialItems={resolvedItems} initialHasMore={hasMore} />
         )}
       </main>
     </div>

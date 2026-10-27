@@ -86,6 +86,7 @@
   },
   "History": {
     "title": "السجل",
+    "loadingMore": "جارٍ تحميل المزيد من السجل",
     "emptyTitle": "سجلك فارغ.",
     "emptySubtitle": "شاهد حلقات من الـ <animesLink>أنمي</animesLink> لتظهر هنا.",
     "continueWatching": "متابعة المشاهدة",
