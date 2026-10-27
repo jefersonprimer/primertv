@@ -14,6 +14,8 @@ type FavoriteAnime = {
   duration: string | null;
   isDubbed?: boolean;
   isSubtitled?: boolean;
+  anilistId?: number | null;
+  malId?: number | null;
 };
 
 export async function FavoritesCarousel() {
@@ -55,6 +57,8 @@ export async function FavoritesCarousel() {
           duration: true,
           isDubbed: true,
           isSubtitled: true,
+          anilistId: true,
+          malId: true,
         },
       })
     ).map((anime) => [anime.id, anime]),
@@ -111,6 +115,10 @@ export async function FavoritesCarousel() {
         bannerUrl: finalBannerUrl || anime.imageUrl,
         animeImageUrl: anime.imageUrl,
         firstEpisodeId,
+        firstEpisodeHref:
+          !firstEpisodeId && (anime.anilistId || anime.malId)
+            ? `/watch/${anime.slug}/episode-1?source=megaplay&episode=1&season=1`
+            : null,
         firstEpisodeImageUrl,
         firstEpisodePublicId,
         firstEpisodeSlug,
