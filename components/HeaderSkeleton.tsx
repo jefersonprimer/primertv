@@ -32,11 +32,11 @@ export function HeaderSkeleton() {
 
           {/* Desktop Nav placeholders */}
           <nav className="hidden h-full items-center sm:flex gap-1">
-            <div className="h-8 w-18 animate-pulse rounded-md bg-zinc-800/60" />
-            <div className="h-8 w-16 animate-pulse rounded-md bg-zinc-800/60" />
-            <div className="h-8 w-16 animate-pulse rounded-md bg-zinc-800/60" />
-            <div className="hidden md:block h-8 w-18 animate-pulse rounded-md bg-zinc-800/60" />
-            <div className="hidden lg:block h-8 w-20 animate-pulse rounded-md bg-zinc-800/60" />
+            <div className="h-6 w-18 animate-pulse rounded-md bg-zinc-800/60" />
+            <div className="h-6 w-16 animate-pulse rounded-md bg-zinc-800/60" />
+            <div className="h-6 w-16 animate-pulse rounded-md bg-zinc-800/60" />
+            <div className="hidden md:block h-6 w-18 animate-pulse rounded-md bg-zinc-800/60" />
+            <div className="hidden lg:block h-6 w-20 animate-pulse rounded-md bg-zinc-800/60" />
           </nav>
         </div>
 
@@ -53,4 +53,3 @@ export function HeaderSkeleton() {
     </header>
   );
 }
-

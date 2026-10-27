@@ -18,7 +18,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "History" });
 
   return {
-    title: `${t("title")} - PrimerTv`,
+    title: `${t("title")} - primertv`,
     robots: NOINDEX_ROBOTS,
     alternates: buildAlternates(locale, "/history"),
   };

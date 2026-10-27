@@ -76,7 +76,10 @@ export default function SeasonSelector({
 
     setLoadingSeason(true);
     try {
-      const episodes = await getAnimeSeasonEpisodesAction(animeSlug, season.number);
+      const episodes = await getAnimeSeasonEpisodesAction(
+        animeSlug,
+        season.number,
+      );
       setSeasonData((current) =>
         current.map((item) =>
           item.number === season.number
@@ -130,7 +133,9 @@ export default function SeasonSelector({
             }))}
             value={currentSeason.id}
             onChange={(value) => {
-              const nextIndex = seasonData.findIndex((season) => season.id === value);
+              const nextIndex = seasonData.findIndex(
+                (season) => season.id === value,
+              );
               if (nextIndex >= 0) void selectSeason(nextIndex);
             }}
             ariaLabel={t("seasonsTitle")}
@@ -149,7 +154,21 @@ export default function SeasonSelector({
             title={sortBy === "oldest" ? t("oldest") : t("newest")}
             aria-label={sortBy === "oldest" ? t("oldest") : t("newest")}
           >
-            <ListSortDescending className="h-6 w-6 shrink-0" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 12H3" />
+              <path d="M3 5h18" />
+              <path d="M9 19H3" />
+            </svg>
             <span className="hidden sm:inline">
               {sortBy === "oldest" ? t("oldest") : t("newest")}
             </span>
@@ -173,7 +192,21 @@ export default function SeasonSelector({
                       : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                   }`}
                 >
-                  <ListSortDescending className="h-5 w-5 shrink-0" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M15 12H3" />
+                    <path d="M3 5h18" />
+                    <path d="M9 19H3" />
+                  </svg>
                   <span>{t("sortByOldest")}</span>
                 </button>
                 <button
@@ -187,7 +220,21 @@ export default function SeasonSelector({
                       : "bg-[#272727] text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
                   }`}
                 >
-                  <ListSortDescending className="h-5 w-5 shrink-0" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M15 12H3" />
+                    <path d="M3 5h18" />
+                    <path d="M9 19H3" />
+                  </svg>
                   <span>{t("sortByNewest")}</span>
                 </button>
               </div>
