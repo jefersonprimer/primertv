@@ -365,6 +365,7 @@
     "noImage": "لا توجد صورة",
     "prevSeason": "الموسم السابق",
     "nextSeason": "الموسم التالي",
+    "seasonLabel": "اختر الموسم",
     "seasonLabelFormat": "موسم {season} {year}",
     "seasons": {
       "winter": "الشتاء",

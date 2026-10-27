@@ -365,6 +365,7 @@
     "noImage": "Sem imagem",
     "prevSeason": "Temporada Anterior",
     "nextSeason": "Próxima Temporada",
+    "seasonLabel": "Selecionar temporada",
     "seasonLabelFormat": "{season} de {year}",
     "seasons": {
       "winter": "Inverno",
