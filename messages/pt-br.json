@@ -603,6 +603,9 @@
     "errorEditing": "Falha ao editar comentário.",
     "errorEditingGeneral": "Ocorreu um erro ao editar o comentário.",
     "errorDeleting": "Falha ao excluir comentário.",
-    "errorDeletingGeneral": "Ocorreu um erro ao excluir o comentário."
+    "errorDeletingGeneral": "Ocorreu um erro ao excluir o comentário.",
+    "sortBy": "Ordenar por",
+    "sortTop": "Principais",
+    "sortNewest": "Mais recentes"
   }
 }

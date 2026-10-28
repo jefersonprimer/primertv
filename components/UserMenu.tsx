@@ -94,7 +94,7 @@ export function UserMenu({ user }: UserMenuProps) {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={handleClose} />
-          <div className="absolute right-0 top-full mt-2 lg:mt-3 2xl:mt-4 z-50 w-72 bg-[#151515] p-2 shadow-2xl border border-zinc-800/80 rounded-2xl">
+          <div className="absolute right-0 top-full mt-2 lg:mt-3 2xl:mt-4 z-50 w-72 bg-[#151515] py-2 border border-zinc-800/80 rounded-xl">
             {view === "main" ? (
               <>
                 <div className="px-3 py-2.5 pb-2">
@@ -130,7 +130,7 @@ export function UserMenu({ user }: UserMenuProps) {
                     <Link
                       href="/profile"
                       onClick={handleClose}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                     >
                       <UserIcon size={20} />
                       <span>{t("profile")}</span>
@@ -141,7 +141,7 @@ export function UserMenu({ user }: UserMenuProps) {
                         <Link
                           href="/history"
                           onClick={handleClose}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                         >
                           <History size={20} />
                           <span>{t("history")}</span>
@@ -149,7 +149,7 @@ export function UserMenu({ user }: UserMenuProps) {
                         <Link
                           href="/watchlist"
                           onClick={handleClose}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                         >
                           <Bookmark size={20} />
                           <span>{t("watchlist")}</span>
@@ -157,7 +157,7 @@ export function UserMenu({ user }: UserMenuProps) {
                         <Link
                           href="/lists"
                           onClick={handleClose}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200"
                         >
                           <List size={20} />
                           <span>{t("myLists")}</span>
@@ -170,7 +170,7 @@ export function UserMenu({ user }: UserMenuProps) {
                   <div className="py-1 border-t border-zinc-700/60">
                     <button
                       onClick={() => setView("language")}
-                      className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200 cursor-pointer group rounded-lg"
+                      className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50 transition-all duration-200 cursor-pointer group"
                     >
                       <div className="flex items-center gap-3 min-w-0 pr-2">
                         <Globe size={20} className="shrink-0" />
@@ -195,7 +195,7 @@ export function UserMenu({ user }: UserMenuProps) {
                       await logout();
                       handleClose();
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 w-full text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-red-500 transition-all duration-200 cursor-pointer rounded-lg"
+                    className="flex items-center gap-3 px-3 py-2.5 w-full text-sm font-medium text-zinc-400 hover:bg-zinc-700/50 hover:text-red-500 transition-all duration-200 cursor-pointer"
                   >
                     <LogOut size={20} />
                     <span>{t("logout")}</span>
@@ -204,14 +204,14 @@ export function UserMenu({ user }: UserMenuProps) {
               </>
             ) : (
               /* Language Selection View */
-              <div className="py-1">
+              <div>
                 <div className="flex items-center gap-2 px-3 py-2 border-b border-zinc-700/60">
                   <button
                     onClick={() => setView("main")}
                     className="p-1 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-700/50 transition-colors cursor-pointer"
                     title="Voltar"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={24} />
                   </button>
                   <span className="text-sm font-semibold text-white">
                     {t("displayLanguage")}
@@ -225,7 +225,7 @@ export function UserMenu({ user }: UserMenuProps) {
                       <button
                         key={lang.code}
                         onClick={() => handleLanguageChange(lang.code)}
-                        className={`flex items-center justify-between rounded-lg w-full px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
+                        className={`flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer ${
                           isSelected
                             ? "text-white bg-zinc-800/60"
                             : "text-zinc-400 hover:text-white hover:bg-zinc-700/40"

@@ -61,7 +61,7 @@ export function PlayerDropdown({
 
       {isOpen && (
         <div
-          className="absolute left-0 z-50 bottom-full mb-2 min-w-[15rem] w-max max-w-xs origin-bottom-left rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl py-1.5 ring-1 ring-black/10 focus:outline-none backdrop-blur-md"
+          className="absolute left-0 z-50 bottom-full mb-2 min-w-[15rem] w-max max-w-xs origin-bottom-left rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl py-2 ring-1 ring-black/10 focus:outline-none backdrop-blur-md"
           role="menu"
           aria-orientation="vertical"
         >
@@ -73,7 +73,7 @@ export function PlayerDropdown({
                   key={p.id}
                   href={p.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2 text-sm transition-colors rounded-lg mx-1 ${
+                  className={`flex items-center justify-between px-3.5 py-2 text-sm transition-colors ${
                     isActive
                       ? "bg-zinc-800 text-white font-semibold"
                       : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white"

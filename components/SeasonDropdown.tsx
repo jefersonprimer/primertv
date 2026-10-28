@@ -35,19 +35,35 @@ function SharedSeasonDropdown({
 }: SharedSeasonDropdownProps) {
   const [open, setOpen] = useState(false);
   const [alignRight, setAlignRight] = useState(false);
+  const [menuMaxWidth, setMenuMaxWidth] = useState<number | undefined>();
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const selected = options.find((option) => option.value === value);
 
   useEffect(() => {
     if (!open) return;
-    // Keep wide menus inside the viewport when the trigger sits near its right edge.
+    // Keep the menu inside the viewport and any horizontally clipped parent.
     const triggerRect = triggerRef.current?.getBoundingClientRect();
     if (triggerRect) {
+      let leftBound = 8;
+      let rightBound = window.innerWidth - 8;
+      let parent = rootRef.current?.parentElement;
+      while (parent) {
+        const overflowX = window.getComputedStyle(parent).overflowX;
+        if (["auto", "scroll", "hidden", "clip"].includes(overflowX)) {
+          const rect = parent.getBoundingClientRect();
+          leftBound = Math.max(leftBound, rect.left);
+          rightBound = Math.min(rightBound, rect.right);
+        }
+        parent = parent.parentElement;
+      }
+
+      const rightSpace = Math.max(0, rightBound - triggerRect.left);
+      const leftSpace = Math.max(0, triggerRect.right - leftBound);
       const preferredWidth = Math.min(480, window.innerWidth * 0.9);
-      const rightSpace = window.innerWidth - triggerRect.left;
-      const leftSpace = triggerRect.right;
-      setAlignRight(rightSpace < preferredWidth && leftSpace > rightSpace);
+      const shouldAlignRight = rightSpace < preferredWidth && leftSpace > rightSpace;
+      setAlignRight(shouldAlignRight);
+      setMenuMaxWidth(Math.max(0, Math.min(preferredWidth, shouldAlignRight ? leftSpace : rightSpace)));
     }
     const onPointerDown = (event: MouseEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
@@ -92,7 +108,8 @@ function SharedSeasonDropdown({
           <div
             role="listbox"
             aria-label={ariaLabel}
-            className={`absolute ${alignRight ? "right-0 left-auto" : "left-0 right-auto"} top-full z-50 mt-2 max-h-60 w-max min-w-full max-w-[min(90vw,36rem)] overflow-y-auto rounded-md bg-[#272727] p-2 shadow-xl custom-scrollbar`}
+            style={{ maxWidth: menuMaxWidth }}
+            className={`absolute ${alignRight ? "right-0 left-auto" : "left-0 right-auto"} top-full z-50 mt-2 max-h-90 w-max min-w-full max-w-[min(90vw,36rem)] overflow-x-hidden overflow-y-auto rounded-xl bg-[#272727] py-2 custom-scrollbar`}
           >
             {options.map((option) => {
               const isSelected = option.value === value;
@@ -106,11 +123,13 @@ function SharedSeasonDropdown({
                     onChange(option.value);
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between gap-8 rounded-md px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-[#151515] ${
+                  className={`flex w-full items-center justify-between gap-8 px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-[#151515] ${
                     isSelected ? "bg-[#151515] text-white" : "text-[#bbb]"
                   }`}
                 >
-                  <span className="shrink-0 whitespace-nowrap">{option.label}</span>
+                  <span className="min-w-0 truncate">
+                    {option.label}
+                  </span>
                   {option.detail && (
                     <span className="shrink-0 text-xs font-normal text-[#bbb]">
                       {option.detail}

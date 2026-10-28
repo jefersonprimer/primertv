@@ -436,7 +436,7 @@ export default async function WatchPage({
                       initialUpvotes={animeEpisode.upvotes}
                       initialDownvotes={animeEpisode.downvotes}
                       initialUserVote={initialUserVote as "UP" | "DOWN" | null}
-                      size={24}
+                      size={20}
                     />
                     <WatchlistButton
                       mediaType="ANIME"
@@ -444,10 +444,10 @@ export default async function WatchPage({
                       slug={anime.slug}
                       initialInWatchlist={inWatchlist}
                       isLoggedIn={Boolean(userId)}
-                      size={24}
+                      size={20}
                       showLabel
                     />
-                    <ShareButton size={24} showLabelInline />
+                    <ShareButton size={20} showLabelInline />
                   </div>
                 </div>
 
@@ -455,7 +455,7 @@ export default async function WatchPage({
                   <div className="flex flex-col items-start">
                     <Link
                       href={`/animes/${anime.slug}`}
-                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                      className="inline-block text-zinc-300 hover:text-white transition-colors hover:underline"
                     >
                       <h4 className="text-base font-bold">{anime.title}</h4>
                     </Link>
@@ -709,7 +709,7 @@ export default async function WatchPage({
                   <div className="flex flex-col items-start gap-2">
                     <Link
                       href={`/animes/${anime.slug}`}
-                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                      className="inline-block text-zinc-300 hover:text-white transition-colors hover:underline"
                     >
                       <h4 className="text-base font-bold">{anime.title}</h4>
                     </Link>
@@ -1031,7 +1031,7 @@ export default async function WatchPage({
                   <div className="flex flex-col items-start gap-2">
                     <Link
                       href={`/series/${seriesEpisode.season.series.slug}`}
-                      className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                      className="inline-block text-zinc-300 hover:text-white transition-colors hover:underline"
                     >
                       <h4 className="text-base font-bold">
                         {seriesEpisode.season.series.title}
@@ -1231,7 +1231,7 @@ export default async function WatchPage({
                     <h1 className="text-xl font-bold md:text-2xl text-white">
                       <Link
                         href={`/series/${extSeries.slug}`}
-                        className="text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                        className="text-zinc-300 hover:text-white transition-colors hover:underline"
                       >
                         {extSeries.title}
                       </Link>{" "}
@@ -1470,7 +1470,7 @@ export default async function WatchPage({
               <div className="flex flex-col items-start gap-2">
                 <Link
                   href={`/movies/${movie.slug}`}
-                  className="inline-block text-blue-400 hover:text-[#f2f2f2] transition-colors hover:underline"
+                  className="inline-block text-zinc-300 hover:text-white transition-colors hover:underline"
                 >
                   <h4 className="text-base font-bold">{movie.title}</h4>
                 </Link>

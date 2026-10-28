@@ -112,7 +112,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                     className="fixed inset-0 z-40"
                     onClick={() => setIsExploreOpen(false)}
                   />
-                  <div className="absolute left-0 top-full mt-1 z-50 w-52 bg-[#1a1313] p-2 shadow-2xl border border-zinc-800/80 rounded-2xl flex flex-col gap-1 backdrop-blur-md">
+                  <div className="absolute left-0 top-full mt-1 z-50 w-52 bg-[#1a1313] py-2 border border-zinc-800/80 rounded-xl flex flex-col backdrop-blur-md">
                     {EXPLORE_NAV_LINKS.map((link) => {
                       const active = isActive(link.href);
                       return (
@@ -120,7 +120,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                           key={link.href}
                           href={link.href}
                           onClick={() => setIsExploreOpen(false)}
-                          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                          className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
                             active
                               ? "bg-linear-to-b from-white/[0.14] via-white/[0.05] to-white/[0.03] text-white font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.30),inset_0_0_0_1px_rgba(255,255,255,0.07)]"
                               : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"

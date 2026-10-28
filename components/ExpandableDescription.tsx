@@ -19,7 +19,7 @@ export default function ExpandableDescription({
   const isLongDescription = description.length > 200;
 
   return (
-    <div className="mt-2 flex flex-col items-start w-full">
+    <div className="mt-2 flex flex-col items-start w-full bg-[#2C2B2B] p-2 rounded-xl">
       <p
         className={`text-[#f2f2f2] leading-relaxed text-base font-normal ${
           isExpanded ? "line-clamp-none" : "line-clamp-3"
@@ -30,7 +30,7 @@ export default function ExpandableDescription({
       {isLongDescription && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="mt-2 text-sm font-semibold text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors uppercase"
+          className="mt-2 text-sm font-semibold text-white hover:text-[#f1f1f1]  transition-colors uppercase"
         >
           {isExpanded ? t("showLess") : t("showMore")}
         </button>

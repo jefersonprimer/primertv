@@ -84,7 +84,7 @@ export function VoteButtons({
   };
 
   return (
-    <div className="inline-flex items-center gap-3 rounded-full bg-[#2A2A2A] border border-zinc-800 px-4 py-2 shadow-lg backdrop-blur-md transition-colors duration-300 hover:border-zinc-700">
+    <div className="inline-flex items-center gap-3 rounded-full bg-[#2A2A2A] border border-zinc-800 px-4 py-2 backdrop-blur-md transition-colors duration-300 hover:border-zinc-700">
       {/* Upvote Button */}
       <button
         onClick={() => handleVote("UP")}

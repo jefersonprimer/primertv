@@ -50,7 +50,9 @@ export default function MediaDescription({
     (subtitles && subtitles.length > 0);
 
   return (
-    <div className={`flex flex-col md:flex-row gap-8 w-full ${showBorder ? "border-b-2 border-zinc-700 pb-4" : ""}`}>
+    <div
+      className={`flex flex-col md:flex-row gap-8 w-full ${showBorder ? "border-b-2 border-zinc-700 pb-4" : ""}`}
+    >
       {/* Description Column */}
       <div
         className={`flex flex-col gap-2 ${hasExtraInfo ? "flex-2 md:w-2/3" : "w-full"}`}
@@ -91,7 +93,9 @@ export default function MediaDescription({
               {t("genres")}:{" "}
               {genres.map((genre, index) => (
                 <span key={genre} className="text-[#f2f2f2]">
-                  <span className="underline">{translateGenre(genre, (key) => tGenre(key as never))}</span>
+                  <span className="underline">
+                    {translateGenre(genre, (key) => tGenre(key as never))}
+                  </span>
                   {index < genres.length - 1 && ", "}
                 </span>
               ))}

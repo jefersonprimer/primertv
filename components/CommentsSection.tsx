@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useTranslations, useFormatter } from "next-intl";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useTranslations, useFormatter, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import {
-  Send,
   User,
   Loader2,
   ThumbsUp,
@@ -15,6 +14,7 @@ import {
   Trash2,
   Check,
   ChevronDown,
+  ArrowUpDown,
 } from "lucide-react";
 
 interface CommentItem {
@@ -45,12 +45,195 @@ interface CommentsSectionProps {
   } | null;
 }
 
+interface CommentFormProps {
+  value: string;
+  onChange: (val: string) => void;
+  onSubmit: (e?: React.FormEvent) => void;
+  placeholder: string;
+  submitting: boolean;
+  submitText: string;
+  onCancel?: () => void;
+  cancelText?: string;
+  error?: string | null;
+  currentUser?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    image?: string | null;
+  } | null;
+  authorName?: string;
+  onAuthorNameChange?: (name: string) => void;
+  authorLabel?: string;
+  authorPlaceholder?: string;
+  isReply?: boolean;
+}
+
+function CommentForm({
+  value,
+  onChange,
+  onSubmit,
+  placeholder,
+  submitting,
+  submitText,
+  onCancel,
+  cancelText,
+  error,
+  currentUser,
+  authorName,
+  onAuthorNameChange,
+  authorLabel,
+  authorPlaceholder,
+  isReply = false,
+}: CommentFormProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onChange(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    if (!value && textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  }, [value]);
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(e);
+      }}
+      className="space-y-3"
+    >
+      {!currentUser && onAuthorNameChange && (
+        <div>
+          {authorLabel && (
+            <label className="block text-xs font-medium text-zinc-400 mb-1">
+              {authorLabel}
+            </label>
+          )}
+          <input
+            type="text"
+            placeholder={authorPlaceholder}
+            value={authorName || ""}
+            onChange={(e) => onAuthorNameChange(e.target.value)}
+            className="w-full max-w-md rounded-none border-0 border-b border-zinc-800 bg-transparent px-0 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-white focus:outline-none focus:ring-0 transition-colors"
+          />
+        </div>
+      )}
+
+      <div className="flex gap-3 items-start">
+        {/* User avatar */}
+        <div
+          className={`flex shrink-0 items-center justify-center rounded-full font-bold text-zinc-300 overflow-hidden bg-zinc-800 border border-zinc-700/50 mt-0.5 ${
+            isReply ? "h-7 w-7 text-xs" : "h-9 w-9 text-sm"
+          }`}
+        >
+          {currentUser?.image ? (
+            <img
+              src={currentUser.image}
+              alt={currentUser.name || "User"}
+              className="h-full w-full object-cover"
+            />
+          ) : currentUser?.name ? (
+            currentUser.name.charAt(0).toUpperCase()
+          ) : (
+            <User className={isReply ? "h-3.5 w-3.5" : "h-4 w-4"} />
+          )}
+        </div>
+
+        {/* Input & actions */}
+        <div className="flex-1 min-w-0 space-y-2">
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            placeholder={placeholder}
+            value={value}
+            onChange={handleInput}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                if (!submitting && value.trim()) {
+                  onSubmit();
+                }
+              }
+            }}
+            className="w-full resize-none rounded-none border-0 border-b border-zinc-800 bg-transparent px-0 py-1.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-white focus:outline-none focus:ring-0 transition-colors overflow-hidden"
+          />
+
+          {error && <p className="text-xs text-red-400 font-medium">{error}</p>}
+
+          <div className="flex items-center justify-end gap-2 pt-1">
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-colors"
+              >
+                {cancelText || "Cancelar"}
+              </button>
+            )}
+
+            <button
+              type="submit"
+              disabled={submitting || !value.trim()}
+              className={`inline-flex items-center justify-center gap-2 rounded-full bg-zinc-100 font-semibold text-zinc-900 shadow-sm transition-all hover:bg-white active:scale-95 disabled:cursor-not-allowed disabled:bg-zinc-800/80 disabled:text-zinc-500 disabled:shadow-none ${
+                isReply ? "px-4 py-1.5 text-xs" : "px-5 py-2.5 text-sm"
+              }`}
+            >
+              {submitting ? (
+                <>
+                  <Loader2
+                    className={`${isReply ? "h-3.5 w-3.5" : "h-4 w-4"} animate-spin`}
+                  />
+                  <span>{submitText}</span>
+                </>
+              ) : (
+                <span>{submitText}</span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+}
+
 export function CommentsSection({
   targetId,
   currentUser,
 }: CommentsSectionProps) {
   const t = useTranslations("Comments");
   const format = useFormatter();
+  const locale = useLocale();
+
+  const sortTopLabel =
+    locale === "pt-br"
+      ? "Principais"
+      : locale === "es"
+        ? "Principales"
+        : locale === "fr"
+          ? "Meilleurs"
+          : locale === "de"
+            ? "Beliebteste"
+            : locale === "ar"
+              ? "الأبرز"
+              : "Top comments";
+
+  const sortNewestLabel =
+    locale === "pt-br"
+      ? "Mais recentes"
+      : locale === "es"
+        ? "Más recientes"
+        : locale === "fr"
+          ? "Plus récents"
+          : locale === "de"
+            ? "Neueste"
+            : locale === "ar"
+              ? "الأحدث"
+              : "Newest";
 
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -58,6 +241,21 @@ export function CommentsSection({
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Sort state ("top" = mais curtidas/respostas, "newest" = mais recentes)
+  const [sortBy, setSortBy] = useState<"top" | "newest">("top");
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Visitor ID for guest votes & comments
   const [visitorId, setVisitorId] = useState<string>("");
@@ -154,8 +352,8 @@ export function CommentsSection({
     };
   }, [targetId, fetchComments]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault?.();
     if (!newComment.trim()) return;
 
     try {
@@ -419,8 +617,37 @@ export function CommentsSection({
     }
   };
 
-  // Group comments into root comments and their replies
-  const rootComments = comments.filter((c) => !c.parentId);
+  // Group comments into root comments and their replies, sorted by Top (likes & replies) or Newest
+  const sortedRootComments = useMemo(() => {
+    const roots = comments.filter((c) => !c.parentId);
+
+    if (sortBy === "newest") {
+      return [...roots].sort((a, b) => {
+        const timeA = new Date(a.createdAt).getTime() || 0;
+        const timeB = new Date(b.createdAt).getTime() || 0;
+        return timeB - timeA;
+      });
+    }
+
+    // "top": sort by engagement (likes and replies count)
+    return [...roots].sort((a, b) => {
+      const aReplies = comments.filter((r) => r.parentId === a.id).length;
+      const bReplies = comments.filter((r) => r.parentId === b.id).length;
+
+      const aScore = (a.likes || 0) * 2 - (a.dislikes || 0) + aReplies * 3;
+      const bScore = (b.likes || 0) * 2 - (b.dislikes || 0) + bReplies * 3;
+
+      if (bScore !== aScore) {
+        return bScore - aScore;
+      }
+
+      const timeA = new Date(a.createdAt).getTime() || 0;
+      const timeB = new Date(b.createdAt).getTime() || 0;
+      return timeB - timeA;
+    });
+  }, [comments, sortBy]);
+
+  const rootComments = sortedRootComments;
   const getRepliesFor = (parentId: string) => {
     return comments.filter((c) => c.parentId === parentId);
   };
@@ -548,7 +775,7 @@ export function CommentsSection({
                     type="button"
                     disabled={submittingEdit || !editContent.trim()}
                     onClick={() => handleEditSubmit(comment.id)}
-                    className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white disabled:opacity-50 transition-colors flex items-center gap-1"
+                    className="inline-flex items-center gap-1 rounded-md bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-900 shadow-sm transition-all hover:bg-white active:scale-95 disabled:cursor-not-allowed disabled:bg-zinc-800/80 disabled:text-zinc-500 disabled:shadow-none"
                   >
                     {submittingEdit ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -679,67 +906,30 @@ export function CommentsSection({
 
             {/* Inline Reply Form */}
             {replyingToId === comment.id && (
-              <div className="mt-3.5 pt-3 border-t border-zinc-800/80 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-blue-400 flex items-center gap-1">
-                    <Reply className="h-4 w-4" />{" "}
-                    {t("replyingTo", { userName: comment.userName })}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setReplyingToId(null)}
-                    className="text-zinc-500 hover:text-zinc-300 text-xs flex items-center gap-1"
-                  >
-                    <X className="h-4 w-4" /> {t("cancel")}
-                  </button>
-                </div>
+              <div className="mt-3.5 pt-3 border-t border-zinc-800/80 space-y-2">
+                <span className="text-xs font-medium text-zinc-400 flex items-center gap-1.5 mb-1">
+                  <Reply className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>{t("replyingTo", { userName: comment.userName })}</span>
+                </span>
 
-                {!currentUser && (
-                  <div>
-                    <input
-                      type="text"
-                      placeholder={t("replyAuthorPlaceholder")}
-                      value={replyAuthorName}
-                      onChange={(e) => setReplyAuthorName(e.target.value)}
-                      className="w-full max-w-sm rounded-lg border border-zinc-800 bg-[#0E0E0E] px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
-                    />
-                  </div>
-                )}
-
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder={t("replyPlaceholder", {
-                      userName: comment.userName,
-                    })}
-                    value={replyContent}
-                    onChange={(e) => setReplyContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleReplySubmit(comment.id);
-                      }
-                    }}
-                    className="flex-1 rounded-lg border border-zinc-800 bg-[#0E0E0E] px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    disabled={submittingReply || !replyContent.trim()}
-                    onClick={() => handleReplySubmit(comment.id)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                  >
-                    {submittingReply ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <Send className="h-3.5 w-3.5" />
-                    )}
-                    <span>{t("reply")}</span>
-                  </button>
-                </div>
-
-                {replyError && (
-                  <p className="text-[11px] text-red-400">{replyError}</p>
-                )}
+                <CommentForm
+                  isReply
+                  value={replyContent}
+                  onChange={setReplyContent}
+                  onSubmit={() => handleReplySubmit(comment.id)}
+                  placeholder={t("replyPlaceholder", {
+                    userName: comment.userName,
+                  })}
+                  submitting={submittingReply}
+                  submitText={t("reply")}
+                  onCancel={() => setReplyingToId(null)}
+                  cancelText={t("cancel")}
+                  error={replyError}
+                  currentUser={currentUser}
+                  authorName={replyAuthorName}
+                  onAuthorNameChange={setReplyAuthorName}
+                  authorPlaceholder={t("replyAuthorPlaceholder")}
+                />
               </div>
             )}
           </div>
@@ -760,7 +950,7 @@ export function CommentsSection({
               <button
                 type="button"
                 onClick={() => toggleExpandReplies(comment.id)}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1 px-1 rounded-md"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:bg-[#2A2A2A] transition-colors p-2 rounded-full"
               >
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
@@ -798,7 +988,7 @@ export function CommentsSection({
   return (
     <section className="mt-8 p-5 lg:p-6">
       {/* Header */}
-      <div className="flex items-center gap-3  pb-4 mb-4">
+      <div className="flex items-center gap-8 pb-4 mb-4">
         <div className="flex items-center gap-2.5">
           {!loading && (
             <span className="text-base lg:text-xl font-medium lg:font-bold text-white">
@@ -806,73 +996,93 @@ export function CommentsSection({
             </span>
           )}
         </div>
+
+        {/* Filter / Sort comments */}
+        {!loading && comments.length > 0 && (
+          <div ref={sortRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setIsSortOpen((prev) => !prev)}
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/70 transition-colors"
+              title="Filtrar comentários"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M15 12H3" />
+                <path d="M3 5h18" />
+                <path d="M9 19H3" />
+              </svg>
+              <span>{sortBy === "top" ? sortTopLabel : sortNewestLabel}</span>
+            </button>
+
+            {isSortOpen && (
+              <div className="absolute right-0 top-full mt-1.5 z-30 min-w-[150px] rounded-xl  bg-[#121212]/95 backdrop-blur-md py-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSortBy("top");
+                    setIsSortOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors text-left ${
+                    sortBy === "top"
+                      ? "bg-zinc-800 text-white font-semibold"
+                      : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 font-medium"
+                  }`}
+                >
+                  <span>{sortTopLabel}</span>
+                  {sortBy === "top" && (
+                    <Check className="h-3.5 w-3.5 text-zinc-100" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSortBy("newest");
+                    setIsSortOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors text-left ${
+                    sortBy === "newest"
+                      ? "bg-zinc-800 text-white font-semibold"
+                      : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 font-medium"
+                  }`}
+                >
+                  <span>{sortNewestLabel}</span>
+                  {sortBy === "newest" && (
+                    <Check className="h-3.5 w-3.5 text-zinc-100" />
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Main Comment Form */}
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        {!currentUser && (
-          <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1">
-              {t("authorNameLabel")}
-            </label>
-            <input
-              type="text"
-              placeholder={t("authorNamePlaceholder")}
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              className="w-full max-w-md rounded-xl border border-zinc-800 bg-[#0E0E0E] px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
-            />
-          </div>
-        )}
-
-        <div className="flex gap-3 items-start">
-          <div className="flex shrink-0 items-center justify-center rounded-full font-bold text-zinc-300 overflow-hidden bg-zinc-800 border border-zinc-700/50 h-9 w-9 text-sm mt-1">
-            {currentUser?.image ? (
-              <img
-                src={currentUser.image}
-                alt={currentUser.name || "User"}
-                className="h-full w-full object-cover"
-              />
-            ) : currentUser?.name ? (
-              currentUser.name.charAt(0).toUpperCase()
-            ) : (
-              <User className="h-4 w-4" />
-            )}
-          </div>
-          <div className="flex-1 min-w-0 space-y-2">
-            <textarea
-              rows={3}
-              placeholder={t("inputPlaceholder")}
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="w-full resize-none rounded-xl border border-zinc-800 bg-[#0E0E0E] p-4 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
-            />
-
-            {error && (
-              <p className="text-xs text-red-400 font-medium">{error}</p>
-            )}
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={submitting || !newComment.trim()}
-                className="inline-flex items-center gap-2 rounded-full bg-[#0077FD] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>{t("submitting")}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{t("submit")}</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
+      <div className="mb-8">
+        <CommentForm
+          value={newComment}
+          onChange={setNewComment}
+          onSubmit={handleSubmit}
+          placeholder={t("inputPlaceholder")}
+          submitting={submitting}
+          submitText={t("submit")}
+          error={error}
+          currentUser={currentUser}
+          authorName={authorName}
+          onAuthorNameChange={setAuthorName}
+          authorLabel={t("authorNameLabel")}
+          authorPlaceholder={t("authorNamePlaceholder")}
+        />
+      </div>
 
       {/* Comments List */}
       <div className="space-y-4">

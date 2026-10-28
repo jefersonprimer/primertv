@@ -8,10 +8,15 @@ const getPrismaClient = () => {
   const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL;
   const isProduction = process.env.NODE_ENV === "production";
 
-  const pool = new pg.Pool({ 
+  // DATABASE_URL may point at a session-mode pooler with a small shared
+  // client limit. Each serverless runtime gets its own pool, so keep the
+  // production pool small to avoid multiplying connections across instances.
+  const pool = new pg.Pool({
     connectionString,
-    max: isProduction ? 3 : 10,
-    idleTimeoutMillis: 10000,
+    max: isProduction ? 1 : 5,
+    // Release serverless connections quickly after queries finish so idle
+    // runtimes do not occupy the session pool's limited client slots.
+    idleTimeoutMillis: isProduction ? 1000 : 10000,
     connectionTimeoutMillis: 10000,
   });
 

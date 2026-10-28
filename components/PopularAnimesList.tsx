@@ -192,9 +192,7 @@ export function PopularAnimesList({
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               disabled={loading}
-              className={`inline-flex rounded items-center justify-between gap-x-2 px-4 py-2 text-sm font-semibold text-[#bbb] transition-colors focus:outline-none hover:text-white hover:bg-[#272727] uppercase ${
-                isDropdownOpen ? "text-white bg-[#272727]" : ""
-              }`}
+              className={`inline-flex rounded items-center justify-between gap-x-2 px-4 py-2 text-sm font-semibold text-[#bbb] transition-colors focus:outline-none ] uppercase `}
               id="popular-filter-button"
               aria-expanded={isDropdownOpen}
               aria-haspopup="true"
@@ -210,7 +208,7 @@ export function PopularAnimesList({
 
           {isDropdownOpen && (
             <div
-              className="absolute rounded-xl right-0 z-50 w-48 sm:w-54 py-2 origin-top-right bg-[#272727] shadow-lg ring-1 ring-black/5 focus:outline-none"
+              className="absolute rounded-xl right-0 z-50 w-48 sm:w-54 py-2 origin-top-right bg-[#272727] ring-1 ring-black/5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="popular-filter-button"
@@ -250,108 +248,108 @@ export function PopularAnimesList({
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-        {items.map((item) => (
-          <Link
-            key={item.id}
-            href={`/animes/${item.slug}`}
-            onClick={(e) => handleItemClick(e, item.slug)}
-            className="group flex flex-col gap-3"
-          >
-            <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-zinc-900 shadow-md ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/20">
-              {item.imageUrl ? (
-                <Image
-                  src={item.imageUrl}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 200px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  priority={false}
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-zinc-500 text-sm">
-                  Sem imagem
-                </div>
-              )}
-
-              {/* Rank Badge */}
-              <div
-                className={`absolute top-0 left-0 z-10 flex items-center gap-1 rounded-br px-2.5 py-1 text-xs font-black shadow-md ${getRankBadgeStyle(
-                  item.rank,
-                )}`}
-              >
-                {getRankIcon(item.rank)}
-                <span>#{item.rank}</span>
-              </div>
-
-              {/* Hover play overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transform scale-90 transition-transform duration-300 group-hover:scale-100">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <h3 className="line-clamp-2 text-sm font-semibold text-white">
-                {item.title}
-              </h3>
-              {(item.isDubbed || item.isSubtitled) && (
-                <div className="flex gap-1.5 self-start">
-                  {item.isDubbed && item.isSubtitled ? (
-                    <span className="text-sm text-[#8c8c8c] font-normal">
-                      {t("subDub")}
-                    </span>
-                  ) : item.isDubbed ? (
-                    <span className="text-sm text-[#8c8c8c] font-normal">
-                      {t("dubbed")}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-[#8c8c8c] font-normal">
-                      {t("subtitled")}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {item.score && (
-                <span className="text-xs font-semibold text-amber-500 flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                  {item.score}
-                </span>
-              )}
-
-              {item.members && (
-                <span className="text-xs text-zinc-400 font-medium">
-                  {item.members.toLocaleString()} membros
-                </span>
-              )}
-            </div>
-          </Link>
-        ))}
-
-        {/* Loading Skeletons */}
-        {loading &&
-          Array.from({ length: 12 }).map((_, idx) => (
-            <div
-              key={`skeleton-${idx}`}
-              className="flex flex-col gap-3 animate-pulse"
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              href={`/animes/${item.slug}`}
+              onClick={(e) => handleItemClick(e, item.slug)}
+              className="group flex flex-col gap-3"
             >
-              <div className="relative aspect-[2/3] w-full rounded-md bg-zinc-800 shadow-md ring-1 ring-white/10" />
-              <div className="flex flex-col gap-2">
-                <div className="h-4 w-3/4 bg-zinc-800" />
-                <div className="h-3.5 w-1/3 bg-zinc-800" />
-                <div className="h-3 w-1/2 bg-zinc-800" />
+              <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-zinc-900 shadow-md ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-blue-500/20">
+                {item.imageUrl ? (
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 200px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    priority={false}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-zinc-500 text-sm">
+                    Sem imagem
+                  </div>
+                )}
+
+                {/* Rank Badge */}
+                <div
+                  className={`absolute top-0 left-0 z-10 flex items-center gap-1 rounded-br px-2.5 py-1 text-xs font-black shadow-md ${getRankBadgeStyle(
+                    item.rank,
+                  )}`}
+                >
+                  {getRankIcon(item.rank)}
+                  <span>#{item.rank}</span>
+                </div>
+
+                {/* Hover play overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transform scale-90 transition-transform duration-300 group-hover:scale-100">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
-            </div>
+
+              <div className="flex flex-col gap-1">
+                <h3 className="line-clamp-2 text-sm font-semibold text-white">
+                  {item.title}
+                </h3>
+                {(item.isDubbed || item.isSubtitled) && (
+                  <div className="flex gap-1.5 self-start">
+                    {item.isDubbed && item.isSubtitled ? (
+                      <span className="text-sm text-[#8c8c8c] font-normal">
+                        {t("subDub")}
+                      </span>
+                    ) : item.isDubbed ? (
+                      <span className="text-sm text-[#8c8c8c] font-normal">
+                        {t("dubbed")}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-[#8c8c8c] font-normal">
+                        {t("subtitled")}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {item.score && (
+                  <span className="text-xs font-semibold text-amber-500 flex items-center gap-1">
+                    <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                    {item.score}
+                  </span>
+                )}
+
+                {item.members && (
+                  <span className="text-xs text-zinc-400 font-medium">
+                    {item.members.toLocaleString()} membros
+                  </span>
+                )}
+              </div>
+            </Link>
           ))}
+
+          {/* Loading Skeletons */}
+          {loading &&
+            Array.from({ length: 12 }).map((_, idx) => (
+              <div
+                key={`skeleton-${idx}`}
+                className="flex flex-col gap-3 animate-pulse"
+              >
+                <div className="relative aspect-[2/3] w-full rounded-md bg-zinc-800 shadow-md ring-1 ring-white/10" />
+                <div className="flex flex-col gap-2">
+                  <div className="h-4 w-3/4 bg-zinc-800" />
+                  <div className="h-3.5 w-1/3 bg-zinc-800" />
+                  <div className="h-3 w-1/2 bg-zinc-800" />
+                </div>
+              </div>
+            ))}
         </div>
       )}
 

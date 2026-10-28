@@ -65,13 +65,13 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 bottom-full z-50 mb-2 w-48 bg-[#272727] p-2 rounded-2xl shadow-2xl backdrop-blur-md animate-[fadeIn_0.15s_ease-out]">
+        <div className="absolute left-0 bottom-full z-50 mb-2 w-48 bg-[#272727] py-2 rounded-xl backdrop-blur-md animate-[fadeIn_0.15s_ease-out]">
           <div className="flex flex-col">
             {locales.map((loc) => (
               <button
                 key={loc.code}
                 onClick={() => handleSelect(loc.code)}
-                className={`flex w-full items-center rounded-lg px-4 py-2.5 text-left text-sm transition-all duration-150 cursor-pointer ${
+                className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-all duration-150 cursor-pointer ${
                   loc.code === locale
                     ? "bg-[#151515] text-[#f2f2f2] font-medium"
                     : "text-[#bbb] hover:bg-[#151515] hover:text-[#f2f2f2]"
