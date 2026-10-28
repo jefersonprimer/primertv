@@ -648,6 +648,23 @@ export default async function WatchPage({
 
     const userId = await getAuthenticatedUserId();
     const inWatchlist = await isInWatchlist("ANIME", anime.id);
+    // MegaPlay can provide a player for an episode that is also present in our
+    // local catalog. Use that database episode for persistent voting.
+    const localEpisode = await prisma.episode.findFirst({
+      where: {
+        number: episodeNumber,
+        season: { animeId: anime.id, number: parsedSeason },
+      },
+      select: { id: true, upvotes: true, downvotes: true },
+    });
+    const existingVote = userId && localEpisode
+      ? await prisma.episodeVote.findUnique({
+          where: {
+            userId_episodeId: { userId, episodeId: localEpisode.id },
+          },
+          select: { type: true },
+        })
+      : null;
 
     return (
       <div className="min-h-screen bg-[#0E0E0E] text-zinc-50">
@@ -691,7 +708,14 @@ export default async function WatchPage({
                   )}
 
                   <div className="flex items-center gap-2.5">
-                    <VoteButtons size={24} />
+                    <VoteButtons
+                      episodeId={localEpisode?.id}
+                      userId={userId}
+                      initialUpvotes={localEpisode?.upvotes ?? 0}
+                      initialDownvotes={localEpisode?.downvotes ?? 0}
+                      initialUserVote={existingVote?.type as "UP" | "DOWN" | undefined}
+                      size={24}
+                    />
                     <WatchlistButton
                       mediaType="ANIME"
                       mediaId={anime.id}

@@ -61,9 +61,15 @@ function SharedSeasonDropdown({
       const rightSpace = Math.max(0, rightBound - triggerRect.left);
       const leftSpace = Math.max(0, triggerRect.right - leftBound);
       const preferredWidth = Math.min(480, window.innerWidth * 0.9);
-      const shouldAlignRight = rightSpace < preferredWidth && leftSpace > rightSpace;
+      const shouldAlignRight =
+        rightSpace < preferredWidth && leftSpace > rightSpace;
       setAlignRight(shouldAlignRight);
-      setMenuMaxWidth(Math.max(0, Math.min(preferredWidth, shouldAlignRight ? leftSpace : rightSpace)));
+      setMenuMaxWidth(
+        Math.max(
+          0,
+          Math.min(preferredWidth, shouldAlignRight ? leftSpace : rightSpace),
+        ),
+      );
     }
     const onPointerDown = (event: MouseEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
@@ -90,7 +96,7 @@ function SharedSeasonDropdown({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className={`flex max-w-full min-w-0 items-center gap-2 text-left text-lg font-bold text-[#f2f2f2] transition-colors hover:text-[#0077FD] ${triggerClassName}`}
+        className={`flex max-w-full min-w-0 items-center gap-2 text-left text-lg font-bold text-[#f2f2f2] transition-colors hover:text-white ${triggerClassName}`}
       >
         <span className="line-clamp-1 min-w-0">{selected.label}</span>
         <ChevronDown
@@ -127,9 +133,7 @@ function SharedSeasonDropdown({
                     isSelected ? "bg-[#151515] text-white" : "text-[#bbb]"
                   }`}
                 >
-                  <span className="min-w-0 truncate">
-                    {option.label}
-                  </span>
+                  <span className="min-w-0 truncate">{option.label}</span>
                   {option.detail && (
                     <span className="shrink-0 text-xs font-normal text-[#bbb]">
                       {option.detail}
